@@ -9,7 +9,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "b13e27fd62585137233095833bfb09aa9b8ca8ef8cd474e6b2a0f06a3b1ded57",
+          "hash": "c584c1ca65e3da9bab09ad58b77c3824021e7594587074371beb0c087e233e3f",
           "path": "docs/PHASE-0.md"
         },
         {
@@ -19,6 +19,14 @@
         {
           "hash": "bc5c806559ac3cfb470c05f4ba0695baa5bd0f31a895c465cc0b698ddfdd7020",
           "path": "docs/consult-brief-01.md"
+        },
+        {
+          "hash": "bce40bc8c12a2e20b767b8d084988a7ffb5d0e321cc0144d79cfaa67616474f2",
+          "path": "docs/consult-brief-host-01.md"
+        },
+        {
+          "hash": "3e1038792608cc18c0d77f58cb915cd2d4d7c9827e20ce164d00667e946cf7d7",
+          "path": "docs/consult-brief-physics-01.md"
         },
         {
           "hash": "bd0357e0bd3fad3655bd61b8955d98b57aa5124451469627b95b27f32aa3ae1d",
@@ -31,6 +39,14 @@
         {
           "hash": "a60b3f3f413b3178c4b24ca35a7a78b12819e2b4a228ac1ae6f4144cb106a14d",
           "path": "docs/consult-reply-claude-atlas-01.md"
+        },
+        {
+          "hash": "f74bde616399037f30ed70fbcc8360423dc4b1b968df514afdbbd32e60934e01",
+          "path": "docs/consult-reply-claude-host-01.md"
+        },
+        {
+          "hash": "7f4b8a2e95efb915d33668a75f3b450628d0735a376cd2c41526063bb79ece60",
+          "path": "docs/consult-reply-claude-physics-01.md"
         },
         {
           "hash": "2c7dacb2ac7ba27ed2e4622ef341e8b382130b60ee755f493d00dc2952132291",
@@ -220,7 +236,7 @@
           "path": "packages/host/bin/host.js"
         },
         {
-          "hash": "c23db623c8b9e6469a770028faf2458c6710b31d5b859441f99933cde4a02f1d",
+          "hash": "0bdea81877a16e4bb1d79e3ec8fca300f6613c25c24c957bcaaa803c7fc2fdd5",
           "importsFiles": [
             "packages/host/server.js",
             "packages/host/session.js",
@@ -229,7 +245,7 @@
           "path": "packages/host/host.test.js"
         },
         {
-          "hash": "78d72688b445cd6c999360d73edbdd914d5f0c5f6dc114bbd571155e1de43527",
+          "hash": "c02e7764a04d5dc7db8d3d224f2ac6d0f447cfc2cfad6a4bb3642851d3887bf7",
           "path": "packages/host/page.html"
         },
         {
@@ -244,7 +260,7 @@
             "createSession",
             "startPump"
           ],
-          "hash": "4d4e71c837e0f3439f352faf9f4d860bd0070b8f05782c0775bede5a387ee3b5",
+          "hash": "8b06c181912610d2ec6e2f4ae967795f4a1860539c7458eb698d56dd9ce61326",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -622,7 +638,7 @@
             "askOllama",
             "pinnedRun"
           ],
-          "hash": "fe4a6a27d17370389e400af1b1a8bd77c24dc49ed0da3b216d12b06cf809af75",
+          "hash": "508121e4295fa14614ce8959116b12df651d3900063eef410a577243fef51052",
           "path": "packages/propose/ollama.js"
         },
         {
@@ -866,7 +882,7 @@
           "path": "LICENSE"
         },
         {
-          "hash": "4a6514f218ffce5d24b6c84c659178fda9ba3037cc3e9231865234067b8c6948",
+          "hash": "6dda35c61947e12b70dc8af4eec6d397725a6e337df1add5bfc9d8fed85cbcf8",
           "path": "README.md"
         },
         {
@@ -1846,8 +1862,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "c84eee69378484d41dab20c49b39655efd4a4fa4",
-    "tracked": 62
+    "commit": "ece9100f5cd821b7aae828f3881704f089d9199c",
+    "tracked": 66
   },
   "landings": [
     {

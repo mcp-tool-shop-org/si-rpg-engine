@@ -65,93 +65,24 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 6,
-      "changed": 44,
+      "added": 4,
+      "changed": 6,
       "moved": 0,
-      "parts": 12,
+      "parts": 4,
       "removed": 0
     },
     "items": [
       {
-        "kind": "import-added",
-        "sentence": "host now imports tick.",
-        "subjects": [
-          "host",
-          "tick"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also runs packages/host/host.test.js.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/host/host.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks packages/host/.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/host/"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "host (package.json) is a new command. It runs packages/host/bin/host.js.",
-        "subjects": [
-          "package.json",
-          "packages/host/bin/host.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "And 1 more change to a door.",
-        "subjects": []
-      },
-      {
-        "kind": "landing",
-        "sentence": "packages/host/page.html is now read by packages/host/host.test.js and packages/host/server.js.",
-        "subjects": [
-          "packages/host/page.html",
-          "packages/host/host.test.js",
-          "packages/host/server.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "packages/host/view.js is now read by packages/host/server.js.",
-        "subjects": [
-          "packages/host/view.js",
-          "packages/host/server.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "packages/tick/ is now read by packages/host/host.test.js.",
-        "subjects": [
-          "packages/tick/",
-          "packages/host/host.test.js"
-        ]
-      },
-      {
-        "kind": "part",
-        "sentence": "host is a new part, drawn from `packages/host/**`.",
-        "subjects": [
-          "host"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "6 files added and 44 changed content, across 12 parts.",
+        "sentence": "Nothing structural changed since 2026-09-24; 4 files added and 6 changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "71e44875ba2bb5cb1dd1e7f96cdf52109ff096f1",
-      "generatedAt": "2026-09-24T20:27:53.426Z"
+      "commit": "c84eee69378484d41dab20c49b39655efd4a4fa4",
+      "generatedAt": "2026-09-24T20:44:51.939Z"
     },
-    "unchanged": false
+    "unchanged": true
   },
   "changesTogether": [
     {
@@ -235,7 +166,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "c84eee69378484d41dab20c49b39655efd4a4fa4",
+  "commit": "ece9100f5cd821b7aae828f3881704f089d9199c",
   "defaultBranch": "main",
   "derived": "12 parts, mostly JavaScript (33 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -536,7 +467,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T20:44:51.939Z",
+  "generatedAt": "2026-09-24T21:06:01.225Z",
   "limits": [
     "1 read uses a path built at run time and is not named here.",
     "4 writes and 5 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",

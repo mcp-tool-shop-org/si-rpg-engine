@@ -1,0 +1,41 @@
+# Physics consult 01 — Claude, 2026-09-24
+
+Opened for this reply: `harness/sim.mjs`, `packages/tick/world.js`, `packages/frame/hash.js` at 71e4487; the ECMAScript spec source for `Math.fround` and `Math.sqrt` (https://raw.githubusercontent.com/tc39/ecma262/main/spec.html, sections sec-math.fround and sec-math.sqrt); the WebAssembly relaxed-SIMD overview (https://github.com/WebAssembly/relaxed-simd/blob/main/proposals/relaxed-simd/Overview.md); the WebAssembly numerics section (https://webassembly.github.io/spec/core/exec/numerics.html, opened earlier today); Rapier's JavaScript determinism page (https://rapier.rs/docs/user_guides/javascript/determinism/); the npm registry for `@dimforge/rapier2d-deterministic` (0.20.0 is published).
+
+VERDICT: revise
+SENTENCE: The golden file proves the arithmetic contract and has never proved the product, so the slice is not a library; it is making the harness step the function play steps, and a library enters later, if at all, as one WASM binary run under three engines against a golden of its own.
+
+## Q1 — Which file is the proof?
+ANSWER: The proof must be `world.step`, imported from `packages/tick/world.js`, not copied. The harness runs a scene built to fire every branch of that function: floor contact, both walls, a corner where each penetration axis wins once, the speed clamp, and two bodies so a body-body change cannot hide. A Node-only test asserts each branch fired in that scene; the shells do not need to know. The day the harness imports the real solver the product golden is written once, with the reason in the commit, and it moves only when `world.js` or the hash changes. Keep `0d38671370d12d1e`: rename its fixture `golden-arith.txt` and keep the point-mass stub as the contract test of the hash and the five operations, independent of any solver. Two goldens, both in CI. The brief's requirement that "a later edit to play cannot pass CI while diverging" is then met by construction, because play and the harness share one function.
+CHANGE IN THE SLICE: "Swap the 10,000-quanta math stub for a real solver" becomes "Make the harness step `world.step` on a branch-complete scene, then keep the stub as the arithmetic contract."
+CONFIDENCE: high
+BASIS: the two files on main; the harness never calls `world.step`.
+
+## Q2 — Where is the arithmetic allowed to live?
+ANSWER: Two homes, one now and one later. Now: JavaScript doubles under add, subtract, multiply, divide, and `Math.sqrt`, which the spec defines as the Number value of the real square root, plus `Math.fround`, which is exactly specified as conversion to binary32 with roundTiesToEven, so a library's float32 arithmetic could be mirrored bit for bit if it ever mattered. Integer operations for the hash. NaN excluded by the hash. That is the contract the three engines already agree on. Later, if a library: one WASM binary, the same bytes loaded by all three engines, built without relaxed SIMD and without threads, with NaN never reaching the hash, and proven our way: a golden under the three engines. Relaxed SIMD is defined as non-deterministic, and its fused multiply-add is allowed to round once or twice depending on hardware, so it is refused by name. Fixed-width SIMD and scalar WASM arithmetic are IEEE-exact by the spec; the only unspecified bits are NaN sign and payload, which the hash already refuses. Rapier publishes `rapier2d-deterministic`, and its JavaScript page claims the WASM build is cross-platform deterministic given the same version and deterministic inputs, and warns that `Math.sin` and `Math.cos` are not. That is their claim. Ours would be the golden. Refuse: any solver run as JavaScript with transcendentals; fixed-point, which changes the hash's domain and every body field to solve a problem the five operations do not have; and a softfloat rebuild, which solves a problem WASM does not have.
+CHANGE IN THE SLICE: none to the requirement; add "a library is one WASM binary, no relaxed SIMD, no threads, NaN refused, proven by its own golden under three engines."
+CONFIDENCE: high on the JavaScript contract and the WASM refusals; medium on Rapier, whose claim I have not tested
+BASIS: spec.html sec-math.fround and sec-math.sqrt; relaxed-simd Overview.md; webassembly numerics; rapier.rs JavaScript determinism page; npm registry
+
+## Q3 — What contact state is inside the hash?
+ANSWER: One rule: whatever changes the next quantum's result is state, and state is hashed or it does not exist. Hashed: pose and velocity, as now. If a warm-started solver arrives, its accumulated impulses per persistent contact and any sleep flag keyed to a count of quanta are state; they are deterministic floats and integers, and they are hashed, not banned. Banning warm starting bans stable stacking, and nothing about determinism requires it. Recomputed every quantum: contact points, normals, penetration depths, anything that is a pure function of poses. Banned: iteration until a time budget, sleeping after milliseconds, island or thread scheduling whose order depends on the host, and relaxed-SIMD kernels.
+CHANGE IN THE SLICE: add "solver state that survives a quantum is hashed; solver behavior keyed to time or thread order is refused."
+CONFIDENCE: high
+BASIS: `world.js` carries no state between quanta today; the rest is reasoning from the replay contract, not an opened page
+FIELD LIST: `id`, `x`, `y`, `vx`, `vy`, `hw`, `hh` stay. `inverseMass` is added only when body-body resolution lands, with 0 for static. `restitution` is added only when a coefficient other than 1 is used; today's reflection is 1. Nothing else in this slice.
+
+## Q4 — Does move stay?
+ANSWER: It stays, and admission is split from resolution. The hazard suite locks what the verb declares: horizontal velocity toward a target for a bounded count of quanta. The solver owns the contact. One fix to admission, cheap and exact for boxes: expand each collider by the actor's half-extents before the segment test. Liang-Barsky on the expanded box is the swept-box test for an axis-aligned body, and it closes Gemini's corner-clip case at no cost. Re-run the hazard scenarios; both still hold. Admission remains a legality test on the declared path, not a simulation of the fall. If the trajectory meets a collider anyway, the solver resolves it and the log records the frames that resulted; the intent was admitted and did not complete, which is a fact about the world, not a defect. A draft that walks through a collider is still refused twice: at load by the hazards on the real tick, and in play by the expanded segment. The verb's velocity semantics do not change in this slice.
+CHANGE IN THE SLICE: add "the intent predicate tests the segment against colliders expanded by the actor's half-extents."
+CONFIDENCE: high
+BASIS: `predicates.js` and `world.js` on main; the expansion is the standard Minkowski argument, no page opened
+
+## Q5 — What falsifies the slice?
+ANSWER: The assumption that a box solver on five operations covers the contacts the first playable scene needs. If that scene needs slopes, rotation, stacking, or a character standing on a moving body, growing `world.js` becomes writing a physics engine, and the WASM path becomes the rational one. That decision needs the scene, not a library. Write instead a one-page contact inventory for the first picture the host brief names: every contact the scene requires, each marked "box solver on five operations can" or "cannot". All "can": grow `world.js`. Any "cannot": the WASM path with its own golden. The Q1 harness change is independent of that answer and comes first either way.
+CHANGE IN THE SLICE: the slice is gated on the contact inventory from the host consult.
+CONFIDENCE: medium
+BASIS: speculation about what the first scene will need
+
+SCAR: The brief calls `harness/sim.mjs` the proof. It is a contract test of the hash and the five operations, and it never was a proof of the product. Keeping it green while `world.js` changes is exactly the drift the Atlas design was written to catch, and it has been possible since slice 2. Against Gemini: determinism does not ban warm starting, and WASM does not need softfloat.
+
+DID NOT CHECK: whether `rapier2d-deterministic` is float32 or float64; whether any of the three engines enables relaxed SIMD by default; JavaScriptCore's NaN canonicalization in WASM; the host brief.
