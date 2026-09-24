@@ -1,6 +1,6 @@
 # Phase 0 — si-rpg-engine
 
-2026-09-24. Planning only. Revised the same day after the two consults. The research dispatches and the citation receipts live beside this file.
+2026-09-24. Revised the same day after the two consults, and brought forward the same evening to match the tree; see "Where the build stands" at the end. The research dispatches and the citation receipts live beside this file.
 
 ## What this engine is
 
@@ -89,7 +89,7 @@ The consult-02 re-run (`prism-01m3a77yebgzs88tgj0z8p22t8`) supported 4 of 25 arX
 
 ## What phase 0 does not do
 
-No package, no tag, no repository remote, no renderer, no physics library choice, no content pack. The sibling engine stays where it is. This folder does not import it yet.
+No package, no tag, no renderer, no physics library choice, no content pack. The sibling engine stays where it is. This folder does not import it yet. The repository is `mcp-tool-shop-org/si-rpg-engine`, public, default branch `main`, created 2026-09-24 when slice 1 started.
 
 The first citation gate supported all 23 arXiv findings in the original dispatch. Prism receipt `prism-01m3a5jhfmzyfk4g3q7401982z` (prism verdict accept). The Genie 3 blog, the GGPO guide, and Fiedler's snapshot-interpolation essay have no arXiv or DOI. Those three pages were opened. The vivid failure sentences (spawned enemy, forgotten weapon, navmesh) come from the paper bodies. They sit beside the abstract findings. They are not the only reason for any choice above.
 
@@ -101,4 +101,16 @@ The first citation gate supported all 23 arXiv findings in the original dispatch
 
 A physics library is a later slice. Cross-platform determinism is a requirement that slice has to meet. The labeled stance-pair set is a parallel track with no owner.
 
-None of these slices has been started.
+## Where the build stands (2026-09-24)
+
+All three slices are on `main`, each merged from a pull request whose CI passed.
+
+| Slice | Landed | What it proved |
+|---|---|---|
+| 1. Determinism harness | `e631b2f` | Golden hash `0d38671370d12d1e` under V8 15.6.61, SpiderMonkey 156.0.1, and JavaScriptCore 319571, installed with jsvu 3.0.5, engine builds pinned. `write-golden` is a command no workflow runs. The WASM build named above is not in the tree; nothing compiles to it, and the three JavaScript engines carry the proof. |
+| 2. Kernel fixture | PR #1 | `packages/frame` owns the contract types and the hash; `packages/tick` owns the quantum, the pipeline, the body record, beliefs, and the input log. Nine tests: the quantum, the admit step, a body with a collider, the typed belief write with tombstone supersession, a line refused, a body draft checked by the collider, a frozen host boundary, and replay from the seed and the log. The runtime is plain ES modules; the contract is `packages/frame/types.d.ts` checked by `tsc --noEmit`. |
+| 3. Verb drafts | PR #2 | `load admit` compiles a draft against the fixed fields and runs it through `predicates/hazards` on the real tick; `load retire` moves a verb to `index.retired`. Play refuses `kind: verb`. The tick does not import the hazard suite. |
+
+**The proposer seat is an instrument, not a slice.** PRs #3 through #6 built `packages/propose`: a pinned local model proposes into a fresh tick in two conditions that differ only in whether the checker's reason is shown, with decoding held to a grammar from the catalog and the frame. It exists because the premise above, that a model can do useful work through the gate, had never been exercised. Four runs later, what it has shown is narrow: the tick refuses what the predicates refuse, replay reproduces every admitted hash, a model cannot write state, and every run so far measured a defect in the seat rather than the model. The last of those defects was a scene no sequence of moves could enter. The seat now refuses to run on a scene an oracle search cannot solve, and it is frozen until the world has more than one verb, more than one body, and something worth wanting. No result from it should be read as a statement about any model.
+
+**What comes next is a build, not a measurement.** The plan's own next slices are a physics library that meets the cross-platform determinism requirement and holds the golden hash, and a host that draws committed frames so a person can look at the world. The studio's measure is a scene someone has played. The seat thaws when there is a scene.

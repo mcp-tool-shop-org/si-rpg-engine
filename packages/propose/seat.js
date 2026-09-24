@@ -4,7 +4,7 @@
 import { proposalPrompt } from './prompt.js';
 import { readProposal } from './parse.js';
 import { proposalSchema } from './schema.js';
-import { GOAL, PILLAR } from './scene.js';
+import { goalText, obstacleText } from './scene.js';
 
 /**
  * @typedef {import('../frame/types.js').Proposal} Proposal
@@ -66,14 +66,18 @@ export async function runSeat(init) {
   for (let i = 0; i < init.budget; i = i + 1) {
     const frame = init.tick.frame();
     const actors = frame.bodies.map((body) => body.id);
-    const schema = proposalSchema(init.verbs, actors);
+    const sources = [];
+    for (let n = 0; n < init.tick.log().length; n = n + 1) {
+      sources.push('e' + (n + 1));
+    }
+    const schema = proposalSchema(init.verbs, actors, sources);
     const seed = init.seedBase + i;
     const prompt = proposalPrompt({
       tick: frame.tick,
       bodies: frame.bodies.map((body) => ({ id: body.id, x: body.x, y: body.y, hw: body.hw, hh: body.hh })),
       episodes: episodesOf(init.tick.log()),
-      goal: 'Goal: put the walker centre within ' + GOAL.radius + ' of x ' + GOAL.x + ', y ' + GOAL.y + '.',
-      obstacle: 'A pillar occupies x ' + PILLAR.minX + ' to ' + PILLAR.maxX + ', y ' + PILLAR.minY + ' to ' + PILLAR.maxY + '. The straight path from the walker to the goal crosses it and is refused.',
+      goal: goalText(),
+      obstacle: obstacleText(),
       previous,
       verdict,
       lastReason: init.withReason ? lastReason : null,

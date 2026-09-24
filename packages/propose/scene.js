@@ -1,9 +1,11 @@
-// The seat's scene. The kernel fixture room is unchanged. A pillar stands
-// between the walker and the goal, so the straight move is refused.
+// The seat's scene. The kernel fixture room is unchanged.
+// The pillar blocks the diagonal from the walker's start to the goal.
+// Its underside is above the walker's bounce, so a move that drops to the
+// floor first can pass underneath. The goal sits in that floor band.
 
-export const GOAL = { x: 3, y: 1, radius: 0.5 };
+export const GOAL = { x: 3, y: 0.35, radius: 0.5 };
 
-export const PILLAR = { id: 'pillar', minX: 1.7, maxX: 2.3, minY: 0.6, maxY: 1.4 };
+export const PILLAR = { id: 'pillar', minX: 1.8, maxX: 2.2, minY: 0.72, maxY: 2.2 };
 
 export function proposeWorld() {
   return {
@@ -15,6 +17,14 @@ export function proposeWorld() {
       PILLAR,
     ],
   };
+}
+
+export function goalText() {
+  return 'Goal: put the walker centre within ' + GOAL.radius + ' of x ' + GOAL.x + ', y ' + GOAL.y + '.';
+}
+
+export function obstacleText() {
+  return 'A pillar occupies x ' + PILLAR.minX + ' to ' + PILLAR.maxX + ', y ' + PILLAR.minY + ' to ' + PILLAR.maxY + '.';
 }
 
 /**
