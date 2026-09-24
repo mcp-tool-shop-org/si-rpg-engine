@@ -65,6 +65,6 @@ for (const p of proposals) {
 }
 
 if (logPath) {
-  writeFileSync(logPath, JSON.stringify({ seed, log: tick.log() }, null, 2) + '\n');
+  writeFileSync(logPath, JSON.stringify({ seed, world: fixtureWorld(), log: tick.log() }, null, 2) + '\n');
 }
 process.stderr.write('admitted ' + tick.log().length + ', refused ' + refused + ', final ' + tick.frame().hash + '\n');
