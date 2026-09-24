@@ -4,9 +4,10 @@
 /**
  * @param {string} text
  * @param {string} frameHash
+ * @param {string[]} bodyIds
  * @returns {{ verdict: 'ok', proposal: import('../frame/types.js').Proposal } | { verdict: 'not-json' | 'wrong-shape', proposal: null }}
  */
-export function readProposal(text, frameHash) {
+export function readProposal(text, frameHash, bodyIds) {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
   if (start < 0 || end <= start) {
@@ -22,7 +23,7 @@ export function readProposal(text, frameHash) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     return { verdict: 'not-json', proposal: null };
   }
-  const proposal = stamp(/** @type {Record<string, unknown>} */ (value), frameHash);
+  const proposal = stamp(/** @type {Record<string, unknown>} */ (value), frameHash, bodyIds);
   if (!proposal) {
     return { verdict: 'wrong-shape', proposal: null };
   }
@@ -30,11 +31,28 @@ export function readProposal(text, frameHash) {
 }
 
 /**
+ * @param {string} label
+ * @param {string[]} bodyIds
+ */
+export function assignBodyId(label, bodyIds) {
+  const stem = /^[a-z][a-z0-9-]{0,31}$/.test(label) ? label : 'body';
+  if (!bodyIds.includes(stem)) {
+    return stem;
+  }
+  let n = 2;
+  while (bodyIds.includes(stem + '-' + n)) {
+    n = n + 1;
+  }
+  return stem + '-' + n;
+}
+
+/**
  * @param {Record<string, unknown>} raw
  * @param {string} frameHash
+ * @param {string[]} bodyIds
  * @returns {import('../frame/types.js').Proposal | null}
  */
-export function stamp(raw, frameHash) {
+export function stamp(raw, frameHash, bodyIds) {
   if (raw.kind === 'intent') {
     const target = /** @type {{ x?: unknown, y?: unknown }} */ (raw.target);
     if (typeof raw.verb !== 'string' || typeof raw.actor !== 'string') {
@@ -70,13 +88,13 @@ export function stamp(raw, frameHash) {
     return belief;
   }
   if (raw.kind === 'body') {
-    if (typeof raw.id !== 'string' || typeof raw.x !== 'number' || typeof raw.y !== 'number') {
+    if (typeof raw.label !== 'string' || typeof raw.x !== 'number' || typeof raw.y !== 'number') {
       return null;
     }
     if (typeof raw.hw !== 'number' || typeof raw.hh !== 'number') {
       return null;
     }
-    return { kind: 'body', id: raw.id, x: raw.x, y: raw.y, hw: raw.hw, hh: raw.hh };
+    return { kind: 'body', id: assignBodyId(raw.label, bodyIds), x: raw.x, y: raw.y, hw: raw.hw, hh: raw.hh };
   }
   if (raw.kind === 'line' && typeof raw.speaker === 'string' && typeof raw.text === 'string') {
     return { kind: 'line', speaker: raw.speaker, text: raw.text };

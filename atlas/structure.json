@@ -76,7 +76,7 @@
           "path": "fixtures/golden.txt"
         },
         {
-          "hash": "b6eedede9a4c7988b14d95830a0b712ab034d00982f98bddf87e657aa7664612",
+          "hash": "c5f54e95474217dd99fa3ac5eb6d7b89f14f57e6c7a8745d7eec88cff7e7b198",
           "path": "fixtures/proposer-qwen2.5-7b.json"
         }
       ],
@@ -319,7 +319,7 @@
         {
           "entry": "oneRun",
           "entryRule": 1,
-          "hash": "1bf9fc1c0ded9d2daa9eeb06229c400b924d1ad44e61a1862c9cbf0998692e5d",
+          "hash": "e197838c90bc8ad213d18872650b94ac30adc48cf0b5de8ccd2f6e31c5493845",
           "importsFiles": [
             "packages/propose/ollama.js",
             "packages/propose/seat.js",
@@ -430,26 +430,26 @@
                 {
                   "inner": [
                     {
-                      "line": 67,
+                      "line": 66,
                       "name": "proposalSchema",
                       "target": {
                         "file": "packages/propose/schema.js"
                       }
                     },
                     {
-                      "line": 69,
+                      "line": 68,
                       "name": "proposalPrompt",
                       "target": {
                         "file": "packages/propose/prompt.js"
                       }
                     },
                     {
-                      "line": 78,
+                      "line": 76,
                       "name": "ask",
                       "target": null
                     },
                     {
-                      "line": 79,
+                      "line": 77,
                       "name": "readProposal",
                       "target": {
                         "file": "packages/propose/parse.js"
@@ -530,23 +530,24 @@
         },
         {
           "exports": [
+            "assignBodyId",
             "readProposal",
             "stamp"
           ],
-          "hash": "4218b89ca341b7ac41f489fadc216226f5cfa4db4f193fab3ee6cecaf7f80aa8",
+          "hash": "83ad602b64d673206c81d13427235026c716a5df9f5ef95e21c62c39108cbb5b",
           "path": "packages/propose/parse.js"
         },
         {
           "exports": [
             "proposalPrompt"
           ],
-          "hash": "47850a5c5adb5b1446c1a4c6ffa5a98d4c1ffdaa8f089ca6e26d583c60dbc390",
+          "hash": "3328ba6a911a8e7f6e70e245806a0df284838e33814ed6b67e70e11e9c0de62d",
           "path": "packages/propose/prompt.js"
         },
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "3b10e6486d4853db5c706fff3a72553e4c1516e216b8f004c0ad8543f898cef0",
+          "hash": "da203288d3ccd73836588b8f3c05f034cba9c19f4381676c7fbd3b458d36f341",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/propose/prompt.js",
@@ -635,7 +636,7 @@
           "exports": [
             "proposalSchema"
           ],
-          "hash": "4e84a2a36338ca97597768bc30de776b9d77114ef54e1b4ab7035c4f8d6f2ed1",
+          "hash": "b57d764c7da50a52d557d92608626e543cc865ff33bee481c31aec54f42e1b1f",
           "path": "packages/propose/schema.js"
         },
         {
@@ -644,7 +645,7 @@
           "exports": [
             "runSeat"
           ],
-          "hash": "cfd5eefa10ae659f5888f14c781d94050ec223bed14d5fb0c206f637e033ad8b",
+          "hash": "8b764bf88719eff457492820505dc7b3d561cc7ab634b9840155d165a20dd3a4",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/propose/prompt.js",
@@ -655,26 +656,26 @@
             {
               "calls": [
                 {
-                  "line": 67,
+                  "line": 66,
                   "name": "proposalSchema",
                   "target": {
                     "file": "packages/propose/schema.js"
                   }
                 },
                 {
-                  "line": 69,
+                  "line": 68,
                   "name": "proposalPrompt",
                   "target": {
                     "file": "packages/propose/prompt.js"
                   }
                 },
                 {
-                  "line": 78,
+                  "line": 76,
                   "name": "ask",
                   "target": null
                 },
                 {
-                  "line": 79,
+                  "line": 77,
                   "name": "readProposal",
                   "target": {
                     "file": "packages/propose/parse.js"
@@ -717,7 +718,7 @@
           "path": "LICENSE"
         },
         {
-          "hash": "9d1ae748063b5752bdef830ab01e4c5679d59ddb76812f5b2e2f756dad6db056",
+          "hash": "7cc0c99cedf37f3f786bb41e15e8f63fb96000a98c2901b45839eb99da5cbeca",
           "path": "README.md"
         },
         {
@@ -1588,7 +1589,7 @@
     }
   ],
   "generatedFrom": {
-    "commit": "470965fa88b4cc37a06b259946db42afa14f8d9d",
+    "commit": "84a00b6db32961fcc9072e01674243ffd526f409",
     "tracked": 53
   },
   "landings": [

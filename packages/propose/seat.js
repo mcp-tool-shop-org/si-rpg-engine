@@ -62,21 +62,19 @@ export async function runSeat(init) {
   let lastReason = null;
   for (let i = 0; i < init.budget; i = i + 1) {
     const frame = init.tick.frame();
-    const walker = frame.bodies[0];
     const actors = frame.bodies.map((body) => body.id);
     const schema = proposalSchema(init.verbs, actors);
     const seed = init.seedBase + i;
     const prompt = proposalPrompt({
       tick: frame.tick,
-      x: walker.x,
-      y: walker.y,
+      bodies: frame.bodies.map((body) => ({ id: body.id, x: body.x, y: body.y, hw: body.hw, hh: body.hh })),
       episodes: episodesOf(init.tick.log()),
       previous,
       verdict,
       lastReason: init.withReason ? lastReason : null,
     });
     const raw = await init.ask(prompt, { schema, seed, temperature: init.temperature });
-    const read = readProposal(raw, frame.hash);
+    const read = readProposal(raw, frame.hash, actors);
     if (read.verdict !== 'ok') {
       attempts.push({
         seed,
