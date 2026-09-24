@@ -166,7 +166,7 @@ Slice 2: `packages/frame` (the hash) → `predicates/intents/index.json` → `pa
 ## Where the docs and the code disagree
 
 1. The committed map is slice 3 once this tree is on main. `load` admits a verb draft between sessions. It reads `predicates/hazards/index.json` by a literal path and writes `predicates/intents`. Tick does not import hazards. The check compares the map to the tree and does not read this file.
-2. A WASM build is in the engine plan and not in the tree. Nothing names a source that compiles to WASM. The harness section does not claim one.
+2. A WASM build is not a slice. The three JavaScript engines already run the same bytes. A second integrator would be a second hash. When a physics library arrives, its binding has to keep this hash, and that is the requirement. The harness section does not claim WASM.
 3. The spoken-line classifier and its labeled pairs are not a door and not a package. The line is unhashed. A stance change is a belief write. The tick refuses a `line` proposal with that reason.
 4. Hosts are outside this repository. The page does not claim they import frame. They are expected to.
 5. The three engine runs go through `$HOME/.jsvu/bin/...`. The map says CI checks `harness/sim.mjs` and that the engine commands are built at run time. The version pins are literal in the install step.
@@ -174,6 +174,7 @@ Slice 2: `packages/frame` (the hash) → `predicates/intents/index.json` → `pa
 7. Phase 0 says the kernel contract is TypeScript. The runtime is plain ES modules, so the three shells and node run the same bytes unbuilt, and the contract is `packages/frame/types.d.ts`, checked by `tsc --noEmit` against the JavaScript. Nothing is emitted, so the map describes the files that run. This is a reading of the plan, not a change to it.
 8. The map's busiest door is CI, which reaches four parts; the page's start path follows `play` because CI only runs tests. The target page above says play is the widest door. Atlas ranks doors by reach, and CI's reach includes what it checks.
 9. `play` accepts `"frameHash": "@drawn"` in a scripted proposal and substitutes the hash of the current committed frame, standing in for the frame a host would have drawn. The tick still refuses any other stale hash. A host outside this tree sends the real hash.
+10. The proposer seat is `packages/propose`. It calls a pinned local model and submits what comes back. The tick does not import it. Replay of the admitted log does not call the model. Lines and verb drafts stay refused. The labeled stance pairs still wait on a content pack, because a pair is one record slot against one utterance and there is no slot vocabulary yet.
 
 ## What this design does not ask of Atlas
 

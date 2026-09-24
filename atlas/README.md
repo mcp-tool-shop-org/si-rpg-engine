@@ -1,37 +1,39 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit 4133799.
+Mapped at 2026-09-24 from commit 41a2890.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-10 parts, mostly JavaScript (19 files). Work enters through 5 doors; the busiest is CI, which reaches 5 parts. People run load, play, replay and write-golden.
+11 parts, mostly JavaScript (25 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (7ce60c6)
+## What changed since 2026-09-24 (4133799)
 
-- load now imports tick.
-- CI now also runs packages/load/load.test.js.
-- CI now also checks packages/load/.
-- load (package.json) is a new command. It runs packages/load/bin/load.js.
-- packages/tick/predicates.js is now read by packages/load/load.test.js.
-- packages/tick/tick.js is now read by packages/load/load.test.js.
-- predicates/hazards/ is now read by packages/load/suite.js.
-- And 3 more new writers and readers of places.
-- 8 files added, across 2 parts.
+- propose now imports tick.
+- CI now also runs packages/propose/propose.test.js.
+- CI now also checks packages/propose/.
+- propose (package.json) is a new command. It runs packages/propose/bin/propose.js.
+- packages/propose/model.json is now read by packages/propose/ollama.js.
+- fixtures was generated and is now mixed.
+- propose is a new part, drawn from `packages/propose/**`.
+- 8 files added and 11 changed content, across 6 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs packages/load/load.test.js and packages/tick/tick.test.js; checks fixtures/golden.txt, harness/sim.mjs, harness/check.js and 6 more.
+1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs packages/load/load.test.js, packages/propose/propose.test.js and packages/tick/tick.test.js; checks fixtures/golden.txt, harness/sim.mjs, harness/check.js and 7 more.
 2. **load** (a command people run). Runs packages/load/bin/load.js.
-3. **play** (a command people run). Runs packages/tick/bin/play.js.
-4. **replay** (a command people run). Runs packages/tick/bin/replay.js.
-5. **write-golden** (a command people run). Runs harness/write-golden.js.
+3. **propose** (a command people run). Runs packages/propose/bin/propose.js.
+4. **play** (a command people run). Runs packages/tick/bin/play.js.
+5. **replay** (a command people run). Runs packages/tick/bin/replay.js.
+6. **write-golden** (a command people run). Runs harness/write-golden.js.
 
 ## What happens through CI
 
-1. The workflow runs packages/load/load.test.js in load and packages/tick/tick.test.js in tick; it checks fixtures/golden.txt in fixtures, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, harness/sim.mjs, harness/check.js and harness/write-golden.js in harness, packages/load/ in load, and packages/tick/ in tick.
-   1. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
+1. The workflow runs packages/load/load.test.js in load, packages/propose/propose.test.js in propose and packages/tick/tick.test.js in tick; it checks fixtures/golden.txt in fixtures, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, harness/sim.mjs, harness/check.js and harness/write-golden.js in harness, packages/load/ in load, packages/propose/ in propose, and packages/tick/ in tick.
+   1. Inside packages/propose/propose.test.js, fresh does, in order: load intent rules (tick), fixture world, create world, create memory and create tick.
+   2. **Create tick** (tick) runs, in order: create hasher (frame) and commit frame.
+   3. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
 
 ## Who reads the results
 
@@ -41,6 +43,8 @@ CI writes nothing this map can see.
 
 **load** (a command people run) runs packages/load/bin/load.js and reaches frame and tick.
 
+**propose** (a command people run) runs packages/propose/bin/propose.js and reaches frame and tick.
+
 **play** (a command people run) runs packages/tick/bin/play.js and reaches frame.
 
 **replay** (a command people run) runs packages/tick/bin/replay.js and reaches frame.
@@ -49,10 +53,11 @@ CI writes nothing this map can see.
 
 ## What breaks what
 
-- **frame** is imported by 2 parts (harness, tick) and sits on the path of 4 doors.
-- **tick** is imported by 1 part (load) and sits on the path of 4 doors.
+- **frame** is imported by 2 parts (harness, tick) and sits on the path of 5 doors.
+- **tick** is imported by 2 parts (load, propose) and sits on the path of 5 doors.
 - **harness** is imported by no other part and sits on the path of 2 doors.
 - **load** is imported by no other part and sits on the path of 2 doors.
+- **propose** is imported by no other part and sits on the path of 2 doors.
 
 ## What tends to change together
 
@@ -74,7 +79,7 @@ No two parts export a helper that looks alike.
 
 ## Generated, never hand-edited
 
-- **fixtures/** is written by harness/write-golden.js.
+- **fixtures/golden.txt** is written by harness/write-golden.js.
 
 ## Hand-authored
 
@@ -89,7 +94,7 @@ Read those in order to follow one pull request end to end.
 ## What this map cannot see
 
 - 1 read uses a path built at run time and is not named here.
-- 3 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 4 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
 - 2 commands are built at run time and not followed.
 - Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions.
 

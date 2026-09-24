@@ -12,6 +12,9 @@ boundaries:
   - name: load
     globs: [packages/load/**]
     role: code
+  - name: propose
+    globs: [packages/propose/**]
+    role: code
   - name: intents
     globs: [predicates/intents/**]
     role: data

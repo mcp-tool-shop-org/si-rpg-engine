@@ -8,7 +8,7 @@
   ],
   "breaks": [
     {
-      "doors": 4,
+      "doors": 5,
       "importedBy": [
         "harness",
         "tick"
@@ -19,9 +19,10 @@
       "partLabel": "frame"
     },
     {
-      "doors": 4,
+      "doors": 5,
       "importedBy": [
-        "load"
+        "load",
+        "propose"
       ],
       "importedByTests": [],
       "kind": "part",
@@ -43,87 +44,88 @@
       "kind": "part",
       "name": "load",
       "partLabel": "load"
+    },
+    {
+      "doors": 2,
+      "importedBy": [],
+      "importedByTests": [],
+      "kind": "part",
+      "name": "propose",
+      "partLabel": "propose"
     }
   ],
   "changes": {
     "fileCounts": {
       "added": 8,
-      "changed": 0,
+      "changed": 11,
       "moved": 0,
-      "parts": 2,
+      "parts": 6,
       "removed": 0
     },
     "items": [
       {
         "kind": "import-added",
-        "sentence": "load now imports tick.",
+        "sentence": "propose now imports tick.",
         "subjects": [
-          "load",
+          "propose",
           "tick"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI now also runs packages/load/load.test.js.",
+        "sentence": "CI now also runs packages/propose/propose.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "packages/load/load.test.js"
+          "packages/propose/propose.test.js"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI now also checks packages/load/.",
+        "sentence": "CI now also checks packages/propose/.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "packages/load/"
+          "packages/propose/"
         ]
       },
       {
         "kind": "door",
-        "sentence": "load (package.json) is a new command. It runs packages/load/bin/load.js.",
+        "sentence": "propose (package.json) is a new command. It runs packages/propose/bin/propose.js.",
         "subjects": [
           "package.json",
-          "packages/load/bin/load.js"
+          "packages/propose/bin/propose.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "packages/tick/predicates.js is now read by packages/load/load.test.js.",
+        "sentence": "packages/propose/model.json is now read by packages/propose/ollama.js.",
         "subjects": [
-          "packages/tick/predicates.js",
-          "packages/load/load.test.js"
+          "packages/propose/model.json",
+          "packages/propose/ollama.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "packages/tick/tick.js is now read by packages/load/load.test.js.",
+        "kind": "origin",
+        "sentence": "fixtures was generated and is now mixed.",
         "subjects": [
-          "packages/tick/tick.js",
-          "packages/load/load.test.js"
+          "fixtures"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "predicates/hazards/ is now read by packages/load/suite.js.",
+        "kind": "part",
+        "sentence": "propose is a new part, drawn from `packages/propose/**`.",
         "subjects": [
-          "predicates/hazards/",
-          "packages/load/suite.js"
+          "propose"
         ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 3 more new writers and readers of places.",
-        "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "8 files added, across 2 parts.",
+        "sentence": "8 files added and 11 changed content, across 6 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "7ce60c644552b1b6148dc658a123d0df1a7dcffb",
-      "generatedAt": "2026-09-24T18:26:00.463Z"
+      "commit": "41337997bc6145c9021ac968e883c88ec0c0be04",
+      "generatedAt": "2026-09-24T18:27:00.069Z"
     },
     "unchanged": false
   },
@@ -132,9 +134,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "41337997bc6145c9021ac968e883c88ec0c0be04",
-  "defaultBranch": "slice-3-load",
-  "derived": "10 parts, mostly JavaScript (19 files). Work enters through 5 doors; the busiest is CI, which reaches 5 parts. People run load, play, replay and write-golden.",
+  "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8",
+  "defaultBranch": "slice-4-proposer",
+  "derived": "11 parts, mostly JavaScript (25 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -146,9 +148,10 @@
         "packages/frame/hash.js",
         "packages/frame/types.d.ts",
         "packages/load/",
+        "packages/propose/",
         "packages/tick/"
       ],
-      "checksCount": 9,
+      "checksCount": 10,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -176,6 +179,11 @@
           "files": 5
         },
         {
+          "boundary": "propose",
+          "depth": 0,
+          "files": 6
+        },
+        {
           "boundary": "tick",
           "depth": 0,
           "files": 9
@@ -183,9 +191,10 @@
       ],
       "runs": [
         "packages/load/load.test.js",
+        "packages/propose/propose.test.js",
         "packages/tick/tick.test.js"
       ],
-      "runsCount": 2,
+      "runsCount": 3,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -222,6 +231,40 @@
       ],
       "runs": [
         "packages/load/bin/load.js"
+      ],
+      "runsCount": 1,
+      "sends": [],
+      "stages": [],
+      "triggers": []
+    },
+    {
+      "checks": [],
+      "checksCount": 0,
+      "file": "package.json",
+      "id": "package.json#propose",
+      "kind": "command",
+      "landings": [],
+      "name": "propose",
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "propose",
+          "depth": 0,
+          "files": 5
+        },
+        {
+          "boundary": "tick",
+          "depth": 1,
+          "files": 6
+        },
+        {
+          "boundary": "frame",
+          "depth": 2,
+          "files": 2
+        }
+      ],
+      "runs": [
+        "packages/propose/bin/propose.js"
       ],
       "runsCount": 1,
       "sends": [],
@@ -328,6 +371,11 @@
       "to": "tick"
     },
     {
+      "from": "propose",
+      "fromTests": false,
+      "to": "tick"
+    },
+    {
       "from": "tick",
       "fromTests": false,
       "to": "frame"
@@ -335,16 +383,16 @@
   ],
   "generated": [
     {
-      "place": "fixtures/",
+      "place": "fixtures/golden.txt",
       "writers": [
         "harness/write-golden.js"
       ]
     }
   ],
-  "generatedAt": "2026-09-24T18:27:00.069Z",
+  "generatedAt": "2026-09-24T18:41:35.157Z",
   "limits": [
     "1 read uses a path built at run time and is not named here.",
-    "3 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "4 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "2 commands are built at run time and not followed.",
     "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions."
   ],
@@ -357,14 +405,77 @@
     "hazards": "hazards",
     "intents": "intents",
     "load": "load",
+    "propose": "propose",
     "root": "the repository root",
     "tick": "tick",
     "workflows": "workflows"
   },
-  "parts": 10,
+  "parts": 11,
   "readers": [],
   "repo": "mcp-tool-shop-org/si-rpg-engine",
   "sequences": [
+    {
+      "entry": "fresh",
+      "file": "packages/propose/propose.test.js",
+      "inner": [
+        {
+          "file": "packages/tick/tick.js",
+          "name": "createTick",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create tick",
+          "steps": [
+            {
+              "name": "createHasher",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "create hasher"
+            },
+            {
+              "name": "commitFrame",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "commit frame"
+            }
+          ]
+        }
+      ],
+      "part": "propose",
+      "partLabel": "propose",
+      "phrase": "fresh",
+      "steps": [
+        {
+          "name": "loadIntentRules",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "load intent rules"
+        },
+        {
+          "name": "fixtureWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "fixture world"
+        },
+        {
+          "name": "createWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create world"
+        },
+        {
+          "name": "createMemory",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create memory"
+        },
+        {
+          "name": "createTick",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create tick"
+        }
+      ]
+    },
     {
       "entry": "fresh",
       "file": "packages/tick/tick.test.js",
@@ -413,11 +524,12 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 2,
+  "testFiles": 3,
   "testedBy": {
-    "frame": 2,
+    "frame": 3,
     "load": 1,
-    "tick": 2
+    "propose": 1,
+    "tick": 3
   },
   "unnamedWrites": 0,
   "unread": [],

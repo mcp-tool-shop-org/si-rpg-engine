@@ -1,6 +1,6 @@
 {
   "name": "si-rpg-engine",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "Deterministic 3D RPG tick. Slice 3 admits verb drafts at load.",
@@ -12,12 +12,13 @@
     "write-golden": "./harness/write-golden.js",
     "play": "./packages/tick/bin/play.js",
     "replay": "./packages/tick/bin/replay.js",
-    "load": "./packages/load/bin/load.js"
+    "load": "./packages/load/bin/load.js",
+    "propose": "./packages/propose/bin/propose.js"
   },
   "scripts": {
     "check": "node harness/check.js",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test packages/tick/tick.test.js packages/load/load.test.js"
+    "test": "node --test packages/tick/tick.test.js packages/load/load.test.js packages/propose/propose.test.js"
   },
   "devDependencies": {
     "@types/node": "22.19.0",
