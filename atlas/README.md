@@ -1,23 +1,16 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit 41a2890.
+Mapped at 2026-09-24 from commit 470965f.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-11 parts, mostly JavaScript (25 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
+11 parts, mostly JavaScript (26 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (4133799)
+## What changed since 2026-09-24 (41a2890)
 
-- propose now imports tick.
-- CI now also runs packages/propose/propose.test.js.
-- CI now also checks packages/propose/.
-- propose (package.json) is a new command. It runs packages/propose/bin/propose.js.
-- packages/propose/model.json is now read by packages/propose/ollama.js.
-- fixtures was generated and is now mixed.
-- propose is a new part, drawn from `packages/propose/**`.
-- 8 files added and 11 changed content, across 6 parts.
+Nothing structural changed since 2026-09-24; 1 file added and 9 changed content.
 
 ## What comes in
 

@@ -3,16 +3,17 @@
 
 import { readFileSync } from 'node:fs';
 
-export function pinnedModel() {
+export function pinnedRun() {
   const pin = JSON.parse(readFileSync(new URL('./model.json', import.meta.url), 'utf8'));
-  return pin.model;
+  return { model: pin.model, temperature: pin.temperature };
 }
 
 /**
  * @param {string} model
  * @param {string} prompt
+ * @param {{ schema: object, seed: number, temperature: number }} call
  */
-export async function askOllama(model, prompt) {
+export async function askOllama(model, prompt, call) {
   const response = await fetch('http://127.0.0.1:11434/api/chat', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -20,8 +21,8 @@ export async function askOllama(model, prompt) {
       model,
       messages: [{ role: 'user', content: prompt }],
       stream: false,
-      format: 'json',
-      options: { temperature: 0 },
+      format: call.schema,
+      options: { temperature: call.temperature, seed: call.seed },
     }),
   });
   if (!response.ok) {

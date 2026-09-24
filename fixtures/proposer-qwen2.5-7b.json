@@ -1,56 +1,1596 @@
 {
   "model": "qwen2.5:7b",
-  "seed": 7,
-  "budget": 4,
+  "temperature": 0.2,
+  "worldSeed": 7,
+  "runs": 10,
+  "budget": 8,
   "withReason": {
-    "admitted": 1,
-    "rate": 0.25,
-    "attempts": [
+    "meanRate": 0.7125,
+    "runs": [
       {
-        "kind": "intent",
-        "admitted": true,
-        "reason": null
+        "seedBase": 1000,
+        "admitted": 7,
+        "rate": 0.875,
+        "attempts": [
+          {
+            "seed": 1000,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1001,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1002,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1003,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1004,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1005,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 231. Walker at x 2.823320572128064, y 0.36618480560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.823320572128064,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1006,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 272. Walker at x 3.463945572128064, y 0.3159049028027696.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent; e6 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.823320572128064,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":1.3159049028027696,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1007,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 272. Walker at x 3.463945572128064, y 0.3159049028027696.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent; e6 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":1.3159049028027696,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.823320572128064,\"y\":1.6159049028027696}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
       },
       {
-        "kind": "intent",
-        "admitted": false,
-        "reason": "path crosses collider floor"
+        "seedBase": 1100,
+        "admitted": 5,
+        "rate": 0.625,
+        "attempts": [
+          {
+            "seed": 1100,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1101,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1102,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1103,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected\nChecker reason: path crosses collider floor",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.3037170149449304\",\"confidence\":0.5,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1104,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.3037170149449304\",\"confidence\":0.5,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1105,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 117. Walker at x 2.3556192057053376, y 0.3233205831833823.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1106,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 117. Walker at x 2.3556192057053376, y 0.3233205831833823.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.4,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1107,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 129. Walker at x 2.5425837765727723, y 0.39650209959787075.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.4,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          }
+        ]
       },
       {
-        "kind": null,
-        "admitted": false,
-        "reason": "unreadable proposal"
+        "seedBase": 1200,
+        "admitted": 5,
+        "rate": 0.625,
+        "attempts": [
+          {
+            "seed": 1200,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1201,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1202,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1203,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 125. Walker at x 2.4904446809828076, y 0.3393424028027696.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1204,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 128. Walker at x 2.5373196809828076, y 0.38584139240484683.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2,\"y\":1,\"hw\":0.5,\"hh\":1.6}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1205,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 128. Walker at x 2.5373196809828076, y 0.38584139240484683.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2,\"y\":1,\"hw\":0.5,\"hh\":1.6}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1206,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 128. Walker at x 2.5373196809828076, y 0.38584139240484683.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected\nChecker reason: path crosses collider floor",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":3,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1207,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 178. Walker at x 3.3185696809828076, y 0.3315299028027696.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":3,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":3.3185696809828076,\"y\":0.3315299028027696,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          }
+        ]
       },
       {
-        "kind": "intent",
-        "admitted": false,
-        "reason": "unknown verb: turn"
+        "seedBase": 1300,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1300,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1301,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1302,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1303,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1304,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.8,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1305,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 149. Walker at x 2.854570572128064, y 0.2735628367993076.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.8,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1306,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 151. Walker at x 2.823320572128064, y 0.3148291353979228.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":0.3148291353979228,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1307,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 151. Walker at x 2.823320572128064, y 0.3148291353979228.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":0.3148291353979228,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"crate2\",\"x\":2.3,\"y\":0.8,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1400,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1400,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1401,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1402,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1403,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1404,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.8,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1405,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 149. Walker at x 2.854570572128064, y 0.2735628367993076.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.8,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1406,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 151. Walker at x 2.823320572128064, y 0.3148291353979228.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":0.3148291353979228,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1407,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 151. Walker at x 2.823320572128064, y 0.3148291353979228.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":0.3148291353979228,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.7,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1500,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1500,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1501,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1502,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1503,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1504,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1505,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":1.9,\"y\":0.3818098056055392}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1506,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 193. Walker at x 1.8858205721280639, y 0.3589467258131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":1.9,\"y\":0.3818098056055392}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":1.9,\"y\":0.3818098056055392,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1507,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 193. Walker at x 1.8858205721280639, y 0.3589467258131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":1.9,\"y\":0.3818098056055392,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.1,\"y\":0.3589467258131557}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1600,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1600,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1601,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1602,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1603,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1604,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1605,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1606,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 169. Walker at x 2.260820572128064, y 0.3346633227854595.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.3,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1607,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 169. Walker at x 2.260820572128064, y 0.3346633227854595.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.3,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.1,\"y\":0.3346633227854595}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1700,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1700,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1701,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1702,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1703,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1704,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1705,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":1.9,\"y\":0.3818098056055392}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1706,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 193. Walker at x 1.8858205721280639, y 0.3589467258131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":1.9,\"y\":0.3818098056055392}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":1.9,\"y\":0.3818098056055392,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1707,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 193. Walker at x 1.8858205721280639, y 0.3589467258131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":1.9,\"y\":0.3818098056055392,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.1,\"y\":0.3589467258131557}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1800,
+        "admitted": 3,
+        "rate": 0.375,
+        "attempts": [
+          {
+            "seed": 1800,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1801,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1802,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1803,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected\nChecker reason: path crosses collider floor",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.3037170149449304\",\"confidence\":0.5,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1804,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.3037170149449304\",\"confidence\":0.5,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1805,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected\nChecker reason: path crosses collider floor",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":1.5761427798729275,\"y\":0.3276458349173956,\"hw\":0.1,\"hh\":0.1}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1806,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":1.5761427798729275,\"y\":0.3276458349173956,\"hw\":0.1,\"hh\":0.1}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1807,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected\nChecker reason: path crosses collider floor",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":1.5761427798729275,\"y\":0.3276458349173956,\"hw\":0.1,\"hh\":0.1}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          }
+        ]
+      },
+      {
+        "seedBase": 1900,
+        "admitted": 7,
+        "rate": 0.875,
+        "attempts": [
+          {
+            "seed": 1900,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1901,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1902,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1903,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1904,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected\nChecker reason: a body draft needs an unused id",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.8,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1905,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 149. Walker at x 2.854570572128064, y 0.2735628367993076.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.8,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1906,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 151. Walker at x 2.823320572128064, y 0.3148291353979228.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1907,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 153. Walker at x 2.854570572128064, y 0.348282933996538.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent; e6 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.85,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
       }
     ]
   },
   "blind": {
-    "admitted": 1,
-    "rate": 0.25,
-    "attempts": [
+    "meanRate": 0.675,
+    "runs": [
       {
-        "kind": "intent",
-        "admitted": true,
-        "reason": null
+        "seedBase": 1000,
+        "admitted": 7,
+        "rate": 0.875,
+        "attempts": [
+          {
+            "seed": 1000,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1001,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1002,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1003,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1004,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1005,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 231. Walker at x 2.823320572128064, y 0.36618480560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.823320572128064,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1006,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 272. Walker at x 3.463945572128064, y 0.3159049028027696.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent; e6 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.823320572128064,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":1.3159049028027696,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1007,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 272. Walker at x 3.463945572128064, y 0.3159049028027696.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent; e6 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.823320572128064,\"y\":1.3159049028027696,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
       },
       {
-        "kind": "intent",
-        "admitted": false,
-        "reason": "path crosses collider floor"
+        "seedBase": 1100,
+        "admitted": 5,
+        "rate": 0.625,
+        "attempts": [
+          {
+            "seed": 1100,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1101,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1102,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1103,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.3037170149449304\",\"confidence\":0.5,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1104,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.3037170149449304\",\"confidence\":0.5,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1105,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 117. Walker at x 2.3556192057053376, y 0.3233205831833823.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1106,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 117. Walker at x 2.3556192057053376, y 0.3233205831833823.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1107,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 117. Walker at x 2.3556192057053376, y 0.3233205831833823.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"blocked\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          }
+        ]
       },
       {
-        "kind": "intent",
-        "admitted": false,
-        "reason": "path crosses collider floor"
+        "seedBase": 1200,
+        "admitted": 5,
+        "rate": 0.625,
+        "attempts": [
+          {
+            "seed": 1200,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1201,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1202,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.7,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1203,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 125. Walker at x 2.4904446809828076, y 0.3393424028027696.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1204,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 128. Walker at x 2.5373196809828076, y 0.38584139240484683.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.3}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2,\"y\":1,\"hw\":0.5,\"hh\":1.6}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1205,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 128. Walker at x 2.5373196809828076, y 0.38584139240484683.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2,\"y\":1,\"hw\":0.5,\"hh\":1.6}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1206,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 128. Walker at x 2.5373196809828076, y 0.38584139240484683.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"blocked\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1207,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 129. Walker at x 2.5373196809828076, y 0.39743480560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"blocked\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          }
+        ]
       },
       {
-        "kind": "intent",
-        "admitted": false,
-        "reason": "path crosses collider floor"
+        "seedBase": 1300,
+        "admitted": 4,
+        "rate": 0.5,
+        "attempts": [
+          {
+            "seed": 1300,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1301,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1302,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1303,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1304,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1305,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.463945572128064,\"y\":0.3838151943944607,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1306,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.463945572128064,\"y\":0.3838151943944607,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1307,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          }
+        ]
+      },
+      {
+        "seedBase": 1400,
+        "admitted": 5,
+        "rate": 0.625,
+        "attempts": [
+          {
+            "seed": 1400,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1401,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1402,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1403,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1404,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1405,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1406,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1407,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 169. Walker at x 2.260820572128064, y 0.3346633227854595.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.3,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          }
+        ]
+      },
+      {
+        "seedBase": 1500,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1500,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1501,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1502,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1503,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1504,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1505,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":1.95,\"y\":0.38}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1506,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 189. Walker at x 1.9483205721280639, y 0.39460432301038606.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":1.95,\"y\":0.38}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":1.95,\"y\":0.38,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1507,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 189. Walker at x 1.9483205721280639, y 0.39460432301038606.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":1.95,\"y\":0.38,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1600,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1600,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1601,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1602,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1603,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1604,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1605,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.3838151943944607}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1606,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 167. Walker at x 2.292070572128064, y 0.3637095241868443.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.3838151943944607}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.3,\"y\":0.3838151943944607,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1607,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 167. Walker at x 2.292070572128064, y 0.3637095241868443.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.3,\"y\":0.3838151943944607,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1700,
+        "admitted": 6,
+        "rate": 0.75,
+        "attempts": [
+          {
+            "seed": 1700,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1701,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1702,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1703,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1704,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1705,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.1,\"y\":0.9,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1706,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 182. Walker at x 2.057695572128064, y 0.38180980560553923.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:2.057695572128064, y:0.38180980560553923\",\"confidence\":0.5,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1707,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 183. Walker at x 2.057695572128064, y 0.38949696880623164.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:2.057695572128064, y:0.38180980560553923\",\"confidence\":0.5,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1800,
+        "admitted": 5,
+        "rate": 0.625,
+        "attempts": [
+          {
+            "seed": 1800,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1801,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1802,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1803,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"blocked\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1804,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"blocked\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1805,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 66. Walker at x 1.5761427798729275, y 0.32764583491739563.\nAdmitted episodes: e1 intent; e2 belief; e3 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.32764583491739563\",\"confidence\":0.5,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1806,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 67. Walker at x 1.5761427798729275, y 0.34962152988986084.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.32764583491739563\",\"confidence\":0.5,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": false,
+            "reason": "path crosses collider floor"
+          },
+          {
+            "seed": 1807,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 67. Walker at x 1.5761427798729275, y 0.34962152988986084.\nAdmitted episodes: e1 intent; e2 belief; e3 belief; e4 belief.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":0}}\nVerdict: rejected",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.34962152988986084\",\"confidence\":0.5,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          }
+        ]
+      },
+      {
+        "seedBase": 1900,
+        "admitted": 5,
+        "rate": 0.625,
+        "attempts": [
+          {
+            "seed": 1900,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 0. Walker at x 1, y 1.\nAdmitted episodes: none.",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1901,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 64. Walker at x 1.5761427798729275, y 0.2778350699724652.\nAdmitted episodes: e1 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"belief\",\"verb\":\"move\",\"actor\":\"walker\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}",
+            "verdict": "ok",
+            "kind": "belief",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1902,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 65. Walker at x 1.5761427798729275, y 0.3037170149449304.\nAdmitted episodes: e1 intent; e2 belief.\nPrevious proposal: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"position\",\"value\":\"x:1.5761427798729275, y:0.2778350699724652\",\"confidence\":0.8,\"source\":\"e1\"}\nVerdict: admitted",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1903,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":1}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1904,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 140. Walker at x 2.713945572128064, y 0.3960561008131557.\nAdmitted episodes: e1 intent; e2 belief; e3 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.713945572128064,\"y\":0.3960561008131557,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1905,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.5,\"y\":0.5}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          },
+          {
+            "seed": 1906,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 156. Walker at x 2.463945572128064, y 0.38381519439446077.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent.\nPrevious proposal: {\"kind\":\"body\",\"id\":\"walker\",\"x\":2.5,\"y\":0.5,\"hw\":0.2,\"hh\":0.2}\nVerdict: rejected",
+            "raw": "{\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.3838151943944607}}",
+            "verdict": "ok",
+            "kind": "intent",
+            "admitted": true,
+            "reason": null
+          },
+          {
+            "seed": 1907,
+            "prompt": "Reply with one JSON object and nothing else.\nAllowed kinds are intent, belief, and body.\nintent: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2,\"y\":1}}\nbelief: {\"kind\":\"belief\",\"subject\":\"walker\",\"key\":\"mood\",\"value\":\"wary\",\"confidence\":0.5,\"source\":\"e1\"}\nbody: {\"kind\":\"body\",\"id\":\"crate\",\"x\":2.5,\"y\":1,\"hw\":0.2,\"hh\":0.2}\nThe only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.\nA belief source must be an episode id already admitted. Do not propose a line or a new verb.\nFrame tick 167. Walker at x 2.292070572128064, y 0.3637095241868443.\nAdmitted episodes: e1 intent; e2 belief; e3 intent; e4 intent; e5 intent.\nPrevious proposal: {\"kind\":\"intent\",\"verb\":\"move\",\"actor\":\"walker\",\"target\":{\"x\":2.3,\"y\":0.3838151943944607}}\nVerdict: admitted",
+            "raw": "{\"kind\":\"body\",\"verb\":\"move\",\"actor\":\"walker\",\"id\":\"walker\",\"x\":2.3,\"y\":0.3838151943944607,\"hw\":0.2,\"hh\":0.2}",
+            "verdict": "ok",
+            "kind": "body",
+            "admitted": false,
+            "reason": "a body draft needs an unused id"
+          }
+        ]
       }
     ]
   }

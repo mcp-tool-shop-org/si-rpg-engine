@@ -56,87 +56,33 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 8,
-      "changed": 11,
+      "added": 1,
+      "changed": 9,
       "moved": 0,
-      "parts": 6,
+      "parts": 3,
       "removed": 0
     },
     "items": [
       {
-        "kind": "import-added",
-        "sentence": "propose now imports tick.",
-        "subjects": [
-          "propose",
-          "tick"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also runs packages/propose/propose.test.js.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/propose/propose.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks packages/propose/.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/propose/"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "propose (package.json) is a new command. It runs packages/propose/bin/propose.js.",
-        "subjects": [
-          "package.json",
-          "packages/propose/bin/propose.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "packages/propose/model.json is now read by packages/propose/ollama.js.",
-        "subjects": [
-          "packages/propose/model.json",
-          "packages/propose/ollama.js"
-        ]
-      },
-      {
-        "kind": "origin",
-        "sentence": "fixtures was generated and is now mixed.",
-        "subjects": [
-          "fixtures"
-        ]
-      },
-      {
-        "kind": "part",
-        "sentence": "propose is a new part, drawn from `packages/propose/**`.",
-        "subjects": [
-          "propose"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "8 files added and 11 changed content, across 6 parts.",
+        "sentence": "Nothing structural changed since 2026-09-24; 1 file added and 9 changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "41337997bc6145c9021ac968e883c88ec0c0be04",
-      "generatedAt": "2026-09-24T18:27:00.069Z"
+      "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8",
+      "generatedAt": "2026-09-24T18:41:35.157Z"
     },
-    "unchanged": false
+    "unchanged": true
   },
   "changesTogether": [],
   "changesTogetherNote": [
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8",
-  "defaultBranch": "slice-4-proposer",
-  "derived": "11 parts, mostly JavaScript (25 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.",
+  "commit": "470965fa88b4cc37a06b259946db42afa14f8d9d",
+  "defaultBranch": "slice-5-measure",
+  "derived": "11 parts, mostly JavaScript (26 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -181,7 +127,7 @@
         {
           "boundary": "propose",
           "depth": 0,
-          "files": 6
+          "files": 7
         },
         {
           "boundary": "tick",
@@ -250,7 +196,7 @@
         {
           "boundary": "propose",
           "depth": 0,
-          "files": 5
+          "files": 6
         },
         {
           "boundary": "tick",
@@ -389,7 +335,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T18:41:35.157Z",
+  "generatedAt": "2026-09-24T18:52:06.045Z",
   "limits": [
     "1 read uses a path built at run time and is not named here.",
     "4 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",

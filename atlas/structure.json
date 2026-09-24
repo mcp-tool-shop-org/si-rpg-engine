@@ -76,7 +76,7 @@
           "path": "fixtures/golden.txt"
         },
         {
-          "hash": "242c69f25b4883a3a5f6c903d87a671887c46379aa303115a7a5be9f7ab8c8dc",
+          "hash": "b6eedede9a4c7988b14d95830a0b712ab034d00982f98bddf87e657aa7664612",
           "path": "fixtures/proposer-qwen2.5-7b.json"
         }
       ],
@@ -317,9 +317,9 @@
       "externals": 0,
       "files": [
         {
-          "entry": "fresh",
+          "entry": "oneRun",
           "entryRule": 1,
-          "hash": "84aae0588687d0e73040959df91ab6eb443ba974d4b0b487a252af1be3698bc9",
+          "hash": "1bf9fc1c0ded9d2daa9eeb06229c400b924d1ad44e61a1862c9cbf0998692e5d",
           "importsFiles": [
             "packages/propose/ollama.js",
             "packages/propose/seat.js",
@@ -335,12 +335,41 @@
             {
               "calls": [
                 {
-                  "line": 33,
-                  "name": "loadIntentRules",
+                  "line": 46,
+                  "name": "fixtureWorld",
                   "target": {
-                    "file": "packages/tick/predicates.js"
+                    "file": "packages/tick/fixture.js"
                   }
                 },
+                {
+                  "line": 46,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 49,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "line": 44,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "fresh"
+            },
+            {
+              "calls": [
                 {
                   "inner": [
                     {
@@ -351,25 +380,28 @@
                       }
                     }
                   ],
-                  "line": 36,
+                  "line": 46,
                   "name": "fixtureWorld",
                   "target": {
                     "file": "packages/tick/fixture.js"
-                  }
+                  },
+                  "via": "fresh"
                 },
                 {
-                  "line": 36,
+                  "line": 46,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
-                  }
+                  },
+                  "via": "fresh"
                 },
                 {
-                  "line": 39,
+                  "line": 49,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
-                  }
+                  },
+                  "via": "fresh"
                 },
                 {
                   "inner": [
@@ -388,53 +420,137 @@
                       }
                     }
                   ],
-                  "line": 34,
+                  "line": 44,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
+                  },
+                  "via": "fresh"
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 67,
+                      "name": "proposalSchema",
+                      "target": {
+                        "file": "packages/propose/schema.js"
+                      }
+                    },
+                    {
+                      "line": 69,
+                      "name": "proposalPrompt",
+                      "target": {
+                        "file": "packages/propose/prompt.js"
+                      }
+                    },
+                    {
+                      "line": 78,
+                      "name": "ask",
+                      "target": null
+                    },
+                    {
+                      "line": 79,
+                      "name": "readProposal",
+                      "target": {
+                        "file": "packages/propose/parse.js"
+                      }
+                    }
+                  ],
+                  "line": 58,
+                  "name": "runSeat",
+                  "target": {
+                    "file": "packages/propose/seat.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 11,
+                      "name": "fixtureColliders",
+                      "target": {
+                        "file": "packages/tick/world.js"
+                      }
+                    }
+                  ],
+                  "line": 69,
+                  "name": "fixtureWorld",
+                  "target": {
+                    "file": "packages/tick/fixture.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 27,
+                      "name": "createWorld",
+                      "target": {
+                        "file": "packages/tick/world.js"
+                      }
+                    },
+                    {
+                      "line": 30,
+                      "name": "createMemory",
+                      "target": {
+                        "file": "packages/tick/memory.js"
+                      }
+                    },
+                    {
+                      "line": 25,
+                      "name": "createTick",
+                      "target": {
+                        "file": "packages/tick/tick.js"
+                      }
+                    }
+                  ],
+                  "line": 67,
+                  "name": "replay",
+                  "target": {
+                    "file": "packages/tick/replay.js"
                   }
                 }
               ],
               "exported": false,
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
-              "name": "fresh"
+              "name": "oneRun"
             }
           ]
         },
         {
-          "hash": "dc64634acdb2358e23b31f0592e132ff548a8fd779a94a294e90d80d663b2a31",
+          "hash": "9c1785251030b9de96295374ba7475715e97cf23e59ad122aefc5d49a3136ea1",
           "path": "packages/propose/model.json"
         },
         {
           "exports": [
             "askOllama",
-            "pinnedModel"
+            "pinnedRun"
           ],
-          "hash": "e56b11190f94981943cb40186039b4bbca397980cebb70f64ff6abf1d4e7d03f",
+          "hash": "fe4a6a27d17370389e400af1b1a8bd77c24dc49ed0da3b216d12b06cf809af75",
           "path": "packages/propose/ollama.js"
         },
         {
           "exports": [
-            "parseProposal",
+            "readProposal",
             "stamp"
           ],
-          "hash": "ff1bc10533077fb17509a8de9c6e40f98f5ce4f8838dc17ee9a2c1bbb7d7577f",
+          "hash": "4218b89ca341b7ac41f489fadc216226f5cfa4db4f193fab3ee6cecaf7f80aa8",
           "path": "packages/propose/parse.js"
         },
         {
           "exports": [
             "proposalPrompt"
           ],
-          "hash": "5bcacde62b80e781bfd5db50935e6c323b630b4a908a8696998ae91f5c550443",
+          "hash": "47850a5c5adb5b1446c1a4c6ffa5a98d4c1ffdaa8f089ca6e26d583c60dbc390",
           "path": "packages/propose/prompt.js"
         },
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "366e46405f14ecb72239860262df481d39c8af060135ddef572b9d7ad1e06132",
+          "hash": "3b10e6486d4853db5c706fff3a72553e4c1516e216b8f004c0ad8543f898cef0",
           "importsFiles": [
+            "packages/propose/parse.js",
             "packages/propose/prompt.js",
+            "packages/propose/schema.js",
             "packages/propose/seat.js",
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -448,7 +564,7 @@
             {
               "calls": [
                 {
-                  "line": 13,
+                  "line": 15,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
@@ -464,21 +580,21 @@
                       }
                     }
                   ],
-                  "line": 16,
+                  "line": 18,
                   "name": "fixtureWorld",
                   "target": {
                     "file": "packages/tick/fixture.js"
                   }
                 },
                 {
-                  "line": 16,
+                  "line": 18,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 19,
+                  "line": 21,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
@@ -501,7 +617,7 @@
                       }
                     }
                   ],
-                  "line": 14,
+                  "line": 16,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -517,14 +633,60 @@
         },
         {
           "exports": [
+            "proposalSchema"
+          ],
+          "hash": "4e84a2a36338ca97597768bc30de776b9d77114ef54e1b4ab7035c4f8d6f2ed1",
+          "path": "packages/propose/schema.js"
+        },
+        {
+          "entry": "runSeat",
+          "entryRule": 4,
+          "exports": [
             "runSeat"
           ],
-          "hash": "a89b87b7a96ad860ffef66063f66600bd430d73204c826c340a87dd96a5e38d6",
+          "hash": "cfd5eefa10ae659f5888f14c781d94050ec223bed14d5fb0c206f637e033ad8b",
           "importsFiles": [
             "packages/propose/parse.js",
-            "packages/propose/prompt.js"
+            "packages/propose/prompt.js",
+            "packages/propose/schema.js"
           ],
-          "path": "packages/propose/seat.js"
+          "path": "packages/propose/seat.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 67,
+                  "name": "proposalSchema",
+                  "target": {
+                    "file": "packages/propose/schema.js"
+                  }
+                },
+                {
+                  "line": 69,
+                  "name": "proposalPrompt",
+                  "target": {
+                    "file": "packages/propose/prompt.js"
+                  }
+                },
+                {
+                  "line": 78,
+                  "name": "ask",
+                  "target": null
+                },
+                {
+                  "line": 79,
+                  "name": "readProposal",
+                  "target": {
+                    "file": "packages/propose/parse.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "runSeat"
+            }
+          ]
         }
       ],
       "globs": [
@@ -555,7 +717,7 @@
           "path": "LICENSE"
         },
         {
-          "hash": "16e31abd1f61ce85bd69acc5ae3c7e2dcc1a07c2ddc32e5940c94c0f1224b157",
+          "hash": "9d1ae748063b5752bdef830ab01e4c5679d59ddb76812f5b2e2f756dad6db056",
           "path": "README.md"
         },
         {
@@ -679,6 +841,8 @@
           ]
         },
         {
+          "entry": "replay",
+          "entryRule": 3,
           "exports": [
             "replay"
           ],
@@ -688,7 +852,38 @@
             "packages/tick/tick.js",
             "packages/tick/world.js"
           ],
-          "path": "packages/tick/replay.js"
+          "path": "packages/tick/replay.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 27,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 30,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "line": 25,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "replay"
+            }
+          ]
         },
         {
           "entry": "createTick",
@@ -946,7 +1141,7 @@
         {
           "boundary": "propose",
           "depth": 0,
-          "files": 6
+          "files": 7
         },
         {
           "boundary": "tick",
@@ -1222,7 +1417,7 @@
         {
           "boundary": "propose",
           "depth": 0,
-          "files": 5
+          "files": 6
         },
         {
           "boundary": "tick",
@@ -1393,8 +1588,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8",
-    "tracked": 52
+    "commit": "470965fa88b4cc37a06b259946db42afa14f8d9d",
+    "tracked": 53
   },
   "landings": [
     {

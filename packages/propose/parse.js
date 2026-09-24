@@ -3,23 +3,30 @@
 
 /**
  * @param {string} text
- * @returns {Record<string, unknown> | null}
+ * @param {string} frameHash
+ * @returns {{ verdict: 'ok', proposal: import('../frame/types.js').Proposal } | { verdict: 'not-json' | 'wrong-shape', proposal: null }}
  */
-export function parseProposal(text) {
+export function readProposal(text, frameHash) {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
   if (start < 0 || end <= start) {
-    return null;
+    return { verdict: 'not-json', proposal: null };
   }
+  /** @type {unknown} */
+  let value;
   try {
-    const value = JSON.parse(text.slice(start, end + 1));
-    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-      return null;
-    }
-    return value;
+    value = JSON.parse(text.slice(start, end + 1));
   } catch {
-    return null;
+    return { verdict: 'not-json', proposal: null };
   }
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return { verdict: 'not-json', proposal: null };
+  }
+  const proposal = stamp(/** @type {Record<string, unknown>} */ (value), frameHash);
+  if (!proposal) {
+    return { verdict: 'wrong-shape', proposal: null };
+  }
+  return { verdict: 'ok', proposal };
 }
 
 /**

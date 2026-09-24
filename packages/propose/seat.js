@@ -1,12 +1,17 @@
-// The proposer seat. It asks, the tick admits or refuses, and the reason
-// comes back only when the condition says so. Replay never calls ask.
+// The proposer seat. Both conditions see the previous proposal and its
+// verdict. Only one sees the checker's reason. Replay never calls ask.
 
 import { proposalPrompt } from './prompt.js';
-import { parseProposal, stamp } from './parse.js';
+import { readProposal } from './parse.js';
+import { proposalSchema } from './schema.js';
 
 /**
  * @typedef {import('../frame/types.js').Proposal} Proposal
  * @typedef {{
+ *   seed: number;
+ *   prompt: string;
+ *   raw: string;
+ *   verdict: 'ok' | 'not-json' | 'wrong-shape';
  *   kind: string | null;
  *   admitted: boolean;
  *   reason: string | null;
@@ -26,48 +31,87 @@ function episodesOf(log) {
 }
 
 /**
+ * @param {Proposal} proposal
+ */
+function previousText(proposal) {
+  if (proposal.kind === 'intent') {
+    return JSON.stringify({ kind: 'intent', verb: proposal.verb, actor: proposal.actor, target: proposal.target });
+  }
+  return JSON.stringify(proposal);
+}
+
+/**
  * @param {{
  *   tick: ReturnType<import('../tick/tick.js').createTick>;
- *   ask: (prompt: string) => Promise<string>;
+ *   ask: (prompt: string, call: { schema: object, seed: number, temperature: number }) => Promise<string>;
  *   budget: number;
  *   withReason: boolean;
+ *   verbs: string[];
+ *   seedBase: number;
+ *   temperature: number;
  * }} init
  */
 export async function runSeat(init) {
   /** @type {Attempt[]} */
   const attempts = [];
   /** @type {string | null} */
+  let previous = null;
+  /** @type {'admitted' | 'rejected' | null} */
+  let verdict = null;
+  /** @type {string | null} */
   let lastReason = null;
   for (let i = 0; i < init.budget; i = i + 1) {
     const frame = init.tick.frame();
     const walker = frame.bodies[0];
+    const actors = frame.bodies.map((body) => body.id);
+    const schema = proposalSchema(init.verbs, actors);
+    const seed = init.seedBase + i;
     const prompt = proposalPrompt({
       tick: frame.tick,
       x: walker.x,
       y: walker.y,
       episodes: episodesOf(init.tick.log()),
+      previous,
+      verdict,
       lastReason: init.withReason ? lastReason : null,
     });
-    const text = await init.ask(prompt);
-    const raw = parseProposal(text);
-    const proposal = raw ? stamp(raw, frame.hash) : null;
-    if (!proposal) {
-      attempts.push({ kind: null, admitted: false, reason: 'unreadable proposal' });
-      lastReason = 'unreadable proposal';
+    const raw = await init.ask(prompt, { schema, seed, temperature: init.temperature });
+    const read = readProposal(raw, frame.hash);
+    if (read.verdict !== 'ok') {
+      attempts.push({
+        seed,
+        prompt,
+        raw,
+        verdict: read.verdict,
+        kind: null,
+        admitted: false,
+        reason: read.verdict,
+      });
+      previous = raw;
+      verdict = 'rejected';
+      lastReason = read.verdict;
       continue;
     }
-    const admission = init.tick.submit(proposal);
+    const admission = init.tick.submit(read.proposal);
     attempts.push({
-      kind: proposal.kind,
+      seed,
+      prompt,
+      raw,
+      verdict: 'ok',
+      kind: read.proposal.kind,
       admitted: admission.admitted,
       reason: admission.admitted ? null : admission.reason,
     });
+    previous = previousText(read.proposal);
+    verdict = admission.admitted ? 'admitted' : 'rejected';
     lastReason = admission.admitted ? null : admission.reason;
   }
   const admitted = attempts.filter((attempt) => attempt.admitted).length;
   return {
     budget: init.budget,
     withReason: init.withReason,
+    seedBase: init.seedBase,
+    temperature: init.temperature,
     admitted,
     rate: admitted / init.budget,
     attempts,
