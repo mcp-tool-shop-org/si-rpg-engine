@@ -165,7 +165,7 @@ Slice 2: `packages/frame` (the hash) → `predicates/intents/index.json` → `pa
 
 ## Where the docs and the code disagree
 
-1. The committed map is slice 2 (branch `slice-2-kernel`, 2026-09-24). The check compares the map to the tree and does not read this file.
+1. The committed map is slice 3 once this tree is on main. `load` admits a verb draft between sessions. It reads `predicates/hazards/index.json` by a literal path and writes `predicates/intents`. Tick does not import hazards. The check compares the map to the tree and does not read this file.
 2. A WASM build is in the engine plan and not in the tree. Nothing names a source that compiles to WASM. The harness section does not claim one.
 3. The spoken-line classifier and its labeled pairs are not a door and not a package. The line is unhashed. A stance change is a belief write. The tick refuses a `line` proposal with that reason.
 4. Hosts are outside this repository. The page does not claim they import frame. They are expected to.

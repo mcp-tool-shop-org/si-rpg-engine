@@ -83,7 +83,39 @@
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
+      "name": "hazards",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
       "name": "intents",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "load",
       "qualifyingSourceCommits": 0,
       "rebaseline": null
     },
@@ -140,8 +172,8 @@
     "definition": "commits is how many commits in the window touch the file, including merges and commits dropped from coupling. lines is added plus deleted in those commits.",
     "files": [
       {
-        "commits": 2,
-        "lines": 79,
+        "commits": 4,
+        "lines": 121,
         "path": ".github/workflows/ci.yml"
       },
       {
@@ -155,33 +187,33 @@
         "path": "LICENSE"
       },
       {
-        "commits": 2,
-        "lines": 17,
+        "commits": 5,
+        "lines": 52,
         "path": "README.md"
       },
       {
-        "commits": 1,
-        "lines": 71,
+        "commits": 3,
+        "lines": 175,
         "path": "atlas/README.md"
       },
       {
-        "commits": 1,
-        "lines": 17,
+        "commits": 3,
+        "lines": 39,
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 1,
-        "lines": 134,
+        "commits": 3,
+        "lines": 802,
         "path": "atlas/page.json"
       },
       {
-        "commits": 1,
-        "lines": 245,
+        "commits": 3,
+        "lines": 467,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 1,
-        "lines": 376,
+        "commits": 3,
+        "lines": 1720,
         "path": "atlas/structure.json"
       },
       {
@@ -190,8 +222,8 @@
         "path": "docs/PHASE-0.md"
       },
       {
-        "commits": 2,
-        "lines": 182,
+        "commits": 4,
+        "lines": 206,
         "path": "docs/atlas-design.md"
       },
       {
@@ -245,24 +277,109 @@
         "path": "fixtures/golden.txt"
       },
       {
-        "commits": 1,
-        "lines": 15,
+        "commits": 3,
+        "lines": 19,
         "path": "harness/check.js"
       },
       {
-        "commits": 2,
-        "lines": 108,
+        "commits": 4,
+        "lines": 312,
         "path": "harness/sim.js"
       },
       {
-        "commits": 1,
-        "lines": 20,
+        "commits": 2,
+        "lines": 140,
+        "path": "harness/sim.mjs"
+      },
+      {
+        "commits": 3,
+        "lines": 24,
         "path": "harness/write-golden.js"
       },
       {
-        "commits": 1,
-        "lines": 17,
+        "commits": 2,
+        "lines": 112,
+        "path": "package-lock.json"
+      },
+      {
+        "commits": 3,
+        "lines": 49,
         "path": "package.json"
+      },
+      {
+        "commits": 2,
+        "lines": 30,
+        "path": "packages/frame/frame.js"
+      },
+      {
+        "commits": 2,
+        "lines": 146,
+        "path": "packages/frame/hash.js"
+      },
+      {
+        "commits": 2,
+        "lines": 262,
+        "path": "packages/frame/types.d.ts"
+      },
+      {
+        "commits": 2,
+        "lines": 134,
+        "path": "packages/tick/bin/play.js"
+      },
+      {
+        "commits": 2,
+        "lines": 60,
+        "path": "packages/tick/bin/replay.js"
+      },
+      {
+        "commits": 2,
+        "lines": 26,
+        "path": "packages/tick/fixture.js"
+      },
+      {
+        "commits": 2,
+        "lines": 188,
+        "path": "packages/tick/memory.js"
+      },
+      {
+        "commits": 2,
+        "lines": 134,
+        "path": "packages/tick/predicates.js"
+      },
+      {
+        "commits": 2,
+        "lines": 88,
+        "path": "packages/tick/replay.js"
+      },
+      {
+        "commits": 2,
+        "lines": 338,
+        "path": "packages/tick/tick.js"
+      },
+      {
+        "commits": 2,
+        "lines": 298,
+        "path": "packages/tick/tick.test.js"
+      },
+      {
+        "commits": 2,
+        "lines": 320,
+        "path": "packages/tick/world.js"
+      },
+      {
+        "commits": 2,
+        "lines": 6,
+        "path": "predicates/intents/index.json"
+      },
+      {
+        "commits": 2,
+        "lines": 14,
+        "path": "predicates/intents/move.json"
+      },
+      {
+        "commits": 2,
+        "lines": 28,
+        "path": "tsconfig.json"
       }
     ]
   },
@@ -270,9 +387,9 @@
     "level": "low",
     "reason": "fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions"
   },
-  "generatedAt": "2026-09-24T18:16:44.483Z",
+  "generatedAt": "2026-09-24T18:26:00.463Z",
   "generatedFrom": {
-    "commit": "e631b2f33a6a0055355883741217cc5468bb0c63"
+    "commit": "7ce60c644552b1b6148dc658a123d0df1a7dcffb"
   },
   "pairs": [],
   "parameters": {
@@ -285,16 +402,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "both",
-    "headDate": "2026-09-24T14:05:04-04:00",
+    "headDate": "2026-09-24T14:25:21-04:00",
     "inScopeFiles": 41,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 2,
+    "qualifyingCommits": 3,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-28T18:05:04.000Z",
+    "since": "2026-03-28T18:25:21.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",

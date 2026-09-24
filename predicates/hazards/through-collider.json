@@ -1,0 +1,8 @@
+{
+  "id": "path-through-collider-refuses",
+  "bodies": [{ "id": "walker", "x": 1, "y": 1, "vx": 0, "vy": 0, "hw": 0.25, "hh": 0.25 }],
+  "colliders": [{ "id": "floor", "minX": -1, "maxX": 5, "minY": -1, "maxY": 0 }],
+  "actor": "walker",
+  "target": { "x": 1, "y": -0.5 },
+  "expect": "refuse"
+}

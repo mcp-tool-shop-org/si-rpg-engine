@@ -1,0 +1,3 @@
+{
+  "scenarios": ["through-collider.json", "clear-step.json"]
+}

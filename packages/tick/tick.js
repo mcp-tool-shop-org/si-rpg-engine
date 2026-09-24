@@ -21,11 +21,13 @@ import { admitIntent } from './predicates.js';
  *   seed: number;
  *   world: ReturnType<import('./world.js').createWorld>;
  *   rules: Map<string, IntentRule>;
+ *   retired?: Set<string>;
  *   memory: ReturnType<import('./memory.js').createMemory>;
  * }} init
  */
 export function createTick(init) {
   const { seed, world, rules, memory } = init;
+  const retired = init.retired ?? new Set();
   const hasher = createHasher();
   /** @type {LogEntry[]} */
   const inputLog = [];
@@ -84,7 +86,7 @@ export function createTick(init) {
         if (proposal.frameHash !== current.hash) {
           return { admitted: false, reason: 'stale frame: intent names ' + String(proposal.frameHash) + ', current is ' + current.hash };
         }
-        const check = admitIntent(proposal, world, rules);
+        const check = admitIntent(proposal, world, rules, retired);
         if (!check.ok) {
           return { admitted: false, reason: check.reason };
         }
@@ -124,6 +126,9 @@ export function createTick(init) {
       }
       case 'line': {
         return { admitted: false, reason: 'no line gate in slice 2: the stance-pair classifier has no owner; lines are not admitted' };
+      }
+      case 'verb': {
+        return { admitted: false, reason: 'verb drafts are admitted at load, not during play' };
       }
       case 'body': {
         if (typeof proposal.id !== 'string' || world.body(proposal.id)) {
