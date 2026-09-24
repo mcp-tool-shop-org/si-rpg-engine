@@ -1,0 +1,57 @@
+{
+  "model": "qwen2.5:7b",
+  "seed": 7,
+  "budget": 4,
+  "withReason": {
+    "admitted": 1,
+    "rate": 0.25,
+    "attempts": [
+      {
+        "kind": "intent",
+        "admitted": true,
+        "reason": null
+      },
+      {
+        "kind": "intent",
+        "admitted": false,
+        "reason": "path crosses collider floor"
+      },
+      {
+        "kind": null,
+        "admitted": false,
+        "reason": "unreadable proposal"
+      },
+      {
+        "kind": "intent",
+        "admitted": false,
+        "reason": "unknown verb: turn"
+      }
+    ]
+  },
+  "blind": {
+    "admitted": 1,
+    "rate": 0.25,
+    "attempts": [
+      {
+        "kind": "intent",
+        "admitted": true,
+        "reason": null
+      },
+      {
+        "kind": "intent",
+        "admitted": false,
+        "reason": "path crosses collider floor"
+      },
+      {
+        "kind": "intent",
+        "admitted": false,
+        "reason": "path crosses collider floor"
+      },
+      {
+        "kind": "intent",
+        "admitted": false,
+        "reason": "path crosses collider floor"
+      }
+    ]
+  }
+}

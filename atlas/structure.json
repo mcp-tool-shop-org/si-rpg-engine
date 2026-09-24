@@ -13,7 +13,7 @@
           "path": "docs/PHASE-0.md"
         },
         {
-          "hash": "6c1b568b626521756f947bd5da866bcf5d45712b5f65a7390c85775ac0977d23",
+          "hash": "79ec84ef7f7bc28fe0abc6b664310dfe923893e2d700b327f90fa93b1e1a143e",
           "path": "docs/atlas-design.md"
         },
         {
@@ -74,6 +74,10 @@
         {
           "hash": "17d4b005bdbe4ac3227ed0dcb1c0633e0958f1acf92f59b6b49d6aac887fad23",
           "path": "fixtures/golden.txt"
+        },
+        {
+          "hash": "242c69f25b4883a3a5f6c903d87a671887c46379aa303115a7a5be9f7ab8c8dc",
+          "path": "fixtures/proposer-qwen2.5-7b.json"
         }
       ],
       "globs": [
@@ -81,7 +85,7 @@
       ],
       "importConfidence": "full",
       "name": "fixtures",
-      "origin": "generated",
+      "origin": "mixed",
       "role": "data",
       "testedBy": 0,
       "unresolvedSites": 0
@@ -121,7 +125,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 2,
+      "testedBy": 3,
       "unresolvedSites": 0
     },
     {
@@ -171,15 +175,15 @@
       "externals": 0,
       "files": [
         {
-          "hash": "8096ac1cc6a56ae43cfd37f18d1ceafb09255de6ccd656578771784b5be76d35",
+          "hash": "cefbad1ed179f21682022636eabb13acdc75618ff3cdb54f50985722b6a504a5",
           "path": "predicates/hazards/clear-step.json"
         },
         {
-          "hash": "d32ab9997e2c1b97796fcdcb0a5a66942bfab131f7ddde51c6ae5bbc26c9e5b3",
+          "hash": "9eb04089dd5b3d150961593026b7db4a822693313d49cfb91689228439de5fdb",
           "path": "predicates/hazards/index.json"
         },
         {
-          "hash": "4fee44d14bf29cc833273bfaa36a96d0314e3be6e00c7e8cdb0506d36656c9c0",
+          "hash": "94e07ce6846dbd76837642830a26bca2ac87678046c52593d42d7f0b548bbffc",
           "path": "predicates/hazards/through-collider.json"
         }
       ],
@@ -237,7 +241,7 @@
             "considerDraft",
             "retireVerb"
           ],
-          "hash": "db5f20d75067487ee161fc1a1c330d6315c982904082d9b9f428ccb60a388441",
+          "hash": "4e5ffae8b9fb12e4c5d55820cbba8d3490bb2924dc4b6bdc88a744d2f90c619d",
           "importsFiles": [
             "packages/load/compile.js",
             "packages/load/suite.js"
@@ -247,7 +251,7 @@
         {
           "entry": "readIndex",
           "entryRule": 1,
-          "hash": "4bf9a16c0b40fbc8405a2a9df89685f3580bf41c9426d5cf4791b599008925fd",
+          "hash": "54e2041c6b66c557d5d149253f93f6de2987d86abaa5d521090ce5a068b5cf25",
           "importsFiles": [
             "packages/load/admit.js",
             "packages/load/suite.js"
@@ -259,11 +263,11 @@
           "exports": [
             "compileVerb"
           ],
-          "hash": "c58397cc238fa308461ff901c9fc9c2a2f097610ffaa2d8f34b9010a0b6f7154",
+          "hash": "f1203199e44ffb50503a3b5d6b2143407495ef08cb405957bb55e835ad0fe264",
           "path": "packages/load/compile.js"
         },
         {
-          "hash": "0c37819904b6b2de3009821cafb0b3f013c5a9e91f8196fa9c8d37d77b6b660b",
+          "hash": "cb581e3f6fdb00f8633410577217ab55a4374bab56f226c23b4a7c5a64a0447e",
           "importsFiles": [
             "packages/load/admit.js",
             "packages/load/compile.js",
@@ -281,7 +285,7 @@
             "loadHazards",
             "runHazards"
           ],
-          "hash": "a39cb2654c1ea5ce1a644eef25eee85ffac58e15e8035b28ec307cfc2e471e1d",
+          "hash": "fff513c8bb9a44513c81ea3ffae8e6cafdc8f98df76c9232038be1ac627e0bbd",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -307,6 +311,238 @@
       "dynamicSpawns": 0,
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
+      "entryPoints": [
+        "packages/propose/bin/propose.js"
+      ],
+      "externals": 0,
+      "files": [
+        {
+          "entry": "fresh",
+          "entryRule": 1,
+          "hash": "84aae0588687d0e73040959df91ab6eb443ba974d4b0b487a252af1be3698bc9",
+          "importsFiles": [
+            "packages/propose/ollama.js",
+            "packages/propose/seat.js",
+            "packages/tick/fixture.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/replay.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/propose/bin/propose.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 33,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 11,
+                      "name": "fixtureColliders",
+                      "target": {
+                        "file": "packages/tick/world.js"
+                      }
+                    }
+                  ],
+                  "line": 36,
+                  "name": "fixtureWorld",
+                  "target": {
+                    "file": "packages/tick/fixture.js"
+                  }
+                },
+                {
+                  "line": 36,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 39,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 31,
+                      "name": "createHasher",
+                      "target": {
+                        "file": "packages/frame/hash.js"
+                      }
+                    },
+                    {
+                      "line": 42,
+                      "name": "commitFrame",
+                      "target": {
+                        "file": "packages/frame/frame.js"
+                      }
+                    }
+                  ],
+                  "line": 34,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "fresh"
+            }
+          ]
+        },
+        {
+          "hash": "dc64634acdb2358e23b31f0592e132ff548a8fd779a94a294e90d80d663b2a31",
+          "path": "packages/propose/model.json"
+        },
+        {
+          "exports": [
+            "askOllama",
+            "pinnedModel"
+          ],
+          "hash": "e56b11190f94981943cb40186039b4bbca397980cebb70f64ff6abf1d4e7d03f",
+          "path": "packages/propose/ollama.js"
+        },
+        {
+          "exports": [
+            "parseProposal",
+            "stamp"
+          ],
+          "hash": "ff1bc10533077fb17509a8de9c6e40f98f5ce4f8838dc17ee9a2c1bbb7d7577f",
+          "path": "packages/propose/parse.js"
+        },
+        {
+          "exports": [
+            "proposalPrompt"
+          ],
+          "hash": "5bcacde62b80e781bfd5db50935e6c323b630b4a908a8696998ae91f5c550443",
+          "path": "packages/propose/prompt.js"
+        },
+        {
+          "entry": "fresh",
+          "entryRule": 1,
+          "hash": "366e46405f14ecb72239860262df481d39c8af060135ddef572b9d7ad1e06132",
+          "importsFiles": [
+            "packages/propose/prompt.js",
+            "packages/propose/seat.js",
+            "packages/tick/fixture.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/replay.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/propose/propose.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 13,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 11,
+                      "name": "fixtureColliders",
+                      "target": {
+                        "file": "packages/tick/world.js"
+                      }
+                    }
+                  ],
+                  "line": 16,
+                  "name": "fixtureWorld",
+                  "target": {
+                    "file": "packages/tick/fixture.js"
+                  }
+                },
+                {
+                  "line": 16,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 19,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 31,
+                      "name": "createHasher",
+                      "target": {
+                        "file": "packages/frame/hash.js"
+                      }
+                    },
+                    {
+                      "line": 42,
+                      "name": "commitFrame",
+                      "target": {
+                        "file": "packages/frame/frame.js"
+                      }
+                    }
+                  ],
+                  "line": 14,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "fresh"
+            }
+          ]
+        },
+        {
+          "exports": [
+            "runSeat"
+          ],
+          "hash": "a89b87b7a96ad860ffef66063f66600bd430d73204c826c340a87dd96a5e38d6",
+          "importsFiles": [
+            "packages/propose/parse.js",
+            "packages/propose/prompt.js"
+          ],
+          "path": "packages/propose/seat.js"
+        }
+      ],
+      "globs": [
+        "packages/propose/**"
+      ],
+      "importConfidence": "full",
+      "name": "propose",
+      "origin": "authored",
+      "outsideWrites": 1,
+      "role": "code",
+      "testedBy": 1,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
       "entryPoints": [],
       "externals": 0,
       "files": [
@@ -319,7 +555,7 @@
           "path": "LICENSE"
         },
         {
-          "hash": "48c2cdda7ad7842b4d75ba3c7f72a85d1317507e411e37f6022358e5cd913ce4",
+          "hash": "16e31abd1f61ce85bd69acc5ae3c7e2dcc1a07c2ddc32e5940c94c0f1224b157",
           "path": "README.md"
         },
         {
@@ -327,7 +563,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "09bbcfe5a7dd612e58614043595c04c7fbd3c1756f821a5ac5164c9632d450a7",
+          "hash": "ea5a65bee3d5f09714e6b3fe32d4dfe6a0e66b69eabcca2a1f05a298f961e165",
           "path": "package.json"
         },
         {
@@ -612,7 +848,7 @@
       "outsideReads": 2,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 2,
+      "testedBy": 3,
       "unresolvedSites": 0
     },
     {
@@ -641,7 +877,7 @@
   ],
   "doors": [
     {
-      "checksCount": 9,
+      "checksCount": 10,
       "commands": [
         {
           "job": "engines",
@@ -706,6 +942,11 @@
           "boundary": "load",
           "depth": 0,
           "files": 5
+        },
+        {
+          "boundary": "propose",
+          "depth": 0,
+          "files": 6
         },
         {
           "boundary": "tick",
@@ -777,6 +1018,19 @@
           "directory": true,
           "job": "engines",
           "matched": true,
+          "path": "packages/propose/",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "packages/propose/propose.test.js",
+          "runKind": "executes"
+        },
+        {
+          "directory": true,
+          "job": "engines",
+          "matched": true,
           "path": "packages/tick/",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
@@ -787,7 +1041,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 11,
+      "runsCount": 13,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -961,6 +1215,66 @@
       "kind": "command",
       "landings": [],
       "mentions": [],
+      "name": "propose",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "propose",
+          "depth": 0,
+          "files": 5
+        },
+        {
+          "boundary": "tick",
+          "depth": 1,
+          "enters": {
+            "file": "packages/tick/tick.js",
+            "from": "packages/propose/bin/propose.js"
+          },
+          "files": 6
+        },
+        {
+          "boundary": "frame",
+          "depth": 2,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/tick.js"
+          },
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "path": "packages/propose/bin/propose.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "package.json",
+      "kind": "command",
+      "landings": [],
+      "mentions": [],
       "name": "replay",
       "permissions": [],
       "pushes": false,
@@ -1068,14 +1382,19 @@
       "to": "tick"
     },
     {
+      "from": "propose",
+      "kind": "file",
+      "to": "tick"
+    },
+    {
       "from": "tick",
       "kind": "file",
       "to": "frame"
     }
   ],
   "generatedFrom": {
-    "commit": "41337997bc6145c9021ac968e883c88ec0c0be04",
-    "tracked": 44
+    "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8",
+    "tracked": 52
   },
   "landings": [
     {
@@ -1119,6 +1438,17 @@
         }
       ],
       "target": "harness/write-golden.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/ollama.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages/propose/model.json",
       "writers": []
     },
     {
@@ -1242,6 +1572,6 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 2,
+  "testFiles": 3,
   "unassigned": []
 }

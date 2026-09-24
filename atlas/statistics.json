@@ -131,6 +131,22 @@
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
+      "name": "propose",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
       "name": "root",
       "qualifyingSourceCommits": 0,
       "rebaseline": null
@@ -142,7 +158,8 @@
         "confidence": "low",
         "importsAndCoChanges": [],
         "importsOnly": [
-          "load"
+          "load",
+          "propose"
         ]
       },
       "cohesion": null,
@@ -189,33 +206,33 @@
         "path": "LICENSE"
       },
       {
-        "commits": 6,
-        "lines": 58,
+        "commits": 7,
+        "lines": 64,
         "path": "README.md"
       },
       {
-        "commits": 4,
-        "lines": 221,
+        "commits": 6,
+        "lines": 321,
         "path": "atlas/README.md"
       },
       {
-        "commits": 4,
-        "lines": 45,
+        "commits": 5,
+        "lines": 51,
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 4,
-        "lines": 941,
+        "commits": 6,
+        "lines": 1290,
         "path": "atlas/page.json"
       },
       {
-        "commits": 4,
-        "lines": 642,
+        "commits": 6,
+        "lines": 985,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 4,
-        "lines": 1843,
+        "commits": 6,
+        "lines": 2450,
         "path": "atlas/structure.json"
       },
       {
@@ -224,8 +241,8 @@
         "path": "docs/PHASE-0.md"
       },
       {
-        "commits": 5,
-        "lines": 208,
+        "commits": 6,
+        "lines": 210,
         "path": "docs/atlas-design.md"
       },
       {
@@ -304,8 +321,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 4,
-        "lines": 58,
+        "commits": 5,
+        "lines": 67,
         "path": "package.json"
       },
       {
@@ -319,43 +336,43 @@
         "path": "packages/frame/hash.js"
       },
       {
-        "commits": 3,
-        "lines": 273,
+        "commits": 4,
+        "lines": 284,
         "path": "packages/frame/types.d.ts"
       },
       {
-        "commits": 1,
-        "lines": 57,
+        "commits": 2,
+        "lines": 114,
         "path": "packages/load/admit.js"
       },
       {
-        "commits": 1,
-        "lines": 52,
+        "commits": 2,
+        "lines": 104,
         "path": "packages/load/bin/load.js"
       },
       {
-        "commits": 1,
-        "lines": 52,
+        "commits": 2,
+        "lines": 104,
         "path": "packages/load/compile.js"
       },
       {
-        "commits": 1,
-        "lines": 100,
+        "commits": 2,
+        "lines": 200,
         "path": "packages/load/load.test.js"
       },
       {
-        "commits": 1,
-        "lines": 65,
+        "commits": 2,
+        "lines": 130,
         "path": "packages/load/suite.js"
       },
       {
-        "commits": 3,
-        "lines": 138,
+        "commits": 4,
+        "lines": 142,
         "path": "packages/tick/bin/play.js"
       },
       {
-        "commits": 3,
-        "lines": 63,
+        "commits": 4,
+        "lines": 66,
         "path": "packages/tick/bin/replay.js"
       },
       {
@@ -369,23 +386,23 @@
         "path": "packages/tick/memory.js"
       },
       {
-        "commits": 3,
-        "lines": 150,
+        "commits": 4,
+        "lines": 166,
         "path": "packages/tick/predicates.js"
       },
       {
-        "commits": 3,
-        "lines": 90,
+        "commits": 4,
+        "lines": 92,
         "path": "packages/tick/replay.js"
       },
       {
-        "commits": 3,
-        "lines": 345,
+        "commits": 4,
+        "lines": 352,
         "path": "packages/tick/tick.js"
       },
       {
-        "commits": 3,
-        "lines": 306,
+        "commits": 4,
+        "lines": 314,
         "path": "packages/tick/tick.test.js"
       },
       {
@@ -394,23 +411,23 @@
         "path": "packages/tick/world.js"
       },
       {
-        "commits": 1,
-        "lines": 8,
+        "commits": 2,
+        "lines": 16,
         "path": "predicates/hazards/clear-step.json"
       },
       {
-        "commits": 1,
-        "lines": 3,
+        "commits": 2,
+        "lines": 6,
         "path": "predicates/hazards/index.json"
       },
       {
-        "commits": 1,
-        "lines": 8,
+        "commits": 2,
+        "lines": 16,
         "path": "predicates/hazards/through-collider.json"
       },
       {
-        "commits": 3,
-        "lines": 9,
+        "commits": 4,
+        "lines": 12,
         "path": "predicates/intents/index.json"
       },
       {
@@ -429,13 +446,13 @@
     "level": "low",
     "reason": "fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions"
   },
-  "generatedAt": "2026-09-24T18:27:00.069Z",
+  "generatedAt": "2026-09-24T18:41:35.157Z",
   "generatedFrom": {
-    "commit": "41337997bc6145c9021ac968e883c88ec0c0be04"
+    "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8"
   },
   "pairs": [],
   "parameters": {
-    "appliedChangesetLimit": 12.25,
+    "appliedChangesetLimit": 14.25,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -444,16 +461,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "both",
-    "headDate": "2026-09-24T14:26:01-04:00",
-    "inScopeFiles": 49,
+    "headDate": "2026-09-24T11:27:47-07:00",
+    "inScopeFiles": 57,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 3,
+    "qualifyingCommits": 5,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-28T18:26:01.000Z",
+    "since": "2026-03-28T18:27:47.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
