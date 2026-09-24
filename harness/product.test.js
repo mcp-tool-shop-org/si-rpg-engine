@@ -1,12 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createProductWorld } from './product-scene.mjs';
+import { createProductWorld, productDriven } from './product-scene.mjs';
 
 test('the product scene fires every branch of the solver on the first quantum', () => {
   const world = createProductWorld();
   assert.ok(world.bodies.length >= 2);
   const before = world.bodies.map((body) => ({ ...body }));
-  world.step();
+  world.step(new Set(productDriven));
   /** @param {string} id */
   const now = (id) => {
     const body = world.bodies.find((item) => item.id === id);
@@ -50,6 +50,12 @@ test('the product scene fires every branch of the solver on the first quantum', 
 
   const fast = now('fast');
   assert.ok(Math.abs(Math.hypot(fast.vx, fast.vy) - 2) < 1e-12);
+
+  const yields = now('yields');
+  const pusher = now('pusher');
+  assert.ok(yields.x > was('yields').x);
+  assert.equal(pusher.x, was('pusher').x + was('pusher').vx / 64);
+  assert.equal(yields.vx, pusher.vx);
 
   for (const body of world.bodies) {
     const prior = was(body.id);

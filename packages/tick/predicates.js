@@ -4,6 +4,7 @@
 // tick's own collider, not a judgment.
 
 import { readFileSync } from 'node:fs';
+import { DT } from './world.js';
 
 /**
  * @typedef {import('../frame/types.js').IntentRule} IntentRule
@@ -37,7 +38,54 @@ export function loadIntentRules() {
  * @param {Set<string>} retired
  * @returns {{ ok: true; rule: IntentRule; quanta: number } | { ok: false; reason: string }}
  */
-export function admitIntent(intent, world, rules, retired) {
+/**
+ * @param {{ x: number, y: number, hw: number, hh: number }} actor
+ * @param {{ x: number, y: number, hw: number, hh: number }} other
+ */
+function nearFace(actor, other) {
+  const left = other.x - other.hw;
+  const right = other.x + other.hw;
+  const bottom = other.y - other.hh;
+  const top = other.y + other.hh;
+  let x = actor.x;
+  if (actor.x < left) {
+    x = left;
+  } else if (actor.x > right) {
+    x = right;
+  }
+  let y = actor.y;
+  if (actor.y < bottom) {
+    y = bottom;
+  } else if (actor.y > top) {
+    y = top;
+  }
+  return { x, y };
+}
+
+/**
+ * @param {number} distance
+ * @param {import('../frame/types.js').IntentRule} rule
+ */
+function quantaFor(distance, rule) {
+  let quanta = Math.ceil(distance / rule.speed / DT);
+  if (quanta < 1) {
+    quanta = 1;
+  }
+  if (quanta > rule.maxQuanta) {
+    quanta = rule.maxQuanta;
+  }
+  return quanta;
+}
+
+/**
+ * @param {import('../frame/types.js').Intent} intent
+ * @param {ReturnType<import('./world.js').createWorld>} world
+ * @param {Map<string, import('../frame/types.js').IntentRule>} rules
+ * @param {Set<string>} retired
+ * @param {ReadonlySet<string>} [scheduled]
+ * @returns {{ ok: true, rule: import('../frame/types.js').IntentRule, quanta: number } | { ok: false, reason: string }}
+ */
+export function admitIntent(intent, world, rules, retired, scheduled) {
   if (retired.has(intent.verb)) {
     return { ok: false, reason: 'retired verb: ' + intent.verb };
   }
@@ -49,30 +97,61 @@ export function admitIntent(intent, world, rules, retired) {
   if (!actor) {
     return { ok: false, reason: 'no body named ' + intent.actor };
   }
-  if (!intent.target || typeof intent.target.x !== 'number' || typeof intent.target.y !== 'number') {
-    return { ok: false, reason: 'target must be a point' };
-  }
-  const dx = intent.target.x - actor.x;
-  const dy = intent.target.y - actor.y;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  if (distance > rule.maxDistance) {
-    return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
-  }
-  if (rule.requiresClearPath) {
-    const hit = world.segmentHits(actor.x, actor.y, intent.target.x, intent.target.y, {
-      hw: actor.hw,
-      hh: actor.hh,
-    });
-    if (hit !== null) {
-      return { ok: false, reason: 'path crosses collider ' + hit };
+  const busy = scheduled || new Set();
+  const kind = rule.targetKind ?? 'point';
+  /** @type {number} */
+  let distance = 0;
+  if (kind === 'body') {
+    const named = intent.target && /** @type {{ body?: unknown }} */ (intent.target).body;
+    if (typeof named !== 'string') {
+      return { ok: false, reason: 'target must name a body' };
+    }
+    const other = world.body(named);
+    if (!other) {
+      return { ok: false, reason: 'no body named ' + named };
+    }
+    if (other.id === actor.id) {
+      return { ok: false, reason: 'target is the actor' };
+    }
+    if (busy.has(other.id)) {
+      return { ok: false, reason: 'target is mid-action' };
+    }
+    const face = nearFace(actor, other);
+    const dx = face.x - actor.x;
+    const dy = face.y - actor.y;
+    distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance > rule.maxDistance) {
+      return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
+    }
+    if (rule.requiresClearPath) {
+      const hit = world.segmentHits(actor.x, actor.y, face.x, face.y, { hw: actor.hw, hh: actor.hh });
+      if (hit !== null) {
+        return { ok: false, reason: 'path crosses collider ' + hit };
+      }
+    }
+    // The near face only has to be in range. The scheduled distance is the
+    // rule's own range, so the walker is still moving after contact.
+    distance = rule.maxDistance;
+  } else {
+    const point = intent.target;
+    if (!point || !('x' in point) || typeof point.x !== 'number' || typeof point.y !== 'number') {
+      return { ok: false, reason: 'target must be a point' };
+    }
+    const dx = point.x - actor.x;
+    const dy = point.y - actor.y;
+    distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance > rule.maxDistance) {
+      return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
+    }
+    if (rule.requiresClearPath) {
+      const hit = world.segmentHits(actor.x, actor.y, point.x, point.y, {
+        hw: actor.hw,
+        hh: actor.hh,
+      });
+      if (hit !== null) {
+        return { ok: false, reason: 'path crosses collider ' + hit };
+      }
     }
   }
-  let quanta = Math.ceil(distance / rule.speed / (1 / 64));
-  if (quanta < 1) {
-    quanta = 1;
-  }
-  if (quanta > rule.maxQuanta) {
-    quanta = rule.maxQuanta;
-  }
-  return { ok: true, rule, quanta };
+  return { ok: true, rule, quanta: quantaFor(distance, rule) };
 }

@@ -1,0 +1,8 @@
+{
+  "verb": "push",
+  "speed": 1,
+  "maxDistance": 3,
+  "requiresClearPath": true,
+  "maxQuanta": 256,
+  "targetKind": "body"
+}

@@ -39,7 +39,7 @@ export interface Intent {
   kind: 'intent';
   verb: string;
   actor: string;
-  target: { x: number; y: number };
+  target: { x: number; y: number } | { body: string };
   frameHash: string;
 }
 
@@ -128,6 +128,8 @@ export interface IntentRule {
   maxDistance: number;
   requiresClearPath: boolean;
   maxQuanta: number;
+  /** Absent means a point target, which is what move is. */
+  targetKind?: 'point' | 'body';
 }
 
 /** The host boundary. Frames in. Nothing out but what it submits as intents. */

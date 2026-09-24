@@ -1,7 +1,8 @@
 // Compile a verb draft against the fixed primitives. A draft is data.
 // Unknown fields, wrong types, and code are refused here. Nothing is written.
 
-const KEYS = ['verb', 'speed', 'maxDistance', 'requiresClearPath', 'maxQuanta'];
+const REQUIRED = ['verb', 'speed', 'maxDistance', 'requiresClearPath', 'maxQuanta'];
+const OPTIONAL = ['targetKind'];
 const VERB = /^[a-z][a-z0-9-]{0,31}$/;
 
 /**
@@ -15,11 +16,11 @@ export function compileVerb(draft) {
   const obj = /** @type {Record<string, unknown>} */ (draft);
   const keys = Object.keys(obj);
   for (const key of keys) {
-    if (!KEYS.includes(key)) {
+    if (!REQUIRED.includes(key) && !OPTIONAL.includes(key)) {
       return { ok: false, reason: 'unknown field: ' + key };
     }
   }
-  for (const key of KEYS) {
+  for (const key of REQUIRED) {
     if (!Object.hasOwn(obj, key)) {
       return { ok: false, reason: 'missing field: ' + key };
     }
@@ -39,6 +40,9 @@ export function compileVerb(draft) {
   if (typeof obj.maxQuanta !== 'number' || !Number.isInteger(obj.maxQuanta) || obj.maxQuanta < 1 || obj.maxQuanta > 256) {
     return { ok: false, reason: 'maxQuanta must be an integer from 1 through 256' };
   }
+  if (obj.targetKind !== undefined && obj.targetKind !== 'point' && obj.targetKind !== 'body') {
+    return { ok: false, reason: 'targetKind must be point or body' };
+  }
   return {
     ok: true,
     rule: {
@@ -47,6 +51,7 @@ export function compileVerb(draft) {
       maxDistance: obj.maxDistance,
       requiresClearPath: obj.requiresClearPath,
       maxQuanta: obj.maxQuanta,
+      ...(obj.targetKind === undefined ? {} : { targetKind: obj.targetKind }),
     },
   };
 }

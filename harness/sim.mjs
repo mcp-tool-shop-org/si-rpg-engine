@@ -5,7 +5,7 @@
 // Run as a module: `v8 --module`, `spidermonkey -m`, `javascriptcore -m`, or node.
 
 import { createHasher } from '../packages/frame/hash.js';
-import { createProductWorld } from './product-scene.mjs';
+import { createProductWorld, productDriven } from './product-scene.mjs';
 
 const STEPS = 10000;
 
@@ -21,11 +21,12 @@ function out(line) {
 }
 
 const world = createProductWorld();
+const driven = new Set(productDriven);
 const h = createHasher();
 let ok = true;
 
 for (let i = 0; i < STEPS; i = i + 1) {
-  world.step();
+  world.step(driven);
   for (let b = 0; b < world.bodies.length; b = b + 1) {
     const body = world.bodies[b];
     if (!h.float(body.x) || !h.float(body.y) || !h.float(body.vx) || !h.float(body.vy)) {

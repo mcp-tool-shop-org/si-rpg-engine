@@ -16,6 +16,7 @@ import { createMemory } from '../tick/memory.js';
  *   colliders: StaticCollider[];
  *   actor: string;
  *   target: { x: number; y: number };
+ *   targetBody?: string;
  *   expect: 'admit' | 'refuse';
  * }} HazardScenario
  */
@@ -47,11 +48,20 @@ export function runHazards(rule, scenarios) {
       rules,
       memory: createMemory(),
     });
+    /** @type {{ x: number, y: number } | { body: string }} */
+    let target = scenario.target;
+    if (rule.targetKind === 'body') {
+      if (typeof scenario.targetBody !== 'string') {
+        failures.push(scenario.id + ' has no targetBody');
+        continue;
+      }
+      target = { body: scenario.targetBody };
+    }
     const result = tick.submit({
       kind: 'intent',
       verb: rule.verb,
       actor: scenario.actor,
-      target: scenario.target,
+      target,
       frameHash: tick.frame().hash,
     });
     if (result.admitted) {

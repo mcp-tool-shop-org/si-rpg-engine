@@ -1,4 +1,7 @@
 {
-  "rules": ["move.json"],
+  "rules": [
+    "move.json",
+    "push.json"
+  ],
   "retired": []
 }
