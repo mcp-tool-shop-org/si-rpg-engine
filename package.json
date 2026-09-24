@@ -13,12 +13,13 @@
     "play": "./packages/tick/bin/play.js",
     "replay": "./packages/tick/bin/replay.js",
     "load": "./packages/load/bin/load.js",
-    "propose": "./packages/propose/bin/propose.js"
+    "propose": "./packages/propose/bin/propose.js",
+    "host": "./packages/host/bin/host.js"
   },
   "scripts": {
     "check": "node harness/check.js",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test packages/tick/tick.test.js packages/load/load.test.js packages/propose/propose.test.js"
+    "test": "node --test packages/tick/tick.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js"
   },
   "devDependencies": {
     "@types/node": "22.19.0",

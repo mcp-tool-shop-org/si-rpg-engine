@@ -15,6 +15,9 @@ boundaries:
   - name: propose
     globs: [packages/propose/**]
     role: code
+  - name: host
+    globs: [packages/host/**]
+    role: code
   - name: intents
     globs: [predicates/intents/**]
     role: data
