@@ -10,6 +10,7 @@
     {
       "doors": 6,
       "importedBy": [
+        "harness",
         "host",
         "load",
         "propose"
@@ -66,23 +67,65 @@
   "changes": {
     "fileCounts": {
       "added": 4,
-      "changed": 6,
+      "changed": 25,
       "moved": 0,
-      "parts": 4,
+      "parts": 7,
       "removed": 0
     },
     "items": [
       {
+        "kind": "import-added",
+        "sentence": "harness now imports tick.",
+        "subjects": [
+          "harness",
+          "tick"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also runs harness/product.test.js.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "harness/product.test.js"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also checks fixtures/golden-arith.txt, harness/arith.mjs and harness/product-scene.mjs.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "fixtures/golden-arith.txt",
+          "harness/arith.mjs",
+          "harness/product-scene.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/golden-arith.txt is now read by harness/check.js.",
+        "subjects": [
+          "fixtures/golden-arith.txt",
+          "harness/check.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "harness/arith.mjs is now read by harness/check.js.",
+        "subjects": [
+          "harness/arith.mjs",
+          "harness/check.js"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-24; 4 files added and 6 changed content.",
+        "sentence": "4 files added and 25 changed content, across 7 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "c84eee69378484d41dab20c49b39655efd4a4fa4",
-      "generatedAt": "2026-09-24T20:44:51.939Z"
+      "commit": "ece9100f5cd821b7aae828f3881704f089d9199c",
+      "generatedAt": "2026-09-24T21:06:01.225Z"
     },
-    "unchanged": true
+    "unchanged": false
   },
   "changesTogether": [
     {
@@ -166,15 +209,18 @@
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "ece9100f5cd821b7aae828f3881704f089d9199c",
+  "commit": "eeed37f3bf0e9acd4c5332c54ed4517462baeefc",
   "defaultBranch": "main",
-  "derived": "12 parts, mostly JavaScript (33 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "12 parts, mostly JavaScript (36 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
+        "fixtures/golden-arith.txt",
         "fixtures/golden.txt",
+        "harness/arith.mjs",
         "harness/sim.mjs",
         "harness/check.js",
+        "harness/product-scene.mjs",
         "harness/write-golden.js",
         "packages/frame/frame.js",
         "packages/frame/hash.js",
@@ -184,7 +230,7 @@
         "packages/propose/",
         "packages/tick/"
       ],
-      "checksCount": 11,
+      "checksCount": 14,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -194,7 +240,7 @@
         {
           "boundary": "fixtures",
           "depth": 0,
-          "files": 1
+          "files": 2
         },
         {
           "boundary": "frame",
@@ -204,7 +250,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 3
+          "files": 6
         },
         {
           "boundary": "host",
@@ -228,12 +274,13 @@
         }
       ],
       "runs": [
+        "harness/product.test.js",
         "packages/host/host.test.js",
         "packages/load/load.test.js",
         "packages/propose/propose.test.js",
         "packages/tick/tick.test.js"
       ],
-      "runsCount": 4,
+      "runsCount": 5,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -439,6 +486,11 @@
       "to": "frame"
     },
     {
+      "from": "harness",
+      "fromTests": false,
+      "to": "tick"
+    },
+    {
       "from": "host",
       "fromTests": false,
       "to": "tick"
@@ -467,9 +519,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T21:06:01.225Z",
+  "generatedAt": "2026-09-24T21:21:45.474Z",
   "limits": [
-    "1 read uses a path built at run time and is not named here.",
+    "2 reads use paths built at run time and are not named here.",
     "4 writes and 5 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "2 commands are built at run time and not followed.",
     "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions."
@@ -604,13 +656,13 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 4,
+  "testFiles": 5,
   "testedBy": {
     "frame": 3,
     "host": 1,
     "load": 1,
     "propose": 1,
-    "tick": 4
+    "tick": 5
   },
   "unnamedWrites": 0,
   "unread": [],

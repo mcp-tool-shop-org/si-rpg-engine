@@ -4,6 +4,8 @@ import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Rewrites fixtures/golden.txt from harness/sim.mjs, the product solver.
+// It does not rewrite fixtures/golden-arith.txt. CI does not run this.
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sim = join(root, 'harness', 'sim.mjs');
 const run = spawnSync(process.execPath, [sim], { encoding: 'utf8' });
