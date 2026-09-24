@@ -19,7 +19,7 @@
   "scripts": {
     "check": "node harness/check.js",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test packages/tick/tick.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js"
+    "test": "node --test packages/tick/tick.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js harness/product.test.js"
   },
   "devDependencies": {
     "@types/node": "22.19.0",

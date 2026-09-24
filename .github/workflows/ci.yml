@@ -62,17 +62,26 @@ jobs:
       - name: Compare each engine to the golden hash
         run: |
           set -euo pipefail
-          golden=$(tr -d '\r\n' < fixtures/golden.txt)
-          v8=$("$HOME/.jsvu/bin/v8-15.6.61" --module harness/sim.mjs | tr -d '\r\n')
-          sm=$("$HOME/.jsvu/bin/spidermonkey-156.0.1" -m harness/sim.mjs | tr -d '\r\n')
-          jsc=$("$HOME/.jsvu/bin/javascriptcore-319571" -m harness/sim.mjs | tr -d '\r\n')
-          if [ "$v8" != "$golden" ] || [ "$sm" != "$golden" ] || [ "$jsc" != "$golden" ]; then
-            echo "v8 [$v8]"
-            echo "spidermonkey [$sm]"
-            echo "javascriptcore [$jsc]"
-            echo "golden [$golden]"
-            exit 1
-          fi
-          echo "three engines match"
+          compare() {
+            local harness="$1"
+            local golden_file="$2"
+            local golden
+            golden=$(tr -d '\r\n' < "$golden_file")
+            local v8 sm jsc
+            v8=$("$HOME/.jsvu/bin/v8-15.6.61" --module "$harness" | tr -d '\r\n')
+            sm=$("$HOME/.jsvu/bin/spidermonkey-156.0.1" -m "$harness" | tr -d '\r\n')
+            jsc=$("$HOME/.jsvu/bin/javascriptcore-319571" -m "$harness" | tr -d '\r\n')
+            if [ "$v8" != "$golden" ] || [ "$sm" != "$golden" ] || [ "$jsc" != "$golden" ]; then
+              echo "$harness"
+              echo "v8 [$v8]"
+              echo "spidermonkey [$sm]"
+              echo "javascriptcore [$jsc]"
+              echo "golden [$golden]"
+              exit 1
+            fi
+            echo "$harness three engines match $golden"
+          }
+          compare harness/sim.mjs fixtures/golden.txt
+          compare harness/arith.mjs fixtures/golden-arith.txt
       - name: Check the Atlas map
         run: npx --yes @dogfood-lab/atlas@1.17.0 check
