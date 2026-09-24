@@ -1,0 +1,8 @@
+{
+  "id": "corner-clip-refuses",
+  "bodies": [{ "id": "walker", "x": 1, "y": 1, "vx": 0, "vy": 0, "hw": 0.25, "hh": 0.25 }],
+  "colliders": [{ "id": "pillar", "minX": 1.8, "maxX": 2.2, "minY": 1.05, "maxY": 2 }],
+  "actor": "walker",
+  "target": { "x": 3, "y": 1 },
+  "expect": "refuse"
+}

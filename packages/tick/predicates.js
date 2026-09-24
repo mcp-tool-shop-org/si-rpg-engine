@@ -59,7 +59,10 @@ export function admitIntent(intent, world, rules, retired) {
     return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
   }
   if (rule.requiresClearPath) {
-    const hit = world.segmentHits(actor.x, actor.y, intent.target.x, intent.target.y);
+    const hit = world.segmentHits(actor.x, actor.y, intent.target.x, intent.target.y, {
+      hw: actor.hw,
+      hh: actor.hh,
+    });
     if (hit !== null) {
       return { ok: false, reason: 'path crosses collider ' + hit };
     }

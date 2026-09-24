@@ -110,13 +110,26 @@ export function createWorld(init) {
 
   /**
    * The collider query the intent predicate uses for reachability.
+   * A pad expands every box by the actor's half-extents, which is the
+   * swept test for an axis-aligned body. The stored colliders do not change.
    * @param {number} x0 @param {number} y0 @param {number} x1 @param {number} y1
+   * @param {{ hw: number, hh: number }} [pad]
    * @returns {string | null} the id of the first collider the segment crosses
    */
-  function segmentHits(x0, y0, x1, y1) {
+  function segmentHits(x0, y0, x1, y1, pad) {
+    const hw = pad ? pad.hw : 0;
+    const hh = pad ? pad.hh : 0;
     for (let j = 0; j < colliders.length; j = j + 1) {
-      if (segmentHitsBox(x0, y0, x1, y1, colliders[j])) {
-        return colliders[j].id;
+      const stored = colliders[j];
+      const box = hw === 0 && hh === 0 ? stored : {
+        id: stored.id,
+        minX: stored.minX - hw,
+        maxX: stored.maxX + hw,
+        minY: stored.minY - hh,
+        maxY: stored.maxY + hh,
+      };
+      if (segmentHitsBox(x0, y0, x1, y1, box)) {
+        return stored.id;
       }
     }
     return null;

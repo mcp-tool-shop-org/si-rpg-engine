@@ -14,7 +14,20 @@ const index = { rules: ['move.json'], retired: [] };
 
 test('the shipped move rule passes the hazard suite', () => {
   const rule = JSON.parse(readFileSync('predicates/intents/move.json', 'utf8'));
-  assert.deepEqual(runHazards(rule, loadHazards()), []);
+  const scenarios = loadHazards();
+  assert.equal(scenarios.length, 3);
+  assert.deepEqual(runHazards(rule, scenarios), []);
+});
+
+test('the corner clip is a path the centre line clears and the swept body does not', () => {
+  const scenario = JSON.parse(readFileSync('predicates/hazards/corner-clip.json', 'utf8'));
+  const world = createWorld({ bodies: scenario.bodies, colliders: scenario.colliders });
+  const actor = scenario.bodies[0];
+  assert.equal(world.segmentHits(actor.x, actor.y, scenario.target.x, scenario.target.y), null);
+  assert.equal(
+    world.segmentHits(actor.x, actor.y, scenario.target.x, scenario.target.y, { hw: actor.hw, hh: actor.hh }),
+    'pillar',
+  );
 });
 
 test('compile refuses an extra field and a speed the integrator will not keep', () => {
