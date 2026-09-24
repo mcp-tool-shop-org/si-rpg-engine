@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const sim = join(root, 'harness', 'sim.js');
+const sim = join(root, 'harness', 'sim.mjs');
 const run = spawnSync(process.execPath, [sim], { encoding: 'utf8' });
 if (run.status !== 0) {
   process.stderr.write(run.stderr || 'sim failed\n');

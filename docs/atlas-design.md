@@ -161,15 +161,19 @@ The golden hash. The Atlas page, once a map exists.
 
 Slice 1: CI is the busiest door. It reaches the harness and the fixtures, and it only checks those files, so the page has no ordered path of code to read. `write-golden` is the other door. It runs `harness/write-golden.js` and is the only writer of `fixtures/golden.txt`. The three engine binaries are invoked through `$HOME`, so the map records them as commands it cannot follow.
 
-Slice 2: `packages/frame` (the hash) → `predicates/intents/index.json` → `packages/tick` → the `play` bin → `replay`.
+Slice 2: `packages/frame` (the hash) → `predicates/intents/index.json` → `packages/tick` → the `play` bin → `replay`. The fixture that proves the slice is `packages/tick/tick.test.js`: the quantum, the admit step, a body with a collider, the memory-write verb the checker can refuse, the host boundary, and replay from the seed and the log.
 
 ## Where the docs and the code disagree
 
-1. The committed map is slice 1. This target page still describes slice 2. The check compares the map to the tree and does not read this file.
+1. The committed map is slice 2 (branch `slice-2-kernel`, 2026-09-24). The check compares the map to the tree and does not read this file.
 2. A WASM build is in the engine plan and not in the tree. Nothing names a source that compiles to WASM. The harness section does not claim one.
-3. The spoken-line classifier and its labeled pairs are not a door and not a package. The line is unhashed. A stance change is a belief write.
+3. The spoken-line classifier and its labeled pairs are not a door and not a package. The line is unhashed. A stance change is a belief write. The tick refuses a `line` proposal with that reason.
 4. Hosts are outside this repository. The page does not claim they import frame. They are expected to.
-5. The three engine runs go through `$HOME/.jsvu/bin/...`. The map says CI checks `harness/sim.js` and that two commands are built at run time. The version pins are literal in the install step.
+5. The three engine runs go through `$HOME/.jsvu/bin/...`. The map says CI checks `harness/sim.mjs` and that the engine commands are built at run time. The version pins are literal in the install step.
+6. Tick reads `predicates/intents/index.json` by a literal relative path, and the index names the rule files. Atlas 1.17.0 counts a working-directory read as outside the repository, so the page lists `predicates/intents/` as hand-authored with no reader it can see. The read is real; the map cannot land it. The `play` and `replay` bins `chdir` to the repository root so the literal path holds.
+7. Phase 0 says the kernel contract is TypeScript. The runtime is plain ES modules, so the three shells and node run the same bytes unbuilt, and the contract is `packages/frame/types.d.ts`, checked by `tsc --noEmit` against the JavaScript. Nothing is emitted, so the map describes the files that run. This is a reading of the plan, not a change to it.
+8. The map's busiest door is CI, which reaches four parts; the page's start path follows `play` because CI only runs tests. The target page above says play is the widest door. Atlas ranks doors by reach, and CI's reach includes what it checks.
+9. `play` accepts `"frameHash": "@drawn"` in a scripted proposal and substitutes the hash of the current committed frame, standing in for the frame a host would have drawn. The tick still refuses any other stale hash. A host outside this tree sends the real hash.
 
 ## What this design does not ask of Atlas
 

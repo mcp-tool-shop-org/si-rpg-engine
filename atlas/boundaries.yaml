@@ -1,8 +1,17 @@
-summary: "Determinism harness for a 3D RPG tick: one body, fixed quanta, one golden hash checked under three engines."
+summary: "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames."
 boundaries:
+  - name: tick
+    globs: [packages/tick/**]
+    role: code
+  - name: frame
+    globs: [packages/frame/**]
+    role: code
   - name: harness
     globs: [harness/**]
     role: test
+  - name: intents
+    globs: [predicates/intents/**]
+    role: data
   - name: fixtures
     globs: [fixtures/**]
     role: data
