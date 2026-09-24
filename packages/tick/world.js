@@ -4,6 +4,9 @@
 export const DT = 1 / 64;
 export const G = -8;
 export const MAX_SPEED = 2;
+// One multiply per quantum for a body with no scheduled action. Zero
+// stops a pushed crate. A driven body is left alone.
+export const UNDRIVEN_DRAG = 0;
 
 /**
  * @typedef {import('../frame/types.js').Body} Body
@@ -29,10 +32,18 @@ export function createWorld(init) {
     return undefined;
   }
 
-  /** One quantum. Gravity, integrate, resolve against every static collider, clamp speed. */
-  function step() {
+  /**
+   * One quantum. An undriven body damps vx, then gravity, integrate,
+   * static colliders, and the speed clamp. Dynamic pairs are i < j.
+   * @param {ReadonlySet<string>} [driven] body ids with a scheduled action
+   */
+  function step(driven) {
+    const driving = driven || new Set();
     for (let i = 0; i < bodies.length; i = i + 1) {
       const b = bodies[i];
+      if (!driving.has(b.id)) {
+        b.vx = b.vx * UNDRIVEN_DRAG;
+      }
       b.vy = b.vy + G * DT;
       b.x = b.x + b.vx * DT;
       b.y = b.y + b.vy * DT;
@@ -66,6 +77,61 @@ export function createWorld(init) {
         b.vx = b.vx * scale;
         b.vy = b.vy * scale;
       }
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      for (let j = i + 1; j < bodies.length; j = j + 1) {
+        resolvePair(bodies[i], bodies[j], i, j, driving);
+      }
+    }
+  }
+
+  /**
+   * @param {Body} a
+   * @param {Body} b
+   * @param {number} i
+   * @param {number} j
+   * @param {ReadonlySet<string>} driving
+   */
+  function resolvePair(a, b, i, j, driving) {
+    const overlapX = Math.min(a.x + a.hw, b.x + b.hw) - Math.max(a.x - a.hw, b.x - b.hw);
+    const overlapY = Math.min(a.y + a.hh, b.y + b.hh) - Math.max(a.y - a.hh, b.y - b.hh);
+    if (overlapX <= 0 || overlapY <= 0) {
+      return;
+    }
+    const aDriven = driving.has(a.id);
+    const bDriven = driving.has(b.id);
+    if (aDriven && bDriven) {
+      return;
+    }
+    const horizontal = overlapX < overlapY;
+    if (aDriven !== bDriven) {
+      const driver = aDriven ? a : b;
+      const other = aDriven ? b : a;
+      if (horizontal) {
+        const dir = other.x > driver.x || (other.x === driver.x && (aDriven ? j > i : i > j)) ? 1 : -1;
+        other.x = other.x + dir * overlapX;
+        other.vx = driver.vx;
+      } else {
+        const dir = other.y > driver.y || (other.y === driver.y && (aDriven ? j > i : i > j)) ? 1 : -1;
+        other.y = other.y + dir * overlapY;
+        other.vy = driver.vy;
+      }
+      return;
+    }
+    if (horizontal) {
+      const half = overlapX / 2;
+      const aLeft = a.x < b.x || (a.x === b.x && i < j);
+      a.x = a.x + (aLeft ? 0 - half : half);
+      b.x = b.x + (aLeft ? half : 0 - half);
+      a.vx = 0;
+      b.vx = 0;
+    } else {
+      const half = overlapY / 2;
+      const aBelow = a.y < b.y || (a.y === b.y && i < j);
+      a.y = a.y + (aBelow ? 0 - half : half);
+      b.y = b.y + (aBelow ? half : 0 - half);
+      a.vy = 0;
+      b.vy = 0;
     }
   }
 

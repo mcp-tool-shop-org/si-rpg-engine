@@ -98,7 +98,7 @@ export function createTick(init) {
    * @returns {Frame}
    */
   function advance() {
-    world.step();
+    world.step(new Set(actions.keys()));
     tick = tick + 1;
     mixQuantum();
     current = commitFrame(tick, hasher.digest(), world.bodies);
@@ -151,7 +151,7 @@ export function createTick(init) {
         if (busy !== undefined) {
           return { admitted: false, reason: proposal.actor + ' is mid-action; ' + busy + ' quanta remain' };
         }
-        const check = admitIntent(proposal, world, rules, retired);
+        const check = admitIntent(proposal, world, rules, retired, new Set(actions.keys()));
         if (!check.ok) {
           return { admitted: false, reason: check.reason };
         }
@@ -159,7 +159,18 @@ export function createTick(init) {
         if (!actor) {
           return { admitted: false, reason: 'no body named ' + proposal.actor };
         }
-        const dx = proposal.target.x - actor.x;
+        const named = /** @type {{ body?: unknown, x?: unknown }} */ (proposal.target);
+        let aimX = actor.x;
+        if (typeof named.body === 'string') {
+          const other = world.body(named.body);
+          if (!other) {
+            return { admitted: false, reason: 'no body named ' + named.body };
+          }
+          aimX = other.x;
+        } else if (typeof named.x === 'number') {
+          aimX = named.x;
+        }
+        const dx = aimX - actor.x;
         actor.vx = dx < 0 ? 0 - check.rule.speed : check.rule.speed;
         memory.recordEpisode(tick, 'intent', proposal.verb + ' ' + proposal.actor);
         record(proposal);

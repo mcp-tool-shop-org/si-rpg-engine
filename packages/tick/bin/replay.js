@@ -3,7 +3,9 @@
 //
 //   replay <log.json>
 //
-// The log is what play wrote with --log. The model is not called.
+// The log is what play wrote with --log. A log that carries its world is
+// replayed in that world; one that does not is replayed in the fixture room.
+// The model is not called.
 
 import { readFileSync } from 'node:fs';
 import { chdir } from 'node:process';
@@ -22,8 +24,13 @@ if (!file) {
   process.exit(2);
 }
 const saved = JSON.parse(readFileSync(file, 'utf8'));
+if (!Array.isArray(saved.log)) {
+  process.stderr.write('not a play log: no log array in ' + file + '\n');
+  process.exit(2);
+}
 const catalog = loadIntentRules();
-const result = replay({ seed: saved.seed, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log: saved.log });
+const world = saved.world && Array.isArray(saved.world.bodies) && Array.isArray(saved.world.colliders) ? saved.world : fixtureWorld();
+const result = replay({ seed: saved.seed, world, rules: catalog.rules, retired: catalog.retired, log: saved.log });
 if (!result.ok) {
   process.stderr.write('replay failed at entry ' + result.at + ': ' + result.reason + '\n');
   process.exit(1);

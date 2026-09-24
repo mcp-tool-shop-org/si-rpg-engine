@@ -57,7 +57,7 @@ test('a direction is taken from the newest body, and the pump fires once per tic
   assert.equal(admitted.admitted, true);
   const target = session.log()[0].proposal;
   assert.equal(target.kind, 'intent');
-  if (target.kind === 'intent') {
+  if (target.kind === 'intent' && 'x' in target.target) {
     assert.ok(Math.abs(target.target.x - (body.x + 1)) < 1e-9);
     assert.ok(Math.abs(target.target.y - body.y) < 1e-9);
   }
@@ -90,7 +90,7 @@ test('up and down are refused, and a click above the floor is still a target', (
   assert.equal(click.admitted, true);
   const proposal = session.log()[0].proposal;
   assert.equal(proposal.kind, 'intent');
-  if (proposal.kind === 'intent') {
+  if (proposal.kind === 'intent' && 'x' in proposal.target) {
     assert.equal(proposal.target.x, 2);
     assert.equal(proposal.target.y, 2);
   }

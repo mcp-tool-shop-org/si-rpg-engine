@@ -6,7 +6,10 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createTick, settle } from './tick.js';
 import { createWorld } from './world.js';
 import { createMemory } from './memory.js';
@@ -268,7 +271,7 @@ test('replay: the seed and the admitted-input log reproduce every hash without t
   assert.equal(outOfOrder.ok, false);
 });
 
-test('the legacy fixture: a log recorded before the pump replays frame for frame after it', () => {
+test('the legacy fixture: admissions match, and frames match until the walker meets the crate', () => {
   const legacy = JSON.parse(readFileSync('fixtures/legacy-play-log.json', 'utf8'));
   const catalog = loadIntentRules();
   /** @type {{ tick: number; hash: string }[]} */
@@ -283,7 +286,142 @@ test('the legacy fixture: a log recorded before the pump replays frame for frame
     onFrame: (f) => void frames.push({ tick: f.tick, hash: f.hash }),
   });
   assert.ok(result.ok, JSON.stringify(result));
-  assert.equal(/** @type {any} */ (result).final, legacy.final, 'the final hash the old engine reached');
-  assert.deepEqual(frames, legacy.frames, 'every committed frame, quantum for quantum');
   assert.deepEqual(/** @type {any} */ (result).hashes, legacy.entries.map((/** @type {any} */ e) => e.hash));
+  // Tick 238 is where the walker first meets the crate this log spawned.
+  // Contact moves that crate. Every frame before the meeting matches.
+  assert.equal(frames.length, legacy.frames.length);
+  for (let i = 0; i < 238; i = i + 1) {
+    assert.equal(frames[i].hash, legacy.frames[i].hash);
+  }
+  assert.notEqual(frames[238].hash, legacy.frames[238].hash);
+});
+
+test('push moves the crate at least one unit, then the crate rests, and the log replays', () => {
+  const saved = JSON.parse(readFileSync('fixtures/push-play-log.json', 'utf8'));
+  const catalog = loadIntentRules();
+  const result = replay({
+    seed: saved.seed,
+    world: saved.world,
+    rules: catalog.rules,
+    retired: catalog.retired,
+    log: saved.log,
+  });
+  assert.ok(result.ok, JSON.stringify(result));
+  assert.equal(/** @type {{ final: string }} */ (result).final, saved.final);
+
+  const world = createWorld(saved.world);
+  const tick = createTick({
+    seed: saved.seed,
+    world,
+    rules: catalog.rules,
+    retired: catalog.retired,
+    memory: createMemory(),
+  });
+  const crate0 = world.body('crate');
+  if (!crate0) {
+    throw new Error('crate');
+  }
+  const start = crate0.x;
+  const admission = tick.submit({
+    kind: 'intent',
+    verb: 'push',
+    actor: 'walker',
+    target: { body: 'crate' },
+    frameHash: tick.frame().hash,
+  });
+  assert.equal(admission.admitted, true);
+  settle(tick);
+  const pushedCrate = world.body('crate');
+  if (!pushedCrate) {
+    throw new Error('crate');
+  }
+  assert.ok(pushedCrate.x - start >= 1);
+  const rested = pushedCrate.x;
+  tick.advance();
+  assert.equal(pushedCrate.vx, 0);
+  assert.equal(pushedCrate.x, rested);
+
+  const busy = createTick({
+    seed: saved.seed,
+    world: createWorld(saved.world),
+    rules: catalog.rules,
+    retired: catalog.retired,
+    memory: createMemory(),
+  });
+  const move = busy.submit({
+    kind: 'intent',
+    verb: 'move',
+    actor: 'crate',
+    target: { x: 2.5, y: 1 },
+    frameHash: busy.frame().hash,
+  });
+  assert.equal(move.admitted, true);
+  const pushed = busy.submit({
+    kind: 'intent',
+    verb: 'push',
+    actor: 'walker',
+    target: { body: 'crate' },
+    frameHash: busy.frame().hash,
+  });
+  assert.equal(pushed.admitted, false);
+  assert.equal(/** @type {{ reason: string }} */ (pushed).reason, 'target is mid-action');
+});
+
+test('an undriven body yields to a driven one, and two undriven bodies split', () => {
+  const world = createWorld({
+    bodies: [
+      { id: 'walker', x: 0, y: 3, vx: 1, vy: 0, hw: 0.5, hh: 0.5 },
+      { id: 'crate', x: 0.8, y: 3, vx: 0.4, vy: 0, hw: 0.5, hh: 0.5 },
+    ],
+    colliders: [],
+  });
+  const beforeBody = world.body('crate');
+  if (!beforeBody) {
+    throw new Error('crate');
+  }
+  const before = beforeBody.x;
+  world.step(new Set(['walker']));
+  const crate = world.body('crate');
+  const walker = world.body('walker');
+  if (!crate || !walker) {
+    throw new Error('pair');
+  }
+  assert.ok(crate.x > before);
+  assert.equal(crate.vx, walker.vx);
+  assert.equal(walker.x, 0 + 1 / 64);
+
+  const pair = createWorld({
+    bodies: [
+      { id: 'a', x: 0, y: 3, vx: 0.2, vy: 0, hw: 0.5, hh: 0.5 },
+      { id: 'b', x: 0.8, y: 3, vx: 0.3, vy: 0, hw: 0.5, hh: 0.5 },
+    ],
+    colliders: [],
+  });
+  pair.step(new Set());
+  const a = pair.body('a');
+  const b = pair.body('b');
+  if (!a || !b) {
+    throw new Error('pair');
+  }
+  assert.equal(a.vx, 0);
+  assert.equal(b.vx, 0);
+  assert.ok(b.x - a.x > 0.8);
+});
+
+test('the replay command honors the world a log carries, and a play log carries one', () => {
+  const pushed = spawnSync(process.execPath, ['packages/tick/bin/replay.js', 'fixtures/push-play-log.json'], { encoding: 'utf8' });
+  assert.equal(pushed.status, 0, pushed.stderr);
+  assert.match(pushed.stdout, /replay ok/);
+  const dir = mkdtempSync(join(tmpdir(), 'si-rpg-'));
+  const script = join(dir, 'script.json');
+  const log = join(dir, 'log.json');
+  writeFileSync(script, JSON.stringify([{ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, y: 1 }, frameHash: '@drawn' }]));
+  const played = spawnSync(process.execPath, ['packages/tick/bin/play.js', script, '--log', log], { encoding: 'utf8' });
+  assert.equal(played.status, 0, played.stderr);
+  const saved = JSON.parse(readFileSync(log, 'utf8'));
+  assert.ok(Array.isArray(saved.world.bodies) && Array.isArray(saved.world.colliders), 'play wrote its world into the log');
+  const again = spawnSync(process.execPath, ['packages/tick/bin/replay.js', log], { encoding: 'utf8' });
+  assert.equal(again.status, 0, again.stderr);
+  const notALog = spawnSync(process.execPath, ['packages/tick/bin/replay.js', 'fixtures/legacy-play-log.json'], { encoding: 'utf8' });
+  assert.equal(notALog.status, 2, 'a capture fixture is refused as not a play log');
 });
