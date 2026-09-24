@@ -13,26 +13,34 @@ import { readFileSync } from 'node:fs';
 
 /**
  * Reads the index at its literal path, relative to the repository root.
- * @returns {Map<string, IntentRule>}
+ * @returns {{ rules: Map<string, IntentRule>, retired: Set<string> }}
  */
 export function loadIntentRules() {
   const index = JSON.parse(readFileSync('predicates/intents/index.json', 'utf8'));
+  /** @type {Set<string>} */
+  const retired = new Set(Array.isArray(index.retired) ? index.retired : []);
   /** @type {Map<string, IntentRule>} */
   const rules = new Map();
   for (const file of index.rules) {
     const rule = JSON.parse(readFileSync('predicates/intents/' + file, 'utf8'));
-    rules.set(rule.verb, rule);
+    if (!retired.has(rule.verb)) {
+      rules.set(rule.verb, rule);
+    }
   }
-  return rules;
+  return { rules, retired };
 }
 
 /**
  * @param {Intent} intent
  * @param {ReturnType<import('./world.js').createWorld>} world
  * @param {Map<string, IntentRule>} rules
+ * @param {Set<string>} retired
  * @returns {{ ok: true; rule: IntentRule; quanta: number } | { ok: false; reason: string }}
  */
-export function admitIntent(intent, world, rules) {
+export function admitIntent(intent, world, rules, retired) {
+  if (retired.has(intent.verb)) {
+    return { ok: false, reason: 'retired verb: ' + intent.verb };
+  }
   const rule = rules.get(intent.verb);
   if (!rule) {
     return { ok: false, reason: 'unknown verb: ' + intent.verb };

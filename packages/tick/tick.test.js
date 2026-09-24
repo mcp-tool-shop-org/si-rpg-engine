@@ -11,8 +11,8 @@ import { loadIntentRules } from './predicates.js';
 import { replay } from './replay.js';
 import { FIXTURE_SEED, fixtureWorld } from './fixture.js';
 
-function fresh(seed = FIXTURE_SEED) {
-  return createTick({ seed, world: createWorld(fixtureWorld()), rules: loadIntentRules(), memory: createMemory() });
+function fresh(seed = FIXTURE_SEED, retired = loadIntentRules().retired) {
+  return createTick({ seed, world: createWorld(fixtureWorld()), rules: loadIntentRules().rules, retired, memory: createMemory() });
 }
 
 /** @param {ReturnType<typeof fresh>} t @param {number} x */
@@ -141,9 +141,9 @@ test('replay: the seed and the admitted-input log reproduce every hash without t
   assert.ok(move(t, 1.5).admitted);
   /** @type {import('../frame/types.js').LogEntry[]} */
   const log = JSON.parse(JSON.stringify(t.log()));
-  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: loadIntentRules(), log });
+  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: loadIntentRules().rules, retired: loadIntentRules().retired, log });
   assert.ok(again.ok, JSON.stringify(again));
   assert.deepEqual(/** @type {any} */ (again).hashes, log.map((e) => e.hash));
-  const wrongSeed = replay({ seed: FIXTURE_SEED + 1, world: fixtureWorld(), rules: loadIntentRules(), log });
+  const wrongSeed = replay({ seed: FIXTURE_SEED + 1, world: fixtureWorld(), rules: loadIntentRules().rules, retired: loadIntentRules().retired, log });
   assert.equal(wrongSeed.ok, false);
 });

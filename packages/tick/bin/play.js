@@ -35,10 +35,12 @@ const logPath = logIndex >= 0 ? args[logIndex + 1] : null;
 /** @type {import('../../frame/types.js').Proposal[]} */
 const proposals = JSON.parse(readFileSync(file, 'utf8'));
 
+const catalog = loadIntentRules();
 const tick = createTick({
   seed,
   world: createWorld(fixtureWorld()),
-  rules: loadIntentRules(),
+  rules: catalog.rules,
+  retired: catalog.retired,
   memory: createMemory(),
 });
 

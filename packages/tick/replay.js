@@ -16,6 +16,7 @@ import { createMemory } from './memory.js';
  *   seed: number;
  *   world: Parameters<typeof createWorld>[0];
  *   rules: Map<string, IntentRule>;
+ *   retired?: Set<string>;
  *   log: ReadonlyArray<LogEntry>;
  * }} init
  * @returns {{ ok: true; hashes: string[] } | { ok: false; at: number; reason: string }}
@@ -25,6 +26,7 @@ export function replay(init) {
     seed: init.seed,
     world: createWorld(init.world),
     rules: init.rules,
+    retired: init.retired,
     memory: createMemory(),
   });
   /** @type {string[]} */

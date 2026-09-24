@@ -22,7 +22,8 @@ if (!file) {
   process.exit(2);
 }
 const saved = JSON.parse(readFileSync(file, 'utf8'));
-const result = replay({ seed: saved.seed, world: fixtureWorld(), rules: loadIntentRules(), log: saved.log });
+const catalog = loadIntentRules();
+const result = replay({ seed: saved.seed, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log: saved.log });
 if (!result.ok) {
   process.stderr.write('replay failed at entry ' + result.at + ': ' + result.reason + '\n');
   process.exit(1);

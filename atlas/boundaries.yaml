@@ -9,8 +9,14 @@ boundaries:
   - name: harness
     globs: [harness/**]
     role: test
+  - name: load
+    globs: [packages/load/**]
+    role: code
   - name: intents
     globs: [predicates/intents/**]
+    role: data
+  - name: hazards
+    globs: [predicates/hazards/**]
     role: data
   - name: fixtures
     globs: [fixtures/**]

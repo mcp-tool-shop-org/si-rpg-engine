@@ -75,7 +75,16 @@ export interface BodyDraft {
   hh: number;
 }
 
-export type Proposal = Intent | BeliefWrite | LineProposal | BodyDraft;
+/**
+ * A verb draft. Refused during play. Admitted only by the load command,
+ * between sessions, after compile and the hazard suite.
+ */
+export interface VerbDraft {
+  kind: 'verb';
+  rule: IntentRule;
+}
+
+export type Proposal = Intent | BeliefWrite | LineProposal | BodyDraft | VerbDraft;
 
 export type Admission =
   | { admitted: true; quanta: number; hash: string }

@@ -1,3 +1,4 @@
 {
-  "rules": ["move.json"]
+  "rules": ["move.json"],
+  "retired": []
 }
