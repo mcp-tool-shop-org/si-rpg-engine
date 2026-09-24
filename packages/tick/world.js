@@ -136,7 +136,10 @@ export function createWorld(init) {
   }
 
   /**
-   * Liang-Barsky clip of the segment against one box. True when they meet.
+   * Liang-Barsky clip of the segment against one box. True when the segment
+   * enters the box's interior. A segment that only touches a face or a corner
+   * is clear: a body resting on the floor has its centre on the swept floor's
+   * top face, and it must still be able to walk along it.
    * @param {number} x0 @param {number} y0 @param {number} x1 @param {number} y1
    * @param {StaticCollider} c
    */
@@ -149,7 +152,7 @@ export function createWorld(init) {
     const q = [x0 - c.minX, c.maxX - x0, y0 - c.minY, c.maxY - y0];
     for (let i = 0; i < 4; i = i + 1) {
       if (p[i] === 0) {
-        if (q[i] < 0) {
+        if (q[i] <= 0) {
           return false;
         }
       } else {
@@ -171,7 +174,7 @@ export function createWorld(init) {
         }
       }
     }
-    return true;
+    return t0 < t1;
   }
 
   /**
