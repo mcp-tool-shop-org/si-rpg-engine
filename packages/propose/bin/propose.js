@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // propose: a pinned local model proposes into a fresh tick, ten runs.
 //
-//   propose [--budget N] [--runs N] [--out report.json]
+//   propose [--budget N] [--runs N] [--model name] [--out report.json]
 //
 // Both conditions see the previous proposal and its verdict. Only one sees
 // the checker's reason. Each attempt has its own sampling seed. Replay of
 // an admitted log does not call the model.
 
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { chdir } from 'node:process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,6 +20,7 @@ import { replay } from '../../tick/replay.js';
 import { runSeat } from '../seat.js';
 import { askOllama, pinnedRun } from '../ollama.js';
 import { attemptsToGoal, proposeWorld } from '../scene.js';
+import { oracleSearch } from '../oracle.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);
@@ -37,7 +38,19 @@ const budget = flag('--budget', 8);
 const runs = flag('--runs', 10);
 const outIndex = args.indexOf('--out');
 const outPath = outIndex >= 0 ? args[outIndex + 1] : null;
+const frozen = JSON.parse(readFileSync(new URL('../model.json', import.meta.url), 'utf8')).frozen;
+if (typeof frozen === 'string' && !args.includes('--unfreeze')) {
+  process.stderr.write('refusing to run: ' + frozen + '\n');
+  process.exit(2);
+}
+const oracle = oracleSearch();
+if (!oracle.solvable || oracle.minAttempts === null || oracle.minAttempts > budget) {
+  process.stderr.write('refusing to run: oracle cannot solve the scene within the budget\n');
+  process.exit(1);
+}
 const pin = pinnedRun();
+const modelIndex = args.indexOf('--model');
+const model = modelIndex >= 0 ? args[modelIndex + 1] : pin.model;
 const catalog = loadIntentRules();
 const verbs = [...catalog.rules.keys()];
 
@@ -58,7 +71,7 @@ function fresh() {
 async function oneRun(withReason, run) {
   const seat = await runSeat({
     tick: fresh(),
-    ask: (prompt, call) => askOllama(pin.model, prompt, call),
+    ask: (prompt, call) => askOllama(model, prompt, call),
     budget,
     withReason,
     verbs,
@@ -156,25 +169,25 @@ function goalSummary(rows) {
       sum = sum + value;
     }
   }
-  return { reached, attempts, meanAttempts: reached === 0 ? null : sum / reached };
+  const meanAttempts = reached === 0 ? null : sum / reached;
+  const aboveOracle = meanAttempts === null || oracle.minAttempts === null
+    ? null
+    : meanAttempts - oracle.minAttempts;
+  return { reached, attempts, meanAttempts, aboveOracle };
 }
 
 const shown = reasonsShown(withReason);
-if (shown === 0) {
-  process.stderr.write('refusing to report: the reason condition showed zero checker reasons\n');
-  process.exit(1);
-}
-
 const intent = {
   withReason: byKind(withReason, 'intent'),
   blind: byKind(blind, 'intent'),
 };
 const report = {
-  model: pin.model,
+  model,
   temperature: pin.temperature,
   worldSeed: FIXTURE_SEED,
   runs,
   budget,
+  oracleMin: oracle.minAttempts,
   reasonsShown: shown,
   goal: { withReason: goalSummary(withReason), blind: goalSummary(blind) },
   intent,
@@ -184,13 +197,22 @@ const report = {
   blind: { meanRate: mean(blind), runs: blind },
 };
 const text = JSON.stringify(report, null, 2) + '\n';
-process.stdout.write(
-  'intent with-reason ' + intent.withReason.admitted + '/' + intent.withReason.n
+const summary = 'intent with-reason ' + intent.withReason.admitted + '/' + intent.withReason.n
   + ' blind ' + intent.blind.admitted + '/' + intent.blind.n
   + ' goal ' + report.goal.withReason.reached + '/' + runs
-  + ' vs ' + report.goal.blind.reached + '/' + runs
-  + ' reasons ' + shown + '\n',
-);
+  + ' mean ' + report.goal.withReason.meanAttempts
+  + ' above-oracle ' + report.goal.withReason.aboveOracle
+  + ' blind ' + report.goal.blind.reached + '/' + runs
+  + ' mean ' + report.goal.blind.meanAttempts
+  + ' above-oracle ' + report.goal.blind.aboveOracle
+  + ' oracle ' + oracle.minAttempts
+  + ' reasons ' + shown + '\n';
+process.stderr.write(summary);
+if (shown === 0) {
+  process.stderr.write('refusing to report: the reason condition showed zero checker reasons\n');
+  process.exit(1);
+}
+process.stdout.write(summary);
 if (outPath) {
   writeFileSync(outPath, text);
 }

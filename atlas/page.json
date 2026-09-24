@@ -8,7 +8,7 @@
   ],
   "breaks": [
     {
-      "doors": 5,
+      "doors": 6,
       "importedBy": [
         "harness",
         "tick"
@@ -57,32 +57,48 @@
   "changes": {
     "fileCounts": {
       "added": 1,
-      "changed": 6,
+      "changed": 41,
       "moved": 0,
-      "parts": 3,
+      "parts": 10,
       "removed": 0
     },
     "items": [
       {
+        "kind": "door",
+        "sentence": "write-golden now also runs harness/sim.mjs.",
+        "subjects": [
+          "package.json",
+          "harness/sim.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "packages/propose/model.json is now also read by packages/propose/bin/propose.js.",
+        "subjects": [
+          "packages/propose/model.json",
+          "packages/propose/bin/propose.js"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-24; 1 file added and 6 changed content.",
+        "sentence": "1 file added and 41 changed content, across 10 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "84a00b6db32961fcc9072e01674243ffd526f409",
-      "generatedAt": "2026-09-24T19:00:16.881Z"
+      "commit": "2455dda9cb6aab21cefcb9d812e6ae50cffefd44",
+      "generatedAt": "2026-09-24T19:11:15.397Z"
     },
-    "unchanged": true
+    "unchanged": false
   },
   "changesTogether": [],
   "changesTogetherNote": [
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "2455dda9cb6aab21cefcb9d812e6ae50cffefd44",
-  "defaultBranch": "slice-7-goal",
-  "derived": "11 parts, mostly JavaScript (27 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.",
+  "commit": "7e5d5b47c2a957b16521025ee540dbbb59c0d380",
+  "defaultBranch": "seat-freeze",
+  "derived": "11 parts, mostly JavaScript (28 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -98,6 +114,7 @@
         "packages/tick/"
       ],
       "checksCount": 10,
+      "checksMore": 27,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -127,7 +144,7 @@
         {
           "boundary": "propose",
           "depth": 0,
-          "files": 8
+          "files": 9
         },
         {
           "boundary": "tick",
@@ -141,6 +158,7 @@
         "packages/tick/tick.test.js"
       ],
       "runsCount": 3,
+      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -152,6 +170,7 @@
     {
       "checks": [],
       "checksCount": 0,
+      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#load",
       "kind": "command",
@@ -179,6 +198,7 @@
         "packages/load/bin/load.js"
       ],
       "runsCount": 1,
+      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -186,6 +206,7 @@
     {
       "checks": [],
       "checksCount": 0,
+      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#propose",
       "kind": "command",
@@ -196,7 +217,7 @@
         {
           "boundary": "propose",
           "depth": 0,
-          "files": 7
+          "files": 8
         },
         {
           "boundary": "tick",
@@ -213,6 +234,7 @@
         "packages/propose/bin/propose.js"
       ],
       "runsCount": 1,
+      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -220,6 +242,7 @@
     {
       "checks": [],
       "checksCount": 0,
+      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#play",
       "kind": "command",
@@ -242,6 +265,7 @@
         "packages/tick/bin/play.js"
       ],
       "runsCount": 1,
+      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -249,6 +273,7 @@
     {
       "checks": [],
       "checksCount": 0,
+      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#replay",
       "kind": "command",
@@ -271,6 +296,7 @@
         "packages/tick/bin/replay.js"
       ],
       "runsCount": 1,
+      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -278,6 +304,7 @@
     {
       "checks": [],
       "checksCount": 0,
+      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#write-golden",
       "kind": "command",
@@ -290,13 +317,20 @@
         {
           "boundary": "harness",
           "depth": 0,
+          "files": 2
+        },
+        {
+          "boundary": "frame",
+          "depth": 1,
           "files": 1
         }
       ],
       "runs": [
+        "harness/sim.mjs",
         "harness/write-golden.js"
       ],
-      "runsCount": 1,
+      "runsCount": 2,
+      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -335,11 +369,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T19:11:15.397Z",
+  "generatedAt": "2026-09-24T20:02:48.636Z",
   "limits": [
-    "1 read uses a path built at run time and is not named here.",
-    "4 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "2 commands are built at run time and not followed.",
+    "4 writes and 5 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.",
     "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -463,11 +495,11 @@
       ]
     }
   ],
-  "startDoor": ".github/workflows/ci.yml",
+  "startDoor": "package.json#load",
   "startHere": [
-    ".github/workflows/ci.yml",
-    "packages/tick/bin/play.js"
+    "packages/load/bin/load.js"
   ],
+  "startReason": "This path follows load (a command people run) from its entry, since CI runs only tests.",
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
   "testFiles": 3,

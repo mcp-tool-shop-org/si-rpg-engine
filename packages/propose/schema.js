@@ -1,16 +1,47 @@
 // The grammar the sampler must obey. Intent names a catalog verb and a
 // body already on the frame. Belief and body do not carry verb or actor.
 // A body draft names a label. The seat assigns the id.
+// Belief exists only when an episode has been admitted, and its source is
+// one of those episode ids.
+
+/**
+ * @typedef {{
+ *   type: 'object',
+ *   additionalProperties: false,
+ *   required: string[],
+ *   properties: {
+ *     kind: { const: string },
+ *     verb?: { type: string, enum: string[] },
+ *     actor?: { type: string, enum: string[] },
+ *     target?: object,
+ *     subject?: { type: string },
+ *     key?: { type: string },
+ *     value?: { type: string },
+ *     confidence?: { type: string },
+ *     source?: { type: string, enum: string[] },
+ *     supersedes?: { type: string },
+ *     withdrawnBy?: { type: string },
+ *     label?: { type: string },
+ *     x?: { type: string },
+ *     y?: { type: string },
+ *     hw?: { type: string },
+ *     hh?: { type: string },
+ *   },
+ * }} ProposalBranch
+ */
 
 /**
  * @param {string[]} verbs
  * @param {string[]} actors
+ * @param {string[]} [sources] admitted episode ids. No belief branch when this is empty.
+ * @returns {{ oneOf: ProposalBranch[] }}
  */
-export function proposalSchema(verbs, actors) {
+export function proposalSchema(verbs, actors, sources) {
+  const admitted = sources ?? [];
   const verb = { type: 'string', enum: verbs };
   const actor = { type: 'string', enum: actors };
-  return {
-    oneOf: [
+  /** @type {ProposalBranch[]} */
+  const branches = [
       {
         type: 'object',
         additionalProperties: false,
@@ -27,22 +58,25 @@ export function proposalSchema(verbs, actors) {
           },
         },
       },
-      {
-        type: 'object',
-        additionalProperties: false,
-        required: ['kind', 'subject', 'key', 'value', 'confidence', 'source'],
-        properties: {
-          kind: { const: 'belief' },
-          subject: { type: 'string' },
-          key: { type: 'string' },
-          value: { type: 'string' },
-          confidence: { type: 'number' },
-          source: { type: 'string' },
-          supersedes: { type: 'string' },
-          withdrawnBy: { type: 'string' },
-        },
+  ];
+  if (admitted.length > 0) {
+    branches.push({
+      type: 'object',
+      additionalProperties: false,
+      required: ['kind', 'subject', 'key', 'value', 'confidence', 'source'],
+      properties: {
+        kind: { const: 'belief' },
+        subject: { type: 'string' },
+        key: { type: 'string' },
+        value: { type: 'string' },
+        confidence: { type: 'number' },
+        source: { type: 'string', enum: admitted },
+        supersedes: { type: 'string' },
+        withdrawnBy: { type: 'string' },
       },
-      {
+    });
+  }
+  branches.push({
         type: 'object',
         additionalProperties: false,
         required: ['kind', 'label', 'x', 'y', 'hw', 'hh'],
@@ -55,6 +89,6 @@ export function proposalSchema(verbs, actors) {
           hh: { type: 'number' },
         },
       },
-    ],
-  };
+  );
+  return { oneOf: branches };
 }

@@ -14,13 +14,18 @@
  * }} view
  */
 export function proposalPrompt(view) {
+  const beliefOpen = view.episodes.length > 0;
   const lines = [
     'Reply with one JSON object and nothing else.',
-    'kind is intent, belief, or body. The schema fixes the fields.',
+    beliefOpen
+      ? 'kind is intent, belief, or body. The schema fixes the fields.'
+      : 'kind is intent or body. The schema fixes the fields.',
     'The only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.',
     view.goal,
     view.obstacle,
-    'A belief source must be an admitted episode. Do not cite the withdrawn episode. Do not propose a line or a new verb.',
+    beliefOpen
+      ? 'A belief source must be an admitted episode. Do not cite the withdrawn episode. Do not propose a line or a new verb.'
+      : 'Do not propose a line or a new verb.',
     'A body proposal names a label. It does not name an id.',
     'Frame tick ' + view.tick + '.',
     'Bodies on the frame: ' + view.bodies.map((body) => body.id + ' at x ' + body.x + ' y ' + body.y + ', half-size ' + body.hw + ' by ' + body.hh).join('; ') + '.',

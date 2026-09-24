@@ -10,8 +10,8 @@ import { proposalPrompt } from './prompt.js';
 import { readProposal } from './parse.js';
 import { proposalSchema } from './schema.js';
 import { runSeat } from './seat.js';
-import { proposeWorld } from './scene.js';
-import { createWorld as worldWith } from '../tick/world.js';
+import { goalText, obstacleText, proposeWorld } from './scene.js';
+import { oracleSearch } from './oracle.js';
 
 function fresh() {
   const catalog = loadIntentRules();
@@ -50,9 +50,17 @@ test('both conditions see the previous proposal; only one sees the reason', () =
   const bare = proposalPrompt({ ...shared, previous: null, verdict: null, lastReason: null });
   assert.equal(bare.includes('{"kind"'), false);
   assert.equal(bare.includes('mood'), false);
-  const room = worldWith(proposeWorld());
+  assert.equal(bare.includes('belief'), false);
+  assert.equal(bare.includes('refused'), false);
+  const room = createWorld(proposeWorld());
   assert.equal(room.segmentHits(1, 1, 3, 1), 'pillar');
   assert.equal(room.segmentHits(1, 1, 1, 2.5), null);
+  assert.equal(goalText(), 'Goal: put the walker centre within 0.5 of x 3, y 0.35.');
+  assert.equal(obstacleText(), 'A pillar occupies x 1.8 to 2.2, y 0.72 to 2.2.');
+  assert.equal(obstacleText().includes('refused'), false);
+  const oracle = oracleSearch();
+  assert.equal(oracle.solvable, true);
+  assert.ok(oracle.minAttempts !== null && oracle.minAttempts <= 8);
 });
 
 test('the reason is the only difference, and an unreadable reply is split in two', async () => {
@@ -139,9 +147,18 @@ test('the schema enums are the catalog, and replay does not ask again', async ()
       return '{"kind":"intent","verb":"move","actor":"walker","target":{"x":2,"y":1}}';
     },
   });
-  const schema = /** @type {{ oneOf: Array<{ properties: { verb: { enum: string[] }, kind: { const: string } } }> }} */ (schemas[0]);
-  assert.deepEqual(schema.oneOf[0].properties.verb.enum, ['move']);
-  assert.deepEqual(schema.oneOf.map((branch) => branch.properties.kind.const), ['intent', 'belief', 'body']);
+  const schema = /** @type {{ oneOf: import('./schema.js').ProposalBranch[] }} */ (schemas[0]);
+  const verbField = schema.oneOf[0].properties.verb;
+  assert.ok(verbField);
+  assert.deepEqual(verbField.enum, ['move']);
+  assert.deepEqual(schema.oneOf.map((branch) => branch.properties.kind.const), ['intent', 'body']);
+  const withSource = proposalSchema(['move'], ['walker'], ['e1']);
+  const belief = withSource.oneOf.find((branch) => branch.properties.kind.const === 'belief');
+  assert.ok(belief);
+  assert.ok(belief.properties.source);
+  assert.deepEqual(belief.properties.source.enum, ['e1']);
+  assert.equal(belief.required.includes('verb'), false);
+  assert.equal(belief.required.includes('source'), true);
   assert.equal(seat.attempts[0].admitted, false);
   assert.equal(seat.admitted, 1);
   const catalog = loadIntentRules();
@@ -155,11 +172,14 @@ test('the schema enums are the catalog, and replay does not ask again', async ()
   assert.equal(again.ok, true);
   assert.equal(asks, 2);
   assert.equal(readProposal('nope', 'h', []).verdict, 'not-json');
-  const bodyBranch = proposalSchema(['move'], ['walker']).oneOf[2];
+  const bodyBranch = proposalSchema(['move'], ['walker']).oneOf.find((branch) => branch.properties.kind.const === 'body');
+  if (!bodyBranch) {
+    throw new Error('body branch missing');
+  }
   assert.equal(bodyBranch.required.includes('verb'), false);
   assert.equal(bodyBranch.required.includes('actor'), false);
   assert.equal(bodyBranch.required.includes('label'), true);
-  const beliefBranch = proposalSchema(['move'], ['walker']).oneOf[1];
-  assert.equal(beliefBranch.required.includes('verb'), false);
+  const closed = proposalSchema(['move'], ['walker']);
+  assert.equal(closed.oneOf.some((branch) => branch.properties.kind.const === 'belief'), false);
   assert.equal(readProposal('{"kind":"body","label":"walker","x":2,"y":1,"hw":0.2,"hh":0.2}', 'h', ['walker']).proposal && /** @type {any} */ (readProposal('{"kind":"body","label":"walker","x":2,"y":1,"hw":0.2,"hh":0.2}', 'h', ['walker']).proposal).id, 'walker-2');
 });

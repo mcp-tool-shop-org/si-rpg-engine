@@ -1,25 +1,27 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit 2455dda.
+Mapped at 2026-09-24 from commit 7e5d5b4.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-11 parts, mostly JavaScript (27 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
+11 parts, mostly JavaScript (28 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (84a00b6)
+## What changed since 2026-09-24 (2455dda)
 
-Nothing structural changed since 2026-09-24; 1 file added and 6 changed content.
+- write-golden now also runs harness/sim.mjs.
+- packages/propose/model.json is now also read by packages/propose/bin/propose.js.
+- 1 file added and 41 changed content, across 10 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs packages/load/load.test.js, packages/propose/propose.test.js and packages/tick/tick.test.js; checks fixtures/golden.txt, harness/sim.mjs, harness/check.js and 7 more.
+1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs packages/load/load.test.js, packages/propose/propose.test.js and packages/tick/tick.test.js; checks fixtures/golden.txt, harness/sim.mjs, harness/check.js and 27 more.
 2. **load** (a command people run). Runs packages/load/bin/load.js.
 3. **propose** (a command people run). Runs packages/propose/bin/propose.js.
 4. **play** (a command people run). Runs packages/tick/bin/play.js.
 5. **replay** (a command people run). Runs packages/tick/bin/replay.js.
-6. **write-golden** (a command people run). Runs harness/write-golden.js.
+6. **write-golden** (a command people run). Runs harness/sim.mjs and harness/write-golden.js.
 
 ## What happens through CI
 
@@ -42,11 +44,11 @@ CI writes nothing this map can see.
 
 **replay** (a command people run) runs packages/tick/bin/replay.js and reaches frame.
 
-**write-golden** (a command people run) runs harness/write-golden.js and writes to fixtures/golden.txt.
+**write-golden** (a command people run) runs harness/sim.mjs and harness/write-golden.js, reaches frame, and writes to fixtures/golden.txt.
 
 ## What breaks what
 
-- **frame** is imported by 2 parts (harness, tick) and sits on the path of 5 doors.
+- **frame** is imported by 2 parts (harness, tick) and sits on the path of 6 doors.
 - **tick** is imported by 2 parts (load, propose) and sits on the path of 5 doors.
 - **harness** is imported by no other part and sits on the path of 2 doors.
 - **load** is imported by no other part and sits on the path of 2 doors.
@@ -80,15 +82,13 @@ People write .github/, docs/, predicates/hazards/, predicates/intents/ and the r
 
 ## Where to start
 
-.github/workflows/ci.yml → packages/tick/bin/play.js
+packages/load/bin/load.js
 
-Read those in order to follow one pull request end to end.
+Read those in order to follow one run of load end to end. This path follows load (a command people run) from its entry, since CI runs only tests.
 
 ## What this map cannot see
 
-- 1 read uses a path built at run time and is not named here.
-- 4 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 2 commands are built at run time and not followed.
+- 4 writes and 5 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.
 - Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.
