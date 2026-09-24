@@ -1,17 +1,25 @@
 {
   "name": "si-rpg-engine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Deterministic 3D RPG tick. Slice 1 is the determinism harness.",
+  "description": "Deterministic 3D RPG tick. Slice 1 is the determinism harness. Slice 2 is the kernel fixture.",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "bin": {
-    "write-golden": "./harness/write-golden.js"
+    "write-golden": "./harness/write-golden.js",
+    "play": "./packages/tick/bin/play.js",
+    "replay": "./packages/tick/bin/replay.js"
   },
   "scripts": {
-    "check": "node harness/check.js"
+    "check": "node harness/check.js",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test packages/tick/tick.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.0",
+    "typescript": "5.9.3"
   }
 }

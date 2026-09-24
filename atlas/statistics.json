@@ -7,7 +7,7 @@
     {
       "breakage": {
         "coChangesOnly": [],
-        "collapsed": true,
+        "collapsed": false,
         "confidence": "low",
         "importsAndCoChanges": [],
         "importsOnly": []
@@ -23,7 +23,7 @@
     {
       "breakage": {
         "coChangesOnly": [],
-        "collapsed": true,
+        "collapsed": false,
         "confidence": "low",
         "importsAndCoChanges": [],
         "importsOnly": []
@@ -39,7 +39,26 @@
     {
       "breakage": {
         "coChangesOnly": [],
-        "collapsed": true,
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": [
+          "harness",
+          "tick"
+        ]
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "frame",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
         "confidence": "low",
         "importsAndCoChanges": [],
         "importsOnly": []
@@ -49,13 +68,29 @@
       "confidence": "low",
       "highWater": null,
       "name": "harness",
+      "qualifyingSourceCommits": 1,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "intents",
       "qualifyingSourceCommits": 0,
       "rebaseline": null
     },
     {
       "breakage": {
         "coChangesOnly": [],
-        "collapsed": true,
+        "collapsed": false,
         "confidence": "low",
         "importsAndCoChanges": [],
         "importsOnly": []
@@ -71,7 +106,23 @@
     {
       "breakage": {
         "coChangesOnly": [],
-        "collapsed": true,
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "tick",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
         "confidence": "low",
         "importsAndCoChanges": [],
         "importsOnly": []
@@ -89,8 +140,8 @@
     "definition": "commits is how many commits in the window touch the file, including merges and commits dropped from coupling. lines is added plus deleted in those commits.",
     "files": [
       {
-        "commits": 1,
-        "lines": 55,
+        "commits": 2,
+        "lines": 79,
         "path": ".github/workflows/ci.yml"
       },
       {
@@ -110,8 +161,28 @@
       },
       {
         "commits": 1,
+        "lines": 71,
+        "path": "atlas/README.md"
+      },
+      {
+        "commits": 1,
         "lines": 17,
         "path": "atlas/boundaries.yaml"
+      },
+      {
+        "commits": 1,
+        "lines": 134,
+        "path": "atlas/page.json"
+      },
+      {
+        "commits": 1,
+        "lines": 245,
+        "path": "atlas/statistics.json"
+      },
+      {
+        "commits": 1,
+        "lines": 376,
+        "path": "atlas/structure.json"
       },
       {
         "commits": 1,
@@ -119,8 +190,8 @@
         "path": "docs/PHASE-0.md"
       },
       {
-        "commits": 1,
-        "lines": 175,
+        "commits": 2,
+        "lines": 182,
         "path": "docs/atlas-design.md"
       },
       {
@@ -179,8 +250,8 @@
         "path": "harness/check.js"
       },
       {
-        "commits": 1,
-        "lines": 102,
+        "commits": 2,
+        "lines": 108,
         "path": "harness/sim.js"
       },
       {
@@ -197,15 +268,15 @@
   },
   "confidence": {
     "level": "low",
-    "reason": "fewer than 30 qualifying commits in the window, and fewer than 20 source files reach 10 revisions"
+    "reason": "fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions"
   },
-  "generatedAt": "2026-09-24T18:05:03.464Z",
+  "generatedAt": "2026-09-24T18:16:44.483Z",
   "generatedFrom": {
-    "commit": "73c244df37a28ee71ba764f6916d7c1416a9e311"
+    "commit": "e631b2f33a6a0055355883741217cc5468bb0c63"
   },
   "pairs": [],
   "parameters": {
-    "appliedChangesetLimit": 5.25,
+    "appliedChangesetLimit": 10.25,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -214,16 +285,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "both",
-    "headDate": "2026-09-24T13:56:33-04:00",
-    "inScopeFiles": 21,
+    "headDate": "2026-09-24T14:05:04-04:00",
+    "inScopeFiles": 41,
     "pinnedStart": null,
-    "priorFloor": null,
-    "qualifyingCommits": 0,
+    "priorFloor": "fallen",
+    "qualifyingCommits": 2,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-28T17:56:33.000Z",
+    "since": "2026-03-28T18:05:04.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",

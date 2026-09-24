@@ -12,15 +12,23 @@ on:
     paths:
       - harness/**
       - fixtures/**
+      - packages/**
+      - predicates/**
       - atlas/**
       - package.json
+      - package-lock.json
+      - tsconfig.json
       - .github/workflows/ci.yml
   pull_request:
     paths:
       - harness/**
       - fixtures/**
+      - packages/**
+      - predicates/**
       - atlas/**
       - package.json
+      - package-lock.json
+      - tsconfig.json
       - .github/workflows/ci.yml
   workflow_dispatch:
 
@@ -37,6 +45,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+      - name: Install dev dependencies
+        run: npm ci
+      - name: Check the kernel contract
+        run: npm run typecheck
+      - name: Run the kernel fixture
+        run: npm test
       - name: Install pinned engines
         run: |
           set -euo pipefail
@@ -48,9 +63,9 @@ jobs:
         run: |
           set -euo pipefail
           golden=$(tr -d '\r\n' < fixtures/golden.txt)
-          v8=$("$HOME/.jsvu/bin/v8-15.6.61" harness/sim.js | tr -d '\r\n')
-          sm=$("$HOME/.jsvu/bin/spidermonkey-156.0.1" harness/sim.js | tr -d '\r\n')
-          jsc=$("$HOME/.jsvu/bin/javascriptcore-319571" harness/sim.js | tr -d '\r\n')
+          v8=$("$HOME/.jsvu/bin/v8-15.6.61" --module harness/sim.mjs | tr -d '\r\n')
+          sm=$("$HOME/.jsvu/bin/spidermonkey-156.0.1" -m harness/sim.mjs | tr -d '\r\n')
+          jsc=$("$HOME/.jsvu/bin/javascriptcore-319571" -m harness/sim.mjs | tr -d '\r\n')
           if [ "$v8" != "$golden" ] || [ "$sm" != "$golden" ] || [ "$jsc" != "$golden" ]; then
             echo "v8 [$v8]"
             echo "spidermonkey [$sm]"

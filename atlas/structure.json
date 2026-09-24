@@ -88,7 +88,45 @@
     },
     {
       "dynamicReads": 0,
-      "dynamicSpawns": 2,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [],
+      "externals": 0,
+      "files": [
+        {
+          "exports": [
+            "commitFrame"
+          ],
+          "hash": "bbc949a5e8c36099a03f725b36ae9eb5f417091b375d0badab0584aed74f24ae",
+          "path": "packages/frame/frame.js"
+        },
+        {
+          "exports": [
+            "createHasher",
+            "hex"
+          ],
+          "hash": "1dfe0dedf2040da8a181f88a5ee7afdcb5bc4f189838fd298de9d039a888bf61",
+          "path": "packages/frame/hash.js"
+        },
+        {
+          "hash": "ce0f23c670052b78d8332064d2b7b2c48306418f220d01f3a12a4c684d559d09",
+          "path": "packages/frame/types.d.ts"
+        }
+      ],
+      "globs": [
+        "packages/frame/**"
+      ],
+      "importConfidence": "full",
+      "name": "frame",
+      "origin": "authored",
+      "role": "code",
+      "testedBy": 1,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
       "entryPoints": [
@@ -97,15 +135,21 @@
       "externals": 0,
       "files": [
         {
-          "hash": "2de51acdb54cc8c18611c6067c99e300c3ab258e59565e9974cca18c0114b257",
+          "hash": "dc6c475eaf6a598616338d927711e74a413fe3dda85b9c7d8e6ee138b1fc6386",
           "path": "harness/check.js"
         },
         {
-          "hash": "2ec640392e79b7508b504120b5ed954fcf658b23f1f3f00181a7a439a2041279",
-          "path": "harness/sim.js"
+          "entry": "out",
+          "entryRule": 1,
+          "hash": "ab2f998efe77b515b71cceef5a14c3366cf49ab5de20199078c6312ef9f7c54c",
+          "importsFiles": [
+            "packages/frame/hash.js"
+          ],
+          "path": "harness/sim.mjs",
+          "sequences": []
         },
         {
-          "hash": "ac5e28ad5bf928a7cce07673d23c08fb8ce21f8ec0db4014b8e2278dcc185785",
+          "hash": "07cbb115a375ac30fe5a1b95897237f0b3967d6e363175516083732db3406fc0",
           "path": "harness/write-golden.js"
         }
       ],
@@ -116,6 +160,35 @@
       "name": "harness",
       "origin": "authored",
       "role": "test",
+      "testedBy": 0,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [
+        "predicates/intents/index.json"
+      ],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "faf88a9038b23769487a165693cf9e579942e5cc82b5630585d6d0b38d73ed81",
+          "path": "predicates/intents/index.json"
+        },
+        {
+          "hash": "5759de88994a41c13a07acb9c297c0056f928250d34472e24e65f8dcad303f62",
+          "path": "predicates/intents/move.json"
+        }
+      ],
+      "globs": [
+        "predicates/intents/**"
+      ],
+      "importConfidence": "full",
+      "name": "intents",
+      "origin": "authored",
+      "role": "data",
       "testedBy": 0,
       "unresolvedSites": 0
     },
@@ -136,12 +209,20 @@
           "path": "LICENSE"
         },
         {
-          "hash": "9ef935e727a14bdff3f49ee37692defca892ded58b259e738384ed0f74b07809",
+          "hash": "140d9a81d7c2683db347b94771f535dde509f3555ef1ab4144bb75a571881c79",
           "path": "README.md"
         },
         {
-          "hash": "11bcf8b196ed7b7235bc85a09f29d4c1f7d4a61036180e02b38b4f30fed0d21d",
+          "hash": "48a0b249bde2f791ad61a1c9d75a8877a8d6b4c01b21ed25f8cc69649e03640e",
+          "path": "package-lock.json"
+        },
+        {
+          "hash": "87d8399e7a81ed14f41b0b5587455619274533b26a650ac9de039a1be0b20b67",
           "path": "package.json"
+        },
+        {
+          "hash": "87f2eedd632766a0e24bccac6d0bd4c87a2e52e6ce04a568639211efd591be51",
+          "path": "tsconfig.json"
         }
       ],
       "globs": [
@@ -159,11 +240,281 @@
       "dynamicSpawns": 0,
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
+      "entryPoints": [
+        "packages/tick/bin/play.js",
+        "packages/tick/bin/replay.js"
+      ],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "d85261782d2c4fb2355fdf271ef7448a678e2b78a5e52b2c095792efe743ae89",
+          "importsFiles": [
+            "packages/tick/fixture.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/bin/play.js"
+        },
+        {
+          "hash": "753fc52adb13b03fd437c37be9a072ea0659e17764ce08eb50e2d9b4e6d6e93e",
+          "importsFiles": [
+            "packages/tick/fixture.js",
+            "packages/tick/predicates.js",
+            "packages/tick/replay.js"
+          ],
+          "path": "packages/tick/bin/replay.js"
+        },
+        {
+          "entry": "fixtureWorld",
+          "entryRule": 4,
+          "exports": [
+            "fixtureWorld"
+          ],
+          "hash": "50d758d7cca26cd95a9be54d2747a9151c8d6e6a625203fa6af970ec2c6fbcdd",
+          "importsFiles": [
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/fixture.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 11,
+                  "name": "fixtureColliders",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "fixtureWorld"
+            }
+          ]
+        },
+        {
+          "exports": [
+            "createMemory"
+          ],
+          "hash": "fc27fababb271b5e23dd90676d7bf6eede15db341c8879be57f650752d092208",
+          "path": "packages/tick/memory.js"
+        },
+        {
+          "entry": "admitIntent",
+          "entryRule": 4,
+          "exports": [
+            "admitIntent",
+            "loadIntentRules"
+          ],
+          "hash": "7e5824cee898c5af885e0acec8df5161aa6c9b77a8efbf658588f79b5c3cd629",
+          "path": "packages/tick/predicates.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 40,
+                  "name": "body",
+                  "target": null
+                },
+                {
+                  "line": 54,
+                  "name": "segmentHits",
+                  "target": null
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "admitIntent"
+            }
+          ]
+        },
+        {
+          "exports": [
+            "replay"
+          ],
+          "hash": "a7ec5fb64f4443bd3c3f9bb6087521fd7677e1584f0c4e190a296ec1681c1462",
+          "importsFiles": [
+            "packages/tick/memory.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/replay.js"
+        },
+        {
+          "entry": "createTick",
+          "entryRule": 4,
+          "exports": [
+            "createTick"
+          ],
+          "hash": "a8df20a23d7606b442bb974c585c7d46cff34ff08352357fc0384e0dbd22f14f",
+          "importsFiles": [
+            "packages/frame/frame.js",
+            "packages/frame/hash.js",
+            "packages/tick/predicates.js"
+          ],
+          "path": "packages/tick/tick.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 29,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  }
+                },
+                {
+                  "line": 40,
+                  "name": "commitFrame",
+                  "target": {
+                    "file": "packages/frame/frame.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "createTick"
+            }
+          ]
+        },
+        {
+          "entry": "fresh",
+          "entryRule": 1,
+          "hash": "08ccd15a6aac6c426ed58fc9db8b207aaa0187f10a2847fd847e2cf14edc74f4",
+          "importsFiles": [
+            "packages/tick/fixture.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/replay.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/tick.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 11,
+                      "name": "fixtureColliders",
+                      "target": {
+                        "file": "packages/tick/world.js"
+                      }
+                    }
+                  ],
+                  "line": 15,
+                  "name": "fixtureWorld",
+                  "target": {
+                    "file": "packages/tick/fixture.js"
+                  }
+                },
+                {
+                  "line": 15,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 15,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 15,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 29,
+                      "name": "createHasher",
+                      "target": {
+                        "file": "packages/frame/hash.js"
+                      }
+                    },
+                    {
+                      "line": 40,
+                      "name": "commitFrame",
+                      "target": {
+                        "file": "packages/frame/frame.js"
+                      }
+                    }
+                  ],
+                  "line": 15,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "fresh"
+            },
+            {
+              "calls": [
+                {
+                  "line": 20,
+                  "name": "frame",
+                  "target": null
+                },
+                {
+                  "line": 20,
+                  "name": "submit",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "move"
+            }
+          ]
+        },
+        {
+          "exports": [
+            "createWorld",
+            "fixtureColliders"
+          ],
+          "hash": "eaf1ff9d5a6839b9a04968b1b38f4333a62139ef43be05866088c495ad57be42",
+          "path": "packages/tick/world.js"
+        }
+      ],
+      "globs": [
+        "packages/tick/**"
+      ],
+      "importConfidence": "full",
+      "name": "tick",
+      "origin": "authored",
+      "outsideReads": 3,
+      "outsideWrites": 1,
+      "role": "code",
+      "testedBy": 1,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
       "entryPoints": [],
       "externals": 0,
       "files": [
         {
-          "hash": "6a4b085cebe937f43b19024dc36d90b4d16ca037fabb59c538dd1acc247bf36c",
+          "hash": "0ae95f5a7d4df2451cb4c611a706bf8e7e1113f1b9055b2f8810a6bc9d58b30d",
           "path": ".github/workflows/ci.yml"
         }
       ],
@@ -180,8 +531,23 @@
   ],
   "doors": [
     {
-      "checksCount": 2,
+      "checksCount": 8,
       "commands": [
+        {
+          "job": "engines",
+          "step": "Install dev dependencies",
+          "text": "npm ci"
+        },
+        {
+          "job": "engines",
+          "step": "Check the kernel contract",
+          "text": "npm run typecheck"
+        },
+        {
+          "job": "engines",
+          "step": "Run the kernel fixture",
+          "text": "npm test"
+        },
         {
           "job": "engines",
           "step": "Install pinned engines",
@@ -190,7 +556,7 @@
         {
           "job": "engines",
           "step": "Compare each engine to the golden hash",
-          "text": "set -euo pipefail\ngolden=$(tr -d '\\r\\n' < fixtures/golden.txt)\nv8=$(\"$HOME/.jsvu/bin/v8-15.6.61\" harness/sim.js | tr -d '\\r\\n')\nsm=$(\"$HOME/.jsvu/bin/spidermonkey-156.0.1\" harness/sim.js | tr -d '\\r\\n')\njsc=$(\"$HOME/.jsvu/bin/javascriptcore-319571\" harness/sim.js | tr -d '\\r\\n')\nif [ \"$v8\" != \"$golden\" ] || [ \"$sm\" != \"$golden\" ] || [ \"$jsc\" != \"$golden\" ]; then\n  echo \"v8 [$v8]\"\n  echo \"spidermonkey [$sm]\"\n  echo \"javascriptcore [$jsc]\"\n  echo \"golden [$golden]\"\n  exit 1\nfi\necho \"three engines match\"\n"
+          "text": "set -euo pipefail\ngolden=$(tr -d '\\r\\n' < fixtures/golden.txt)\nv8=$(\"$HOME/.jsvu/bin/v8-15.6.61\" --module harness/sim.mjs | tr -d '\\r\\n')\nsm=$(\"$HOME/.jsvu/bin/spidermonkey-156.0.1\" -m harness/sim.mjs | tr -d '\\r\\n')\njsc=$(\"$HOME/.jsvu/bin/javascriptcore-319571\" -m harness/sim.mjs | tr -d '\\r\\n')\nif [ \"$v8\" != \"$golden\" ] || [ \"$sm\" != \"$golden\" ] || [ \"$jsc\" != \"$golden\" ]; then\n  echo \"v8 [$v8]\"\n  echo \"spidermonkey [$sm]\"\n  echo \"javascriptcore [$jsc]\"\n  echo \"golden [$golden]\"\n  exit 1\nfi\necho \"three engines match\"\n"
         },
         {
           "job": "engines",
@@ -201,7 +567,12 @@
       "elsewhere": [],
       "file": ".github/workflows/ci.yml",
       "landings": [],
-      "mentions": [],
+      "mentions": [
+        {
+          "job": "engines",
+          "path": "tsconfig.json"
+        }
+      ],
       "name": "CI",
       "permissions": [],
       "pushes": false,
@@ -212,9 +583,19 @@
           "files": 1
         },
         {
+          "boundary": "frame",
+          "depth": 0,
+          "files": 3
+        },
+        {
           "boundary": "harness",
           "depth": 0,
-          "files": 1
+          "files": 3
+        },
+        {
+          "boundary": "tick",
+          "depth": 0,
+          "files": 9
         }
       ],
       "readers": [],
@@ -226,11 +607,59 @@
         },
         {
           "job": "engines",
-          "path": "harness/sim.js",
+          "matched": true,
+          "path": "harness/check.js",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "harness/sim.mjs",
           "runKind": "checks"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "harness/write-golden.js",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "packages/frame/frame.js",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "packages/frame/hash.js",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "packages/frame/types.d.ts",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "directory": true,
+          "job": "engines",
+          "matched": true,
+          "path": "packages/tick/",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "packages/tick/tick.test.js",
+          "runKind": "executes"
         }
       ],
-      "runsCount": 2,
+      "runsCount": 9,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -251,7 +680,11 @@
             "atlas/**",
             "fixtures/**",
             "harness/**",
-            "package.json"
+            "package-lock.json",
+            "package.json",
+            "packages/**",
+            "predicates/**",
+            "tsconfig.json"
           ]
         },
         {
@@ -264,7 +697,11 @@
             "atlas/**",
             "fixtures/**",
             "harness/**",
-            "package.json"
+            "package-lock.json",
+            "package.json",
+            "packages/**",
+            "predicates/**",
+            "tsconfig.json"
           ]
         },
         {
@@ -283,31 +720,31 @@
       "elsewhere": [],
       "file": "package.json",
       "kind": "command",
-      "landings": [
-        "fixtures/golden.txt"
-      ],
+      "landings": [],
       "mentions": [],
-      "name": "write-golden",
+      "name": "play",
       "permissions": [],
       "pushes": false,
       "reach": [
         {
-          "boundary": "harness",
+          "boundary": "tick",
           "depth": 0,
-          "files": 1
-        }
-      ],
-      "readers": [
+          "files": 6
+        },
         {
-          "by": "harness/check.js",
-          "call": "readFileSync",
-          "confidence": "ast",
-          "target": "fixtures/golden.txt"
+          "boundary": "frame",
+          "depth": 2,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/tick.js"
+          },
+          "files": 2
         }
       ],
+      "readers": [],
       "runs": [
         {
-          "path": "harness/write-golden.js",
+          "path": "packages/tick/bin/play.js",
           "runKind": "executes"
         }
       ],
@@ -327,12 +764,139 @@
       "triggers": [],
       "uses": [],
       "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "package.json",
+      "kind": "command",
+      "landings": [],
+      "mentions": [],
+      "name": "replay",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "tick",
+          "depth": 0,
+          "files": 7
+        },
+        {
+          "boundary": "frame",
+          "depth": 3,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/tick.js"
+          },
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "path": "packages/tick/bin/replay.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "package.json",
+      "kind": "command",
+      "landings": [
+        "fixtures/golden.txt"
+      ],
+      "mentions": [],
+      "name": "write-golden",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "harness",
+          "depth": 0,
+          "files": 2
+        },
+        {
+          "boundary": "frame",
+          "depth": 1,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "harness/sim.mjs"
+          },
+          "files": 1
+        }
+      ],
+      "readers": [
+        {
+          "by": "harness/check.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "target": "fixtures/golden.txt"
+        }
+      ],
+      "runs": [
+        {
+          "path": "harness/sim.mjs",
+          "runKind": "executes",
+          "via": "harness/write-golden.js"
+        },
+        {
+          "path": "harness/write-golden.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 2,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
     }
   ],
-  "edges": [],
+  "edges": [
+    {
+      "from": "harness",
+      "kind": "file",
+      "to": "frame"
+    },
+    {
+      "from": "tick",
+      "kind": "file",
+      "to": "frame"
+    }
+  ],
   "generatedFrom": {
-    "commit": "73c244df37a28ee71ba764f6916d7c1416a9e311",
-    "tracked": 20
+    "commit": "e631b2f33a6a0055355883741217cc5468bb0c63",
+    "tracked": 36
   },
   "landings": [
     {
@@ -364,13 +928,77 @@
           "confidence": "ast"
         }
       ],
-      "target": "harness/sim.js",
+      "target": "harness/sim.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "harness/write-golden.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "packages/tick/bin/play.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "packages/tick/bin/replay.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/predicates.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "predicates/intents",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/predicates.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "predicates/intents/index.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": ".github/workflows/ci.yml"
+        }
+      ],
+      "target": "tsconfig.json",
       "writers": []
     }
   ],
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 0,
+  "testFiles": 1,
   "unassigned": []
 }
