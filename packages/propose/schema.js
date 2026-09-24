@@ -1,6 +1,6 @@
-// The grammar the sampler must obey. Each kind is a complete object.
-// Verbs and actors come from the catalog and the frame, so an unknown
-// verb cannot be decoded, and a missing coordinate cannot either.
+// The grammar the sampler must obey. Intent names a catalog verb and a
+// body already on the frame. Belief and body do not carry verb or actor.
+// A body draft names a label. The seat assigns the id.
 
 /**
  * @param {string[]} verbs
@@ -30,11 +30,9 @@ export function proposalSchema(verbs, actors) {
       {
         type: 'object',
         additionalProperties: false,
-        required: ['kind', 'verb', 'actor', 'subject', 'key', 'value', 'confidence', 'source'],
+        required: ['kind', 'subject', 'key', 'value', 'confidence', 'source'],
         properties: {
           kind: { const: 'belief' },
-          verb,
-          actor,
           subject: { type: 'string' },
           key: { type: 'string' },
           value: { type: 'string' },
@@ -47,12 +45,10 @@ export function proposalSchema(verbs, actors) {
       {
         type: 'object',
         additionalProperties: false,
-        required: ['kind', 'verb', 'actor', 'id', 'x', 'y', 'hw', 'hh'],
+        required: ['kind', 'label', 'x', 'y', 'hw', 'hh'],
         properties: {
           kind: { const: 'body' },
-          verb,
-          actor,
-          id: { type: 'string' },
+          label: { type: 'string' },
           x: { type: 'number' },
           y: { type: 'number' },
           hw: { type: 'number' },

@@ -104,17 +104,48 @@ function mean(rows) {
   return sum / rows.length;
 }
 
+/**
+ * @param {Array<{ attempts: Array<{ kind: string | null, admitted: boolean }> }>} rows
+ * @param {string} kind
+ */
+function byKind(rows, kind) {
+  let admitted = 0;
+  let n = 0;
+  for (const row of rows) {
+    for (const attempt of row.attempts) {
+      if (attempt.kind !== kind) {
+        continue;
+      }
+      n = n + 1;
+      if (attempt.admitted) {
+        admitted = admitted + 1;
+      }
+    }
+  }
+  return { admitted, n };
+}
+
+const intent = {
+  withReason: byKind(withReason, 'intent'),
+  blind: byKind(blind, 'intent'),
+};
 const report = {
   model: pin.model,
   temperature: pin.temperature,
   worldSeed: FIXTURE_SEED,
   runs,
   budget,
+  intent,
+  belief: { withReason: byKind(withReason, 'belief'), blind: byKind(blind, 'belief') },
+  body: { withReason: byKind(withReason, 'body'), blind: byKind(blind, 'body') },
   withReason: { meanRate: mean(withReason), runs: withReason },
   blind: { meanRate: mean(blind), runs: blind },
 };
 const text = JSON.stringify(report, null, 2) + '\n';
-process.stdout.write('with-reason ' + report.withReason.meanRate + ' blind ' + report.blind.meanRate + '\n');
+process.stdout.write(
+  'intent with-reason ' + intent.withReason.admitted + '/' + intent.withReason.n
+  + ' blind ' + intent.blind.admitted + '/' + intent.blind.n + '\n',
+);
 if (outPath) {
   writeFileSync(outPath, text);
 }

@@ -56,8 +56,8 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 1,
-      "changed": 9,
+      "added": 0,
+      "changed": 8,
       "moved": 0,
       "parts": 3,
       "removed": 0
@@ -65,13 +65,13 @@
     "items": [
       {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-24; 1 file added and 9 changed content.",
+        "sentence": "Nothing structural changed since 2026-09-24; 8 files changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8",
-      "generatedAt": "2026-09-24T18:41:35.157Z"
+      "commit": "470965fa88b4cc37a06b259946db42afa14f8d9d",
+      "generatedAt": "2026-09-24T18:52:06.045Z"
     },
     "unchanged": true
   },
@@ -80,8 +80,8 @@
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "470965fa88b4cc37a06b259946db42afa14f8d9d",
-  "defaultBranch": "slice-5-measure",
+  "commit": "84a00b6db32961fcc9072e01674243ffd526f409",
+  "defaultBranch": "slice-6-intent-rate",
   "derived": "11 parts, mostly JavaScript (26 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.",
   "doors": [
     {
@@ -335,7 +335,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T18:52:06.045Z",
+  "generatedAt": "2026-09-24T19:00:16.881Z",
   "limits": [
     "1 read uses a path built at run time and is not named here.",
     "4 writes and 4 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",

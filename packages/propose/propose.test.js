@@ -25,7 +25,13 @@ function fresh() {
 const verbs = ['move'];
 
 test('both conditions see the previous proposal; only one sees the reason', () => {
-  const shared = { tick: 3, x: 1, y: 1, episodes: [], previous: '{"kind":"intent","verb":"move"}', verdict: /** @type {'rejected'} */ ('rejected') };
+  const shared = {
+    tick: 3,
+    bodies: [{ id: 'walker', x: 1, y: 1, hw: 0.25, hh: 0.25 }],
+    episodes: [],
+    previous: '{"kind":"intent","verb":"move"}',
+    verdict: /** @type {'rejected'} */ ('rejected'),
+  };
   const shown = proposalPrompt({ ...shared, lastReason: 'path crosses collider floor' });
   const hidden = proposalPrompt({ ...shared, lastReason: null });
   assert.match(shown, /Previous proposal:/);
@@ -34,6 +40,8 @@ test('both conditions see the previous proposal; only one sees the reason', () =
   assert.match(hidden, /Verdict: rejected/);
   assert.match(shown, /path crosses collider floor/);
   assert.equal(hidden.includes('path crosses collider floor'), false);
+  assert.match(shown, /Bodies on the frame: walker at x 1 y 1/);
+  assert.match(shown, /Withdrawn episode e0 must not be cited/);
 });
 
 test('the reason is the only difference, and an unreadable reply is split in two', async () => {
@@ -135,6 +143,12 @@ test('the schema enums are the catalog, and replay does not ask again', async ()
   });
   assert.equal(again.ok, true);
   assert.equal(asks, 2);
-  assert.equal(readProposal('nope', 'h').verdict, 'not-json');
-  assert.equal(proposalSchema(['move'], ['walker']).oneOf[2].properties.actor.enum[0], 'walker');
+  assert.equal(readProposal('nope', 'h', []).verdict, 'not-json');
+  const bodyBranch = proposalSchema(['move'], ['walker']).oneOf[2];
+  assert.equal(bodyBranch.required.includes('verb'), false);
+  assert.equal(bodyBranch.required.includes('actor'), false);
+  assert.equal(bodyBranch.required.includes('label'), true);
+  const beliefBranch = proposalSchema(['move'], ['walker']).oneOf[1];
+  assert.equal(beliefBranch.required.includes('verb'), false);
+  assert.equal(readProposal('{"kind":"body","label":"walker","x":2,"y":1,"hw":0.2,"hh":0.2}', 'h', ['walker']).proposal && /** @type {any} */ (readProposal('{"kind":"body","label":"walker","x":2,"y":1,"hw":0.2,"hh":0.2}', 'h', ['walker']).proposal).id, 'walker-2');
 });
