@@ -425,3 +425,22 @@ test('the replay command honors the world a log carries, and a play log carries 
   const notALog = spawnSync(process.execPath, ['packages/tick/bin/replay.js', 'fixtures/legacy-play-log.json'], { encoding: 'utf8' });
   assert.equal(notALog.status, 2, 'a capture fixture is refused as not a play log');
 });
+
+test('the 1C behavior fixture: a walker pushing a crate replays frame for frame', () => {
+  const saved = JSON.parse(readFileSync('fixtures/behavior-1c.json', 'utf8'));
+  const catalog = loadIntentRules();
+  /** @type {{ tick: number; hash: string }[]} */
+  const frames = [];
+  const log = saved.entries.map((/** @type {any} */ e) => ({ tick: e.tick, proposal: e.proposal, hash: e.hash }));
+  const result = replay({
+    seed: saved.seed,
+    world: saved.world,
+    rules: catalog.rules,
+    retired: catalog.retired,
+    log,
+    onFrame: (f) => void frames.push({ tick: f.tick, hash: f.hash }),
+  });
+  assert.ok(result.ok, JSON.stringify(result));
+  assert.deepEqual(/** @type {any} */ (result).hashes, saved.entries.map((/** @type {any} */ e) => e.hash));
+  assert.deepEqual(frames.slice(0, saved.frames.length), saved.frames, 'every committed frame, quantum for quantum');
+});
