@@ -79,13 +79,25 @@ export function createSession(scene) {
   }
 
   /**
+   * The tick at which the goal was first reached, or null. Sticky: once
+   * reached it stays that tick, so a page that missed frames still reports
+   * the sim's tick and not the first frame it happened to draw.
+   * @type {number | null}
+   */
+  let firstDoor = null;
+
+  /**
    * @param {Frame} frame
    */
   function doorTick(frame) {
+    if (firstDoor !== null) {
+      return firstDoor;
+    }
     if (!scene || !reachedGoal(scene, frame)) {
       return null;
     }
-    return frame.tick;
+    firstDoor = frame.tick;
+    return firstDoor;
   }
 
   /**

@@ -444,3 +444,20 @@ test('the 1C behavior fixture: a walker pushing a crate replays frame for frame'
   assert.deepEqual(/** @type {any} */ (result).hashes, saved.entries.map((/** @type {any} */ e) => e.hash));
   assert.deepEqual(frames.slice(0, saved.frames.length), saved.frames, 'every committed frame, quantum for quantum');
 });
+
+test('the replay command replays a host log, which carries a scene instead of a world', () => {
+  const scene = JSON.parse(readFileSync('scenes/crate-and-door.json', 'utf8'));
+  const catalog = loadIntentRules();
+  const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
+  for (let i = 0; i < 30; i = i + 1) {
+    t.advance();
+  }
+  assert.ok(t.submit({ kind: 'intent', verb: 'push', actor: 'walker', target: { body: 'crate' }, frameHash: t.frame().hash }).admitted);
+  settle(t);
+  const dir = mkdtempSync(join(tmpdir(), 'si-rpg-'));
+  const path = join(dir, 'host-log.json');
+  writeFileSync(path, JSON.stringify({ seed: scene.seed, scene, when: 'goal', log: t.log() }));
+  const ran = spawnSync(process.execPath, ['packages/tick/bin/replay.js', path], { encoding: 'utf8' });
+  assert.equal(ran.status, 0, ran.stderr);
+  assert.match(ran.stdout, /replay ok: 1 hashes/);
+});
