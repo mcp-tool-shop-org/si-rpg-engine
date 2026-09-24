@@ -1,0 +1,17 @@
+{
+  "name": "si-rpg-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic 3D RPG tick. Slice 1 is the determinism harness.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "write-golden": "./harness/write-golden.js"
+  },
+  "scripts": {
+    "check": "node harness/check.js"
+  }
+}

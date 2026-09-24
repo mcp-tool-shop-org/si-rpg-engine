@@ -1,0 +1,17 @@
+summary: "Determinism harness for a 3D RPG tick: one body, fixed quanta, one golden hash checked under three engines."
+boundaries:
+  - name: harness
+    globs: [harness/**]
+    role: test
+  - name: fixtures
+    globs: [fixtures/**]
+    role: data
+  - name: docs
+    globs: [docs/**]
+    role: docs
+  - name: workflows
+    globs: [.github/**]
+    role: config
+  - name: root
+    globs: ["*"]
+    role: docs

@@ -1,6 +1,12 @@
 # si-rpg-engine
 
-Phase 0 planning. This folder is a plan for a super-intelligence RPG engine, the counterpart to [ai-rpg-engine](https://github.com/mcp-tool-shop-org/ai-rpg-engine). It is not a package, not a runtime, and not a release.
+A deterministic 3D RPG tick, the counterpart to [ai-rpg-engine](https://github.com/mcp-tool-shop-org/ai-rpg-engine). Slice 1 is a determinism harness: one body, 10000 fixed quanta, a golden hash. It is not a published package.
+
+```bash
+node harness/check.js
+```
+
+`write-golden` rewrites `fixtures/golden.txt` after a change to the integrator or the hash. CI does not run it. CI installs pinned builds of V8 15.6.61, SpiderMonkey 156.0.1, and JavaScriptCore 319571 with jsvu 3.0.5 and compares each to that file.
 
 The plan is [docs/PHASE-0.md](docs/PHASE-0.md). The proposed operating map is [docs/atlas-design.md](docs/atlas-design.md). The research behind the plan is [docs/study-swarm/si-rpg-engine.dispatch.md](docs/study-swarm/si-rpg-engine.dispatch.md).
 

@@ -1,0 +1,55 @@
+# Push is limited to main so a tag push cannot fire, and a feature branch
+# leaves only the pull_request event. A branch with no open pull request
+# gets no automatic run; workflow_dispatch is the fallback.
+# The concurrency group is belt-and-braces and UNVERIFIED: once push is
+# scoped to main, push and pull_request cannot name the same branch, so
+# the group is never asked to collapse them.
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - harness/**
+      - fixtures/**
+      - package.json
+      - .github/workflows/ci.yml
+  pull_request:
+    paths:
+      - harness/**
+      - fixtures/**
+      - package.json
+      - .github/workflows/ci.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  engines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pinned engines
+        run: |
+          set -euo pipefail
+          npm install -g jsvu@3.0.5
+          jsvu --os=linux64 v8@15.6.61
+          jsvu --os=linux64 spidermonkey@156.0.1
+          jsvu --os=linux64 javascriptcore@319571
+      - name: Compare each engine to the golden hash
+        run: |
+          set -euo pipefail
+          golden=$(tr -d '\r\n' < fixtures/golden.txt)
+          for bin in v8-15.6.61 spidermonkey-156.0.1 javascriptcore-319571; do
+            got=$("$HOME/.jsvu/bin/$bin" harness/sim.js | tr -d '\r\n')
+            if [ "$got" != "$golden" ]; then
+              echo "$bin produced [$got]"
+              exit 1
+            fi
+            echo "$bin matches"
+          done
