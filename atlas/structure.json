@@ -121,7 +121,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 1,
+      "testedBy": 2,
       "unresolvedSites": 0
     },
     {
@@ -165,9 +165,24 @@
       "dynamicSpawns": 0,
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
-      "entryPoints": [],
+      "entryPoints": [
+        "predicates/hazards/index.json"
+      ],
       "externals": 0,
-      "files": [],
+      "files": [
+        {
+          "hash": "8096ac1cc6a56ae43cfd37f18d1ceafb09255de6ccd656578771784b5be76d35",
+          "path": "predicates/hazards/clear-step.json"
+        },
+        {
+          "hash": "d32ab9997e2c1b97796fcdcb0a5a66942bfab131f7ddde51c6ae5bbc26c9e5b3",
+          "path": "predicates/hazards/index.json"
+        },
+        {
+          "hash": "4fee44d14bf29cc833273bfaa36a96d0314e3be6e00c7e8cdb0506d36656c9c0",
+          "path": "predicates/hazards/through-collider.json"
+        }
+      ],
       "globs": [
         "predicates/hazards/**"
       ],
@@ -212,17 +227,79 @@
       "dynamicSpawns": 0,
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
-      "entryPoints": [],
+      "entryPoints": [
+        "packages/load/bin/load.js"
+      ],
       "externals": 0,
-      "files": [],
+      "files": [
+        {
+          "exports": [
+            "considerDraft",
+            "retireVerb"
+          ],
+          "hash": "db5f20d75067487ee161fc1a1c330d6315c982904082d9b9f428ccb60a388441",
+          "importsFiles": [
+            "packages/load/compile.js",
+            "packages/load/suite.js"
+          ],
+          "path": "packages/load/admit.js"
+        },
+        {
+          "entry": "readIndex",
+          "entryRule": 1,
+          "hash": "4bf9a16c0b40fbc8405a2a9df89685f3580bf41c9426d5cf4791b599008925fd",
+          "importsFiles": [
+            "packages/load/admit.js",
+            "packages/load/suite.js"
+          ],
+          "path": "packages/load/bin/load.js",
+          "sequences": []
+        },
+        {
+          "exports": [
+            "compileVerb"
+          ],
+          "hash": "c58397cc238fa308461ff901c9fc9c2a2f097610ffaa2d8f34b9010a0b6f7154",
+          "path": "packages/load/compile.js"
+        },
+        {
+          "hash": "0c37819904b6b2de3009821cafb0b3f013c5a9e91f8196fa9c8d37d77b6b660b",
+          "importsFiles": [
+            "packages/load/admit.js",
+            "packages/load/compile.js",
+            "packages/load/suite.js",
+            "packages/tick/fixture.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/load/load.test.js"
+        },
+        {
+          "exports": [
+            "loadHazards",
+            "runHazards"
+          ],
+          "hash": "a39cb2654c1ea5ce1a644eef25eee85ffac58e15e8035b28ec307cfc2e471e1d",
+          "importsFiles": [
+            "packages/tick/memory.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/load/suite.js"
+        }
+      ],
       "globs": [
         "packages/load/**"
       ],
       "importConfidence": "full",
       "name": "load",
       "origin": "authored",
+      "outsideReads": 2,
+      "outsideWrites": 2,
       "role": "code",
-      "testedBy": 0,
+      "testedBy": 1,
       "unresolvedSites": 0
     },
     {
@@ -535,7 +612,7 @@
       "outsideReads": 2,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 1,
+      "testedBy": 2,
       "unresolvedSites": 0
     },
     {
@@ -564,7 +641,7 @@
   ],
   "doors": [
     {
-      "checksCount": 8,
+      "checksCount": 9,
       "commands": [
         {
           "job": "engines",
@@ -626,6 +703,11 @@
           "files": 3
         },
         {
+          "boundary": "load",
+          "depth": 0,
+          "files": 5
+        },
+        {
           "boundary": "tick",
           "depth": 0,
           "files": 9
@@ -682,6 +764,19 @@
           "directory": true,
           "job": "engines",
           "matched": true,
+          "path": "packages/load/",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "packages/load/load.test.js",
+          "runKind": "executes"
+        },
+        {
+          "directory": true,
+          "job": "engines",
+          "matched": true,
           "path": "packages/tick/",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
@@ -692,7 +787,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 9,
+      "runsCount": 11,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -745,6 +840,66 @@
         "actions/checkout",
         "actions/setup-node"
       ],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "package.json",
+      "kind": "command",
+      "landings": [],
+      "mentions": [],
+      "name": "load",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "load",
+          "depth": 0,
+          "files": 4
+        },
+        {
+          "boundary": "tick",
+          "depth": 2,
+          "enters": {
+            "file": "packages/tick/tick.js",
+            "from": "packages/load/suite.js"
+          },
+          "files": 4
+        },
+        {
+          "boundary": "frame",
+          "depth": 3,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/tick.js"
+          },
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "path": "packages/load/bin/load.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
       "usesWorkflowToken": false
     },
     {
@@ -908,14 +1063,19 @@
       "to": "frame"
     },
     {
+      "from": "load",
+      "kind": "file",
+      "to": "tick"
+    },
+    {
       "from": "tick",
       "kind": "file",
       "to": "frame"
     }
   ],
   "generatedFrom": {
-    "commit": "7ce60c644552b1b6148dc658a123d0df1a7dcffb",
-    "tracked": 36
+    "commit": "41337997bc6145c9021ac968e883c88ec0c0be04",
+    "tracked": 44
   },
   "landings": [
     {
@@ -986,6 +1146,52 @@
     {
       "readers": [
         {
+          "by": "packages/load/load.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/tick/predicates.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/load/load.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/tick/tick.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/load/suite.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "predicates/hazards",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/load/suite.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "predicates/hazards/index.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "packages/tick/predicates.js",
           "call": "readFileSync",
           "confidence": "ast"
@@ -997,12 +1203,30 @@
     {
       "readers": [
         {
+          "by": "packages/load/load.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/predicates.js",
           "call": "readFileSync",
           "confidence": "ast"
         }
       ],
       "target": "predicates/intents/index.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/load/load.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "predicates/intents/move.json",
       "writers": []
     },
     {
@@ -1018,6 +1242,6 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 1,
+  "testFiles": 2,
   "unassigned": []
 }
