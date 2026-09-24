@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>si-rpg-engine</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #14181c; color: #e7e1d5; font: 14px/1.4 ui-sans-serif, system-ui, sans-serif; }
+    body { display: flex; flex-direction: column; }
+    header { padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+    header p { margin: 0; max-width: 100%; }
+    #status { word-break: break-all; }
+    #reason { color: #e0a15a; min-height: 1.2em; margin: 0 14px; }
+    #stage { flex: 1 1 auto; min-width: 0; min-height: 0; position: relative; }
+    canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <p>Walker, floor, two walls. Left and right move. Click a point.</p>
+    <p id="status">connecting</p>
+  </header>
+  <p id="reason"></p>
+  <div id="stage"><canvas id="room"></canvas></div>
+  <script type="module">
+    import { fit, worldToCanvas, canvasToWorld, blendBody } from '/view.js';
+
+    const canvas = document.getElementById('room');
+    const ctx = canvas.getContext('2d');
+    const status = document.getElementById('status');
+    const reason = document.getElementById('reason');
+    let world = null;
+    let previous = null;
+    let newest = null;
+    let arrived = 0;
+
+    function resize() {
+      const ratio = window.devicePixelRatio || 1;
+      const w = Math.max(1, Math.floor(canvas.clientWidth * ratio));
+      const h = Math.max(1, Math.floor(canvas.clientHeight * ratio));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+    }
+
+    function rect(view, x0, y0, x1, y1, fill) {
+      const a = worldToCanvas(view, x0, y0);
+      const b = worldToCanvas(view, x1, y1);
+      ctx.fillStyle = fill;
+      ctx.fillRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(b.x - a.x), Math.abs(b.y - a.y));
+    }
+
+    function draw() {
+      resize();
+      const view = fit(canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#1c242b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (world) {
+        for (const box of world.colliders) {
+          const fill = box.id === 'floor' ? '#3d4a43' : '#3e4d63';
+          rect(view, box.minX, box.minY, box.maxX, box.maxY, fill);
+        }
+      }
+      if (newest) {
+        const alpha = world ? Math.min(1, (performance.now() - arrived) / (world.dt * 1000)) : 1;
+        for (const body of newest.bodies) {
+          const prev = previous ? previous.bodies.find((item) => item.id === body.id) : null;
+          const at = blendBody(prev || null, body, alpha, world ? world.dt : 1);
+          const color = body.id === 'walker' ? '#e7e1d5' : '#8fb9a8';
+          rect(view, at.x - body.hw, at.y - body.hh, at.x + body.hw, at.y + body.hh, color);
+        }
+        status.textContent = 'tick ' + newest.tick + '  ' + newest.hash;
+      }
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+
+    async function send(body) {
+      const response = await fetch('/intent', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const result = await response.json();
+      reason.textContent = result.admitted ? '' : result.reason;
+    }
+
+    canvas.addEventListener('pointerdown', (event) => {
+      const rectBox = canvas.getBoundingClientRect();
+      const ratio = canvas.width / rectBox.width;
+      const view = fit(canvas.width, canvas.height);
+      const point = canvasToWorld(view, (event.clientX - rectBox.left) * ratio, (event.clientY - rectBox.top) * ratio);
+      send({ verb: 'move', actor: 'walker', target: point });
+    });
+
+    window.addEventListener('keydown', (event) => {
+      const directions = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down' };
+      const direction = directions[event.key];
+      if (!direction) {
+        return;
+      }
+      event.preventDefault();
+      send({ verb: 'move', actor: 'walker', direction });
+    });
+
+    const response = await fetch('/frames');
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) {
+        break;
+      }
+      buffer += decoder.decode(chunk.value, { stream: true });
+      let nl = buffer.indexOf('\n');
+      while (nl >= 0) {
+        const line = buffer.slice(0, nl);
+        buffer = buffer.slice(nl + 1);
+        if (line) {
+          const record = JSON.parse(line);
+          if (record.kind === 'world') {
+            world = record;
+          } else if (record.kind === 'frame') {
+            previous = newest;
+            newest = record;
+            arrived = performance.now();
+          }
+        }
+        nl = buffer.indexOf('\n');
+      }
+    }
+  </script>
+</body>
+</html>

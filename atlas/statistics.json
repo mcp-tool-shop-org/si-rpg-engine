@@ -52,7 +52,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "frame",
-      "qualifyingSourceCommits": 0,
+      "qualifyingSourceCommits": 1,
       "rebaseline": null
     },
     {
@@ -99,6 +99,22 @@
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
+      "name": "host",
+      "qualifyingSourceCommits": 2,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
       "name": "intents",
       "qualifyingSourceCommits": 0,
       "rebaseline": null
@@ -116,7 +132,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "load",
-      "qualifyingSourceCommits": 0,
+      "qualifyingSourceCommits": 1,
       "rebaseline": null
     },
     {
@@ -127,12 +143,12 @@
         "importsAndCoChanges": [],
         "importsOnly": []
       },
-      "cohesion": null,
+      "cohesion": 1,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "propose",
-      "qualifyingSourceCommits": 4,
+      "qualifyingSourceCommits": 6,
       "rebaseline": null
     },
     {
@@ -158,6 +174,7 @@
         "confidence": "low",
         "importsAndCoChanges": [],
         "importsOnly": [
+          "host",
           "load",
           "propose"
         ]
@@ -167,7 +184,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "tick",
-      "qualifyingSourceCommits": 0,
+      "qualifyingSourceCommits": 1,
       "rebaseline": null
     },
     {
@@ -206,38 +223,38 @@
         "path": "LICENSE"
       },
       {
-        "commits": 17,
-        "lines": 88,
+        "commits": 21,
+        "lines": 96,
         "path": "README.md"
       },
       {
-        "commits": 16,
-        "lines": 529,
+        "commits": 19,
+        "lines": 607,
         "path": "atlas/README.md"
       },
       {
-        "commits": 7,
-        "lines": 57,
+        "commits": 8,
+        "lines": 60,
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 16,
-        "lines": 2070,
+        "commits": 19,
+        "lines": 2414,
         "path": "atlas/page.json"
       },
       {
-        "commits": 16,
-        "lines": 1885,
+        "commits": 19,
+        "lines": 2413,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 16,
-        "lines": 4438,
+        "commits": 19,
+        "lines": 5082,
         "path": "atlas/structure.json"
       },
       {
-        "commits": 3,
-        "lines": 140,
+        "commits": 7,
+        "lines": 150,
         "path": "docs/PHASE-0.md"
       },
       {
@@ -296,6 +313,11 @@
         "path": "fixtures/golden.txt"
       },
       {
+        "commits": 2,
+        "lines": 2500,
+        "path": "fixtures/legacy-play-log.json"
+      },
+      {
         "commits": 8,
         "lines": 9376,
         "path": "fixtures/proposer-qwen2.5-7b.json"
@@ -326,8 +348,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 7,
-        "lines": 81,
+        "commits": 8,
+        "lines": 86,
         "path": "package.json"
       },
       {
@@ -341,9 +363,39 @@
         "path": "packages/frame/hash.js"
       },
       {
-        "commits": 4,
-        "lines": 284,
+        "commits": 6,
+        "lines": 296,
         "path": "packages/frame/types.d.ts"
+      },
+      {
+        "commits": 1,
+        "lines": 41,
+        "path": "packages/host/bin/host.js"
+      },
+      {
+        "commits": 2,
+        "lines": 139,
+        "path": "packages/host/host.test.js"
+      },
+      {
+        "commits": 2,
+        "lines": 139,
+        "path": "packages/host/page.html"
+      },
+      {
+        "commits": 1,
+        "lines": 93,
+        "path": "packages/host/server.js"
+      },
+      {
+        "commits": 2,
+        "lines": 149,
+        "path": "packages/host/session.js"
+      },
+      {
+        "commits": 1,
+        "lines": 74,
+        "path": "packages/host/view.js"
       },
       {
         "commits": 2,
@@ -366,8 +418,8 @@
         "path": "packages/load/load.test.js"
       },
       {
-        "commits": 2,
-        "lines": 130,
+        "commits": 4,
+        "lines": 142,
         "path": "packages/load/suite.js"
       },
       {
@@ -386,8 +438,8 @@
         "path": "packages/propose/ollama.js"
       },
       {
-        "commits": 2,
-        "lines": 182,
+        "commits": 4,
+        "lines": 188,
         "path": "packages/propose/oracle.js"
       },
       {
@@ -416,13 +468,13 @@
         "path": "packages/propose/schema.js"
       },
       {
-        "commits": 10,
-        "lines": 354,
+        "commits": 12,
+        "lines": 358,
         "path": "packages/propose/seat.js"
       },
       {
-        "commits": 4,
-        "lines": 142,
+        "commits": 6,
+        "lines": 148,
         "path": "packages/tick/bin/play.js"
       },
       {
@@ -446,18 +498,18 @@
         "path": "packages/tick/predicates.js"
       },
       {
-        "commits": 4,
-        "lines": 92,
+        "commits": 6,
+        "lines": 140,
         "path": "packages/tick/replay.js"
       },
       {
-        "commits": 4,
-        "lines": 352,
+        "commits": 6,
+        "lines": 598,
         "path": "packages/tick/tick.js"
       },
       {
-        "commits": 4,
-        "lines": 314,
+        "commits": 6,
+        "lines": 618,
         "path": "packages/tick/tick.test.js"
       },
       {
@@ -501,56 +553,245 @@
     "level": "low",
     "reason": "fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions"
   },
-  "generatedAt": "2026-09-24T20:27:53.426Z",
+  "generatedAt": "2026-09-24T21:06:01.225Z",
   "generatedFrom": {
-    "commit": "71e44875ba2bb5cb1dd1e7f96cdf52109ff096f1"
+    "commit": "ece9100f5cd821b7aae828f3881704f089d9199c"
   },
   "pairs": [
     {
+      "a": "README.md",
+      "b": "atlas/README.md",
+      "either": 13,
+      "shared": 7,
+      "strength": 0.538462
+    },
+    {
+      "a": "README.md",
+      "b": "atlas/page.json",
+      "either": 13,
+      "shared": 7,
+      "strength": 0.538462
+    },
+    {
+      "a": "README.md",
+      "b": "atlas/statistics.json",
+      "either": 13,
+      "shared": 7,
+      "strength": 0.538462
+    },
+    {
+      "a": "README.md",
+      "b": "atlas/structure.json",
+      "either": 13,
+      "shared": 7,
+      "strength": 0.538462
+    },
+    {
+      "a": "README.md",
+      "b": "packages/propose/seat.js",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 6,
-      "shared": 6,
+      "either": 9,
+      "shared": 9,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 6,
-      "shared": 6,
+      "either": 9,
+      "shared": 9,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 6,
-      "shared": 6,
+      "either": 9,
+      "shared": 9,
       "strength": 1
+    },
+    {
+      "a": "atlas/README.md",
+      "b": "packages/propose/bin/propose.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/README.md",
+      "b": "packages/propose/prompt.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/README.md",
+      "b": "packages/propose/propose.test.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/README.md",
+      "b": "packages/propose/seat.js",
+      "either": 9,
+      "shared": 6,
+      "strength": 0.666667
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 6,
-      "shared": 6,
+      "either": 9,
+      "shared": 9,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 6,
-      "shared": 6,
+      "either": 9,
+      "shared": 9,
       "strength": 1
+    },
+    {
+      "a": "atlas/page.json",
+      "b": "packages/propose/bin/propose.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/page.json",
+      "b": "packages/propose/prompt.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/page.json",
+      "b": "packages/propose/propose.test.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/page.json",
+      "b": "packages/propose/seat.js",
+      "either": 9,
+      "shared": 6,
+      "strength": 0.666667
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 6,
-      "shared": 6,
+      "either": 9,
+      "shared": 9,
       "strength": 1
+    },
+    {
+      "a": "atlas/statistics.json",
+      "b": "packages/propose/bin/propose.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/statistics.json",
+      "b": "packages/propose/prompt.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/statistics.json",
+      "b": "packages/propose/propose.test.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/statistics.json",
+      "b": "packages/propose/seat.js",
+      "either": 9,
+      "shared": 6,
+      "strength": 0.666667
+    },
+    {
+      "a": "atlas/structure.json",
+      "b": "packages/propose/bin/propose.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/structure.json",
+      "b": "packages/propose/prompt.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/structure.json",
+      "b": "packages/propose/propose.test.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "atlas/structure.json",
+      "b": "packages/propose/seat.js",
+      "either": 9,
+      "shared": 6,
+      "strength": 0.666667
+    },
+    {
+      "a": "packages/propose/bin/propose.js",
+      "b": "packages/propose/prompt.js",
+      "either": 5,
+      "shared": 5,
+      "strength": 1
+    },
+    {
+      "a": "packages/propose/bin/propose.js",
+      "b": "packages/propose/propose.test.js",
+      "either": 5,
+      "shared": 5,
+      "strength": 1
+    },
+    {
+      "a": "packages/propose/bin/propose.js",
+      "b": "packages/propose/seat.js",
+      "either": 6,
+      "shared": 5,
+      "strength": 0.833333
+    },
+    {
+      "a": "packages/propose/prompt.js",
+      "b": "packages/propose/propose.test.js",
+      "either": 5,
+      "shared": 5,
+      "strength": 1
+    },
+    {
+      "a": "packages/propose/prompt.js",
+      "b": "packages/propose/seat.js",
+      "either": 6,
+      "shared": 5,
+      "strength": 0.833333
+    },
+    {
+      "a": "packages/propose/propose.test.js",
+      "b": "packages/propose/seat.js",
+      "either": 6,
+      "shared": 5,
+      "strength": 0.833333
     }
   ],
   "parameters": {
-    "appliedChangesetLimit": 15.25,
+    "appliedChangesetLimit": 17.75,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -559,16 +800,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "both",
-    "headDate": "2026-09-24T13:07:16-07:00",
-    "inScopeFiles": 61,
+    "headDate": "2026-09-24T17:05:57-04:00",
+    "inScopeFiles": 71,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 9,
+    "qualifyingCommits": 13,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-28T20:07:16.000Z",
+    "since": "2026-03-28T21:05:57.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
