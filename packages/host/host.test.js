@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { blendBody, canvasToWorld, fit, worldToCanvas } from './view.js';
+import { blendBody, canvasToWorld, fit, groundTarget, projectionAxes, projectedSpan, worldToCanvas } from './view.js';
 import { createSession, startPump } from './session.js';
 import { loadScene } from '../tick/scene.js';
 import { createHostServer } from './server.js';
@@ -16,6 +16,25 @@ test('the blend cuts a jump and slides an ordinary step', () => {
   assert.equal(cut.x, 3);
   const first = blendBody(null, { x: 1, y: 1, vx: 0, vy: 0 }, 0, dt);
   assert.equal(first.cut, true);
+});
+
+test('a key names the axis the debug view looks along', () => {
+  assert.equal(projectionAxes('z').label, 'x-y, looking along z');
+  assert.equal(projectionAxes('x').label, 'z-y, looking along x');
+  assert.equal(projectionAxes('y').label, 'x-z, looking along y');
+  const body = { x: 1, y: 2, z: 3, hx: 0.25, hy: 0.5, hz: 0.1 };
+  const side = projectedSpan('z', body, true);
+  assert.equal(side.h0, 0.75);
+  assert.equal(side.v0, 1.5);
+  const top = projectedSpan('y', body, true);
+  assert.equal(top.v0, 2.9);
+  const actor = { x: 1, z: 0 };
+  assert.deepEqual(groundTarget('z', 2.5, 4, actor), { x: 2.5, z: 0 });
+  assert.deepEqual(groundTarget('y', 2.5, 1.25, actor), { x: 2.5, z: 1.25 });
+  assert.deepEqual(groundTarget('x', 1.25, 4, actor), { x: 1, z: 1.25 });
+  const page = readFileSync(new URL('./page.html', import.meta.url), 'utf8');
+  assert.match(page, /projection: x-y, looking along z/);
+  assert.match(page, /event\.key === 'x'/);
 });
 
 test('canvas coordinates round-trip inside the room', () => {
@@ -34,7 +53,7 @@ test('an intent is stamped with the newest hash, and a second one waits', () => 
   const admitted = session.intent({
     verb: 'move',
     actor: 'walker',
-    target: { x: 2, y: 1 },
+    target: { x: 2, z: 0 },
     frameHash: stale,
   });
   assert.equal(admitted.admitted, true);
@@ -60,7 +79,7 @@ test('a direction is taken from the newest body, and the pump fires once per tic
   assert.equal(target.kind, 'intent');
   if (target.kind === 'intent' && 'x' in target.target) {
     assert.ok(Math.abs(target.target.x - (body.x + 1)) < 1e-9);
-    assert.ok(Math.abs(target.target.y - body.y) < 1e-9);
+    assert.ok(Math.abs(target.target.z - body.z) < 1e-9);
   }
   /** @type {Array<() => void>} */
   const fires = [];
@@ -77,7 +96,7 @@ test('a direction is taken from the newest body, and the pump fires once per tic
   pump.stop();
 });
 
-test('up and down are refused, and a click above the floor is still a target', () => {
+test('up and down are refused, and a ground click is a target', () => {
   const session = createSession();
   const x = session.frame().bodies[0].x;
   const up = session.intent({ direction: 'up' });
@@ -87,14 +106,16 @@ test('up and down are refused, and a click above the floor is still a target', (
   assert.equal(down.admitted, false);
   assert.equal(session.log().length, 0);
   assert.equal(session.frame().bodies[0].x, x);
-  const click = session.intent({ verb: 'move', actor: 'walker', target: { x: 2, y: 2 } });
+  const click = session.intent({ verb: 'move', actor: 'walker', target: { x: 2, z: 0.5 } });
   assert.equal(click.admitted, true);
   const proposal = session.log()[0].proposal;
   assert.equal(proposal.kind, 'intent');
   if (proposal.kind === 'intent' && 'x' in proposal.target) {
     assert.equal(proposal.target.x, 2);
-    assert.equal(proposal.target.y, 2);
+    assert.equal(proposal.target.z, 0.5);
   }
+  const oldShape = session.intent({ verb: 'move', actor: 'walker', target: { x: 2, y: 2 } });
+  assert.equal(oldShape.admitted, false);
 });
 
 test('the page stream is a world line, then frames, and a posted intent is admitted', async () => {
@@ -127,7 +148,7 @@ test('the page stream is a world line, then frames, and a posted intent is admit
   const posted = await fetch('http://127.0.0.1:' + port + '/intent', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ verb: 'move', actor: 'walker', target: { x: 2, y: 1 }, frameHash: 'displayed' }),
+    body: JSON.stringify({ verb: 'move', actor: 'walker', target: { x: 2, z: 0 }, frameHash: 'displayed' }),
   });
   const result = await posted.json();
   assert.equal(result.admitted, true);

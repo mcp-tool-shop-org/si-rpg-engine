@@ -10,7 +10,7 @@
     header { padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
     header p { margin: 0; max-width: 100%; }
     #status { word-break: break-all; }
-    #reason, #door { min-height: 1.2em; margin: 0 14px; }
+    #projection, #reason, #door { min-height: 1.2em; margin: 0 14px; }
     #reason { color: #e0a15a; }
     #door { color: #e7e1d5; }
     #stage { flex: 1 1 auto; min-width: 0; min-height: 0; position: relative; }
@@ -19,24 +19,31 @@
 </head>
 <body>
   <header>
-    <p><strong>Debug view of the tick.</strong> Boxes are the committed state, nothing more. Left and right move. P pushes the nearest body. Click a point.</p>
+    <p><strong>Debug view of the tick.</strong> Boxes are the committed state, nothing more. Left and right move on the ground. P pushes the nearest body. Click a ground point. x, y, and z choose the axis looked along.</p>
     <p id="status">connecting</p>
   </header>
+  <p id="projection">projection: x-y, looking along z</p>
   <p id="reason"></p>
   <p id="door"></p>
   <div id="stage"><canvas id="room"></canvas></div>
   <script type="module">
-    import { fit, worldToCanvas, canvasToWorld, blendBody } from '/view.js';
+    import { fit, worldToCanvas, canvasToWorld, blendBody, projectionAxes, projectedSpan, groundTarget } from '/view.js';
 
     const canvas = document.getElementById('room');
     const ctx = canvas.getContext('2d');
     const status = document.getElementById('status');
+    const projection = document.getElementById('projection');
     const reason = document.getElementById('reason');
     const door = document.getElementById('door');
     let world = null;
     let previous = null;
     let newest = null;
     let arrived = 0;
+    let along = 'z';
+
+    function showProjection() {
+      projection.textContent = 'projection: ' + projectionAxes(along).label;
+    }
 
     function resize() {
       const ratio = window.devicePixelRatio || 1;
@@ -48,26 +55,53 @@
       }
     }
 
-    function rect(view, x0, y0, x1, y1, fill) {
-      const a = worldToCanvas(view, x0, y0);
-      const b = worldToCanvas(view, x1, y1);
+    function rect(view, h0, v0, h1, v1, fill) {
+      const a = worldToCanvas(view, h0, v0);
+      const b = worldToCanvas(view, h1, v1);
       ctx.fillStyle = fill;
       ctx.fillRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(b.x - a.x), Math.abs(b.y - a.y));
     }
 
+    function viewOf() {
+      if (!world || world.colliders.length === 0) {
+        return fit(canvas.width, canvas.height);
+      }
+      let minH = Infinity;
+      let maxH = -Infinity;
+      let minV = Infinity;
+      let maxV = -Infinity;
+      for (const box of world.colliders) {
+        const span = projectedSpan(along, box, false);
+        minH = Math.min(minH, span.h0);
+        maxH = Math.max(maxH, span.h1);
+        minV = Math.min(minV, span.v0);
+        maxV = Math.max(maxV, span.v1);
+      }
+      if (world.goal) {
+        const span = projectedSpan(along, world.goal, false);
+        minH = Math.min(minH, span.h0);
+        maxH = Math.max(maxH, span.h1);
+        minV = Math.min(minV, span.v0);
+        maxV = Math.max(maxV, span.v1);
+      }
+      return fit(canvas.width, canvas.height, { minH, maxH, minV, maxV });
+    }
+
     function draw() {
       resize();
-      const view = fit(canvas.width, canvas.height);
+      const view = viewOf();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#1c242b';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       if (world) {
         for (const box of world.colliders) {
           const fill = box.id === 'floor' ? '#3d4a43' : '#3e4d63';
-          rect(view, box.minX, box.minY, box.maxX, box.maxY, fill);
+          const span = projectedSpan(along, box, false);
+          rect(view, span.h0, span.v0, span.h1, span.v1, fill);
         }
         if (world.goal) {
-          rect(view, world.goal.minX, world.goal.minY, world.goal.maxX, world.goal.maxY, 'rgba(224, 161, 90, 0.45)');
+          const span = projectedSpan(along, world.goal, false);
+          rect(view, span.h0, span.v0, span.h1, span.v1, 'rgba(224, 161, 90, 0.45)');
         }
       }
       if (newest) {
@@ -76,7 +110,11 @@
           const prev = previous ? previous.bodies.find((item) => item.id === body.id) : null;
           const at = blendBody(prev || null, body, alpha, world ? world.dt : 1);
           const color = body.id === 'walker' ? '#e7e1d5' : '#8fb9a8';
-          rect(view, at.x - body.hw, at.y - body.hh, at.x + body.hw, at.y + body.hh, color);
+          const span = projectedSpan(along, {
+            x: at.x, y: at.y, z: at.z,
+            hx: body.hx, hy: body.hy, hz: body.hz,
+          }, true);
+          rect(view, span.h0, span.v0, span.h1, span.v1, color);
         }
         status.textContent = 'tick ' + newest.tick + '  ' + newest.hash;
         if (newest.door !== null && newest.door !== undefined && door.textContent === '') {
@@ -97,27 +135,55 @@
       reason.textContent = result.admitted ? '' : result.reason;
     }
 
+    function walker() {
+      if (!newest) {
+        return null;
+      }
+      return newest.bodies.find((body) => body.id === 'walker') || newest.bodies[0];
+    }
+
     canvas.addEventListener('pointerdown', (event) => {
+      const actor = walker();
+      if (!actor) {
+        return;
+      }
       const rectBox = canvas.getBoundingClientRect();
       const ratio = canvas.width / rectBox.width;
-      const view = fit(canvas.width, canvas.height);
+      const view = viewOf();
       const point = canvasToWorld(view, (event.clientX - rectBox.left) * ratio, (event.clientY - rectBox.top) * ratio);
-      send({ verb: 'move', actor: 'walker', target: point });
+      send({ verb: 'move', actor: 'walker', target: groundTarget(along, point.x, point.y, actor) });
     });
 
     window.addEventListener('keydown', (event) => {
-      const directions = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down' };
+      if (event.key === 'x' || event.key === 'y' || event.key === 'z') {
+        event.preventDefault();
+        along = event.key;
+        showProjection();
+        return;
+      }
       if (event.key === 'p' || event.key === 'P') {
         event.preventDefault();
         send({ verb: 'push', actor: 'walker' });
         return;
       }
+      const directions = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down' };
       const direction = directions[event.key];
       if (!direction) {
         return;
       }
       event.preventDefault();
-      send({ verb: 'move', actor: 'walker', direction });
+      const axes = projectionAxes(along);
+      const actor = walker();
+      const horizontal = direction === 'left' || direction === 'right';
+      const axis = horizontal ? axes.horizontal : axes.vertical;
+      if (!actor || axis === 'y') {
+        send({ verb: 'move', actor: 'walker', direction: horizontal ? direction : (direction === 'up' ? 'up' : 'down') });
+        return;
+      }
+      const sign = direction === 'left' || direction === 'down' ? -1 : 1;
+      const target = { x: actor.x, z: actor.z };
+      target[axis] = actor[axis] + sign;
+      send({ verb: 'move', actor: 'walker', target });
     });
 
     const response = await fetch('/frames');

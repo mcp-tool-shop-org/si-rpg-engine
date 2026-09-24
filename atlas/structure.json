@@ -13,7 +13,7 @@
           "path": "docs/PHASE-0.md"
         },
         {
-          "hash": "39dd9b02470addb8e17491f9981004b3a4f8fa2681abcab313953a1049be79d7",
+          "hash": "93051affce2fb0d296622dc6335385cf6e8c452f3bb8a6cb3bb4cf5f9b2aa009",
           "path": "docs/PHASE-1.md"
         },
         {
@@ -65,6 +65,10 @@
           "path": "docs/dispatch-1d-the-scene-played.md"
         },
         {
+          "hash": "019bbbcb5b018f67e2cbb4cc5b9a8cfb8c354a306154db53a7958c53ee1a979e",
+          "path": "docs/dispatch-e1-three-dimensions.md"
+        },
+        {
           "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
           "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
         },
@@ -104,11 +108,19 @@
           "path": "fixtures/behavior-1c.json"
         },
         {
+          "hash": "e9a27cd692bc0a058804e66a67a0077d49392bb78c811aac5a2ebb1123aed132",
+          "path": "fixtures/behavior-3d.json"
+        },
+        {
+          "hash": "5555470b3450b02cd6575387e288d301024b400ecab04a9cef452b2e3ddddf91",
+          "path": "fixtures/first-scene-played.json"
+        },
+        {
           "hash": "17d4b005bdbe4ac3227ed0dcb1c0633e0958f1acf92f59b6b49d6aac887fad23",
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "05f6f711b7fe46651979fab8944b4ecf779189685f1eade6be81c57886d97581",
+          "hash": "4712e161ff183587b246de51ba2fc2ad87a668a1b04aae7fdfd9c38b252e539b",
           "path": "fixtures/golden.txt"
         },
         {
@@ -150,7 +162,7 @@
           "exports": [
             "commitFrame"
           ],
-          "hash": "bbc949a5e8c36099a03f725b36ae9eb5f417091b375d0badab0584aed74f24ae",
+          "hash": "979c6ca8e497e690a79bcf4094eb2e17514241a321ede194bd18c0bd8c1af155",
           "path": "packages/frame/frame.js"
         },
         {
@@ -162,7 +174,7 @@
           "path": "packages/frame/hash.js"
         },
         {
-          "hash": "10e30af6e39fc80b239bcd6ff4f6fa9c6ecab2b3170a532059923e3d6b75191a",
+          "hash": "bb16a1d7ba915731e7fbdf9f3b7fc4a2f59a51441a189922ca541233ad8c1934",
           "path": "packages/frame/types.d.ts"
         }
       ],
@@ -201,14 +213,14 @@
           "exports": [
             "createProductWorld"
           ],
-          "hash": "75719d101e86ca8acfc8046501cedff333f4e4dc24b74be6fe2f7837725efd46",
+          "hash": "dd98fa0a58def9c50448dac329f0310cecc0a6693f1dbe2d34902718d272f0b6",
           "importsFiles": [
             "packages/tick/world.js"
           ],
           "path": "harness/product-scene.mjs"
         },
         {
-          "hash": "60bccdf05fe436e8fad0a2ef493cb322a10243cd08da3886fecf429b8fe3f5f1",
+          "hash": "07ce4a2692fa05c0d46146c5bd9bcc560f579ebfffc9f6b74d234bddc38cde78",
           "importsFiles": [
             "harness/product-scene.mjs"
           ],
@@ -217,7 +229,7 @@
         {
           "entry": "out",
           "entryRule": 1,
-          "hash": "c25ccc6e29de80e9f5cb9f3e77a0887d43a224bdff26c7f8d03f178338422715",
+          "hash": "a3f734cc16a948a8c5f78574981bd67cf8608521f0d3eba627cca91ea8ce60b5",
           "importsFiles": [
             "harness/product-scene.mjs",
             "packages/frame/hash.js"
@@ -226,7 +238,7 @@
           "sequences": []
         },
         {
-          "hash": "8e12cc64ce00f241a621255ce74c954b8c57a19b5ee3c3cc31259fbb041c5f93",
+          "hash": "1ec6d383b57ca874bcd74399ce878ac01b6a9ebd0edf71be825d9d95232b0408",
           "path": "harness/write-golden.js"
         }
       ],
@@ -236,6 +248,7 @@
       "importConfidence": "full",
       "name": "harness",
       "origin": "authored",
+      "outsideReads": 1,
       "role": "test",
       "testedBy": 1,
       "unresolvedSites": 0
@@ -251,15 +264,15 @@
       "externals": 0,
       "files": [
         {
-          "hash": "5bab7b18af3b380c845ae1c34fc5c4ce7e0ed4d598bfbff9aeed3d3805b38248",
+          "hash": "9ba32a3274f18def2e5914b37d0d570e651fd8f093a7dc779e467cc1a67086c1",
           "path": "predicates/hazards/beyond-wall.json"
         },
         {
-          "hash": "aedec47062c6fc81bcc34a6ff3266759d19a9a6dc72bb7ca986df7eee1766abd",
+          "hash": "6519ff0003db187b5fa7ddebc18e33218f2c17846157a97b8fdb6b9d72fed25e",
           "path": "predicates/hazards/clear-step.json"
         },
         {
-          "hash": "07b74e55352140f284f66ffaf7628eb9b68be90176ffe5bf96e4edbebf4f5873",
+          "hash": "d702e1243ea1b37436d24426abda957ab3659c3eca57dc26fdbca3b28c303dca",
           "path": "predicates/hazards/corner-clip.json"
         },
         {
@@ -267,7 +280,7 @@
           "path": "predicates/hazards/index.json"
         },
         {
-          "hash": "a4878f98517b04aa20656c27877b5a917f20676f32a5c9f6e6875b0003bf50ae",
+          "hash": "0cbff1a7b96b322fd3b6366375e15a51c5f3f39169a76e9cd0734723a7db88ae",
           "path": "predicates/hazards/through-collider.json"
         }
       ],
@@ -304,7 +317,7 @@
           "sequences": []
         },
         {
-          "hash": "098a7891d2e9dd097eb2514c1c1caf2a4cc5e7e363aaae4259dcfc76204dfafe",
+          "hash": "d5671cef36843d6de579f357497c5fddb899db899250a0c10185996a065cb5d5",
           "importsFiles": [
             "packages/host/server.js",
             "packages/host/session.js",
@@ -314,7 +327,7 @@
           "path": "packages/host/host.test.js"
         },
         {
-          "hash": "a30bff2533541cbb83f2fdf5950284e930d76d27b112b06f490e944bec3dee5b",
+          "hash": "4d80eceae0bcd75397be47acfdea0c801ac4566815c1e653e3e5dc6923a117df",
           "path": "packages/host/page.html"
         },
         {
@@ -329,7 +342,7 @@
             "createSession",
             "startPump"
           ],
-          "hash": "1c92631ac1cf148b68dc62bbf331f7fcf917cbf51f6444ca2bedd3296f27db43",
+          "hash": "6ce8097763901979c9be0e0afcce3eb5d086cb4080ca3b348c201e153ab03fdd",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -345,9 +358,12 @@
             "blendBody",
             "canvasToWorld",
             "fit",
+            "groundTarget",
+            "projectedSpan",
+            "projectionAxes",
             "worldToCanvas"
           ],
-          "hash": "7966a2fa491d03107961fc55f6e96ee67d8d5c3f0933623f65796ef0992dc1cc",
+          "hash": "041fd8b35a2034cd6067ee1dcde5e516e2db751fdde26bef34f49fba78ce336a",
           "path": "packages/host/view.js"
         }
       ],
@@ -436,7 +452,7 @@
           "path": "packages/load/compile.js"
         },
         {
-          "hash": "9f9cb9eb851ef4741066dae1d606c753358f023dea8dfc0164f7eb5749db16aa",
+          "hash": "a1db206177dfc316754f0fc1289a968d3d15532592434a939cb4a03bc0e8f892",
           "importsFiles": [
             "packages/load/admit.js",
             "packages/load/compile.js",
@@ -454,7 +470,7 @@
             "loadHazards",
             "runHazards"
           ],
-          "hash": "a58cb991bfeac4d08cab1ad08f1a9dd5cbbdd7c08164098a8e46fb3216f0d0c1",
+          "hash": "ebc8a7c8abacf1c66a817138373d1846fb1841a8c1b31742bf9f34cb7832ea56",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -592,47 +608,47 @@
                 {
                   "inner": [
                     {
-                      "line": 74,
+                      "line": 75,
                       "name": "proposalSchema",
                       "target": {
                         "file": "packages/propose/schema.js"
                       }
                     },
                     {
-                      "line": 80,
+                      "line": 83,
                       "name": "goalText",
                       "target": {
                         "file": "packages/propose/scene.js"
                       }
                     },
                     {
-                      "line": 81,
+                      "line": 84,
                       "name": "obstacleText",
                       "target": {
                         "file": "packages/propose/scene.js"
                       }
                     },
                     {
-                      "line": 76,
+                      "line": 77,
                       "name": "proposalPrompt",
                       "target": {
                         "file": "packages/propose/prompt.js"
                       }
                     },
                     {
-                      "line": 86,
+                      "line": 89,
                       "name": "ask",
                       "target": null
                     },
                     {
-                      "line": 87,
+                      "line": 90,
                       "name": "readProposal",
                       "target": {
                         "file": "packages/propose/parse.js"
                       }
                     },
                     {
-                      "line": 111,
+                      "line": 115,
                       "name": "settle",
                       "target": {
                         "file": "packages/tick/tick.js"
@@ -655,28 +671,28 @@
                 {
                   "inner": [
                     {
-                      "line": 31,
+                      "line": 37,
                       "name": "createWorld",
                       "target": {
                         "file": "packages/tick/world.js"
                       }
                     },
                     {
-                      "line": 34,
+                      "line": 40,
                       "name": "createMemory",
                       "target": {
                         "file": "packages/tick/memory.js"
                       }
                     },
                     {
-                      "line": 29,
+                      "line": 35,
                       "name": "createTick",
                       "target": {
                         "file": "packages/tick/tick.js"
                       }
                     },
                     {
-                      "line": 58,
+                      "line": 64,
                       "name": "settle",
                       "target": {
                         "file": "packages/tick/tick.js"
@@ -720,7 +736,7 @@
           "exports": [
             "oracleSearch"
           ],
-          "hash": "f40852fe3fd4b3d7625f5758096d9c9a13908e31262181a8418cdbeb74037459",
+          "hash": "47db0b96422ed9d7430693ddf6225229fe8983c8287ff91ca8527527c7626d46",
           "importsFiles": [
             "packages/propose/scene.js",
             "packages/tick/fixture.js",
@@ -737,20 +753,20 @@
             "readProposal",
             "stamp"
           ],
-          "hash": "94b40eed7e6c2e0b246e617f54518268bcb7f80a765e4088725323c17bc823e8",
+          "hash": "6882e04d23c265193f8e456e86e3d79f8d075ef7a70a062a9d286169c7438ec2",
           "path": "packages/propose/parse.js"
         },
         {
           "exports": [
             "proposalPrompt"
           ],
-          "hash": "a6d5751266c41cce441188766d1eb265970a3ba8ffcf120dafcfecc58ce5b611",
+          "hash": "4f2a02ecc733a1016c5f38b778444d32ff1038de043d4248f4230a7799b042d8",
           "path": "packages/propose/prompt.js"
         },
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "fa023655c5d6e934a2aac3dbad4c98f00fc81e00009f91803d99cc2eda7e52e9",
+          "hash": "65ee796c271db8476518ece0e34690a3a47c18637a5f8a752b87cb6c038755ae",
           "importsFiles": [
             "packages/propose/oracle.js",
             "packages/propose/parse.js",
@@ -845,14 +861,14 @@
             "proposeWorld",
             "reachedGoal"
           ],
-          "hash": "98463073426f2df181e7b321e5f299a724e21fa7905902ff17a03b0b27f721b6",
+          "hash": "8146356d29bdfc5e66bc3671eb3660c872ee80db006e38e3e5dcc8fcd21bba83",
           "path": "packages/propose/scene.js"
         },
         {
           "exports": [
             "proposalSchema"
           ],
-          "hash": "771ea151eef90416a18bcd6183faa5640da1c9693b314c0f427c4cce9ab06046",
+          "hash": "de205bd0924bbc35880f2ae1b56043c82861539d748c2807ad70226895ffbbc4",
           "path": "packages/propose/schema.js"
         },
         {
@@ -861,7 +877,7 @@
           "exports": [
             "runSeat"
           ],
-          "hash": "1aa55db4199059a98467baf2358d8bab9de043463769d2ee5733de862e573203",
+          "hash": "de8e92151b12f835476313221ca7acd9661c53d73241f827790e92d33ca66389",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/propose/prompt.js",
@@ -874,47 +890,47 @@
             {
               "calls": [
                 {
-                  "line": 74,
+                  "line": 75,
                   "name": "proposalSchema",
                   "target": {
                     "file": "packages/propose/schema.js"
                   }
                 },
                 {
-                  "line": 80,
+                  "line": 83,
                   "name": "goalText",
                   "target": {
                     "file": "packages/propose/scene.js"
                   }
                 },
                 {
-                  "line": 81,
+                  "line": 84,
                   "name": "obstacleText",
                   "target": {
                     "file": "packages/propose/scene.js"
                   }
                 },
                 {
-                  "line": 76,
+                  "line": 77,
                   "name": "proposalPrompt",
                   "target": {
                     "file": "packages/propose/prompt.js"
                   }
                 },
                 {
-                  "line": 86,
+                  "line": 89,
                   "name": "ask",
                   "target": null
                 },
                 {
-                  "line": 87,
+                  "line": 90,
                   "name": "readProposal",
                   "target": {
                     "file": "packages/propose/parse.js"
                   }
                 },
                 {
-                  "line": 111,
+                  "line": 115,
                   "name": "settle",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -957,7 +973,7 @@
           "path": "LICENSE"
         },
         {
-          "hash": "f669aa6e282162532a736468696e970cbb2b45fe62fd0125f934ef27e4dbfde9",
+          "hash": "486ae3b1986b76900df94cea557db3183869d1b37a8b3e8ca152088fba68df65",
           "path": "README.md"
         },
         {
@@ -992,7 +1008,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "492abcc89cd8975794967d5cb067f430f7fbe9ab631b9fe7063631117894d0e8",
+          "hash": "8454420e0523faf99c62f574f11fb0ca72c69e595dab5069c67c598f8b7cd619",
           "path": "scenes/crate-and-door.json"
         }
       ],
@@ -1046,7 +1062,7 @@
           "exports": [
             "fixtureWorld"
           ],
-          "hash": "50d758d7cca26cd95a9be54d2747a9151c8d6e6a625203fa6af970ec2c6fbcdd",
+          "hash": "2b661476fbc3a933d010060e85578bba35811c17faf57993b623b49314f7e94d",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -1083,7 +1099,7 @@
             "admitIntent",
             "loadIntentRules"
           ],
-          "hash": "c27153320abe96d6a28b0a2b29308db70cc35a1f19a4c8bca63721e5ec01ebb2",
+          "hash": "e5b6e5e8566f5b3d33254779d412f5798d24e2cc5eb7d30860aba25414832646",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -1092,12 +1108,12 @@
             {
               "calls": [
                 {
-                  "line": 96,
+                  "line": 97,
                   "name": "body",
                   "target": null
                 },
                 {
-                  "line": 127,
+                  "line": 128,
                   "name": "segmentHits",
                   "target": null
                 }
@@ -1115,7 +1131,7 @@
           "exports": [
             "replay"
           ],
-          "hash": "ba1911c817305a8cbd7578525289cf6c3c95c6979cd1cfd8f60cd49325e2273a",
+          "hash": "bbb04659ed0fa57d76842b630d83d2e074e25609454aad206502f8d03e5f3568",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -1126,28 +1142,28 @@
             {
               "calls": [
                 {
-                  "line": 31,
+                  "line": 37,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 34,
+                  "line": 40,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
                   }
                 },
                 {
-                  "line": 29,
+                  "line": 35,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
                   }
                 },
                 {
-                  "line": 58,
+                  "line": 64,
                   "name": "settle",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -1169,7 +1185,7 @@
             "reachedGoal",
             "validateScene"
           ],
-          "hash": "8026d72ec51adc7e4ac9736049e0d497715db268bb074fa216451e7b57e7b502",
+          "hash": "b5fa711f1f47d416f85a68a99258018549587f6a9b86563d02da33f0361f94fa",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -1178,7 +1194,7 @@
             {
               "calls": [
                 {
-                  "line": 151,
+                  "line": 160,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -1193,7 +1209,7 @@
             {
               "calls": [
                 {
-                  "line": 151,
+                  "line": 160,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -1211,7 +1227,7 @@
         {
           "entry": "broken",
           "entryRule": 1,
-          "hash": "3afd19377ca97a6b0812f3e9aedc6f06276d678bf4419b356bc7a8b5af9fdb53",
+          "hash": "ea8362caf3f27272ea9e6453748449b3b5fdcbbba8f17a12024ce283f4437946",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
@@ -1226,7 +1242,7 @@
                 {
                   "inner": [
                     {
-                      "line": 151,
+                      "line": 160,
                       "name": "createWorld",
                       "target": {
                         "file": "packages/tick/world.js"
@@ -1254,7 +1270,7 @@
             "createTick",
             "settle"
           ],
-          "hash": "419436572c6a7135072b7e4c965fc40c6e69fbe2ed57968b17895ef57bf67e14",
+          "hash": "75a55b79c1ef2f0bf8ec9dfe63f13cdf254ea6c5246bec7fe9cbac8733714fec",
           "importsFiles": [
             "packages/frame/frame.js",
             "packages/frame/hash.js",
@@ -1287,12 +1303,12 @@
             {
               "calls": [
                 {
-                  "line": 261,
+                  "line": 276,
                   "name": "idle",
                   "target": null
                 },
                 {
-                  "line": 262,
+                  "line": 277,
                   "name": "advance",
                   "target": null
                 }
@@ -1307,12 +1323,13 @@
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "45f10f27d92d10c95b04da90327b2ccbe10ff44c1895dc1b744dffdf9e7dac88",
+          "hash": "f3ccb3a80b38a75c5e63c3de2f1879320801f2b08b1ffe83484224cd0113b33c",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
             "packages/tick/replay.js",
+            "packages/tick/scene.js",
             "packages/tick/tick.js",
             "packages/tick/world.js"
           ],
@@ -1330,28 +1347,28 @@
                       }
                     }
                   ],
-                  "line": 21,
+                  "line": 22,
                   "name": "fixtureWorld",
                   "target": {
                     "file": "packages/tick/fixture.js"
                   }
                 },
                 {
-                  "line": 21,
+                  "line": 22,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 21,
+                  "line": 22,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "line": 21,
+                  "line": 22,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
@@ -1374,7 +1391,7 @@
                       }
                     }
                   ],
-                  "line": 21,
+                  "line": 22,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -1389,12 +1406,12 @@
             {
               "calls": [
                 {
-                  "line": 26,
+                  "line": 27,
                   "name": "frame",
                   "target": null
                 },
                 {
-                  "line": 26,
+                  "line": 27,
                   "name": "submit",
                   "target": null
                 }
@@ -1403,6 +1420,21 @@
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
               "name": "move"
+            },
+            {
+              "calls": [
+                {
+                  "line": 280,
+                  "name": "validateScene",
+                  "target": {
+                    "file": "packages/tick/scene.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "refusedRecord"
             }
           ]
         },
@@ -1411,7 +1443,7 @@
             "createWorld",
             "fixtureColliders"
           ],
-          "hash": "9a066689154ecc807c9e4c625f0ed37c8bddefb15394d247ef0512ddd53f0c30",
+          "hash": "0f8e9f1281ca510c0e18c8b285032b5139f193ef920490908ceb140e5d529027",
           "path": "packages/tick/world.js"
         }
       ],
@@ -2107,8 +2139,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "6362370a2d8849a8fc753166a715edc6299dc45b",
-    "tracked": 82
+    "commit": "3ba2a840e6dbb425fb4fef484af5383435c39736",
+    "tracked": 85
   },
   "landings": [
     {
@@ -2121,6 +2153,30 @@
         }
       ],
       "target": "fixtures/behavior-1c.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/tick.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/behavior-3d.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/tick.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/first-scene-played.json",
       "writers": []
     },
     {
@@ -2172,12 +2228,6 @@
       "readers": [
         {
           "by": "packages/tick/tick.test.js",
-          "call": "literal",
-          "confidence": "ast",
-          "fromTests": true
-        },
-        {
-          "by": "packages/tick/tick.test.js",
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
@@ -2201,11 +2251,6 @@
       "readers": [
         {
           "by": "harness/check.js",
-          "call": "literal",
-          "confidence": "ast"
-        },
-        {
-          "by": "harness/write-golden.js",
           "call": "literal",
           "confidence": "ast"
         }

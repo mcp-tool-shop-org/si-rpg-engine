@@ -7,8 +7,9 @@ import { fileURLToPath } from 'node:url';
 // Rewrites fixtures/golden.txt from harness/sim.mjs, the product solver.
 // It does not rewrite fixtures/golden-arith.txt. CI does not run this.
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const sim = join(root, 'harness', 'sim.mjs');
-const run = spawnSync(process.execPath, [sim], { encoding: 'utf8' });
+// The path is written out so the map can see that this command runs the
+// product harness; the command runs from the repository root.
+const run = spawnSync(process.execPath, ['harness/sim.mjs'], { cwd: root, encoding: 'utf8' });
 if (run.status !== 0) {
   process.stderr.write(run.stderr || 'sim failed\n');
   process.exit(run.status || 1);

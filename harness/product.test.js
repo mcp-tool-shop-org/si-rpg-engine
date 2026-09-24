@@ -4,7 +4,6 @@ import { createProductWorld, productDriven } from './product-scene.mjs';
 
 test('the product scene fires every branch of the solver on the first quantum', () => {
   const world = createProductWorld();
-  assert.ok(world.bodies.length >= 2);
   const before = world.bodies.map((body) => ({ ...body }));
   world.step(new Set(productDriven));
   /** @param {string} id */
@@ -24,41 +23,85 @@ test('the product scene fires every branch of the solver on the first quantum', 
     return body;
   };
 
-  const floor = now('on-floor');
-  assert.equal(floor.vx, was('on-floor').vx);
-  assert.ok(floor.vy > 0);
-  assert.equal(floor.y, floor.hh);
+  const xMin = now('face-x-min');
+  assert.ok(xMin.vx > 0);
+  assert.ok(xMin.vy < 0);
+  assert.equal(xMin.vz, 0);
+  assert.ok(xMin.x < was('face-x-min').x);
 
-  const left = now('into-left');
-  assert.ok(left.vx > 0);
-  assert.ok(left.x > was('into-left').x);
-  assert.ok(left.vy < 0);
+  const xMax = now('face-x-max');
+  assert.ok(xMax.vx < 0);
+  assert.ok(xMax.vy < 0);
+  assert.equal(xMax.vz, 0);
+  assert.ok(xMax.x > was('face-x-max').x);
 
-  const right = now('into-right');
-  assert.ok(right.vx < 0);
-  assert.ok(right.x < was('into-right').x);
+  const yMin = now('face-y-min');
+  assert.ok(yMin.vy > 0);
+  assert.equal(yMin.vx, 0);
+  assert.equal(yMin.vz, 0);
+  assert.ok(yMin.y < was('face-y-min').y);
+
+  const yMax = now('face-y-max');
+  assert.ok(yMax.vy < 0);
+  assert.equal(yMax.vx, 0);
+  assert.equal(yMax.vz, 0);
+  assert.ok(yMax.y > was('face-y-max').y);
+
+  const zMin = now('face-z-min');
+  assert.ok(zMin.vz > 0);
+  assert.ok(zMin.vy < 0);
+  assert.equal(zMin.vx, 0);
+  assert.ok(zMin.z < was('face-z-min').z);
+
+  const zMax = now('face-z-max');
+  assert.ok(zMax.vz < 0);
+  assert.ok(zMax.vy < 0);
+  assert.equal(zMax.vx, 0);
+  assert.ok(zMax.z > was('face-z-max').z);
 
   const cornerX = now('corner-x');
   assert.ok(cornerX.vx < 0);
   assert.ok(cornerX.vy < 0);
+  assert.equal(cornerX.vz, 0);
   assert.ok(cornerX.x < was('corner-x').x);
 
   const cornerY = now('corner-y');
-  assert.equal(cornerY.vx, was('corner-y').vx);
-  assert.ok(cornerY.vy > 0);
+  assert.equal(cornerY.vx, 0);
+  assert.ok(cornerY.vy < 0);
+  assert.equal(cornerY.vz, 0);
   assert.ok(cornerY.y < was('corner-y').y);
 
-  const fast = now('fast');
-  assert.ok(Math.abs(Math.hypot(fast.vx, fast.vy) - 2) < 1e-12);
+  const cornerZ = now('corner-z');
+  assert.equal(cornerZ.vx, 0);
+  assert.ok(cornerZ.vy < 0);
+  assert.ok(cornerZ.vz < 0);
+  assert.ok(cornerZ.z < was('corner-z').z);
 
-  const yields = now('yields');
-  const pusher = now('pusher');
-  assert.ok(yields.x > was('yields').x);
-  assert.equal(pusher.x, was('pusher').x + was('pusher').vx / 64);
-  assert.equal(yields.vx, pusher.vx);
+  const fast = now('fast');
+  assert.ok(Math.abs(Math.hypot(fast.vx, fast.vy, fast.vz) - 2) < 1e-12);
+
+  const pushX = now('push-x');
+  const yieldX = now('yield-x');
+  assert.equal(yieldX.vx, pushX.vx);
+  assert.ok(yieldX.x > was('yield-x').x);
+  assert.equal(pushX.x, was('push-x').x + was('push-x').vx / 64);
+
+  const pushY = now('push-y');
+  const yieldY = now('yield-y');
+  assert.equal(yieldY.vy, pushY.vy);
+  assert.ok(yieldY.y > was('yield-y').y);
+
+  const pushZ = now('push-z');
+  const yieldZ = now('yield-z');
+  assert.equal(yieldZ.vz, pushZ.vz);
+  assert.ok(yieldZ.z > was('yield-z').z);
+  assert.equal(pushZ.z, was('push-z').z + was('push-z').vz / 64);
 
   for (const body of world.bodies) {
     const prior = was(body.id);
-    assert.ok(body.x !== prior.x || body.y !== prior.y || body.vx !== prior.vx || body.vy !== prior.vy);
+    assert.ok(
+      body.x !== prior.x || body.y !== prior.y || body.z !== prior.z
+      || body.vx !== prior.vx || body.vy !== prior.vy || body.vz !== prior.vz,
+    );
   }
 });

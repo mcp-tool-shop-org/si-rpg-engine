@@ -16,6 +16,7 @@ import { createMemory } from './memory.js';
 import { loadIntentRules } from './predicates.js';
 import { replay } from './replay.js';
 import { FIXTURE_SEED, fixtureWorld } from './fixture.js';
+import { validateScene } from './scene.js';
 
 function fresh(seed = FIXTURE_SEED, retired = loadIntentRules().retired) {
   return createTick({ seed, world: createWorld(fixtureWorld()), rules: loadIntentRules().rules, retired, memory: createMemory() });
@@ -23,7 +24,7 @@ function fresh(seed = FIXTURE_SEED, retired = loadIntentRules().retired) {
 
 /** @param {ReturnType<typeof fresh>} t @param {number} x */
 function move(t, x) {
-  return t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x, y: 1 }, frameHash: t.frame().hash });
+  return t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x, z: 0 }, frameHash: t.frame().hash });
 }
 
 test('the quantum: same seed and inputs give the same hash, a different seed does not', () => {
@@ -64,7 +65,7 @@ test('one action per actor: a second intent while quanta remain is refused with 
   const first = move(t, 3);
   assert.ok(first.admitted);
   t.advance();
-  const second = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.5, y: 1 }, frameHash: t.frame().hash });
+  const second = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.5, z: 0 }, frameHash: t.frame().hash });
   assert.equal(second.admitted, false);
   assert.match(/** @type {any} */ (second).reason, /walker is mid-action; \d+ quanta remain/);
   assert.equal(t.log().length, 1, 'the refusal is not recorded');
@@ -106,18 +107,18 @@ test('velocity clears in the advance that completes the action, after that quant
 
 test('the admit step: the predicate refuses an unknown verb, a stale frame, and a path through a wall', () => {
   const t = fresh();
-  const stale = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 3, y: 1 }, frameHash: 'not-the-frame' });
+  const stale = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 3, z: 0 }, frameHash: 'not-the-frame' });
   assert.equal(stale.admitted, false);
   assert.match(/** @type {any} */ (stale).reason, /stale frame/);
-  const unknown = t.submit({ kind: 'intent', verb: 'fly', actor: 'walker', target: { x: 3, y: 1 }, frameHash: t.frame().hash });
+  const unknown = t.submit({ kind: 'intent', verb: 'fly', actor: 'walker', target: { x: 3, z: 0 }, frameHash: t.frame().hash });
   assert.equal(unknown.admitted, false);
   assert.match(/** @type {any} */ (unknown).reason, /unknown verb/);
-  const far = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 4.5, y: 1 }, frameHash: t.frame().hash });
+  const far = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 4.5, z: 0 }, frameHash: t.frame().hash });
   assert.equal(far.admitted, false);
   assert.match(/** @type {any} */ (far).reason, /beyond move range/);
-  const through = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1, y: -0.5 }, frameHash: t.frame().hash });
+  const through = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 3.9, z: 0 }, frameHash: t.frame().hash });
   assert.equal(through.admitted, false);
-  assert.match(/** @type {any} */ (through).reason, /path crosses collider floor/);
+  assert.match(/** @type {any} */ (through).reason, /path crosses collider wall-right/);
   assert.equal(t.log().length, 0, 'a refusal is not recorded');
 });
 
@@ -184,10 +185,10 @@ test('a spoken line is refused: slice 2 has no gate, and the line is never hashe
 
 test('a body draft is checked by the collider', () => {
   const t = fresh();
-  const inWall = t.submit({ kind: 'body', id: 'crate', x: 4.2, y: 1, hw: 0.2, hh: 0.2 });
+  const inWall = t.submit({ kind: 'body', id: 'crate', x: 4.2, y: 1, z: 0, hx: 0.2, hy: 0.2, hz: 0.2 });
   assert.equal(inWall.admitted, false);
   assert.match(/** @type {any} */ (inWall).reason, /overlaps wall-right/);
-  const clear = t.submit({ kind: 'body', id: 'crate', x: 3, y: 2, hw: 0.2, hh: 0.2 });
+  const clear = t.submit({ kind: 'body', id: 'crate', x: 3, y: 2, z: 0, hx: 0.2, hy: 0.2, hz: 0.2 });
   assert.ok(clear.admitted);
   settle(t);
   assert.equal(t.frame().bodies.length, 2);
@@ -271,98 +272,101 @@ test('replay: the seed and the admitted-input log reproduce every hash without t
   assert.equal(outOfOrder.ok, false);
 });
 
-test('the legacy fixture: admissions match, and frames match until the walker meets the crate', () => {
-  const legacy = JSON.parse(readFileSync('fixtures/legacy-play-log.json', 'utf8'));
-  const catalog = loadIntentRules();
-  /** @type {{ tick: number; hash: string }[]} */
-  const frames = [];
-  const log = legacy.entries.map((/** @type {any} */ e) => ({ tick: e.tick, proposal: e.proposal, hash: e.hash }));
-  const result = replay({
-    seed: legacy.seed,
-    world: fixtureWorld(),
-    rules: catalog.rules,
-    retired: catalog.retired,
-    log,
-    onFrame: (f) => void frames.push({ tick: f.tick, hash: f.hash }),
+/**
+ * @param {string} label
+ * @param {unknown[]} bodies
+ */
+function refusedRecord(label, bodies) {
+  const result = validateScene({
+    name: label,
+    seed: 1,
+    bodies,
+    colliders: [{ id: 'floor', minX: -1, maxX: 5, minY: -1, maxY: 0, minZ: -1, maxZ: 1 }],
+    goal: {
+      actor: 'walker',
+      zone: { minX: -1, maxX: 1, minY: -1, maxY: 0, minZ: -1, maxZ: 1 },
+    },
   });
-  assert.ok(result.ok, JSON.stringify(result));
-  assert.deepEqual(/** @type {any} */ (result).hashes, legacy.entries.map((/** @type {any} */ e) => e.hash));
-  // Tick 238 is where the walker first meets the crate this log spawned.
-  // Contact moves that crate. Every frame before the meeting matches.
-  assert.equal(frames.length, legacy.frames.length);
-  for (let i = 0; i < 238; i = i + 1) {
-    assert.equal(frames[i].hash, legacy.frames[i].hash);
+  assert.equal(result.ok, false, label);
+  if (!result.ok) {
+    assert.equal(result.reason, 'a body record is three-dimensional', label);
   }
-  assert.notEqual(frames[238].hash, legacy.frames[238].hash);
+}
+
+test('the 2D captures stay, and the loader refuses each body record', () => {
+  const legacy = JSON.parse(readFileSync('fixtures/legacy-play-log.json', 'utf8'));
+  const legacyBody = legacy.entries.map((/** @type {any} */ entry) => entry.proposal).find((/** @type {any} */ proposal) => proposal.kind === 'body');
+  refusedRecord('legacy-play-log', [legacyBody]);
+  const behavior = JSON.parse(readFileSync('fixtures/behavior-1c.json', 'utf8'));
+  refusedRecord('behavior-1c', behavior.world.bodies);
+  const pushed = JSON.parse(readFileSync('fixtures/push-play-log.json', 'utf8'));
+  refusedRecord('push-play-log', pushed.world.bodies);
+  const played = JSON.parse(readFileSync('fixtures/first-scene-played.json', 'utf8'));
+  refusedRecord('first-scene-played', played.scene.bodies);
 });
 
-test('push moves the crate at least one unit, then the crate rests, and the log replays', () => {
-  const saved = JSON.parse(readFileSync('fixtures/push-play-log.json', 'utf8'));
-  const catalog = loadIntentRules();
-  const result = replay({
-    seed: saved.seed,
-    world: saved.world,
-    rules: catalog.rules,
-    retired: catalog.retired,
-    log: saved.log,
-  });
-  assert.ok(result.ok, JSON.stringify(result));
-  assert.equal(/** @type {{ final: string }} */ (result).final, saved.final);
+/**
+ * @param {{ id: string, x: number, y: number, z: number, vx: number, vy: number, vz: number, hx: number, hy: number, hz: number }} crate
+ */
+function pushWorld(crate) {
+  return {
+    bodies: [
+      { id: 'walker', x: 1, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      crate,
+    ],
+    colliders: [
+      { id: 'floor', minX: -1, maxX: 8, minY: -1, maxY: 0, minZ: -2, maxZ: 4 },
+      { id: 'wall-left', minX: -1, maxX: 0, minY: 0, maxY: 4, minZ: -2, maxZ: 4 },
+      { id: 'wall-right', minX: 6, maxX: 7, minY: 0, maxY: 4, minZ: -2, maxZ: 4 },
+    ],
+  };
+}
 
-  const world = createWorld(saved.world);
-  const tick = createTick({
-    seed: saved.seed,
-    world,
-    rules: catalog.rules,
-    retired: catalog.retired,
-    memory: createMemory(),
-  });
-  const crate0 = world.body('crate');
-  if (!crate0) {
+test('push moves the crate at least one unit on x and on z, then the crate rests', () => {
+  const catalog = loadIntentRules();
+  const alongX = createWorld(pushWorld({ id: 'crate', x: 1.6, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }));
+  const tick = createTick({ seed: FIXTURE_SEED, world: alongX, rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
+  const crateBefore = alongX.body('crate');
+  if (!crateBefore) {
     throw new Error('crate');
   }
-  const start = crate0.x;
-  const admission = tick.submit({
-    kind: 'intent',
-    verb: 'push',
-    actor: 'walker',
-    target: { body: 'crate' },
-    frameHash: tick.frame().hash,
-  });
-  assert.equal(admission.admitted, true);
+  const startX = crateBefore.x;
+  assert.equal(tick.submit({ kind: 'intent', verb: 'push', actor: 'walker', target: { body: 'crate' }, frameHash: tick.frame().hash }).admitted, true);
   settle(tick);
-  const pushedCrate = world.body('crate');
-  if (!pushedCrate) {
+  const crateX = alongX.body('crate');
+  if (!crateX) {
     throw new Error('crate');
   }
-  assert.ok(pushedCrate.x - start >= 1);
-  const rested = pushedCrate.x;
+  assert.ok(crateX.x - startX >= 1);
+  const rested = crateX.x;
   tick.advance();
-  assert.equal(pushedCrate.vx, 0);
-  assert.equal(pushedCrate.x, rested);
+  assert.equal(crateX.vx, 0);
+  assert.equal(crateX.x, rested);
+
+  const alongZ = createWorld(pushWorld({ id: 'crate', x: 1, y: 0.25, z: 0.6, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }));
+  const zed = createTick({ seed: FIXTURE_SEED, world: alongZ, rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
+  const crateZBefore = alongZ.body('crate');
+  if (!crateZBefore) {
+    throw new Error('crate');
+  }
+  const startZ = crateZBefore.z;
+  assert.equal(zed.submit({ kind: 'intent', verb: 'push', actor: 'walker', target: { body: 'crate' }, frameHash: zed.frame().hash }).admitted, true);
+  settle(zed);
+  const crateZ = alongZ.body('crate');
+  if (!crateZ) {
+    throw new Error('crate');
+  }
+  assert.ok(crateZ.z - startZ >= 1);
 
   const busy = createTick({
-    seed: saved.seed,
-    world: createWorld(saved.world),
+    seed: FIXTURE_SEED,
+    world: createWorld(pushWorld({ id: 'crate', x: 1.6, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 })),
     rules: catalog.rules,
     retired: catalog.retired,
     memory: createMemory(),
   });
-  const move = busy.submit({
-    kind: 'intent',
-    verb: 'move',
-    actor: 'crate',
-    target: { x: 2.5, y: 1 },
-    frameHash: busy.frame().hash,
-  });
-  assert.equal(move.admitted, true);
-  const pushed = busy.submit({
-    kind: 'intent',
-    verb: 'push',
-    actor: 'walker',
-    target: { body: 'crate' },
-    frameHash: busy.frame().hash,
-  });
+  assert.equal(busy.submit({ kind: 'intent', verb: 'move', actor: 'crate', target: { x: 2.5, z: 0 }, frameHash: busy.frame().hash }).admitted, true);
+  const pushed = busy.submit({ kind: 'intent', verb: 'push', actor: 'walker', target: { body: 'crate' }, frameHash: busy.frame().hash });
   assert.equal(pushed.admitted, false);
   assert.equal(/** @type {{ reason: string }} */ (pushed).reason, 'target is mid-action');
 });
@@ -370,8 +374,8 @@ test('push moves the crate at least one unit, then the crate rests, and the log 
 test('an undriven body yields to a driven one, and two undriven bodies split', () => {
   const world = createWorld({
     bodies: [
-      { id: 'walker', x: 0, y: 3, vx: 1, vy: 0, hw: 0.5, hh: 0.5 },
-      { id: 'crate', x: 0.8, y: 3, vx: 0.4, vy: 0, hw: 0.5, hh: 0.5 },
+      { id: 'walker', x: 0, y: 3, z: 0, vx: 1, vy: 0, vz: 0, hx: 0.5, hy: 0.5, hz: 0.5 },
+      { id: 'crate', x: 0.8, y: 3, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.5, hy: 0.5, hz: 0.5 },
     ],
     colliders: [],
   });
@@ -392,8 +396,8 @@ test('an undriven body yields to a driven one, and two undriven bodies split', (
 
   const pair = createWorld({
     bodies: [
-      { id: 'a', x: 0, y: 3, vx: 0.2, vy: 0, hw: 0.5, hh: 0.5 },
-      { id: 'b', x: 0.8, y: 3, vx: 0.3, vy: 0, hw: 0.5, hh: 0.5 },
+      { id: 'a', x: 0, y: 3, z: 0, vx: 0.2, vy: 0, vz: 0, hx: 0.5, hy: 0.5, hz: 0.5 },
+      { id: 'b', x: 0.8, y: 3, z: 0, vx: 0.3, vy: 0, vz: 0, hx: 0.5, hy: 0.5, hz: 0.5 },
     ],
     colliders: [],
   });
@@ -409,13 +413,10 @@ test('an undriven body yields to a driven one, and two undriven bodies split', (
 });
 
 test('the replay command honors the world a log carries, and a play log carries one', () => {
-  const pushed = spawnSync(process.execPath, ['packages/tick/bin/replay.js', 'fixtures/push-play-log.json'], { encoding: 'utf8' });
-  assert.equal(pushed.status, 0, pushed.stderr);
-  assert.match(pushed.stdout, /replay ok/);
   const dir = mkdtempSync(join(tmpdir(), 'si-rpg-'));
   const script = join(dir, 'script.json');
   const log = join(dir, 'log.json');
-  writeFileSync(script, JSON.stringify([{ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, y: 1 }, frameHash: '@drawn' }]));
+  writeFileSync(script, JSON.stringify([{ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, z: 0 }, frameHash: '@drawn' }]));
   const played = spawnSync(process.execPath, ['packages/tick/bin/play.js', script, '--log', log], { encoding: 'utf8' });
   assert.equal(played.status, 0, played.stderr);
   const saved = JSON.parse(readFileSync(log, 'utf8'));
@@ -426,23 +427,22 @@ test('the replay command honors the world a log carries, and a play log carries 
   assert.equal(notALog.status, 2, 'a capture fixture is refused as not a play log');
 });
 
-test('the 1C behavior fixture: a walker pushing a crate replays frame for frame', () => {
-  const saved = JSON.parse(readFileSync('fixtures/behavior-1c.json', 'utf8'));
+test('the 3D behavior fixture replays frame for frame', () => {
+  const saved = JSON.parse(readFileSync('fixtures/behavior-3d.json', 'utf8'));
   const catalog = loadIntentRules();
   /** @type {{ tick: number; hash: string }[]} */
   const frames = [];
-  const log = saved.entries.map((/** @type {any} */ e) => ({ tick: e.tick, proposal: e.proposal, hash: e.hash }));
   const result = replay({
     seed: saved.seed,
     world: saved.world,
     rules: catalog.rules,
     retired: catalog.retired,
-    log,
+    log: saved.log,
     onFrame: (f) => void frames.push({ tick: f.tick, hash: f.hash }),
   });
   assert.ok(result.ok, JSON.stringify(result));
-  assert.deepEqual(/** @type {any} */ (result).hashes, saved.entries.map((/** @type {any} */ e) => e.hash));
-  assert.deepEqual(frames.slice(0, saved.frames.length), saved.frames, 'every committed frame, quantum for quantum');
+  assert.deepEqual(/** @type {any} */ (result).hashes, saved.log.map((/** @type {any} */ entry) => entry.hash));
+  assert.deepEqual(frames, saved.frames, 'every committed frame, quantum for quantum');
 });
 
 test('the replay command replays a host log, which carries a scene instead of a world', () => {
@@ -465,12 +465,12 @@ test('the replay command replays a host log, which carries a scene instead of a 
 test('a walker resting on the floor can still move and push: touching a swept face is not a crossing', () => {
   const scene = JSON.parse(readFileSync('scenes/crate-and-door.json', 'utf8'));
   const world = createWorld({ bodies: scene.bodies, colliders: scene.colliders });
-  const pad = { hw: 0.25, hh: 0.25 };
-  assert.equal(world.segmentHits(1.7, 0.25, 2.7, 0.25, pad), null, 'along the floor at rest');
-  assert.equal(world.segmentHits(1.7, 0.25, 2.1, 0.3, pad), null, 'to the near face of the crate at rest');
-  assert.equal(world.segmentHits(1.7, 0.25, 1.7, -0.5, pad), 'floor', 'into the floor still crosses');
-  assert.equal(world.segmentHits(1.7, 1, 4, 1, pad), 'wall-right', 'into the wall still crosses');
-  assert.equal(world.segmentHits(1.7, 1, 3.75, 1, pad), null, 'ending exactly on the swept wall face is touching');
+  const pad = { hx: 0.25, hy: 0.25, hz: 0.25 };
+  assert.equal(world.segmentHits(1.7, 0.25, 0, 2.7, 0.25, 0, pad), null, 'along the floor at rest');
+  assert.equal(world.segmentHits(1.7, 0.25, 0, 2.1, 0.3, 0, pad), null, 'to the near face of the crate at rest');
+  assert.equal(world.segmentHits(1.7, 0.25, 0, 1.7, -0.5, 0, pad), 'floor', 'into the floor still crosses');
+  assert.equal(world.segmentHits(1.7, 1, 0, 4, 1, 0, pad), 'wall-right', 'into the wall still crosses');
+  assert.equal(world.segmentHits(1.7, 1, 0, 3.75, 1, 0, pad), null, 'ending exactly on the swept wall face is touching');
   const catalog = loadIntentRules();
   const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
   let rested = false;
@@ -480,4 +480,91 @@ test('a walker resting on the floor can still move and push: touching a swept fa
   assert.ok(rested, 'the walker came fully to rest on the floor');
   const push = t.submit({ kind: 'intent', verb: 'push', actor: 'walker', target: { body: 'crate' }, frameHash: t.frame().hash });
   assert.ok(push.admitted, JSON.stringify(push));
+});
+
+test('a body falls and lands on the floor', () => {
+  const t = fresh();
+  let minY = Infinity;
+  let landed = false;
+  for (let i = 0; i < 400; i = i + 1) {
+    const frame = t.advance();
+    const body = frame.bodies[0];
+    if (body.y < minY) {
+      minY = body.y;
+    }
+    if (body.y === 0.25 && body.vy > 0) {
+      landed = true;
+    }
+  }
+  assert.ok(minY >= 0.25 - 1e-9, 'the box never entered the floor');
+  assert.equal(landed, true, 'the centre reached the floor and the landing reflected vy');
+});
+
+test('a body slides in x and in z', () => {
+  /**
+   * @param {ReturnType<typeof fresh>} tick
+   */
+  function land(tick) {
+    for (let i = 0; i < 400; i = i + 1) {
+      if (tick.advance().bodies[0].y === 0.25) {
+        return;
+      }
+    }
+    throw new Error('the walker did not reach the floor');
+  }
+
+  const across = fresh();
+  land(across);
+  const z0 = across.frame().bodies[0].z;
+  assert.equal(across.submit({
+    kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2.5, z: 0 }, frameHash: across.frame().hash,
+  }).admitted, true);
+  settle(across);
+  assert.ok(across.frame().bodies[0].x > 2);
+  assert.equal(across.frame().bodies[0].z, z0);
+
+  const depth = fresh();
+  land(depth);
+  const x0 = depth.frame().bodies[0].x;
+  assert.equal(depth.submit({
+    kind: 'intent', verb: 'move', actor: 'walker', target: { x: x0, z: 1.5 }, frameHash: depth.frame().hash,
+  }).admitted, true);
+  settle(depth);
+  assert.equal(depth.frame().bodies[0].x, x0);
+  assert.ok(depth.frame().bodies[0].z > 1);
+});
+
+test('a wall stops a body on each ground axis', () => {
+  /**
+   * @param {'x' | 'z'} axis
+   */
+  function hit(axis) {
+    const body = { id: 'walker', x: 1, y: 3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 };
+    /** @type {import('../frame/types.js').StaticCollider} */
+    let wall;
+    if (axis === 'x') {
+      body.x = 1.75;
+      body.vx = 2;
+      wall = { id: 'wall', minX: 2, maxX: 3, minY: 0, maxY: 4, minZ: -2, maxZ: 2 };
+    } else {
+      body.z = 1.75;
+      body.vz = 2;
+      wall = { id: 'wall', minX: -2, maxX: 4, minY: 0, maxY: 4, minZ: 2, maxZ: 3 };
+    }
+    const world = createWorld({ bodies: [body], colliders: [wall] });
+    world.step(new Set(['walker']));
+    const after = world.body('walker');
+    if (!after) {
+      throw new Error('walker');
+    }
+    if (axis === 'x') {
+      assert.ok(after.vx < 0, 'the wall reflected x');
+      assert.ok(after.x + after.hx <= 2 + 1e-9, 'the box does not enter the wall');
+    } else {
+      assert.ok(after.vz < 0, 'the wall reflected z');
+      assert.ok(after.z + after.hz <= 2 + 1e-9, 'the box does not enter the wall');
+    }
+  }
+  hit('x');
+  hit('z');
 });

@@ -4,7 +4,7 @@
 /**
  * @param {{
  *   tick: number;
- *   bodies: Array<{ id: string, x: number, y: number, hw: number, hh: number }>;
+ *   bodies: Array<{ id: string, x: number, y: number, z: number, hx: number, hy: number, hz: number }>;
  *   episodes: string[];
  *   goal: string;
  *   obstacle: string;
@@ -28,7 +28,7 @@ export function proposalPrompt(view) {
       : 'Do not propose a line or a new verb.',
     'A body proposal names a label. It does not name an id.',
     'Frame tick ' + view.tick + '.',
-    'Bodies on the frame: ' + view.bodies.map((body) => body.id + ' at x ' + body.x + ' y ' + body.y + ', half-size ' + body.hw + ' by ' + body.hh).join('; ') + '.',
+    'Bodies on the frame: ' + view.bodies.map((body) => body.id + ' at x ' + body.x + ' y ' + body.y + ' z ' + body.z + ', half-extents ' + body.hx + ', ' + body.hy + ', ' + body.hz).join('; ') + '.',
     'Admitted episodes: ' + (view.episodes.length === 0 ? 'none' : view.episodes.join('; ')) + '.',
     'Withdrawn episode e0 must not be cited. It is not in the log.',
   ];

@@ -9,22 +9,22 @@ import { FIXTURE_SEED } from '../tick/fixture.js';
 import { GOAL, proposeWorld, reachedGoal } from './scene.js';
 
 /**
- * @returns {{ x: number, y: number }[]}
+ * @returns {{ x: number, z: number }[]}
  */
 function grid() {
-  /** @type {{ x: number, y: number }[]} */
-  const points = [{ x: GOAL.x, y: GOAL.y }];
+  /** @type {{ x: number, z: number }[]} */
+  const points = [{ x: GOAL.x, z: GOAL.z }];
   for (let x = 0.5; x <= 3.5; x = x + 0.5) {
-    for (let y = 0.25; y <= 2.5; y = y + 0.5) {
-      points.push({ x, y });
+    for (let z = -1.5; z <= 1.5; z = z + 0.5) {
+      points.push({ x, z });
     }
   }
   return points;
 }
 
 /**
- * @param {{ x: number, y: number }[]} targets
- * @returns {{ ok: boolean, minDist: number, at: number | null, x: number | undefined, y: number | undefined }}
+ * @param {{ x: number, z: number }[]} targets
+ * @returns {{ ok: boolean, minDist: number, at: number | null, x: number | undefined, y: number | undefined, z: number | undefined }}
  */
 function play(targets) {
   const catalog = loadIntentRules();
@@ -46,22 +46,23 @@ function play(targets) {
       frameHash: frame.hash,
     });
     if (!admission.admitted) {
-      return { ok: false, minDist, at: null, x: undefined, y: undefined };
+      return { ok: false, minDist, at: null, x: undefined, y: undefined, z: undefined };
     }
     settle(tick);
     const body = tick.frame().bodies[0];
     const dx = body.x - GOAL.x;
     const dy = body.y - GOAL.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+    const dz = body.z - GOAL.z;
+    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
     if (dist < minDist) {
       minDist = dist;
     }
-    if (reachedGoal(body.x, body.y)) {
-      return { ok: true, minDist: dist, at: i + 1, x: body.x, y: body.y };
+    if (reachedGoal(body.x, body.y, body.z)) {
+      return { ok: true, minDist: dist, at: i + 1, x: body.x, y: body.y, z: body.z };
     }
   }
   const body = tick.frame().bodies[0];
-  return { ok: false, minDist, at: null, x: body.x, y: body.y };
+  return { ok: false, minDist, at: null, x: body.x, y: body.y, z: body.z };
 }
 
 export function oracleSearch() {

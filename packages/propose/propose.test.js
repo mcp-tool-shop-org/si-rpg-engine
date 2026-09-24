@@ -29,7 +29,7 @@ const verbs = ['move'];
 test('both conditions see the previous proposal; only one sees the reason', () => {
   const shared = {
     tick: 3,
-    bodies: [{ id: 'walker', x: 1, y: 1, hw: 0.25, hh: 0.25 }],
+    bodies: [{ id: 'walker', x: 1, y: 1, z: 0, hx: 0.25, hy: 0.25, hz: 0.25 }],
     episodes: [],
     goal: 'Goal: put the walker centre within 0.5 of x 3, y 1.',
     obstacle: 'A pillar occupies x 1.7 to 2.3, y 0.6 to 1.4.',
@@ -44,7 +44,7 @@ test('both conditions see the previous proposal; only one sees the reason', () =
   assert.match(hidden, /Verdict: rejected/);
   assert.match(shown, /path crosses collider floor/);
   assert.equal(hidden.includes('path crosses collider floor'), false);
-  assert.match(shown, /Bodies on the frame: walker at x 1 y 1/);
+  assert.match(shown, /Bodies on the frame: walker at x 1 y 1 z 0/);
   assert.match(shown, /Withdrawn episode e0 must not be cited/);
   assert.match(shown, /Goal:/);
   const bare = proposalPrompt({ ...shared, previous: null, verdict: null, lastReason: null });
@@ -53,10 +53,10 @@ test('both conditions see the previous proposal; only one sees the reason', () =
   assert.equal(bare.includes('belief'), false);
   assert.equal(bare.includes('refused'), false);
   const room = createWorld(proposeWorld());
-  assert.equal(room.segmentHits(1, 1, 3, 1), 'pillar');
-  assert.equal(room.segmentHits(1, 1, 1, 2.5), null);
-  assert.equal(goalText(), 'Goal: put the walker centre within 0.5 of x 3, y 0.35.');
-  assert.equal(obstacleText(), 'A pillar occupies x 1.8 to 2.2, y 0.72 to 2.2.');
+  assert.equal(room.segmentHits(1, 1, 0, 3, 1, 0), 'pillar');
+  assert.equal(room.segmentHits(1, 1, 0, 1, 2.5, 0), null);
+  assert.equal(goalText(), 'Goal: put the walker centre within 0.5 of x 3, y 0.35, z 0.');
+  assert.equal(obstacleText(), 'A pillar occupies x 1.8 to 2.2, y 0.72 to 2.2, z -0.35 to 0.35.');
   assert.equal(obstacleText().includes('refused'), false);
   const oracle = oracleSearch();
   assert.equal(oracle.solvable, true);
@@ -76,9 +76,9 @@ test('the reason is the only difference, and an unreadable reply is split in two
     ask: async (prompt) => {
       seen.push(prompt);
       if (seen.length === 1) {
-        return '{"kind":"intent","verb":"fly","actor":"walker","target":{"x":2,"y":1}}';
+        return '{"kind":"intent","verb":"fly","actor":"walker","target":{"x":2,"z":0}}';
       }
-      return '{"kind":"intent","verb":"move","actor":"walker","target":{"x":2,"y":1}}';
+      return '{"kind":"intent","verb":"move","actor":"walker","target":{"x":2,"z":0}}';
     },
   });
   assert.equal(withReason.admitted, 1);
@@ -98,7 +98,7 @@ test('the reason is the only difference, and an unreadable reply is split in two
     temperature: 0,
     ask: async (prompt) => {
       blindSeen.push(prompt);
-      return '{"kind":"intent","verb":"fly","actor":"walker","target":{"x":2,"y":1}}';
+      return '{"kind":"intent","verb":"fly","actor":"walker","target":{"x":2,"z":0}}';
     },
   });
   assert.equal(blind.admitted, 0);
@@ -144,7 +144,7 @@ test('the schema enums are the catalog, and replay does not ask again', async ()
       if (asks === 1) {
         return '{"kind":"line","speaker":"walker","text":"hello"}';
       }
-      return '{"kind":"intent","verb":"move","actor":"walker","target":{"x":2,"y":1}}';
+      return '{"kind":"intent","verb":"move","actor":"walker","target":{"x":2,"z":0}}';
     },
   });
   const schema = /** @type {{ oneOf: import('./schema.js').ProposalBranch[] }} */ (schemas[0]);
@@ -181,5 +181,5 @@ test('the schema enums are the catalog, and replay does not ask again', async ()
   assert.equal(bodyBranch.required.includes('label'), true);
   const closed = proposalSchema(['move'], ['walker']);
   assert.equal(closed.oneOf.some((branch) => branch.properties.kind.const === 'belief'), false);
-  assert.equal(readProposal('{"kind":"body","label":"walker","x":2,"y":1,"hw":0.2,"hh":0.2}', 'h', ['walker']).proposal && /** @type {any} */ (readProposal('{"kind":"body","label":"walker","x":2,"y":1,"hw":0.2,"hh":0.2}', 'h', ['walker']).proposal).id, 'walker-2');
+  assert.equal(readProposal('{"kind":"body","label":"walker","x":2,"y":1,"z":0,"hx":0.2,"hy":0.2,"hz":0.2}', 'h', ['walker']).proposal && /** @type {any} */ (readProposal('{"kind":"body","label":"walker","x":2,"y":1,"z":0,"hx":0.2,"hy":0.2,"hz":0.2}', 'h', ['walker']).proposal).id, 'walker-2');
 });

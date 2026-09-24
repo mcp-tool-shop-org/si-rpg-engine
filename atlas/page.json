@@ -68,7 +68,7 @@
   "changes": {
     "fileCounts": {
       "added": 0,
-      "changed": 68,
+      "changed": 64,
       "moved": 0,
       "parts": 12,
       "removed": 0
@@ -83,22 +83,14 @@
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "scenes/crate-and-door.json is now also read by packages/tick/tick.test.js.",
-        "subjects": [
-          "scenes/crate-and-door.json",
-          "packages/tick/tick.test.js"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "68 files changed content, across 12 parts.",
+        "sentence": "64 files changed content, across 12 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "39e10a02737f943d61794256395de8574f35c216",
-      "generatedAt": "2026-09-24T22:24:22.890Z"
+      "commit": "d8f197708fa264d61334294eaff95927f958813c",
+      "generatedAt": "2026-09-24T23:27:47.530Z"
     },
     "unchanged": false
   },
@@ -184,7 +176,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "6362370a2d8849a8fc753166a715edc6299dc45b",
+  "commit": "3ba2a840e6dbb425fb4fef484af5383435c39736",
   "defaultBranch": "main",
   "derived": "13 parts, mostly JavaScript (38 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -536,10 +528,10 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T22:42:09.218Z",
+  "generatedAt": "2026-09-24T23:31:28.654Z",
   "limits": [
     "1 read uses a path built at run time and is not named here.",
-    "5 writes and 7 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.",
+    "5 writes and 8 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.",
     "1 command is built at run time and not followed.",
     "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions."
   ],

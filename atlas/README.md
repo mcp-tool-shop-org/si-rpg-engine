@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit 6362370.
+Mapped at 2026-09-24 from commit 3ba2a84.
 
 ## What this is
 
@@ -8,11 +8,10 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 13 parts, mostly JavaScript (38 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (39e10a0)
+## What changed since 2026-09-24 (d8f1977)
 
 - write-golden now also runs harness/sim.mjs.
-- scenes/crate-and-door.json is now also read by packages/tick/tick.test.js.
-- 68 files changed content, across 12 parts.
+- 64 files changed content, across 12 parts.
 
 ## What comes in
 
@@ -101,7 +100,7 @@ Read those in order to follow one run of host end to end. This path follows host
 ## What this map cannot see
 
 - 1 read uses a path built at run time and is not named here.
-- 5 writes and 7 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.
+- 5 writes and 8 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.
 - 1 command is built at run time and not followed.
 - Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions.
 

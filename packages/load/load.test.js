@@ -35,9 +35,11 @@ test('the corner clip is a path the centre line clears and the swept body does n
   const scenario = JSON.parse(readFileSync('predicates/hazards/corner-clip.json', 'utf8'));
   const world = createWorld({ bodies: scenario.bodies, colliders: scenario.colliders });
   const actor = scenario.bodies[0];
-  assert.equal(world.segmentHits(actor.x, actor.y, scenario.target.x, scenario.target.y), null);
+  assert.equal(world.segmentHits(actor.x, actor.y, actor.z, scenario.target.x, actor.y, scenario.target.z), null);
   assert.equal(
-    world.segmentHits(actor.x, actor.y, scenario.target.x, scenario.target.y, { hw: actor.hw, hh: actor.hh }),
+    world.segmentHits(actor.x, actor.y, actor.z, scenario.target.x, actor.y, scenario.target.z, {
+      hx: actor.hx, hy: actor.hy, hz: actor.hz,
+    }),
     'pillar',
   );
 });
@@ -110,7 +112,7 @@ test('play refuses a verb draft, and a retired verb is not a move', () => {
     kind: 'intent',
     verb: 'move',
     actor: 'walker',
-    target: { x: 2, y: 1 },
+    target: { x: 2, z: 0 },
     frameHash: later.frame().hash,
   });
   assert.equal(refused.admitted, false);

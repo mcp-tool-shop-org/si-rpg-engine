@@ -63,7 +63,7 @@ export function createTick(init) {
     for (let i = 0; i < world.bodies.length; i = i + 1) {
       const b = world.bodies[i];
       hasher.text(b.id);
-      if (!hasher.float(b.x) || !hasher.float(b.y) || !hasher.float(b.vx) || !hasher.float(b.vy)) {
+      if (!hasher.float(b.x) || !hasher.float(b.y) || !hasher.float(b.z) || !hasher.float(b.vx) || !hasher.float(b.vy) || !hasher.float(b.vz)) {
         throw new Error('NaN in body ' + b.id + ' at tick ' + tick);
       }
     }
@@ -111,6 +111,7 @@ export function createTick(init) {
         const actor = world.body(actorId);
         if (actor) {
           actor.vx = 0;
+          actor.vz = 0;
         }
         actions.delete(actorId);
       } else {
@@ -159,19 +160,30 @@ export function createTick(init) {
         if (!actor) {
           return { admitted: false, reason: 'no body named ' + proposal.actor };
         }
-        const named = /** @type {{ body?: unknown, x?: unknown }} */ (proposal.target);
+        const named = /** @type {{ body?: unknown, x?: unknown, z?: unknown }} */ (proposal.target);
         let aimX = actor.x;
+        let aimZ = actor.z;
         if (typeof named.body === 'string') {
           const other = world.body(named.body);
           if (!other) {
             return { admitted: false, reason: 'no body named ' + named.body };
           }
           aimX = other.x;
-        } else if (typeof named.x === 'number') {
+          aimZ = other.z;
+        } else if (typeof named.x === 'number' && typeof named.z === 'number') {
           aimX = named.x;
+          aimZ = named.z;
         }
         const dx = aimX - actor.x;
-        actor.vx = dx < 0 ? 0 - check.rule.speed : check.rule.speed;
+        const dz = aimZ - actor.z;
+        const ground = Math.sqrt(dx * dx + dz * dz);
+        if (ground === 0) {
+          actor.vx = 0;
+          actor.vz = 0;
+        } else {
+          actor.vx = check.rule.speed * dx / ground;
+          actor.vz = check.rule.speed * dz / ground;
+        }
         memory.recordEpisode(tick, 'intent', proposal.verb + ' ' + proposal.actor);
         record(proposal);
         actions.set(proposal.actor, check.quanta);
@@ -211,7 +223,10 @@ export function createTick(init) {
         if (hit !== null) {
           return { admitted: false, reason: 'body draft overlaps ' + hit };
         }
-        world.bodies.push({ id: proposal.id, x: proposal.x, y: proposal.y, vx: 0, vy: 0, hw: proposal.hw, hh: proposal.hh });
+        world.bodies.push({
+          id: proposal.id, x: proposal.x, y: proposal.y, z: proposal.z,
+          vx: 0, vy: 0, vz: 0, hx: proposal.hx, hy: proposal.hy, hz: proposal.hz,
+        });
         memory.recordEpisode(tick, 'body', proposal.id);
         record(proposal);
         pending = pending + 1;

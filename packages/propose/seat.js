@@ -19,6 +19,7 @@ import { goalText, obstacleText } from './scene.js';
  *   reason: string | null;
  *   x: number;
  *   y: number;
+ *   z: number;
  * }} Attempt
  */
 
@@ -75,7 +76,9 @@ export async function runSeat(init) {
     const seed = init.seedBase + i;
     const prompt = proposalPrompt({
       tick: frame.tick,
-      bodies: frame.bodies.map((body) => ({ id: body.id, x: body.x, y: body.y, hw: body.hw, hh: body.hh })),
+      bodies: frame.bodies.map((body) => ({
+        id: body.id, x: body.x, y: body.y, z: body.z, hx: body.hx, hy: body.hy, hz: body.hz,
+      })),
       episodes: episodesOf(init.tick.log()),
       goal: goalText(),
       obstacle: obstacleText(),
@@ -87,7 +90,7 @@ export async function runSeat(init) {
     const read = readProposal(raw, frame.hash, actors);
     const place = () => {
       const after = init.tick.frame().bodies[0];
-      return { x: after.x, y: after.y };
+      return { x: after.x, y: after.y, z: after.z };
     };
     if (read.verdict !== 'ok') {
       const at = place();
@@ -101,6 +104,7 @@ export async function runSeat(init) {
         reason: read.verdict,
         x: at.x,
         y: at.y,
+        z: at.z,
       });
       previous = raw;
       verdict = 'rejected';
@@ -120,6 +124,7 @@ export async function runSeat(init) {
       reason: admission.admitted ? null : admission.reason,
       x: at.x,
       y: at.y,
+      z: at.z,
     });
     previous = previousText(read.proposal);
     verdict = admission.admitted ? 'admitted' : 'rejected';

@@ -7,7 +7,7 @@ export const FIXTURE_SEED = 7;
 
 export function fixtureWorld() {
   return {
-    bodies: [{ id: 'walker', x: 1, y: 1, vx: 0, vy: 0, hw: 0.25, hh: 0.25 }],
+    bodies: [{ id: 'walker', x: 1, y: 1, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }],
     colliders: fixtureColliders(),
   };
 }

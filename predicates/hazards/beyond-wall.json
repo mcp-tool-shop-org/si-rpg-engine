@@ -1,12 +1,12 @@
 {
   "id": "beyond-wall-refuses",
   "bodies": [
-    { "id": "walker", "x": 1, "y": 1, "vx": 0, "vy": 0, "hw": 0.25, "hh": 0.25 },
-    { "id": "crate", "x": 3, "y": 1, "vx": 0, "vy": 0, "hw": 0.25, "hh": 0.25 }
+    { "id": "walker", "x": 1, "y": 1, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 },
+    { "id": "crate", "x": 3, "y": 1, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 }
   ],
-  "colliders": [{ "id": "wall", "minX": 1.7, "maxX": 1.9, "minY": 0, "maxY": 2 }],
+  "colliders": [{ "id": "wall", "minX": 1.7, "maxX": 1.9, "minY": 0, "maxY": 2, "minZ": -1, "maxZ": 1 }],
   "actor": "walker",
-  "target": { "x": 3, "y": 1 },
+  "target": { "x": 3, "z": 0 },
   "targetBody": "crate",
   "expect": "refuse"
 }
