@@ -10,17 +10,20 @@
     header { padding: 10px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
     header p { margin: 0; max-width: 100%; }
     #status { word-break: break-all; }
-    #reason { color: #e0a15a; min-height: 1.2em; margin: 0 14px; }
+    #reason, #door { min-height: 1.2em; margin: 0 14px; }
+    #reason { color: #e0a15a; }
+    #door { color: #e7e1d5; }
     #stage { flex: 1 1 auto; min-width: 0; min-height: 0; position: relative; }
     canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
   </style>
 </head>
 <body>
   <header>
-    <p>Walker, floor, two walls. Left and right move. Click a point.</p>
+    <p>Left and right move. P pushes the nearest body. Click a point.</p>
     <p id="status">connecting</p>
   </header>
   <p id="reason"></p>
+  <p id="door"></p>
   <div id="stage"><canvas id="room"></canvas></div>
   <script type="module">
     import { fit, worldToCanvas, canvasToWorld, blendBody } from '/view.js';
@@ -29,6 +32,7 @@
     const ctx = canvas.getContext('2d');
     const status = document.getElementById('status');
     const reason = document.getElementById('reason');
+    const door = document.getElementById('door');
     let world = null;
     let previous = null;
     let newest = null;
@@ -62,6 +66,9 @@
           const fill = box.id === 'floor' ? '#3d4a43' : '#3e4d63';
           rect(view, box.minX, box.minY, box.maxX, box.maxY, fill);
         }
+        if (world.goal) {
+          rect(view, world.goal.minX, world.goal.minY, world.goal.maxX, world.goal.maxY, 'rgba(224, 161, 90, 0.45)');
+        }
       }
       if (newest) {
         const alpha = world ? Math.min(1, (performance.now() - arrived) / (world.dt * 1000)) : 1;
@@ -72,6 +79,9 @@
           rect(view, at.x - body.hw, at.y - body.hh, at.x + body.hw, at.y + body.hh, color);
         }
         status.textContent = 'tick ' + newest.tick + '  ' + newest.hash;
+        if (newest.door !== null && newest.door !== undefined && door.textContent === '') {
+          door.textContent = 'door reached at tick ' + newest.door;
+        }
       }
       requestAnimationFrame(draw);
     }
@@ -97,6 +107,11 @@
 
     window.addEventListener('keydown', (event) => {
       const directions = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down' };
+      if (event.key === 'p' || event.key === 'P') {
+        event.preventDefault();
+        send({ verb: 'push', actor: 'walker' });
+        return;
+      }
       const direction = directions[event.key];
       if (!direction) {
         return;

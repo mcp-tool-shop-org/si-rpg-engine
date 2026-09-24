@@ -1,23 +1,26 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit 1126282.
+Mapped at 2026-09-24 from commit 39e10a0.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-12 parts, mostly JavaScript (36 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.
+13 parts, mostly JavaScript (38 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (5f47e58)
+## What changed since 2026-09-24 (1126282)
 
-- write-golden no longer runs harness/sim.mjs.
-- fixtures/push-play-log.json is now read by packages/tick/tick.test.js.
-- predicates/intents/push.json is now read by packages/load/load.test.js.
-- 6 files added and 60 changed content, across 12 parts.
+- CI now also runs packages/tick/scene.test.js.
+- fixtures/behavior-1c.json is now read by packages/tick/tick.test.js.
+- packages/tick/bin/play.js is now also read by packages/tick/tick.test.js.
+- packages/tick/bin/replay.js is now also read by packages/tick/tick.test.js.
+- And 1 more new writer or reader of a place.
+- scenes is a new part, drawn from `scenes/**`.
+- 5 files added and 15 changed content, across 8 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs harness/product.test.js, packages/host/host.test.js, packages/load/load.test.js and 2 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 11 more.
+1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs harness/product.test.js, packages/host/host.test.js, packages/load/load.test.js and 3 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 11 more.
 2. **host** (a command people run). Runs packages/host/bin/host.js.
 3. **load** (a command people run). Runs packages/load/bin/load.js.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -27,7 +30,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 ## What happens through CI
 
-1. The workflow runs harness/product.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose and packages/tick/tick.test.js in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 5 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 18 files in 2 more parts.
+1. The workflow runs harness/product.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, and packages/tick/scene.test.js and packages/tick/tick.test.js in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 5 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 20 files in 2 more parts.
    1. Inside packages/propose/propose.test.js, fresh does, in order: load intent rules (tick), fixture world, create world, create memory and create tick.
    2. **Create tick** (tick) runs, in order: create hasher (frame) and commit frame.
    3. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
@@ -81,7 +84,9 @@ Every written place has a reader.
 
 ## Helpers that look duplicated
 
-No two parts export a helper that looks alike.
+These are candidates from names and call order, not a judgement.
+
+- **reachedGoal** is exported by packages/propose/scene.js (propose) and packages/tick/scene.js (tick); the two look alike.
 
 ## Generated, never hand-edited
 
@@ -89,19 +94,19 @@ No two parts export a helper that looks alike.
 
 ## Hand-authored
 
-People write .github/, docs/, predicates/hazards/, predicates/intents/ and the repository root. Nothing in this repository writes to them.
+People write .github/, docs/, predicates/hazards/, predicates/intents/, the repository root and scenes/. Nothing in this repository writes to them.
 
 ## Where to start
 
-.github/workflows/ci.yml → packages/propose/bin/propose.js → packages/tick/fixture.js
+.github/workflows/ci.yml → packages/tick/bin/play.js
 
 Read those in order to follow one pull request end to end.
 
 ## What this map cannot see
 
 - 2 reads use paths built at run time and are not named here.
-- 4 writes and 5 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 2 commands are built at run time and not followed.
+- 5 writes and 6 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 4 commands are built at run time and not followed, 2 of them in tests.
 - Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.
