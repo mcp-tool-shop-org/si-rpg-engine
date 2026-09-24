@@ -132,7 +132,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "propose",
-      "qualifyingSourceCommits": 1,
+      "qualifyingSourceCommits": 2,
       "rebaseline": null
     },
     {
@@ -206,13 +206,13 @@
         "path": "LICENSE"
       },
       {
-        "commits": 11,
-        "lines": 72,
+        "commits": 13,
+        "lines": 76,
         "path": "README.md"
       },
       {
-        "commits": 10,
-        "lines": 449,
+        "commits": 12,
+        "lines": 461,
         "path": "atlas/README.md"
       },
       {
@@ -221,18 +221,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 10,
-        "lines": 1850,
+        "commits": 12,
+        "lines": 1882,
         "path": "atlas/page.json"
       },
       {
-        "commits": 10,
-        "lines": 1411,
+        "commits": 12,
+        "lines": 1545,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 10,
-        "lines": 3716,
+        "commits": 12,
+        "lines": 3786,
         "path": "atlas/structure.json"
       },
       {
@@ -296,8 +296,8 @@
         "path": "fixtures/golden.txt"
       },
       {
-        "commits": 4,
-        "lines": 3322,
+        "commits": 6,
+        "lines": 5330,
         "path": "fixtures/proposer-qwen2.5-7b.json"
       },
       {
@@ -371,8 +371,8 @@
         "path": "packages/load/suite.js"
       },
       {
-        "commits": 4,
-        "lines": 360,
+        "commits": 6,
+        "lines": 426,
         "path": "packages/propose/bin/propose.js"
       },
       {
@@ -386,28 +386,28 @@
         "path": "packages/propose/ollama.js"
       },
       {
-        "commits": 4,
-        "lines": 212,
+        "commits": 6,
+        "lines": 268,
         "path": "packages/propose/parse.js"
       },
       {
-        "commits": 4,
-        "lines": 78,
+        "commits": 6,
+        "lines": 100,
         "path": "packages/propose/prompt.js"
       },
       {
-        "commits": 4,
-        "lines": 328,
+        "commits": 6,
+        "lines": 368,
         "path": "packages/propose/propose.test.js"
       },
       {
-        "commits": 2,
-        "lines": 128,
+        "commits": 4,
+        "lines": 160,
         "path": "packages/propose/schema.js"
       },
       {
-        "commits": 4,
-        "lines": 288,
+        "commits": 6,
+        "lines": 300,
         "path": "packages/propose/seat.js"
       },
       {
@@ -491,13 +491,13 @@
     "level": "low",
     "reason": "fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions"
   },
-  "generatedAt": "2026-09-24T19:00:16.881Z",
+  "generatedAt": "2026-09-24T19:11:15.397Z",
   "generatedFrom": {
-    "commit": "84a00b6db32961fcc9072e01674243ffd526f409"
+    "commit": "2455dda9cb6aab21cefcb9d812e6ae50cffefd44"
   },
   "pairs": [],
   "parameters": {
-    "appliedChangesetLimit": 14.5,
+    "appliedChangesetLimit": 14.75,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -506,16 +506,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "both",
-    "headDate": "2026-09-24T11:52:48-07:00",
-    "inScopeFiles": 58,
+    "headDate": "2026-09-24T12:00:59-07:00",
+    "inScopeFiles": 59,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 6,
+    "qualifyingCommits": 7,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-28T18:52:48.000Z",
+    "since": "2026-03-28T19:00:59.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",

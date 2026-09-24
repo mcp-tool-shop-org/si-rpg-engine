@@ -1,16 +1,16 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit 84a00b6.
+Mapped at 2026-09-24 from commit 2455dda.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-11 parts, mostly JavaScript (26 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
+11 parts, mostly JavaScript (27 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (470965f)
+## What changed since 2026-09-24 (84a00b6)
 
-Nothing structural changed since 2026-09-24; 8 files changed content.
+Nothing structural changed since 2026-09-24; 1 file added and 6 changed content.
 
 ## What comes in
 

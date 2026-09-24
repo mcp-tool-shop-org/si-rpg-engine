@@ -10,6 +10,8 @@ import { proposalPrompt } from './prompt.js';
 import { readProposal } from './parse.js';
 import { proposalSchema } from './schema.js';
 import { runSeat } from './seat.js';
+import { proposeWorld } from './scene.js';
+import { createWorld as worldWith } from '../tick/world.js';
 
 function fresh() {
   const catalog = loadIntentRules();
@@ -29,6 +31,8 @@ test('both conditions see the previous proposal; only one sees the reason', () =
     tick: 3,
     bodies: [{ id: 'walker', x: 1, y: 1, hw: 0.25, hh: 0.25 }],
     episodes: [],
+    goal: 'Goal: put the walker centre within 0.5 of x 3, y 1.',
+    obstacle: 'A pillar occupies x 1.7 to 2.3, y 0.6 to 1.4.',
     previous: '{"kind":"intent","verb":"move"}',
     verdict: /** @type {'rejected'} */ ('rejected'),
   };
@@ -42,6 +46,13 @@ test('both conditions see the previous proposal; only one sees the reason', () =
   assert.equal(hidden.includes('path crosses collider floor'), false);
   assert.match(shown, /Bodies on the frame: walker at x 1 y 1/);
   assert.match(shown, /Withdrawn episode e0 must not be cited/);
+  assert.match(shown, /Goal:/);
+  const bare = proposalPrompt({ ...shared, previous: null, verdict: null, lastReason: null });
+  assert.equal(bare.includes('{"kind"'), false);
+  assert.equal(bare.includes('mood'), false);
+  const room = worldWith(proposeWorld());
+  assert.equal(room.segmentHits(1, 1, 3, 1), 'pillar');
+  assert.equal(room.segmentHits(1, 1, 1, 2.5), null);
 });
 
 test('the reason is the only difference, and an unreadable reply is split in two', async () => {

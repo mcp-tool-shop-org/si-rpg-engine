@@ -4,6 +4,7 @@
 import { proposalPrompt } from './prompt.js';
 import { readProposal } from './parse.js';
 import { proposalSchema } from './schema.js';
+import { GOAL, PILLAR } from './scene.js';
 
 /**
  * @typedef {import('../frame/types.js').Proposal} Proposal
@@ -15,6 +16,8 @@ import { proposalSchema } from './schema.js';
  *   kind: string | null;
  *   admitted: boolean;
  *   reason: string | null;
+ *   x: number;
+ *   y: number;
  * }} Attempt
  */
 
@@ -69,13 +72,20 @@ export async function runSeat(init) {
       tick: frame.tick,
       bodies: frame.bodies.map((body) => ({ id: body.id, x: body.x, y: body.y, hw: body.hw, hh: body.hh })),
       episodes: episodesOf(init.tick.log()),
+      goal: 'Goal: put the walker centre within ' + GOAL.radius + ' of x ' + GOAL.x + ', y ' + GOAL.y + '.',
+      obstacle: 'A pillar occupies x ' + PILLAR.minX + ' to ' + PILLAR.maxX + ', y ' + PILLAR.minY + ' to ' + PILLAR.maxY + '. The straight path from the walker to the goal crosses it and is refused.',
       previous,
       verdict,
       lastReason: init.withReason ? lastReason : null,
     });
     const raw = await init.ask(prompt, { schema, seed, temperature: init.temperature });
     const read = readProposal(raw, frame.hash, actors);
+    const place = () => {
+      const after = init.tick.frame().bodies[0];
+      return { x: after.x, y: after.y };
+    };
     if (read.verdict !== 'ok') {
+      const at = place();
       attempts.push({
         seed,
         prompt,
@@ -84,6 +94,8 @@ export async function runSeat(init) {
         kind: null,
         admitted: false,
         reason: read.verdict,
+        x: at.x,
+        y: at.y,
       });
       previous = raw;
       verdict = 'rejected';
@@ -91,6 +103,7 @@ export async function runSeat(init) {
       continue;
     }
     const admission = init.tick.submit(read.proposal);
+    const at = place();
     attempts.push({
       seed,
       prompt,
@@ -99,6 +112,8 @@ export async function runSeat(init) {
       kind: read.proposal.kind,
       admitted: admission.admitted,
       reason: admission.admitted ? null : admission.reason,
+      x: at.x,
+      y: at.y,
     });
     previous = previousText(read.proposal);
     verdict = admission.admitted ? 'admitted' : 'rejected';
