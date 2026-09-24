@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit eeed37f.
+Mapped at 2026-09-24 from commit 5f47e58.
 
 ## What this is
 
@@ -8,24 +8,21 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 12 parts, mostly JavaScript (36 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (ece9100)
+## What changed since 2026-09-24 (eeed37f)
 
-- harness now imports tick.
-- CI now also runs harness/product.test.js.
-- CI now also checks fixtures/golden-arith.txt, harness/arith.mjs and harness/product-scene.mjs.
-- fixtures/golden-arith.txt is now read by harness/check.js.
-- harness/arith.mjs is now read by harness/check.js.
-- 4 files added and 25 changed content, across 7 parts.
+- write-golden now also runs harness/sim.mjs.
+- predicates/hazards/corner-clip.json is now read by packages/load/load.test.js.
+- 1 file added and 64 changed content, across 12 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs harness/product.test.js, packages/host/host.test.js, packages/load/load.test.js and 2 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 11 more.
+1. **CI.** On a pull request touching 9 paths; on a push to main touching 9 paths; or by hand. Runs harness/product.test.js, packages/host/host.test.js, packages/load/load.test.js and 2 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 35 more.
 2. **host** (a command people run). Runs packages/host/bin/host.js.
 3. **load** (a command people run). Runs packages/load/bin/load.js.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
-5. **play** (a command people run). Runs packages/tick/bin/play.js.
-6. **replay** (a command people run). Runs packages/tick/bin/replay.js.
-7. **write-golden** (a command people run). Runs harness/write-golden.js.
+5. **write-golden** (a command people run). Runs harness/sim.mjs and harness/write-golden.js.
+6. **play** (a command people run). Runs packages/tick/bin/play.js.
+7. **replay** (a command people run). Runs packages/tick/bin/replay.js.
 
 ## What happens through CI
 
@@ -46,16 +43,16 @@ CI writes nothing this map can see.
 
 **propose** (a command people run) runs packages/propose/bin/propose.js and reaches frame and tick.
 
+**write-golden** (a command people run) runs harness/sim.mjs and harness/write-golden.js, reaches frame and tick, and writes to fixtures/golden.txt.
+
 **play** (a command people run) runs packages/tick/bin/play.js and reaches frame.
 
 **replay** (a command people run) runs packages/tick/bin/replay.js and reaches frame.
 
-**write-golden** (a command people run) runs harness/write-golden.js and writes to fixtures/golden.txt.
-
 ## What breaks what
 
-- **tick** is imported by 4 parts (harness, host, load, propose) and sits on the path of 6 doors.
-- **frame** is imported by 2 parts (harness, tick) and sits on the path of 6 doors.
+- **tick** is imported by 4 parts (harness, host, load, propose) and sits on the path of 7 doors.
+- **frame** is imported by 2 parts (harness, tick) and sits on the path of 7 doors.
 - **harness** is imported by no other part and sits on the path of 2 doors.
 - **host** is imported by no other part and sits on the path of 2 doors.
 - **load** is imported by no other part and sits on the path of 2 doors.
@@ -95,15 +92,15 @@ People write .github/, docs/, predicates/hazards/, predicates/intents/ and the r
 
 ## Where to start
 
-.github/workflows/ci.yml → packages/propose/bin/propose.js → packages/tick/fixture.js
+packages/host/bin/host.js
 
-Read those in order to follow one pull request end to end.
+Read those in order to follow one run of host end to end. This path follows host (a command people run) from its entry, since CI runs only tests.
 
 ## What this map cannot see
 
-- 2 reads use paths built at run time and are not named here.
-- 4 writes and 5 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 2 commands are built at run time and not followed.
+- 1 read uses a path built at run time and is not named here.
+- 4 writes and 6 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.
+- 1 command is built at run time and not followed.
 - Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.

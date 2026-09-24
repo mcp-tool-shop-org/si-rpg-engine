@@ -68,7 +68,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "harness",
-      "qualifyingSourceCommits": 1,
+      "qualifyingSourceCommits": 2,
       "rebaseline": null
     },
     {
@@ -209,8 +209,8 @@
     "definition": "commits is how many commits in the window touch the file, including merges and commits dropped from coupling. lines is added plus deleted in those commits.",
     "files": [
       {
-        "commits": 4,
-        "lines": 121,
+        "commits": 6,
+        "lines": 187,
         "path": ".github/workflows/ci.yml"
       },
       {
@@ -224,13 +224,13 @@
         "path": "LICENSE"
       },
       {
-        "commits": 22,
-        "lines": 98,
+        "commits": 24,
+        "lines": 106,
         "path": "README.md"
       },
       {
-        "commits": 21,
-        "lines": 671,
+        "commits": 23,
+        "lines": 713,
         "path": "atlas/README.md"
       },
       {
@@ -239,18 +239,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 21,
-        "lines": 2724,
+        "commits": 23,
+        "lines": 2892,
         "path": "atlas/page.json"
       },
       {
-        "commits": 21,
-        "lines": 2979,
+        "commits": 23,
+        "lines": 3369,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 21,
-        "lines": 5454,
+        "commits": 23,
+        "lines": 5762,
         "path": "atlas/structure.json"
       },
       {
@@ -329,8 +329,13 @@
         "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
       },
       {
-        "commits": 1,
-        "lines": 1,
+        "commits": 2,
+        "lines": 2,
+        "path": "fixtures/golden-arith.txt"
+      },
+      {
+        "commits": 3,
+        "lines": 5,
         "path": "fixtures/golden.txt"
       },
       {
@@ -344,9 +349,24 @@
         "path": "fixtures/proposer-qwen2.5-7b.json"
       },
       {
-        "commits": 3,
-        "lines": 19,
+        "commits": 2,
+        "lines": 132,
+        "path": "harness/arith.mjs"
+      },
+      {
+        "commits": 5,
+        "lines": 67,
         "path": "harness/check.js"
+      },
+      {
+        "commits": 2,
+        "lines": 50,
+        "path": "harness/product-scene.mjs"
+      },
+      {
+        "commits": 2,
+        "lines": 116,
+        "path": "harness/product.test.js"
       },
       {
         "commits": 4,
@@ -354,13 +374,13 @@
         "path": "harness/sim.js"
       },
       {
-        "commits": 2,
-        "lines": 140,
+        "commits": 4,
+        "lines": 242,
         "path": "harness/sim.mjs"
       },
       {
-        "commits": 3,
-        "lines": 24,
+        "commits": 5,
+        "lines": 28,
         "path": "harness/write-golden.js"
       },
       {
@@ -369,8 +389,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 9,
-        "lines": 91,
+        "commits": 11,
+        "lines": 95,
         "path": "package.json"
       },
       {
@@ -574,199 +594,115 @@
     "level": "low",
     "reason": "fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions"
   },
-  "generatedAt": "2026-09-24T21:21:45.474Z",
+  "generatedAt": "2026-09-24T21:27:46.091Z",
   "generatedFrom": {
-    "commit": "eeed37f3bf0e9acd4c5332c54ed4517462baeefc"
+    "commit": "5f47e5821e60f49841bf1e9040061083f52e9dc9"
   },
   "pairs": [
     {
       "a": "README.md",
       "b": "atlas/README.md",
-      "either": 14,
-      "shared": 7,
-      "strength": 0.5
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
       "a": "README.md",
       "b": "atlas/page.json",
-      "either": 14,
-      "shared": 7,
-      "strength": 0.5
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
       "a": "README.md",
       "b": "atlas/statistics.json",
-      "either": 14,
-      "shared": 7,
-      "strength": 0.5
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
       "a": "README.md",
       "b": "atlas/structure.json",
-      "either": 14,
-      "shared": 7,
-      "strength": 0.5
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
       "a": "README.md",
+      "b": "packages/propose/seat.js",
+      "either": 12,
+      "shared": 6,
+      "strength": 0.5
+    },
+    {
+      "a": "atlas/README.md",
+      "b": "atlas/page.json",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "atlas/README.md",
+      "b": "atlas/statistics.json",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "atlas/README.md",
+      "b": "atlas/structure.json",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "atlas/README.md",
       "b": "packages/propose/seat.js",
       "either": 11,
       "shared": 6,
       "strength": 0.545455
     },
     {
-      "a": "atlas/README.md",
-      "b": "atlas/page.json",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "atlas/README.md",
-      "b": "atlas/statistics.json",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "atlas/README.md",
-      "b": "atlas/structure.json",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "atlas/README.md",
-      "b": "packages/propose/bin/propose.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/README.md",
-      "b": "packages/propose/prompt.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/README.md",
-      "b": "packages/propose/propose.test.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/README.md",
-      "b": "packages/propose/seat.js",
-      "either": 10,
-      "shared": 6,
-      "strength": 0.6
-    },
-    {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
-      "b": "packages/propose/bin/propose.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/page.json",
-      "b": "packages/propose/prompt.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/page.json",
-      "b": "packages/propose/propose.test.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/page.json",
       "b": "packages/propose/seat.js",
-      "either": 10,
+      "either": 11,
       "shared": 6,
-      "strength": 0.6
+      "strength": 0.545455
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
-      "b": "packages/propose/bin/propose.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/statistics.json",
-      "b": "packages/propose/prompt.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/statistics.json",
-      "b": "packages/propose/propose.test.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/statistics.json",
       "b": "packages/propose/seat.js",
-      "either": 10,
+      "either": 11,
       "shared": 6,
-      "strength": 0.6
-    },
-    {
-      "a": "atlas/structure.json",
-      "b": "packages/propose/bin/propose.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/structure.json",
-      "b": "packages/propose/prompt.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "atlas/structure.json",
-      "b": "packages/propose/propose.test.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
+      "strength": 0.545455
     },
     {
       "a": "atlas/structure.json",
       "b": "packages/propose/seat.js",
-      "either": 10,
+      "either": 11,
       "shared": 6,
-      "strength": 0.6
+      "strength": 0.545455
     },
     {
       "a": "packages/propose/bin/propose.js",
@@ -812,7 +748,7 @@
     }
   ],
   "parameters": {
-    "appliedChangesetLimit": 18.75,
+    "appliedChangesetLimit": 19,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -821,16 +757,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "both",
-    "headDate": "2026-09-24T14:06:55-07:00",
-    "inScopeFiles": 75,
+    "headDate": "2026-09-24T14:27:18-07:00",
+    "inScopeFiles": 76,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 14,
+    "qualifyingCommits": 15,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-28T21:06:55.000Z",
+    "since": "2026-03-28T21:27:18.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
@@ -840,7 +776,9 @@
       ".tsx",
       ".mts",
       ".cts",
-      ".py"
+      ".py",
+      ".rs",
+      ".gd"
     ],
     "sourceFileReach": 20,
     "sourceFileRise": 25,
