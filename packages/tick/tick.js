@@ -2,6 +2,12 @@
 // A proposal is admitted by a checker that is not the model, or refused with
 // the checker's reason. Only admissions are recorded. Every quantum is hashed
 // by the function in frame. A host receives committed frames and nothing else.
+//
+// submit declares and admits. It schedules the quanta an admission needs and
+// returns before any of them run. advance runs exactly one quantum, whether
+// or not anything is scheduled: the world keeps stepping and hashing while a
+// person does nothing. A log entry records the tick and the hash at the moment
+// of admission. Replay advances to that tick before it submits.
 
 import { createHasher } from '../frame/hash.js';
 import { commitFrame } from '../frame/frame.js';
@@ -35,6 +41,16 @@ export function createTick(init) {
   const hosts = [];
   let tick = 0;
 
+  /**
+   * One scheduled action per actor. The count is the quanta still to run.
+   * When it reaches zero the actor's horizontal velocity is cleared, after
+   * that quantum has been hashed, which is where the old submit cleared it.
+   * @type {Map<string, number>}
+   */
+  const actions = new Map();
+  /** Quanta owed by admissions that are not actions: a belief or a body draft takes one. */
+  let pending = 0;
+
   // No verb consumes randomness in slice 2. The seed is part of the hash so a
   // replay with the wrong seed fails on the first frame.
   hasher.u32(seed);
@@ -53,27 +69,72 @@ export function createTick(init) {
     }
   }
 
-  /** One quantum: step, hash, commit, emit. */
-  function quantum() {
-    world.step();
-    tick = tick + 1;
-    mixQuantum();
-    current = commitFrame(tick, hasher.digest(), world.bodies);
-    for (let i = 0; i < hosts.length; i = i + 1) {
-      hosts[i].draw(current);
+  /**
+   * Hands a committed frame to one host. A host that throws is detached and
+   * the quantum completes. A host cannot hold the law by failing.
+   * @param {Host} host
+   * @param {Frame} frame
+   */
+  function show(host, frame) {
+    try {
+      host.draw(frame);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Every attached host sees the frame. Hosts that throw are dropped. */
+  function emit() {
+    for (let i = hosts.length - 1; i >= 0; i = i - 1) {
+      if (!show(hosts[i], current)) {
+        hosts.splice(i, 1);
+      }
     }
   }
 
   /**
-   * @param {Proposal} proposal
-   * @param {string} hash
+   * One quantum: step, hash, commit, emit, then retire what finished.
+   * @returns {Frame}
    */
-  function record(proposal, hash) {
-    inputLog.push({ tick, proposal, hash });
+  function advance() {
+    world.step();
+    tick = tick + 1;
+    mixQuantum();
+    current = commitFrame(tick, hasher.digest(), world.bodies);
+    emit();
+    if (pending > 0) {
+      pending = pending - 1;
+    }
+    for (const [actorId, remaining] of actions) {
+      if (remaining <= 1) {
+        const actor = world.body(actorId);
+        if (actor) {
+          actor.vx = 0;
+        }
+        actions.delete(actorId);
+      } else {
+        actions.set(actorId, remaining - 1);
+      }
+    }
+    return current;
+  }
+
+  /** True when nothing is scheduled. The world still steps if advanced. */
+  function idle() {
+    return actions.size === 0 && pending === 0;
   }
 
   /**
-   * The front door. Declare, validate, resolve, record, emit.
+   * Records an admission at the tick and hash it was admitted against.
+   * @param {Proposal} proposal
+   */
+  function record(proposal) {
+    inputLog.push({ tick, proposal, hash: current.hash });
+  }
+
+  /**
+   * The front door. Declare and validate now; resolve across later quanta.
    * @param {Proposal} proposal
    * @returns {Admission}
    */
@@ -86,6 +147,10 @@ export function createTick(init) {
         if (proposal.frameHash !== current.hash) {
           return { admitted: false, reason: 'stale frame: intent names ' + String(proposal.frameHash) + ', current is ' + current.hash };
         }
+        const busy = actions.get(proposal.actor);
+        if (busy !== undefined) {
+          return { admitted: false, reason: proposal.actor + ' is mid-action; ' + busy + ' quanta remain' };
+        }
         const check = admitIntent(proposal, world, rules, retired);
         if (!check.ok) {
           return { admitted: false, reason: check.reason };
@@ -97,11 +162,8 @@ export function createTick(init) {
         const dx = proposal.target.x - actor.x;
         actor.vx = dx < 0 ? 0 - check.rule.speed : check.rule.speed;
         memory.recordEpisode(tick, 'intent', proposal.verb + ' ' + proposal.actor);
-        for (let i = 0; i < check.quanta; i = i + 1) {
-          quantum();
-        }
-        actor.vx = 0;
-        record(proposal, current.hash);
+        record(proposal);
+        actions.set(proposal.actor, check.quanta);
         return { admitted: true, quanta: check.quanta, hash: current.hash };
       }
       case 'belief': {
@@ -120,8 +182,8 @@ export function createTick(init) {
           hasher.text(String(proposal.withdrawnBy));
         }
         memory.recordEpisode(tick, 'belief', check.belief.id);
-        quantum();
-        record(proposal, current.hash);
+        record(proposal);
+        pending = pending + 1;
         return { admitted: true, quanta: 1, hash: current.hash };
       }
       case 'line': {
@@ -140,8 +202,8 @@ export function createTick(init) {
         }
         world.bodies.push({ id: proposal.id, x: proposal.x, y: proposal.y, vx: 0, vy: 0, hw: proposal.hw, hh: proposal.hh });
         memory.recordEpisode(tick, 'body', proposal.id);
-        quantum();
-        record(proposal, current.hash);
+        record(proposal);
+        pending = pending + 1;
         return { admitted: true, quanta: 1, hash: current.hash };
       }
       default:
@@ -150,17 +212,21 @@ export function createTick(init) {
   }
 
   /**
-   * The host boundary. A host gets every committed frame. It has no other
-   * method to call on the tick but submit.
+   * The host boundary. A host gets every committed frame, starting with the
+   * current one. It has no other method to call on the tick but submit.
+   * A host that throws on attach is not attached.
    * @param {Host} host
    */
   function attach(host) {
-    hosts.push(host);
-    host.draw(current);
+    if (show(host, current)) {
+      hosts.push(host);
+    }
   }
 
   return {
     submit,
+    advance,
+    idle,
     attach,
     /** @returns {Frame} */
     frame() {
@@ -171,4 +237,19 @@ export function createTick(init) {
       return inputLog;
     },
   };
+}
+
+/**
+ * Runs quanta until nothing is scheduled. What play, replay, the hazard
+ * suite, and the tests mean by "let the action finish".
+ * @param {ReturnType<typeof createTick>} tick
+ * @returns {number} the quanta run
+ */
+export function settle(tick) {
+  let n = 0;
+  while (!tick.idle()) {
+    tick.advance();
+    n = n + 1;
+  }
+  return n;
 }

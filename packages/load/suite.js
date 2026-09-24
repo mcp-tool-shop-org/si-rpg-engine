@@ -2,7 +2,7 @@
 // This module imports the tick. The tick does not import it.
 
 import { readFileSync } from 'node:fs';
-import { createTick } from '../tick/tick.js';
+import { createTick, settle } from '../tick/tick.js';
 import { createWorld } from '../tick/world.js';
 import { createMemory } from '../tick/memory.js';
 
@@ -54,6 +54,10 @@ export function runHazards(rule, scenarios) {
       target: scenario.target,
       frameHash: tick.frame().hash,
     });
+    if (result.admitted) {
+      // An admitted step runs to completion on the real tick before it is judged.
+      settle(tick);
+    }
     if (scenario.expect === 'refuse' && result.admitted) {
       failures.push(scenario.id + ' was admitted');
     }

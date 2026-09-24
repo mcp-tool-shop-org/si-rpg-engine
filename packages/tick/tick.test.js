@@ -1,10 +1,13 @@
 // The slice 2 fixture, as phase 0 names it: the quantum, the admit step, a
 // body with a collider, a memory-write verb the checker can refuse, and a
-// host boundary that draws without deciding. Run from the repository root.
+// host boundary that draws without deciding. Plus the pump: submit schedules,
+// advance runs one quantum, and a log recorded before the pump replays after
+// it. Run from the repository root.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createTick } from './tick.js';
+import { readFileSync } from 'node:fs';
+import { createTick, settle } from './tick.js';
 import { createWorld } from './world.js';
 import { createMemory } from './memory.js';
 import { loadIntentRules } from './predicates.js';
@@ -31,7 +34,71 @@ test('the quantum: same seed and inputs give the same hash, a different seed doe
   assert.ok(ra.admitted && rb.admitted);
   assert.equal(ra.hash, rb.hash);
   assert.ok(ra.quanta > 1, 'an action spans quanta');
+  assert.equal(settle(a), ra.quanta);
+  assert.equal(settle(b), rb.quanta);
+  assert.equal(a.frame().hash, b.frame().hash);
   assert.equal(a.frame().tick, ra.quanta, 'every quantum was committed');
+});
+
+test('the pump: submit schedules and does not step; advance runs exactly one quantum', () => {
+  const t = fresh();
+  const before = t.frame();
+  const r = move(t, 3);
+  assert.ok(r.admitted);
+  assert.equal(r.hash, before.hash, 'the admission names the hash it was admitted against');
+  assert.equal(t.frame().tick, 0, 'submit ran no quantum');
+  assert.equal(t.idle(), false);
+  const f1 = t.advance();
+  assert.equal(f1.tick, 1);
+  assert.equal(t.frame(), f1);
+  assert.notEqual(f1.hash, before.hash);
+  assert.equal(t.log()[0].tick, 0);
+  assert.equal(t.log()[0].hash, before.hash);
+});
+
+test('one action per actor: a second intent while quanta remain is refused with the count', () => {
+  const t = fresh();
+  const first = move(t, 3);
+  assert.ok(first.admitted);
+  t.advance();
+  const second = t.submit({ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.5, y: 1 }, frameHash: t.frame().hash });
+  assert.equal(second.admitted, false);
+  assert.match(/** @type {any} */ (second).reason, /walker is mid-action; \d+ quanta remain/);
+  assert.equal(t.log().length, 1, 'the refusal is not recorded');
+  settle(t);
+  const third = move(t, 1.5);
+  assert.ok(third.admitted, 'the actor is free once the action finished');
+});
+
+test('idle advance: the world keeps stepping and hashing with nothing scheduled', () => {
+  const t = fresh();
+  assert.equal(t.idle(), true);
+  const h0 = t.frame().hash;
+  const f = t.advance();
+  assert.equal(f.tick, 1);
+  assert.notEqual(f.hash, h0);
+  assert.equal(t.idle(), true);
+  assert.equal(t.log().length, 0, 'an idle quantum is not an admission');
+  const u = fresh();
+  u.advance();
+  assert.equal(u.frame().hash, f.hash, 'idle quanta are deterministic');
+});
+
+test('velocity clears in the advance that completes the action, after that quantum is hashed', () => {
+  const t = fresh();
+  const r = move(t, 3);
+  assert.ok(r.admitted);
+  for (let i = 0; i < r.quanta - 1; i = i + 1) {
+    t.advance();
+    assert.equal(t.idle(), false);
+  }
+  assert.notEqual(t.frame().bodies[0].vx, 0, 'still moving before the last quantum');
+  t.advance();
+  assert.equal(t.idle(), true);
+  const last = t.frame();
+  assert.notEqual(last.bodies[0].vx, 0, 'the last committed frame was hashed with the velocity still set');
+  t.advance();
+  assert.equal(t.frame().bodies[0].vx, 0, 'cleared before the next quantum stepped');
 });
 
 test('the admit step: the predicate refuses an unknown verb, a stale frame, and a path through a wall', () => {
@@ -63,6 +130,7 @@ test('a body with a collider: the walker settles on the floor and never passes i
   });
   const r = move(t, 3);
   assert.ok(r.admitted);
+  settle(t);
   assert.ok(minY >= 0.25 - 1e-9, 'the box never entered the floor: min centre y ' + minY);
   assert.ok(t.frame().bodies[0].x > 1, 'the walker moved toward the target');
 });
@@ -73,13 +141,17 @@ test('the memory-write verb: the checker refuses an uncited belief and admits a 
   assert.equal(uncited.admitted, false);
   assert.match(/** @type {any} */ (uncited).reason, /cite an admitted episode/);
   assert.ok(move(t, 2).admitted, 'an admitted intent is the episode');
+  settle(t);
   const cited = t.submit({ kind: 'belief', subject: 'walker', key: 'mood', value: 'wary', confidence: 0.7, source: 'e1' });
   assert.ok(cited.admitted);
+  assert.equal(t.idle(), false, 'a belief write takes one quantum');
+  settle(t);
   const noWithdrawal = t.submit({ kind: 'belief', subject: 'walker', key: 'mood', value: 'calm', confidence: 0.9, source: 'e1', supersedes: 'b1' });
   assert.equal(noWithdrawal.admitted, false);
   assert.match(/** @type {any} */ (noWithdrawal).reason, /withdrawing episode/);
   const withdrawn = t.submit({ kind: 'belief', subject: 'walker', key: 'mood', value: 'calm', confidence: 0.9, source: 'e2', supersedes: 'b1', withdrawnBy: 'e2' });
   assert.ok(withdrawn.admitted);
+  settle(t);
   assert.equal(t.log().length, 3, 'three admissions were recorded');
 });
 
@@ -104,6 +176,7 @@ test('a spoken line is refused: slice 2 has no gate, and the line is never hashe
   const r = t.submit({ kind: 'line', speaker: 'walker', text: 'I was never here.' });
   assert.equal(r.admitted, false);
   assert.equal(t.frame().hash, before);
+  assert.equal(t.idle(), true);
 });
 
 test('a body draft is checked by the collider', () => {
@@ -113,6 +186,7 @@ test('a body draft is checked by the collider', () => {
   assert.match(/** @type {any} */ (inWall).reason, /overlaps wall-right/);
   const clear = t.submit({ kind: 'body', id: 'crate', x: 3, y: 2, hw: 0.2, hh: 0.2 });
   assert.ok(clear.admitted);
+  settle(t);
   assert.equal(t.frame().bodies.length, 2);
 });
 
@@ -122,6 +196,7 @@ test('the host boundary: frames are frozen, carry no proposal, and a host has no
   const seen = [];
   t.attach({ draw: (f) => void seen.push(f) });
   move(t, 2);
+  settle(t);
   assert.ok(seen.length > 1);
   for (const f of seen) {
     assert.ok(Object.isFrozen(f));
@@ -131,19 +206,84 @@ test('the host boundary: frames are frozen, carry no proposal, and a host has no
   assert.throws(() => {
     /** @type {any} */ (seen[1].bodies[0]).x = 99;
   });
-  assert.deepEqual(Object.keys(t).sort(), ['attach', 'frame', 'log', 'submit'], 'no method reads a proposal or writes geometry');
+  assert.deepEqual(Object.keys(t).sort(), ['advance', 'attach', 'frame', 'idle', 'log', 'submit'], 'no method reads a proposal or writes geometry');
 });
 
-test('replay: the seed and the admitted-input log reproduce every hash without the model', () => {
+test('the draw guard: a host that throws is detached, the quantum completes, and other hosts still draw', () => {
+  const t = fresh();
+  let good = 0;
+  let badCalls = 0;
+  t.attach({ draw: () => void (good = good + 1) });
+  t.attach({
+    draw() {
+      badCalls = badCalls + 1;
+      if (badCalls === 2) {
+        throw new Error('window closed');
+      }
+    },
+  });
+  const r = move(t, 2);
+  assert.ok(r.admitted);
+  const u = fresh();
+  move(u, 2);
+  for (let i = 0; i < r.quanta; i = i + 1) {
+    t.advance();
+    u.advance();
+  }
+  assert.equal(t.frame().hash, u.frame().hash, 'a throwing host did not change the law');
+  assert.equal(badCalls, 2, 'the bad host was detached after it threw');
+  assert.equal(good, 1 + r.quanta, 'the good host saw the attach frame and every quantum');
+  const v = fresh();
+  v.attach({
+    draw() {
+      throw new Error('never');
+    },
+  });
+  assert.equal(v.advance().tick, 1, 'a host that throws on attach is not attached and the tick still steps');
+});
+
+test('replay: the seed and the admitted-input log reproduce every hash without the model, with gaps between admissions', () => {
   const t = fresh();
   assert.ok(move(t, 2.5).admitted);
+  settle(t);
+  t.advance();
+  t.advance();
   assert.ok(t.submit({ kind: 'belief', subject: 'walker', key: 'goal', value: 'east', confidence: 0.8, source: 'e1' }).admitted);
+  settle(t);
   assert.ok(move(t, 1.5).admitted);
+  settle(t);
   /** @type {import('../frame/types.js').LogEntry[]} */
   const log = JSON.parse(JSON.stringify(t.log()));
-  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: loadIntentRules().rules, retired: loadIntentRules().retired, log });
+  assert.ok(log[1].tick > log[0].tick + 1, 'the log records the tick of admission across the idle gap');
+  const catalog = loadIntentRules();
+  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log });
   assert.ok(again.ok, JSON.stringify(again));
   assert.deepEqual(/** @type {any} */ (again).hashes, log.map((e) => e.hash));
-  const wrongSeed = replay({ seed: FIXTURE_SEED + 1, world: fixtureWorld(), rules: loadIntentRules().rules, retired: loadIntentRules().retired, log });
+  assert.equal(/** @type {any} */ (again).final, t.frame().hash);
+  const wrongSeed = replay({ seed: FIXTURE_SEED + 1, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log });
   assert.equal(wrongSeed.ok, false);
+  const early = JSON.parse(JSON.stringify(log));
+  early[1].tick = 0;
+  const outOfOrder = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log: early });
+  assert.equal(outOfOrder.ok, false);
+});
+
+test('the legacy fixture: a log recorded before the pump replays frame for frame after it', () => {
+  const legacy = JSON.parse(readFileSync('fixtures/legacy-play-log.json', 'utf8'));
+  const catalog = loadIntentRules();
+  /** @type {{ tick: number; hash: string }[]} */
+  const frames = [];
+  const log = legacy.entries.map((/** @type {any} */ e) => ({ tick: e.tick, proposal: e.proposal, hash: e.hash }));
+  const result = replay({
+    seed: legacy.seed,
+    world: fixtureWorld(),
+    rules: catalog.rules,
+    retired: catalog.retired,
+    log,
+    onFrame: (f) => void frames.push({ tick: f.tick, hash: f.hash }),
+  });
+  assert.ok(result.ok, JSON.stringify(result));
+  assert.equal(/** @type {any} */ (result).final, legacy.final, 'the final hash the old engine reached');
+  assert.deepEqual(frames, legacy.frames, 'every committed frame, quantum for quantum');
+  assert.deepEqual(/** @type {any} */ (result).hashes, legacy.entries.map((/** @type {any} */ e) => e.hash));
 });
