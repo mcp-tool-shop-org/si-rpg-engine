@@ -1,0 +1,245 @@
+{
+  "authorship": {
+    "parts": [],
+    "places": []
+  },
+  "boundaries": [
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": true,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "docs",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": true,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "fixtures",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": true,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "harness",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": true,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "root",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": true,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
+      "name": "workflows",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    }
+  ],
+  "churn": {
+    "definition": "commits is how many commits in the window touch the file, including merges and commits dropped from coupling. lines is added plus deleted in those commits.",
+    "files": [
+      {
+        "commits": 1,
+        "lines": 55,
+        "path": ".github/workflows/ci.yml"
+      },
+      {
+        "commits": 1,
+        "lines": 2,
+        "path": ".gitignore"
+      },
+      {
+        "commits": 1,
+        "lines": 21,
+        "path": "LICENSE"
+      },
+      {
+        "commits": 2,
+        "lines": 17,
+        "path": "README.md"
+      },
+      {
+        "commits": 1,
+        "lines": 17,
+        "path": "atlas/boundaries.yaml"
+      },
+      {
+        "commits": 1,
+        "lines": 104,
+        "path": "docs/PHASE-0.md"
+      },
+      {
+        "commits": 1,
+        "lines": 175,
+        "path": "docs/atlas-design.md"
+      },
+      {
+        "commits": 1,
+        "lines": 126,
+        "path": "docs/consult-brief-01.md"
+      },
+      {
+        "commits": 1,
+        "lines": 53,
+        "path": "docs/consult-reply-claude-01.md"
+      },
+      {
+        "commits": 1,
+        "lines": 45,
+        "path": "docs/consult-reply-claude-02.md"
+      },
+      {
+        "commits": 1,
+        "lines": 49,
+        "path": "docs/consult-reply-claude-atlas-01.md"
+      },
+      {
+        "commits": 1,
+        "lines": 57,
+        "path": "docs/consult-reply-gemini-01.md"
+      },
+      {
+        "commits": 1,
+        "lines": 194,
+        "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
+      },
+      {
+        "commits": 1,
+        "lines": 71,
+        "path": "docs/study-swarm/consult-02.dispatch.md"
+      },
+      {
+        "commits": 1,
+        "lines": 180,
+        "path": "docs/study-swarm/si-rpg-engine.citation-receipt.json"
+      },
+      {
+        "commits": 1,
+        "lines": 91,
+        "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
+      },
+      {
+        "commits": 1,
+        "lines": 1,
+        "path": "fixtures/golden.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 15,
+        "path": "harness/check.js"
+      },
+      {
+        "commits": 1,
+        "lines": 102,
+        "path": "harness/sim.js"
+      },
+      {
+        "commits": 1,
+        "lines": 20,
+        "path": "harness/write-golden.js"
+      },
+      {
+        "commits": 1,
+        "lines": 17,
+        "path": "package.json"
+      }
+    ]
+  },
+  "confidence": {
+    "level": "low",
+    "reason": "fewer than 30 qualifying commits in the window, and fewer than 20 source files reach 10 revisions"
+  },
+  "generatedAt": "2026-09-24T18:05:03.464Z",
+  "generatedFrom": {
+    "commit": "73c244df37a28ee71ba764f6916d7c1416a9e311"
+  },
+  "pairs": [],
+  "parameters": {
+    "appliedChangesetLimit": 5.25,
+    "changeset": 50,
+    "changesetFraction": 0.25,
+    "cohesionDrop": 0.2,
+    "couplingPopulation": "source",
+    "fallenShared": 3,
+    "floor": "fallen",
+    "floorHeld": false,
+    "floorTrigger": "both",
+    "headDate": "2026-09-24T13:56:33-04:00",
+    "inScopeFiles": 21,
+    "pinnedStart": null,
+    "priorFloor": null,
+    "qualifyingCommits": 0,
+    "qualifyingMinimum": 30,
+    "revisions": 5,
+    "shared": 10,
+    "sharedFloorUsed": 3,
+    "since": "2026-03-28T17:56:33.000Z",
+    "sourceExtensions": [
+      ".js",
+      ".mjs",
+      ".cjs",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".mts",
+      ".cts",
+      ".py"
+    ],
+    "sourceFileReach": 20,
+    "sourceFileRise": 25,
+    "sourceFilesReachingStrongFloor": 0,
+    "strength": 0.5,
+    "windowDays": 180
+  },
+  "strengthDefinition": "strength is the shared qualifying commits divided by either. either is the number of qualifying commits that touch either file."
+}

@@ -12,12 +12,14 @@ on:
     paths:
       - harness/**
       - fixtures/**
+      - atlas/**
       - package.json
       - .github/workflows/ci.yml
   pull_request:
     paths:
       - harness/**
       - fixtures/**
+      - atlas/**
       - package.json
       - .github/workflows/ci.yml
   workflow_dispatch:
@@ -29,6 +31,7 @@ concurrency:
 jobs:
   engines:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,11 +48,16 @@ jobs:
         run: |
           set -euo pipefail
           golden=$(tr -d '\r\n' < fixtures/golden.txt)
-          for bin in v8-15.6.61 spidermonkey-156.0.1 javascriptcore-319571; do
-            got=$("$HOME/.jsvu/bin/$bin" harness/sim.js | tr -d '\r\n')
-            if [ "$got" != "$golden" ]; then
-              echo "$bin produced [$got]"
-              exit 1
-            fi
-            echo "$bin matches"
-          done
+          v8=$("$HOME/.jsvu/bin/v8-15.6.61" harness/sim.js | tr -d '\r\n')
+          sm=$("$HOME/.jsvu/bin/spidermonkey-156.0.1" harness/sim.js | tr -d '\r\n')
+          jsc=$("$HOME/.jsvu/bin/javascriptcore-319571" harness/sim.js | tr -d '\r\n')
+          if [ "$v8" != "$golden" ] || [ "$sm" != "$golden" ] || [ "$jsc" != "$golden" ]; then
+            echo "v8 [$v8]"
+            echo "spidermonkey [$sm]"
+            echo "javascriptcore [$jsc]"
+            echo "golden [$golden]"
+            exit 1
+          fi
+          echo "three engines match"
+      - name: Check the Atlas map
+        run: npx --yes @dogfood-lab/atlas@1.17.0 check

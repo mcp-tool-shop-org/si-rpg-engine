@@ -130,7 +130,7 @@ A deterministic 3D RPG tick. The model proposes an intent, a line, a typed belie
 
 ## The harness
 
-One body, one static collider, 10,000 quanta, a disposable integrator. The integrator uses add, subtract, multiply, divide, and square root, or a bundled math library. Those five operations are the ones ECMAScript specifies exactly, so a pinned engine bump must not move the hash. If a bump does move it, that is a defect in the harness's operation set. CI fails. `write-golden` is not the answer. `write-golden` is the only writer of the file, and it is for a change to the integrator or the hash function.
+One body, one static collider, 10,000 quanta, a disposable integrator. The integrator uses add, subtract, multiply, divide, and square root, or a bundled math library. Each double enters the hash as two little-endian 32-bit words, read with a DataView, so the byte order is part of the definition and not the host's. Those five operations are the ones ECMAScript specifies exactly, so a pinned engine bump must not move the hash. If a bump does move it, that is a defect in the harness's operation set. CI fails. `write-golden` is not the answer. `write-golden` is the only writer of the file, and it is for a change to the integrator or the hash function.
 
 ## Who reads the results
 
@@ -159,16 +159,17 @@ The golden hash. The Atlas page, once a map exists.
 
 ## Where to start
 
-Slice 1: `atlas/boundaries.yaml` → `harness/` → `fixtures/` → `.github/workflows/`.
+Slice 1: CI is the busiest door. It reaches the harness and the fixtures, and it only checks those files, so the page has no ordered path of code to read. `write-golden` is the other door. It runs `harness/write-golden.js` and is the only writer of `fixtures/golden.txt`. The three engine binaries are invoked through `$HOME`, so the map records them as commands it cannot follow.
 
 Slice 2: `packages/frame` (the hash) → `predicates/intents/index.json` → `packages/tick` → the `play` bin → `replay`.
 
 ## Where the docs and the code disagree
 
-1. Today there is no code and no workflow. This page describes slice 2. A map of slice 1 is the harness, the fixtures, the workflows, the docs, and the root, and its summary is the slice-1 sentence. The check does not read this file.
+1. The committed map is slice 1. This target page still describes slice 2. The check compares the map to the tree and does not read this file.
 2. A WASM build is in the engine plan and not in the tree. Nothing names a source that compiles to WASM. The harness section does not claim one.
 3. The spoken-line classifier and its labeled pairs are not a door and not a package. The line is unhashed. A stance change is a belief write.
 4. Hosts are outside this repository. The page does not claim they import frame. They are expected to.
+5. The three engine runs go through `$HOME/.jsvu/bin/...`. The map says CI checks `harness/sim.js` and that two commands are built at run time. The version pins are literal in the install step.
 
 ## What this design does not ask of Atlas
 

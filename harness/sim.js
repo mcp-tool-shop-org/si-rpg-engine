@@ -11,7 +11,7 @@ var MAX = 2;
 
 var buf = new ArrayBuffer(8);
 var f64 = new Float64Array(buf);
-var u32 = new Uint32Array(buf);
+var view = new DataView(buf);
 var h0 = 0x811c9dc5;
 var h1 = 0x811c9dc5;
 
@@ -43,8 +43,8 @@ function mixFloat(x) {
     return false;
   }
   f64[0] = x;
-  mixWord(u32[0], 0);
-  mixWord(u32[1], 1);
+  mixWord(view.getUint32(0, true), 0);
+  mixWord(view.getUint32(4, true), 1);
   return true;
 }
 

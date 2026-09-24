@@ -1,0 +1,376 @@
+{
+  "boundaries": [
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "1847d9e2900dbb225288fbcdee3d4fd3e3e1c1551daf7d9f1b79b2c7893bd91f",
+          "path": "docs/PHASE-0.md"
+        },
+        {
+          "hash": "4ad7089c8c50df7cfdde2006f924c71aa045b70f1d9eb42e7d8c715ac2b7b495",
+          "path": "docs/atlas-design.md"
+        },
+        {
+          "hash": "bc5c806559ac3cfb470c05f4ba0695baa5bd0f31a895c465cc0b698ddfdd7020",
+          "path": "docs/consult-brief-01.md"
+        },
+        {
+          "hash": "bd0357e0bd3fad3655bd61b8955d98b57aa5124451469627b95b27f32aa3ae1d",
+          "path": "docs/consult-reply-claude-01.md"
+        },
+        {
+          "hash": "6d9be18b2e3f1d5869621e04f1889eeeb787728c9e07b6a2b6bdecad4871f42e",
+          "path": "docs/consult-reply-claude-02.md"
+        },
+        {
+          "hash": "a60b3f3f413b3178c4b24ca35a7a78b12819e2b4a228ac1ae6f4144cb106a14d",
+          "path": "docs/consult-reply-claude-atlas-01.md"
+        },
+        {
+          "hash": "2c7dacb2ac7ba27ed2e4622ef341e8b382130b60ee755f493d00dc2952132291",
+          "path": "docs/consult-reply-gemini-01.md"
+        },
+        {
+          "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
+          "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
+        },
+        {
+          "hash": "e3ea920ad0685f5dda0aa0445b7b6347c58a14b7d50583738d4678d3dd6f01b2",
+          "path": "docs/study-swarm/consult-02.dispatch.md"
+        },
+        {
+          "hash": "b3e11ed1473ef4af6ddee0ef2bc12c7a3b39fdba5f2fcec514c10e47792889ae",
+          "path": "docs/study-swarm/si-rpg-engine.citation-receipt.json"
+        },
+        {
+          "hash": "6355daacbebd3488b217af7d17446ece88e36c233cf77219633cf892ef353ce8",
+          "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
+        }
+      ],
+      "globs": [
+        "docs/**"
+      ],
+      "importConfidence": "full",
+      "name": "docs",
+      "origin": "authored",
+      "role": "docs",
+      "testedBy": 0,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "17d4b005bdbe4ac3227ed0dcb1c0633e0958f1acf92f59b6b49d6aac887fad23",
+          "path": "fixtures/golden.txt"
+        }
+      ],
+      "globs": [
+        "fixtures/**"
+      ],
+      "importConfidence": "full",
+      "name": "fixtures",
+      "origin": "generated",
+      "role": "data",
+      "testedBy": 0,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 2,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [
+        "harness/write-golden.js"
+      ],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "2de51acdb54cc8c18611c6067c99e300c3ab258e59565e9974cca18c0114b257",
+          "path": "harness/check.js"
+        },
+        {
+          "hash": "2ec640392e79b7508b504120b5ed954fcf658b23f1f3f00181a7a439a2041279",
+          "path": "harness/sim.js"
+        },
+        {
+          "hash": "ac5e28ad5bf928a7cce07673d23c08fb8ce21f8ec0db4014b8e2278dcc185785",
+          "path": "harness/write-golden.js"
+        }
+      ],
+      "globs": [
+        "harness/**"
+      ],
+      "importConfidence": "full",
+      "name": "harness",
+      "origin": "authored",
+      "role": "test",
+      "testedBy": 0,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "9aa4f94ff94cae1ce6fe0b76d2bda24a30ea3468bc56b95453f4fe5c93b13885",
+          "path": ".gitignore"
+        },
+        {
+          "hash": "367e5141e4f5884e5791c4021f33a9faa958840a5decf44e1b273a87aad1c459",
+          "path": "LICENSE"
+        },
+        {
+          "hash": "9ef935e727a14bdff3f49ee37692defca892ded58b259e738384ed0f74b07809",
+          "path": "README.md"
+        },
+        {
+          "hash": "11bcf8b196ed7b7235bc85a09f29d4c1f7d4a61036180e02b38b4f30fed0d21d",
+          "path": "package.json"
+        }
+      ],
+      "globs": [
+        "*"
+      ],
+      "importConfidence": "full",
+      "name": "root",
+      "origin": "authored",
+      "role": "docs",
+      "testedBy": 0,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "6a4b085cebe937f43b19024dc36d90b4d16ca037fabb59c538dd1acc247bf36c",
+          "path": ".github/workflows/ci.yml"
+        }
+      ],
+      "globs": [
+        ".github/**"
+      ],
+      "importConfidence": "full",
+      "name": "workflows",
+      "origin": "authored",
+      "role": "config",
+      "testedBy": 0,
+      "unresolvedSites": 0
+    }
+  ],
+  "doors": [
+    {
+      "checksCount": 2,
+      "commands": [
+        {
+          "job": "engines",
+          "step": "Install pinned engines",
+          "text": "set -euo pipefail\nnpm install -g jsvu@3.0.5\njsvu --os=linux64 v8@15.6.61\njsvu --os=linux64 spidermonkey@156.0.1\njsvu --os=linux64 javascriptcore@319571\n"
+        },
+        {
+          "job": "engines",
+          "step": "Compare each engine to the golden hash",
+          "text": "set -euo pipefail\ngolden=$(tr -d '\\r\\n' < fixtures/golden.txt)\nv8=$(\"$HOME/.jsvu/bin/v8-15.6.61\" harness/sim.js | tr -d '\\r\\n')\nsm=$(\"$HOME/.jsvu/bin/spidermonkey-156.0.1\" harness/sim.js | tr -d '\\r\\n')\njsc=$(\"$HOME/.jsvu/bin/javascriptcore-319571\" harness/sim.js | tr -d '\\r\\n')\nif [ \"$v8\" != \"$golden\" ] || [ \"$sm\" != \"$golden\" ] || [ \"$jsc\" != \"$golden\" ]; then\n  echo \"v8 [$v8]\"\n  echo \"spidermonkey [$sm]\"\n  echo \"javascriptcore [$jsc]\"\n  echo \"golden [$golden]\"\n  exit 1\nfi\necho \"three engines match\"\n"
+        },
+        {
+          "job": "engines",
+          "step": "Check the Atlas map",
+          "text": "npx --yes @dogfood-lab/atlas@1.17.0 check"
+        }
+      ],
+      "elsewhere": [],
+      "file": ".github/workflows/ci.yml",
+      "landings": [],
+      "mentions": [],
+      "name": "CI",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "fixtures",
+          "depth": 0,
+          "files": 1
+        },
+        {
+          "boundary": "harness",
+          "depth": 0,
+          "files": 1
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "job": "engines",
+          "path": "fixtures/golden.txt",
+          "runKind": "checks"
+        },
+        {
+          "job": "engines",
+          "path": "harness/sim.js",
+          "runKind": "checks"
+        }
+      ],
+      "runsCount": 2,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [
+        {
+          "event": "pull_request",
+          "paths": [
+            ".github/workflows/ci.yml",
+            "atlas/**",
+            "fixtures/**",
+            "harness/**",
+            "package.json"
+          ]
+        },
+        {
+          "branches": [
+            "main"
+          ],
+          "event": "push",
+          "paths": [
+            ".github/workflows/ci.yml",
+            "atlas/**",
+            "fixtures/**",
+            "harness/**",
+            "package.json"
+          ]
+        },
+        {
+          "event": "workflow_dispatch"
+        }
+      ],
+      "uses": [
+        "actions/checkout",
+        "actions/setup-node"
+      ],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "package.json",
+      "kind": "command",
+      "landings": [
+        "fixtures/golden.txt"
+      ],
+      "mentions": [],
+      "name": "write-golden",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "harness",
+          "depth": 0,
+          "files": 1
+        }
+      ],
+      "readers": [
+        {
+          "by": "harness/check.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "target": "fixtures/golden.txt"
+        }
+      ],
+      "runs": [
+        {
+          "path": "harness/write-golden.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
+    }
+  ],
+  "edges": [],
+  "generatedFrom": {
+    "commit": "73c244df37a28ee71ba764f6916d7c1416a9e311",
+    "tracked": 20
+  },
+  "landings": [
+    {
+      "readers": [
+        {
+          "by": "harness/check.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "fixtures/golden.txt",
+      "writers": [
+        {
+          "by": "harness/write-golden.js",
+          "confidence": "ast"
+        }
+      ]
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/check.js",
+          "call": "literal",
+          "confidence": "ast"
+        },
+        {
+          "by": "harness/write-golden.js",
+          "call": "literal",
+          "confidence": "ast"
+        }
+      ],
+      "target": "harness/sim.js",
+      "writers": []
+    }
+  ],
+  "overlaps": [],
+  "submodules": [],
+  "symlinks": [],
+  "testFiles": 0,
+  "unassigned": []
+}

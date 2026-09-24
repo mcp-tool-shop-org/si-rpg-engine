@@ -1,0 +1,134 @@
+{
+  "authored": [
+    ".github/",
+    "docs/",
+    "root"
+  ],
+  "breaks": [
+    {
+      "doors": 2,
+      "importedBy": [],
+      "importedByTests": [],
+      "kind": "part",
+      "name": "harness",
+      "partLabel": "harness"
+    }
+  ],
+  "changes": {
+    "first": true
+  },
+  "changesTogether": [],
+  "changesTogetherNote": [
+    "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
+  ],
+  "changesTogetherWithTests": 0,
+  "commit": "73c244df37a28ee71ba764f6916d7c1416a9e311",
+  "defaultBranch": "main",
+  "derived": "5 parts, mostly JavaScript (3 files). Work enters through 2 doors; the busiest is CI, which reaches 2 parts. People run write-golden.",
+  "doors": [
+    {
+      "checks": [
+        "fixtures/golden.txt",
+        "harness/sim.js"
+      ],
+      "checksCount": 2,
+      "file": ".github/workflows/ci.yml",
+      "id": ".github/workflows/ci.yml",
+      "landings": [],
+      "name": "CI",
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "fixtures",
+          "depth": 0,
+          "files": 1
+        },
+        {
+          "boundary": "harness",
+          "depth": 0,
+          "files": 1
+        }
+      ],
+      "runs": [],
+      "runsCount": 0,
+      "sends": [],
+      "stages": [],
+      "triggers": [
+        "on a pull request touching 5 paths",
+        "on a push to main touching 5 paths",
+        "or by hand"
+      ]
+    },
+    {
+      "checks": [],
+      "checksCount": 0,
+      "file": "package.json",
+      "id": "package.json#write-golden",
+      "kind": "command",
+      "landings": [
+        "fixtures/golden.txt"
+      ],
+      "name": "write-golden",
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "harness",
+          "depth": 0,
+          "files": 1
+        }
+      ],
+      "runs": [
+        "harness/write-golden.js"
+      ],
+      "runsCount": 1,
+      "sends": [],
+      "stages": [],
+      "triggers": []
+    }
+  ],
+  "duplicates": [],
+  "duplicatesLead": null,
+  "duplicatesNote": [],
+  "edges": [],
+  "generated": [
+    {
+      "place": "fixtures/",
+      "writers": [
+        "harness/write-golden.js"
+      ]
+    }
+  ],
+  "generatedAt": "2026-09-24T18:05:03.464Z",
+  "limits": [
+    "2 commands are built at run time and not followed.",
+    "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 20 source files reach 10 revisions."
+  ],
+  "mainDoor": ".github/workflows/ci.yml",
+  "partLabels": {
+    "docs": "docs",
+    "fixtures": "fixtures",
+    "harness": "harness",
+    "root": "the repository root",
+    "workflows": "workflows"
+  },
+  "parts": 5,
+  "readers": [],
+  "repo": "mcp-tool-shop-org/si-rpg-engine",
+  "sequences": [],
+  "startDoor": ".github/workflows/ci.yml",
+  "startHere": [],
+  "startNote": "CI runs no code this map can follow; it only checks code, so there is no path of files to read in order.",
+  "summary": "Determinism harness for a 3D RPG tick: one body, fixed quanta, one golden hash checked under three engines.",
+  "summaryFrom": "person",
+  "testFiles": 0,
+  "testedBy": {},
+  "unnamedWrites": 0,
+  "unread": [],
+  "unreadFiles": 0,
+  "unreadNote": [],
+  "untested": [],
+  "untestedNote": [
+    "No test files were found by name."
+  ],
+  "written": 1
+}
