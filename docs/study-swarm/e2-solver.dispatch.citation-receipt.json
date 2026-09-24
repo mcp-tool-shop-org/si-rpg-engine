@@ -1,0 +1,26 @@
+{
+  "schema": "roleos-citation-receipt/v1",
+  "kind": "citation-verification",
+  "tool": "roleos verify-citations",
+  "input": "docs\\study-swarm\\e2-solver.dispatch.md",
+  "verdict": "escalate",
+  "blocking": false,
+  "advisory": true,
+  "citations_sha256": "b7a3b82b04cb472eae8b2a37e02d43938ca6edf48964c2c658552c471f5f6f3f",
+  "prism_receipt": {
+    "id": "prism-01m3awpw6j4ys3vnbc301nxkb0",
+    "signature": "d044e7eb24cd36cd3ce3adfb4d9708246f3d5e658611feaf227718e43789b1adfc2568e2251a85f75a52cef6a4c2dad34e4f25cf16046a54dbd830d924a5e40a",
+    "verdict": "escalate"
+  },
+  "retrieval_pins": [
+    {
+      "id": "c1",
+      "identifier": "arXiv:cs/0701192",
+      "query": "https://export.arxiv.org/api/query?id_list=cs%2F0701192",
+      "source_sha256": "b3d4ee635986ff09a0fa4dad8917955c07acf4abd0c5a144177e56d73b3d3e55",
+      "existence": "resolved"
+    }
+  ],
+  "local_panel": null,
+  "chain_sha256": "7a77fdeeb806eb1b20d5badc759885132066312c87d8729857dbd6521d6e64b8"
+}
