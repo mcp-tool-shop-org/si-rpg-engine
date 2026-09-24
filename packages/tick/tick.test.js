@@ -6,7 +6,10 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createTick, settle } from './tick.js';
 import { createWorld } from './world.js';
 import { createMemory } from './memory.js';
@@ -403,4 +406,22 @@ test('an undriven body yields to a driven one, and two undriven bodies split', (
   assert.equal(a.vx, 0);
   assert.equal(b.vx, 0);
   assert.ok(b.x - a.x > 0.8);
+});
+
+test('the replay command honors the world a log carries, and a play log carries one', () => {
+  const pushed = spawnSync(process.execPath, ['packages/tick/bin/replay.js', 'fixtures/push-play-log.json'], { encoding: 'utf8' });
+  assert.equal(pushed.status, 0, pushed.stderr);
+  assert.match(pushed.stdout, /replay ok/);
+  const dir = mkdtempSync(join(tmpdir(), 'si-rpg-'));
+  const script = join(dir, 'script.json');
+  const log = join(dir, 'log.json');
+  writeFileSync(script, JSON.stringify([{ kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, y: 1 }, frameHash: '@drawn' }]));
+  const played = spawnSync(process.execPath, ['packages/tick/bin/play.js', script, '--log', log], { encoding: 'utf8' });
+  assert.equal(played.status, 0, played.stderr);
+  const saved = JSON.parse(readFileSync(log, 'utf8'));
+  assert.ok(Array.isArray(saved.world.bodies) && Array.isArray(saved.world.colliders), 'play wrote its world into the log');
+  const again = spawnSync(process.execPath, ['packages/tick/bin/replay.js', log], { encoding: 'utf8' });
+  assert.equal(again.status, 0, again.stderr);
+  const notALog = spawnSync(process.execPath, ['packages/tick/bin/replay.js', 'fixtures/legacy-play-log.json'], { encoding: 'utf8' });
+  assert.equal(notALog.status, 2, 'a capture fixture is refused as not a play log');
 });
