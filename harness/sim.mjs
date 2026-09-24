@@ -29,7 +29,7 @@ for (let i = 0; i < STEPS; i = i + 1) {
   world.step(driven);
   for (let b = 0; b < world.bodies.length; b = b + 1) {
     const body = world.bodies[b];
-    if (!h.float(body.x) || !h.float(body.y) || !h.float(body.vx) || !h.float(body.vy)) {
+    if (!h.float(body.x) || !h.float(body.y) || !h.float(body.z) || !h.float(body.vx) || !h.float(body.vy) || !h.float(body.vz)) {
       ok = false;
       break;
     }

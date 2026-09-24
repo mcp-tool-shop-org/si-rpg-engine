@@ -1,0 +1,89 @@
+{
+  "seed": 7,
+  "scene": {
+    "name": "crate-and-door",
+    "seed": 7,
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.8,
+        "y": 1,
+        "vx": 0,
+        "vy": 0,
+        "hw": 0.25,
+        "hh": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.4,
+        "y": 0.3,
+        "vx": 0,
+        "vy": 0,
+        "hw": 0.3,
+        "hh": 0.3
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 5,
+        "minY": -1,
+        "maxY": 0
+      },
+      {
+        "id": "wall-left",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 8
+      },
+      {
+        "id": "wall-right",
+        "minX": 4,
+        "maxX": 5,
+        "minY": 0,
+        "maxY": 8
+      }
+    ],
+    "goal": {
+      "actor": "crate",
+      "zone": {
+        "minX": 3.3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 1
+      }
+    }
+  },
+  "when": "goal",
+  "log": [
+    {
+      "tick": 393,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 1.8,
+          "y": 0.455078125
+        },
+        "frameHash": "952c2e6c49692f91"
+      },
+      "hash": "952c2e6c49692f91"
+    },
+    {
+      "tick": 473,
+      "proposal": {
+        "kind": "intent",
+        "verb": "push",
+        "actor": "walker",
+        "target": {
+          "body": "crate"
+        },
+        "frameHash": "d8e3a83b3f86275d"
+      },
+      "hash": "d8e3a83b3f86275d"
+    }
+  ]
+}

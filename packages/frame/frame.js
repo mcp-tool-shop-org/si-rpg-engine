@@ -9,7 +9,9 @@
  */
 export function commitFrame(tick, hash, bodies) {
   const copy = bodies.map((b) =>
-    Object.freeze({ id: b.id, x: b.x, y: b.y, vx: b.vx, vy: b.vy, hw: b.hw, hh: b.hh })
+    Object.freeze({
+      id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz, hx: b.hx, hy: b.hy, hz: b.hz,
+    })
   );
   return Object.freeze({ tick, hash, bodies: Object.freeze(copy) });
 }

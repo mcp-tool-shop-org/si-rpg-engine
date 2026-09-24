@@ -1,12 +1,12 @@
 {
   "id": "path-through-collider-refuses",
   "bodies": [
-    { "id": "walker", "x": 1, "y": 1, "vx": 0, "vy": 0, "hw": 0.25, "hh": 0.25 },
-    { "id": "below", "x": 1, "y": -0.5, "vx": 0, "vy": 0, "hw": 0.2, "hh": 0.2 }
+    { "id": "walker", "x": 1, "y": 1, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 },
+    { "id": "beyond", "x": -1, "y": 1, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.2, "hy": 0.2, "hz": 0.2 }
   ],
-  "colliders": [{ "id": "floor", "minX": -1, "maxX": 5, "minY": -1, "maxY": 0 }],
+  "colliders": [{ "id": "wall", "minX": -0.2, "maxX": 0.2, "minY": 0, "maxY": 2, "minZ": -1, "maxZ": 1 }],
   "actor": "walker",
-  "target": { "x": 1, "y": -0.5 },
-  "targetBody": "below",
+  "target": { "x": -1, "z": 0 },
+  "targetBody": "beyond",
   "expect": "refuse"
 }

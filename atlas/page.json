@@ -9,7 +9,7 @@
   ],
   "breaks": [
     {
-      "doors": 7,
+      "doors": 6,
       "importedBy": [
         "harness",
         "host",
@@ -22,7 +22,7 @@
       "partLabel": "tick"
     },
     {
-      "doors": 7,
+      "doors": 6,
       "importedBy": [
         "harness",
         "tick"
@@ -67,16 +67,16 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 0,
-      "changed": 68,
+      "added": 3,
+      "changed": 71,
       "moved": 0,
-      "parts": 12,
+      "parts": 13,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "write-golden now also runs harness/sim.mjs.",
+        "sentence": "write-golden no longer runs harness/sim.mjs.",
         "subjects": [
           "package.json",
           "harness/sim.mjs"
@@ -84,21 +84,29 @@
       },
       {
         "kind": "landing",
-        "sentence": "scenes/crate-and-door.json is now also read by packages/tick/tick.test.js.",
+        "sentence": "fixtures/behavior-3d.json is now read by packages/tick/tick.test.js.",
         "subjects": [
-          "scenes/crate-and-door.json",
+          "fixtures/behavior-3d.json",
+          "packages/tick/tick.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/first-scene-played.json is now read by packages/tick/tick.test.js.",
+        "subjects": [
+          "fixtures/first-scene-played.json",
           "packages/tick/tick.test.js"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "68 files changed content, across 12 parts.",
+        "sentence": "3 files added and 71 changed content, across 13 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "39e10a02737f943d61794256395de8574f35c216",
-      "generatedAt": "2026-09-24T22:24:22.890Z"
+      "commit": "6362370a2d8849a8fc753166a715edc6299dc45b",
+      "generatedAt": "2026-09-24T22:42:09.218Z"
     },
     "unchanged": false
   },
@@ -184,7 +192,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "6362370a2d8849a8fc753166a715edc6299dc45b",
+  "commit": "d8f197708fa264d61334294eaff95927f958813c",
   "defaultBranch": "main",
   "derived": "13 parts, mostly JavaScript (38 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -206,7 +214,6 @@
         "packages/tick/"
       ],
       "checksCount": 14,
-      "checksMore": 37,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -258,7 +265,6 @@
         "packages/tick/tick.test.js"
       ],
       "runsCount": 6,
-      "runsMore": 3,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -270,7 +276,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#host",
       "kind": "command",
@@ -298,7 +303,6 @@
         "packages/host/bin/host.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -306,7 +310,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#load",
       "kind": "command",
@@ -334,7 +337,6 @@
         "packages/load/bin/load.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -342,7 +344,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#propose",
       "kind": "command",
@@ -370,7 +371,6 @@
         "packages/propose/bin/propose.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -378,46 +378,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
-      "file": "package.json",
-      "id": "package.json#write-golden",
-      "kind": "command",
-      "landings": [
-        "fixtures/golden.txt"
-      ],
-      "name": "write-golden",
-      "pushes": false,
-      "reach": [
-        {
-          "boundary": "harness",
-          "depth": 0,
-          "files": 3
-        },
-        {
-          "boundary": "frame",
-          "depth": 1,
-          "files": 1
-        },
-        {
-          "boundary": "tick",
-          "depth": 2,
-          "files": 1
-        }
-      ],
-      "runs": [
-        "harness/sim.mjs",
-        "harness/write-golden.js"
-      ],
-      "runsCount": 2,
-      "runsMore": 0,
-      "sends": [],
-      "stages": [],
-      "triggers": []
-    },
-    {
-      "checks": [],
-      "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#play",
       "kind": "command",
@@ -440,7 +400,6 @@
         "packages/tick/bin/play.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -448,7 +407,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#replay",
       "kind": "command",
@@ -471,7 +429,32 @@
         "packages/tick/bin/replay.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
+      "sends": [],
+      "stages": [],
+      "triggers": []
+    },
+    {
+      "checks": [],
+      "checksCount": 0,
+      "file": "package.json",
+      "id": "package.json#write-golden",
+      "kind": "command",
+      "landings": [
+        "fixtures/golden.txt"
+      ],
+      "name": "write-golden",
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "harness",
+          "depth": 0,
+          "files": 1
+        }
+      ],
+      "runs": [
+        "harness/write-golden.js"
+      ],
+      "runsCount": 1,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -536,11 +519,11 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T22:42:09.218Z",
+  "generatedAt": "2026-09-24T23:27:47.530Z",
   "limits": [
-    "1 read uses a path built at run time and is not named here.",
-    "5 writes and 7 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.",
-    "1 command is built at run time and not followed.",
+    "2 reads use paths built at run time and are not named here.",
+    "5 writes and 6 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "5 commands are built at run time and not followed, 3 of them in tests.",
     "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -666,12 +649,11 @@
       ]
     }
   ],
-  "startDoor": "package.json#host",
+  "startDoor": ".github/workflows/ci.yml",
   "startHere": [
-    "packages/host/bin/host.js",
-    "packages/tick/scene.js"
+    ".github/workflows/ci.yml",
+    "packages/tick/bin/play.js"
   ],
-  "startReason": "This path follows host (a command people run) from its entry, since CI runs only tests.",
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
   "testFiles": 6,

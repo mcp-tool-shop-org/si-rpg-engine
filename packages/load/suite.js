@@ -15,7 +15,7 @@ import { createMemory } from '../tick/memory.js';
  *   bodies: Body[];
  *   colliders: StaticCollider[];
  *   actor: string;
- *   target: { x: number; y: number };
+ *   target: { x: number; z: number };
  *   targetBody?: string;
  *   expect: 'admit' | 'refuse';
  * }} HazardScenario
@@ -48,7 +48,7 @@ export function runHazards(rule, scenarios) {
       rules,
       memory: createMemory(),
     });
-    /** @type {{ x: number, y: number } | { body: string }} */
+    /** @type {{ x: number, z: number } | { body: string }} */
     let target = scenario.target;
     if (rule.targetKind === 'body') {
       if (typeof scenario.targetBody !== 'string') {

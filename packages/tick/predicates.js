@@ -32,21 +32,16 @@ export function loadIntentRules() {
 }
 
 /**
- * @param {Intent} intent
- * @param {ReturnType<import('./world.js').createWorld>} world
- * @param {Map<string, IntentRule>} rules
- * @param {Set<string>} retired
- * @returns {{ ok: true; rule: IntentRule; quanta: number } | { ok: false; reason: string }}
- */
-/**
- * @param {{ x: number, y: number, hw: number, hh: number }} actor
- * @param {{ x: number, y: number, hw: number, hh: number }} other
+ * @param {{ x: number, y: number, z: number, hx: number, hy: number, hz: number }} actor
+ * @param {{ x: number, y: number, z: number, hx: number, hy: number, hz: number }} other
  */
 function nearFace(actor, other) {
-  const left = other.x - other.hw;
-  const right = other.x + other.hw;
-  const bottom = other.y - other.hh;
-  const top = other.y + other.hh;
+  const left = other.x - other.hx;
+  const right = other.x + other.hx;
+  const bottom = other.y - other.hy;
+  const top = other.y + other.hy;
+  const near = other.z - other.hz;
+  const far = other.z + other.hz;
   let x = actor.x;
   if (actor.x < left) {
     x = left;
@@ -59,7 +54,13 @@ function nearFace(actor, other) {
   } else if (actor.y > top) {
     y = top;
   }
-  return { x, y };
+  let z = actor.z;
+  if (actor.z < near) {
+    z = near;
+  } else if (actor.z > far) {
+    z = far;
+  }
+  return { x, y, z };
 }
 
 /**
@@ -118,13 +119,13 @@ export function admitIntent(intent, world, rules, retired, scheduled) {
     }
     const face = nearFace(actor, other);
     const dx = face.x - actor.x;
-    const dy = face.y - actor.y;
-    distance = Math.sqrt(dx * dx + dy * dy);
+    const dz = face.z - actor.z;
+    distance = Math.sqrt(dx * dx + dz * dz);
     if (distance > rule.maxDistance) {
       return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
     }
     if (rule.requiresClearPath) {
-      const hit = world.segmentHits(actor.x, actor.y, face.x, face.y, { hw: actor.hw, hh: actor.hh });
+      const hit = world.segmentHits(actor.x, actor.y, actor.z, face.x, face.y, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
       if (hit !== null) {
         return { ok: false, reason: 'path crosses collider ' + hit };
       }
@@ -134,19 +135,20 @@ export function admitIntent(intent, world, rules, retired, scheduled) {
     distance = rule.maxDistance;
   } else {
     const point = intent.target;
-    if (!point || !('x' in point) || typeof point.x !== 'number' || typeof point.y !== 'number') {
+    if (!point || !('x' in point) || typeof point.x !== 'number' || typeof point.z !== 'number') {
       return { ok: false, reason: 'target must be a point' };
     }
     const dx = point.x - actor.x;
-    const dy = point.y - actor.y;
-    distance = Math.sqrt(dx * dx + dy * dy);
+    const dz = point.z - actor.z;
+    distance = Math.sqrt(dx * dx + dz * dz);
     if (distance > rule.maxDistance) {
       return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
     }
     if (rule.requiresClearPath) {
-      const hit = world.segmentHits(actor.x, actor.y, point.x, point.y, {
-        hw: actor.hw,
-        hh: actor.hh,
+      const hit = world.segmentHits(actor.x, actor.y, actor.z, point.x, actor.y, point.z, {
+        hx: actor.hx,
+        hy: actor.hy,
+        hz: actor.hz,
       });
       if (hit !== null) {
         return { ok: false, reason: 'path crosses collider ' + hit };

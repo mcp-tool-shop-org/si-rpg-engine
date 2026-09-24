@@ -24,8 +24,10 @@
  *     label?: { type: string },
  *     x?: { type: string },
  *     y?: { type: string },
- *     hw?: { type: string },
- *     hh?: { type: string },
+ *     z?: { type: string },
+ *     hx?: { type: string },
+ *     hy?: { type: string },
+ *     hz?: { type: string },
  *   },
  * }} ProposalBranch
  */
@@ -53,8 +55,8 @@ export function proposalSchema(verbs, actors, sources) {
           target: {
             type: 'object',
             additionalProperties: false,
-            required: ['x', 'y'],
-            properties: { x: { type: 'number' }, y: { type: 'number' } },
+            required: ['x', 'z'],
+            properties: { x: { type: 'number' }, z: { type: 'number' } },
           },
         },
       },
@@ -79,14 +81,16 @@ export function proposalSchema(verbs, actors, sources) {
   branches.push({
         type: 'object',
         additionalProperties: false,
-        required: ['kind', 'label', 'x', 'y', 'hw', 'hh'],
+        required: ['kind', 'label', 'x', 'y', 'z', 'hx', 'hy', 'hz'],
         properties: {
           kind: { const: 'body' },
           label: { type: 'string' },
           x: { type: 'number' },
           y: { type: 'number' },
-          hw: { type: 'number' },
-          hh: { type: 'number' },
+          z: { type: 'number' },
+          hx: { type: 'number' },
+          hy: { type: 'number' },
+          hz: { type: 'number' },
         },
       },
   );

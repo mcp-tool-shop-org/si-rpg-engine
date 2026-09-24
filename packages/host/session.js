@@ -13,7 +13,7 @@ import { reachedGoal } from '../tick/scene.js';
  * @typedef {import('../frame/types.js').Admission} Admission
  */
 
-const STEPS = { left: [-1, 0], right: [1, 0] };
+const STEPS = { left: -1, right: 1 };
 
 /**
  * @param {import('../tick/scene.js').Scene} [scene]
@@ -69,10 +69,13 @@ export function createSession(scene) {
         id: body.id,
         x: body.x,
         y: body.y,
+        z: body.z,
         vx: body.vx,
         vy: body.vy,
-        hw: body.hw,
-        hh: body.hh,
+        vz: body.vz,
+        hx: body.hx,
+        hy: body.hy,
+        hz: body.hz,
       })),
       door: doorTick(frame),
     };
@@ -125,8 +128,8 @@ export function createSession(scene) {
           continue;
         }
         const dx = body.x - actorBody.x;
-        const dy = body.y - actorBody.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const dz = body.z - actorBody.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
         if (distance <= push.maxDistance && distance < nearestDistance) {
           nearest = body;
           nearestDistance = distance;
@@ -143,7 +146,7 @@ export function createSession(scene) {
         frameHash: frame.hash,
       });
     }
-    /** @type {{ x: number, y: number } | null} */
+    /** @type {{ x: number, z: number } | null} */
     let target = null;
     if (record.direction === 'up' || record.direction === 'down') {
       return { admitted: false, reason: 'move has no vertical; click a point' };
@@ -154,11 +157,11 @@ export function createSession(scene) {
         return { admitted: false, reason: 'no body named ' + actor };
       }
       const step = STEPS[/** @type {keyof typeof STEPS} */ (record.direction)];
-      target = { x: body.x + step[0], y: body.y + step[1] };
+      target = { x: body.x + step, z: body.z };
     } else if (record.target && typeof record.target === 'object') {
-      const point = /** @type {{ x?: unknown, y?: unknown }} */ (record.target);
-      if (typeof point.x === 'number' && typeof point.y === 'number') {
-        target = { x: point.x, y: point.y };
+      const point = /** @type {{ x?: unknown, z?: unknown }} */ (record.target);
+      if (typeof point.x === 'number' && typeof point.z === 'number') {
+        target = { x: point.x, z: point.z };
       }
     }
     if (!target) {

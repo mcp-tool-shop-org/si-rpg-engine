@@ -7,12 +7,16 @@ export interface Body {
   id: string;
   x: number;
   y: number;
+  z: number;
   vx: number;
   vy: number;
-  /** half width */
-  hw: number;
-  /** half height */
-  hh: number;
+  vz: number;
+  /** half extent on x */
+  hx: number;
+  /** half extent on y, the up axis */
+  hy: number;
+  /** half extent on z */
+  hz: number;
 }
 
 /** A static collider the tick can query. It never moves. */
@@ -22,6 +26,8 @@ export interface StaticCollider {
   maxX: number;
   minY: number;
   maxY: number;
+  minZ: number;
+  maxZ: number;
 }
 
 /**
@@ -39,7 +45,7 @@ export interface Intent {
   kind: 'intent';
   verb: string;
   actor: string;
-  target: { x: number; y: number } | { body: string };
+  target: { x: number; z: number } | { body: string };
   frameHash: string;
 }
 
@@ -71,8 +77,10 @@ export interface BodyDraft {
   id: string;
   x: number;
   y: number;
-  hw: number;
-  hh: number;
+  z: number;
+  hx: number;
+  hy: number;
+  hz: number;
 }
 
 /**

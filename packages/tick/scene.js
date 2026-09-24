@@ -7,7 +7,7 @@ import { createWorld } from './world.js';
  * @typedef {import('../frame/types.js').Body} Body
  * @typedef {import('../frame/types.js').StaticCollider} StaticCollider
  * @typedef {import('../frame/types.js').Frame} Frame
- * @typedef {{ minX: number, maxX: number, minY: number, maxY: number }} Zone
+ * @typedef {{ minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number }} Zone
  * @typedef {{
  *   name: string,
  *   seed: number,
@@ -18,10 +18,10 @@ import { createWorld } from './world.js';
  */
 
 const SCENE_KEYS = ['name', 'seed', 'bodies', 'colliders', 'goal'];
-const BODY_KEYS = ['id', 'x', 'y', 'vx', 'vy', 'hw', 'hh'];
-const COLLIDER_KEYS = ['id', 'minX', 'maxX', 'minY', 'maxY'];
+const BODY_KEYS = ['id', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'hx', 'hy', 'hz'];
+const COLLIDER_KEYS = ['id', 'minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'];
 const GOAL_KEYS = ['actor', 'zone'];
-const ZONE_KEYS = ['minX', 'maxX', 'minY', 'maxY'];
+const ZONE_KEYS = ['minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'];
 
 /**
  * @param {Record<string, unknown>} obj
@@ -73,6 +73,9 @@ export function validateScene(value) {
       return { ok: false, reason: 'a body is an object' };
     }
     const body = /** @type {Record<string, unknown>} */ (item);
+    if (body.hw !== undefined || body.hh !== undefined) {
+      return { ok: false, reason: 'a body record is three-dimensional' };
+    }
     const bodyExtra = unknown(body, BODY_KEYS);
     if (bodyExtra) {
       return { ok: false, reason: 'unknown field: ' + bodyExtra };
@@ -80,7 +83,7 @@ export function validateScene(value) {
     if (typeof body.id !== 'string') {
       return { ok: false, reason: 'a body needs an id' };
     }
-    for (const key of ['x', 'y', 'vx', 'vy', 'hw', 'hh']) {
+    for (const key of ['x', 'y', 'z', 'vx', 'vy', 'vz', 'hx', 'hy', 'hz']) {
       if (typeof body[key] !== 'number' || !Number.isFinite(/** @type {number} */ (body[key]))) {
         return { ok: false, reason: 'body ' + body.id + ' needs a finite ' + key };
       }
@@ -101,7 +104,7 @@ export function validateScene(value) {
     if (typeof box.id !== 'string') {
       return { ok: false, reason: 'a collider needs an id' };
     }
-    for (const key of ['minX', 'maxX', 'minY', 'maxY']) {
+    for (const key of ['minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ']) {
       if (typeof box[key] !== 'number' || !Number.isFinite(/** @type {number} */ (box[key]))) {
         return { ok: false, reason: 'collider ' + box.id + ' needs a finite ' + key };
       }
@@ -143,7 +146,13 @@ export function validateScene(value) {
     extMinY = Math.min(extMinY, box.minY);
     extMaxY = Math.max(extMaxY, box.maxY);
   }
-  if (typedZone.minX < extMinX || typedZone.maxX > extMaxX || typedZone.minY < extMinY || typedZone.maxY > extMaxY) {
+  let extMinZ = Infinity;
+  let extMaxZ = -Infinity;
+  for (const box of colliders) {
+    extMinZ = Math.min(extMinZ, box.minZ);
+    extMaxZ = Math.max(extMaxZ, box.maxZ);
+  }
+  if (typedZone.minX < extMinX || typedZone.maxX > extMaxX || typedZone.minY < extMinY || typedZone.maxY > extMaxY || typedZone.minZ < extMinZ || typedZone.maxZ > extMaxZ) {
     return { ok: false, reason: 'goal zone is outside the colliders' };
   }
   for (let i = 0; i < bodies.length; i = i + 1) {
@@ -183,8 +192,10 @@ export function reachedGoal(scene, frame) {
     return false;
   }
   const zone = scene.goal.zone;
-  return body.x - body.hw >= zone.minX
-    && body.x + body.hw <= zone.maxX
-    && body.y - body.hh >= zone.minY
-    && body.y + body.hh <= zone.maxY;
+  return body.x - body.hx >= zone.minX
+    && body.x + body.hx <= zone.maxX
+    && body.y - body.hy >= zone.minY
+    && body.y + body.hy <= zone.maxY
+    && body.z - body.hz >= zone.minZ
+    && body.z + body.hz <= zone.maxZ;
 }

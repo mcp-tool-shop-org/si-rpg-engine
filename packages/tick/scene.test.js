@@ -26,12 +26,12 @@ test('the crate-and-door scene loads, and each malformed scene is refused', () =
   assert.equal(reachedGoal(loaded.scene, {
     tick: 0,
     hash: '0',
-    bodies: [{ id: 'crate', x: 3.65, y: 0.3, vx: 0, vy: 0, hw: 0.3, hh: 0.3 }],
+    bodies: [{ id: 'crate', x: 3.65, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 }],
   }), true);
   assert.equal(reachedGoal(loaded.scene, {
     tick: 0,
     hash: '0',
-    bodies: [{ id: 'crate', x: 2.4, y: 0.3, vx: 0, vy: 0, hw: 0.3, hh: 0.3 }],
+    bodies: [{ id: 'crate', x: 2.4, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 }],
   }), false);
   assert.match(/** @type {{ reason: string }} */ (broken({ extra: true })).reason, /unknown field/);
   const overlapBody = structuredClone(scene);
@@ -43,7 +43,7 @@ test('the crate-and-door scene loads, and each malformed scene is refused', () =
   assert.match(/** @type {{ reason: string }} */ (validateScene(overlapWall)).reason, /overlaps/);
   assert.match(/** @type {{ reason: string }} */ (broken({ goal: { actor: 'door', zone: scene.goal.zone } })).reason, /not a body/);
   const outside = structuredClone(scene);
-  outside.goal.zone = { minX: 3.3, maxX: 9, minY: 0, maxY: 1 };
+  outside.goal.zone = { minX: 3.3, maxX: 9, minY: 0, maxY: 1, minZ: -0.5, maxZ: 0.5 };
   assert.match(/** @type {{ reason: string }} */ (validateScene(outside)).reason, /outside/);
 });
 
@@ -55,10 +55,10 @@ test('the oracle puts the crate in the door within eight moves', () => {
   }
   const room = loaded.scene;
   const catalog = loadIntentRules();
-  /** @type {Array<{ verb: string, actor: string, target: { x: number, y: number } | { body: string } }>} */
+  /** @type {Array<{ verb: string, actor: string, target: { x: number, z: number } | { body: string } }>} */
   const options = [{ verb: 'push', actor: 'walker', target: { body: 'crate' } }];
   for (let x = 1; x <= 3; x = x + 0.5) {
-    options.push({ verb: 'move', actor: 'walker', target: { x, y: 1 } });
+    options.push({ verb: 'move', actor: 'walker', target: { x, z: 0 } });
   }
   /**
    * @param {typeof options} seq

@@ -26,6 +26,12 @@ import { createMemory } from './memory.js';
  * @returns {{ ok: true; hashes: string[]; final: string; quanta: number } | { ok: false; at: number; reason: string }}
  */
 export function replay(init) {
+  for (let i = 0; i < init.world.bodies.length; i = i + 1) {
+    const body = /** @type {Record<string, unknown>} */ (/** @type {unknown} */ (init.world.bodies[i]));
+    if (body.hw !== undefined || body.hh !== undefined || typeof body.z !== 'number') {
+      return { ok: false, at: 0, reason: 'a body record is three-dimensional' };
+    }
+  }
   const tick = createTick({
     seed: init.seed,
     world: createWorld(init.world),

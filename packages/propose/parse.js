@@ -54,14 +54,14 @@ export function assignBodyId(label, bodyIds) {
  */
 export function stamp(raw, frameHash, bodyIds) {
   if (raw.kind === 'intent') {
-    const target = /** @type {{ x?: unknown, y?: unknown }} */ (raw.target);
+    const target = /** @type {{ x?: unknown, z?: unknown }} */ (raw.target);
     if (typeof raw.verb !== 'string' || typeof raw.actor !== 'string') {
       return null;
     }
-    if (!target || typeof target.x !== 'number' || typeof target.y !== 'number') {
+    if (!target || typeof target.x !== 'number' || typeof target.z !== 'number') {
       return null;
     }
-    return { kind: 'intent', verb: raw.verb, actor: raw.actor, target: { x: target.x, y: target.y }, frameHash };
+    return { kind: 'intent', verb: raw.verb, actor: raw.actor, target: { x: target.x, z: target.z }, frameHash };
   }
   if (raw.kind === 'belief') {
     if (typeof raw.subject !== 'string' || typeof raw.key !== 'string' || typeof raw.value !== 'string') {
@@ -88,13 +88,22 @@ export function stamp(raw, frameHash, bodyIds) {
     return belief;
   }
   if (raw.kind === 'body') {
-    if (typeof raw.label !== 'string' || typeof raw.x !== 'number' || typeof raw.y !== 'number') {
+    if (typeof raw.label !== 'string' || typeof raw.x !== 'number' || typeof raw.y !== 'number' || typeof raw.z !== 'number') {
       return null;
     }
-    if (typeof raw.hw !== 'number' || typeof raw.hh !== 'number') {
+    if (typeof raw.hx !== 'number' || typeof raw.hy !== 'number' || typeof raw.hz !== 'number') {
       return null;
     }
-    return { kind: 'body', id: assignBodyId(raw.label, bodyIds), x: raw.x, y: raw.y, hw: raw.hw, hh: raw.hh };
+    return {
+      kind: 'body',
+      id: assignBodyId(raw.label, bodyIds),
+      x: raw.x,
+      y: raw.y,
+      z: raw.z,
+      hx: raw.hx,
+      hy: raw.hy,
+      hz: raw.hz,
+    };
   }
   if (raw.kind === 'line' && typeof raw.speaker === 'string' && typeof raw.text === 'string') {
     return { kind: 'line', speaker: raw.speaker, text: raw.text };
