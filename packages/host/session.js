@@ -12,7 +12,7 @@ import { FIXTURE_SEED, fixtureWorld } from '../tick/fixture.js';
  * @typedef {import('../frame/types.js').Admission} Admission
  */
 
-const STEPS = { left: [-1, 0], right: [1, 0], up: [0, 1], down: [0, -1] };
+const STEPS = { left: [-1, 0], right: [1, 0] };
 
 export function createSession() {
   const catalog = loadIntentRules();
@@ -78,6 +78,9 @@ export function createSession() {
     const frame = tick.frame();
     /** @type {{ x: number, y: number } | null} */
     let target = null;
+    if (record.direction === 'up' || record.direction === 'down') {
+      return { admitted: false, reason: 'move has no vertical; click a point' };
+    }
     if (typeof record.direction === 'string' && Object.hasOwn(STEPS, record.direction)) {
       const body = frame.bodies.find((item) => item.id === actor);
       if (!body) {
@@ -126,6 +129,9 @@ export function createSession() {
 
 /**
  * One quantum per timer fire. A late timer does not catch up.
+ * 16 ms is what an integer timer can schedule. A quantum is 1/64 s,
+ * 15.625 ms, so the picture runs about two percent slow. The tick's
+ * step does not change.
  * @param {ReturnType<typeof createSession>} session
  * @param {{ every: (ms: number, fn: () => void) => unknown, cancel: (timer: unknown) => void }} clock
  */

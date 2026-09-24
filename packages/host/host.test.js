@@ -76,6 +76,26 @@ test('a direction is taken from the newest body, and the pump fires once per tic
   pump.stop();
 });
 
+test('up and down are refused, and a click above the floor is still a target', () => {
+  const session = createSession();
+  const x = session.frame().bodies[0].x;
+  const up = session.intent({ direction: 'up' });
+  assert.equal(up.admitted, false);
+  assert.match(/** @type {{ reason: string }} */ (up).reason, /no vertical/);
+  const down = session.intent({ direction: 'down' });
+  assert.equal(down.admitted, false);
+  assert.equal(session.log().length, 0);
+  assert.equal(session.frame().bodies[0].x, x);
+  const click = session.intent({ verb: 'move', actor: 'walker', target: { x: 2, y: 2 } });
+  assert.equal(click.admitted, true);
+  const proposal = session.log()[0].proposal;
+  assert.equal(proposal.kind, 'intent');
+  if (proposal.kind === 'intent') {
+    assert.equal(proposal.target.x, 2);
+    assert.equal(proposal.target.y, 2);
+  }
+});
+
 test('the page stream is a world line, then frames, and a posted intent is admitted', async () => {
   const session = createSession();
   const server = createHostServer(session);
