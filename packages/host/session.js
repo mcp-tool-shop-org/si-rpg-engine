@@ -6,6 +6,7 @@ import { createWorld, DT, fixtureColliders } from '../tick/world.js';
 import { createMemory } from '../tick/memory.js';
 import { loadIntentRules } from '../tick/predicates.js';
 import { FIXTURE_SEED, fixtureWorld } from '../tick/fixture.js';
+import { reachedGoal } from '../tick/scene.js';
 
 /**
  * @typedef {import('../frame/types.js').Frame} Frame
@@ -14,11 +15,14 @@ import { FIXTURE_SEED, fixtureWorld } from '../tick/fixture.js';
 
 const STEPS = { left: [-1, 0], right: [1, 0] };
 
-export function createSession() {
+/**
+ * @param {import('../tick/scene.js').Scene} [scene]
+ */
+export function createSession(scene) {
   const catalog = loadIntentRules();
   const tick = createTick({
-    seed: FIXTURE_SEED,
-    world: createWorld(fixtureWorld()),
+    seed: scene ? scene.seed : FIXTURE_SEED,
+    world: createWorld(scene ? { bodies: scene.bodies, colliders: scene.colliders } : fixtureWorld()),
     rules: catalog.rules,
     retired: catalog.retired,
     memory: createMemory(),
@@ -41,7 +45,16 @@ export function createSession() {
   }
 
   function worldRecord() {
-    return { kind: 'world', dt: DT, colliders: fixtureColliders() };
+    /** @type {{ kind: string, dt: number, colliders: ReturnType<typeof fixtureColliders>, goal?: import('../tick/scene.js').Zone }} */
+    const record = {
+      kind: 'world',
+      dt: DT,
+      colliders: scene ? scene.colliders : fixtureColliders(),
+    };
+    if (scene) {
+      record.goal = scene.goal.zone;
+    }
+    return record;
   }
 
   /**
@@ -61,7 +74,30 @@ export function createSession() {
         hw: body.hw,
         hh: body.hh,
       })),
+      door: doorTick(frame),
     };
+  }
+
+  /**
+   * The tick at which the goal was first reached, or null. Sticky: once
+   * reached it stays that tick, so a page that missed frames still reports
+   * the sim's tick and not the first frame it happened to draw.
+   * @type {number | null}
+   */
+  let firstDoor = null;
+
+  /**
+   * @param {Frame} frame
+   */
+  function doorTick(frame) {
+    if (firstDoor !== null) {
+      return firstDoor;
+    }
+    if (!scene || !reachedGoal(scene, frame)) {
+      return null;
+    }
+    firstDoor = frame.tick;
+    return firstDoor;
   }
 
   /**
@@ -76,6 +112,37 @@ export function createSession() {
     const actor = typeof record.actor === 'string' ? record.actor : 'walker';
     const verb = typeof record.verb === 'string' ? record.verb : 'move';
     const frame = tick.frame();
+    if (verb === 'push') {
+      const actorBody = frame.bodies.find((item) => item.id === actor);
+      const push = catalog.rules.get('push');
+      if (!actorBody || !push) {
+        return { admitted: false, reason: 'no body named ' + actor };
+      }
+      let nearest = null;
+      let nearestDistance = Infinity;
+      for (const body of frame.bodies) {
+        if (body.id === actor) {
+          continue;
+        }
+        const dx = body.x - actorBody.x;
+        const dy = body.y - actorBody.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance <= push.maxDistance && distance < nearestDistance) {
+          nearest = body;
+          nearestDistance = distance;
+        }
+      }
+      if (!nearest) {
+        return { admitted: false, reason: 'no body in range to push' };
+      }
+      return tick.submit({
+        kind: 'intent',
+        verb: 'push',
+        actor,
+        target: { body: nearest.id },
+        frameHash: frame.hash,
+      });
+    }
     /** @type {{ x: number, y: number } | null} */
     let target = null;
     if (record.direction === 'up' || record.direction === 'down') {
@@ -111,6 +178,7 @@ export function createSession() {
     watch,
     worldRecord,
     frameRecord,
+    doorTick,
     intent,
     advance() {
       return tick.advance();

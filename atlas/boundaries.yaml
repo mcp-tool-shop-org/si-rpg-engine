@@ -27,6 +27,9 @@ boundaries:
   - name: fixtures
     globs: [fixtures/**]
     role: data
+  - name: scenes
+    globs: [scenes/**]
+    role: data
   - name: docs
     globs: [docs/**]
     role: docs

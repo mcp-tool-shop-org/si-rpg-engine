@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { blendBody, canvasToWorld, fit, worldToCanvas } from './view.js';
 import { createSession, startPump } from './session.js';
+import { loadScene } from '../tick/scene.js';
 import { createHostServer } from './server.js';
 
 test('the blend cuts a jump and slides an ordinary step', () => {
@@ -136,4 +137,51 @@ test('the page stream is a world line, then frames, and a posted intent is admit
   assert.equal(page.includes('packages/tick'), false);
   await reader.cancel();
   await new Promise((resolve) => server.close(resolve));
+});
+
+test('P pushes the nearest body on the newest frame', () => {
+  const loaded = loadScene('scenes/crate-and-door.json');
+  assert.equal(loaded.ok, true);
+  if (!loaded.ok) {
+    return;
+  }
+  const session = createSession(loaded.scene);
+  const stale = 'displayed';
+  const result = session.intent({ verb: 'push', actor: 'walker', frameHash: stale });
+  assert.equal(result.admitted, true);
+  assert.equal(result.hash, session.frame().hash);
+  assert.notEqual(result.hash, stale);
+  const proposal = session.log()[0].proposal;
+  assert.equal(proposal.kind, 'intent');
+  if (proposal.kind === 'intent' && 'body' in proposal.target) {
+    assert.equal(proposal.target.body, 'crate');
+  }
+  const world = session.worldRecord();
+  assert.ok(world.goal);
+  assert.equal(world.goal.minX, 3.3);
+});
+
+test('the door tick is sticky: a frame drawn late still names the tick the sim reached it', () => {
+  const loaded = loadScene('scenes/crate-and-door.json');
+  assert.equal(loaded.ok, true);
+  if (!loaded.ok) {
+    return;
+  }
+  const session = createSession(loaded.scene);
+  // Let the walker land first. A push from the air lands the walker on the crate instead of behind it.
+  for (let i = 0; i < 200; i = i + 1) {
+    session.advance();
+  }
+  const pushed = session.intent({ verb: 'push', actor: 'walker', frameHash: session.frame().hash });
+  assert.equal(pushed.admitted, true);
+  let first = null;
+  for (let i = 0; i < 600 && first === null; i = i + 1) {
+    const frame = session.advance();
+    first = session.doorTick(frame);
+  }
+  assert.ok(first !== null, 'the crate reached the door');
+  for (let i = 0; i < 50; i = i + 1) {
+    session.advance();
+  }
+  assert.equal(session.frameRecord(session.frame()).door, first, 'a later frame still reports the first tick');
 });

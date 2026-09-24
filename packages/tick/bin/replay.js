@@ -29,7 +29,13 @@ if (!Array.isArray(saved.log)) {
   process.exit(2);
 }
 const catalog = loadIntentRules();
-const world = saved.world && Array.isArray(saved.world.bodies) && Array.isArray(saved.world.colliders) ? saved.world : fixtureWorld();
+/** @param {unknown} value */
+function isWorld(value) {
+  const v = /** @type {{ bodies?: unknown, colliders?: unknown } | null} */ (value);
+  return !!v && typeof v === 'object' && Array.isArray(v.bodies) && Array.isArray(v.colliders);
+}
+// A play log carries `world`; a host log carries the `scene` it served.
+const world = isWorld(saved.world) ? saved.world : isWorld(saved.scene) ? { bodies: saved.scene.bodies, colliders: saved.scene.colliders } : fixtureWorld();
 const result = replay({ seed: saved.seed, world, rules: catalog.rules, retired: catalog.retired, log: saved.log });
 if (!result.ok) {
   process.stderr.write('replay failed at entry ' + result.at + ': ' + result.reason + '\n');
