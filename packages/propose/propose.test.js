@@ -7,6 +7,8 @@ import { loadIntentRules } from '../tick/predicates.js';
 import { replay } from '../tick/replay.js';
 import { FIXTURE_SEED, fixtureWorld } from '../tick/fixture.js';
 import { proposalPrompt } from './prompt.js';
+import { readProposal } from './parse.js';
+import { proposalSchema } from './schema.js';
 import { runSeat } from './seat.js';
 
 function fresh() {
@@ -20,20 +22,30 @@ function fresh() {
   });
 }
 
-test('the prompt carries the checker reason only when the condition asks', () => {
-  const shown = proposalPrompt({ tick: 0, x: 1, y: 1, episodes: [], lastReason: 'unknown verb: fly' });
-  const hidden = proposalPrompt({ tick: 0, x: 1, y: 1, episodes: [], lastReason: null });
-  assert.match(shown, /unknown verb: fly/);
-  assert.equal(hidden.includes('unknown verb'), false);
+const verbs = ['move'];
+
+test('both conditions see the previous proposal; only one sees the reason', () => {
+  const shared = { tick: 3, x: 1, y: 1, episodes: [], previous: '{"kind":"intent","verb":"move"}', verdict: /** @type {'rejected'} */ ('rejected') };
+  const shown = proposalPrompt({ ...shared, lastReason: 'path crosses collider floor' });
+  const hidden = proposalPrompt({ ...shared, lastReason: null });
+  assert.match(shown, /Previous proposal:/);
+  assert.match(hidden, /Previous proposal:/);
+  assert.match(shown, /Verdict: rejected/);
+  assert.match(hidden, /Verdict: rejected/);
+  assert.match(shown, /path crosses collider floor/);
+  assert.equal(hidden.includes('path crosses collider floor'), false);
 });
 
-test('returning the reason lets the next proposal answer it; hiding it does not', async () => {
+test('the reason is the only difference, and an unreadable reply is split in two', async () => {
   /** @type {string[]} */
   const seen = [];
   const withReason = await runSeat({
     tick: fresh(),
     budget: 2,
     withReason: true,
+    verbs,
+    seedBase: 10,
+    temperature: 0,
     ask: async (prompt) => {
       seen.push(prompt);
       if (seen.length === 1) {
@@ -43,7 +55,10 @@ test('returning the reason lets the next proposal answer it; hiding it does not'
     },
   });
   assert.equal(withReason.admitted, 1);
+  assert.match(seen[1], /Previous proposal:/);
   assert.match(seen[1], /unknown verb: fly/);
+  assert.equal(withReason.attempts[0].verdict, 'ok');
+  assert.equal(withReason.attempts[0].seed, 10);
 
   /** @type {string[]} */
   const blindSeen = [];
@@ -51,32 +66,64 @@ test('returning the reason lets the next proposal answer it; hiding it does not'
     tick: fresh(),
     budget: 2,
     withReason: false,
+    verbs,
+    seedBase: 10,
+    temperature: 0,
     ask: async (prompt) => {
       blindSeen.push(prompt);
       return '{"kind":"intent","verb":"fly","actor":"walker","target":{"x":2,"y":1}}';
     },
   });
   assert.equal(blind.admitted, 0);
-  assert.equal(blindSeen[1].includes('unknown verb'), false);
-  assert.equal(blind.log.length, 0);
+  assert.match(blindSeen[1], /Previous proposal:/);
+  assert.match(blindSeen[1], /Verdict: rejected/);
+  assert.equal(blindSeen[1].includes('unknown verb: fly'), false);
+  assert.equal(blind.attempts[1].prompt, blindSeen[1]);
+  assert.equal(blind.attempts[1].raw.includes('fly'), true);
+
+  let step = 0;
+  const broken = await runSeat({
+    tick: fresh(),
+    budget: 2,
+    withReason: false,
+    verbs,
+    seedBase: 1,
+    temperature: 0,
+    ask: async () => {
+      step = step + 1;
+      return step === 1 ? 'not json' : '{"kind":"intent","verb":"move","actor":"walker"}';
+    },
+  });
+  assert.equal(broken.attempts[0].verdict, 'not-json');
+  assert.equal(broken.attempts[1].verdict, 'wrong-shape');
 });
 
-test('a line is refused by the tick, and replay of the admitted log does not ask again', async () => {
+test('the schema enums are the catalog, and replay does not ask again', async () => {
+  /** @type {object[]} */
+  const schemas = [];
   let asks = 0;
   const seat = await runSeat({
     tick: fresh(),
     budget: 2,
     withReason: true,
-    ask: async () => {
+    verbs,
+    seedBase: 40,
+    temperature: 0.2,
+    ask: async (_prompt, call) => {
       asks = asks + 1;
+      schemas.push(call.schema);
+      assert.equal(call.seed, 39 + asks);
+      assert.equal(call.temperature, 0.2);
       if (asks === 1) {
         return '{"kind":"line","speaker":"walker","text":"hello"}';
       }
       return '{"kind":"intent","verb":"move","actor":"walker","target":{"x":2,"y":1}}';
     },
   });
+  const schema = /** @type {{ oneOf: Array<{ properties: { verb: { enum: string[] }, kind: { const: string } } }> }} */ (schemas[0]);
+  assert.deepEqual(schema.oneOf[0].properties.verb.enum, ['move']);
+  assert.deepEqual(schema.oneOf.map((branch) => branch.properties.kind.const), ['intent', 'belief', 'body']);
   assert.equal(seat.attempts[0].admitted, false);
-  assert.match(seat.attempts[0].reason ?? '', /line gate/);
   assert.equal(seat.admitted, 1);
   const catalog = loadIntentRules();
   const again = replay({
@@ -87,5 +134,7 @@ test('a line is refused by the tick, and replay of the admitted log does not ask
     log: seat.log,
   });
   assert.equal(again.ok, true);
-  assert.equal(asks, 2, 'replay did not call the model');
+  assert.equal(asks, 2);
+  assert.equal(readProposal('nope', 'h').verdict, 'not-json');
+  assert.equal(proposalSchema(['move'], ['walker']).oneOf[2].properties.actor.enum[0], 'walker');
 });

@@ -206,33 +206,33 @@
         "path": "LICENSE"
       },
       {
-        "commits": 7,
-        "lines": 64,
+        "commits": 9,
+        "lines": 68,
         "path": "README.md"
       },
       {
-        "commits": 6,
-        "lines": 321,
+        "commits": 8,
+        "lines": 419,
         "path": "atlas/README.md"
       },
       {
-        "commits": 5,
-        "lines": 51,
+        "commits": 7,
+        "lines": 57,
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 6,
-        "lines": 1290,
+        "commits": 8,
+        "lines": 1690,
         "path": "atlas/page.json"
       },
       {
-        "commits": 6,
-        "lines": 985,
+        "commits": 8,
+        "lines": 1243,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 6,
-        "lines": 2450,
+        "commits": 8,
+        "lines": 3186,
         "path": "atlas/structure.json"
       },
       {
@@ -241,8 +241,8 @@
         "path": "docs/PHASE-0.md"
       },
       {
-        "commits": 6,
-        "lines": 210,
+        "commits": 8,
+        "lines": 216,
         "path": "docs/atlas-design.md"
       },
       {
@@ -296,6 +296,11 @@
         "path": "fixtures/golden.txt"
       },
       {
+        "commits": 2,
+        "lines": 114,
+        "path": "fixtures/proposer-qwen2.5-7b.json"
+      },
+      {
         "commits": 3,
         "lines": 19,
         "path": "harness/check.js"
@@ -321,8 +326,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 5,
-        "lines": 67,
+        "commits": 7,
+        "lines": 81,
         "path": "package.json"
       },
       {
@@ -364,6 +369,41 @@
         "commits": 2,
         "lines": 130,
         "path": "packages/load/suite.js"
+      },
+      {
+        "commits": 2,
+        "lines": 164,
+        "path": "packages/propose/bin/propose.js"
+      },
+      {
+        "commits": 2,
+        "lines": 6,
+        "path": "packages/propose/model.json"
+      },
+      {
+        "commits": 2,
+        "lines": 66,
+        "path": "packages/propose/ollama.js"
+      },
+      {
+        "commits": 2,
+        "lines": 162,
+        "path": "packages/propose/parse.js"
+      },
+      {
+        "commits": 2,
+        "lines": 60,
+        "path": "packages/propose/prompt.js"
+      },
+      {
+        "commits": 2,
+        "lines": 182,
+        "path": "packages/propose/propose.test.js"
+      },
+      {
+        "commits": 2,
+        "lines": 152,
+        "path": "packages/propose/seat.js"
       },
       {
         "commits": 4,
@@ -446,13 +486,13 @@
     "level": "low",
     "reason": "fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions"
   },
-  "generatedAt": "2026-09-24T18:41:35.157Z",
+  "generatedAt": "2026-09-24T18:52:06.045Z",
   "generatedFrom": {
-    "commit": "41a289025789bb0759a7fc60bee52f19b94e41e8"
+    "commit": "470965fa88b4cc37a06b259946db42afa14f8d9d"
   },
   "pairs": [],
   "parameters": {
-    "appliedChangesetLimit": 14.25,
+    "appliedChangesetLimit": 14.5,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -461,8 +501,8 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "both",
-    "headDate": "2026-09-24T11:27:47-07:00",
-    "inScopeFiles": 57,
+    "headDate": "2026-09-24T11:42:21-07:00",
+    "inScopeFiles": 58,
     "pinnedStart": null,
     "priorFloor": "fallen",
     "qualifyingCommits": 5,
@@ -470,7 +510,7 @@
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-28T18:27:47.000Z",
+    "since": "2026-03-28T18:42:21.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",

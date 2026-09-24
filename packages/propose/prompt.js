@@ -7,6 +7,8 @@
  *   x: number;
  *   y: number;
  *   episodes: string[];
+ *   previous: string | null;
+ *   verdict: 'admitted' | 'rejected' | null;
  *   lastReason: string | null;
  * }} view
  */
@@ -22,9 +24,12 @@ export function proposalPrompt(view) {
     'Frame tick ' + view.tick + '. Walker at x ' + view.x + ', y ' + view.y + '.',
     'Admitted episodes: ' + (view.episodes.length === 0 ? 'none' : view.episodes.join('; ')) + '.',
   ];
+  if (view.previous) {
+    lines.push('Previous proposal: ' + view.previous);
+    lines.push('Verdict: ' + view.verdict);
+  }
   if (view.lastReason) {
-    lines.push('The checker refused the previous proposal: ' + view.lastReason);
-    lines.push('Propose a different action that answers that reason.');
+    lines.push('Checker reason: ' + view.lastReason);
   }
   return lines.join('\n');
 }
