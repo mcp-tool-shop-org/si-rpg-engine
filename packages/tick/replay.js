@@ -1,14 +1,17 @@
 // Replay is the seed plus the admitted-input log. The model is not called:
-// this file imports nothing that generates a proposal. Every recorded hash
-// must come back, or the replay fails at the first one that does not.
+// this file imports nothing that generates a proposal. Each entry names the
+// tick it was admitted at and the hash it was admitted against. Replay
+// advances to that tick, submits, and checks the hash. It fails at the first
+// entry that does not come back.
 
-import { createTick } from './tick.js';
+import { createTick, settle } from './tick.js';
 import { createWorld } from './world.js';
 import { createMemory } from './memory.js';
 
 /**
  * @typedef {import('../frame/types.js').LogEntry} LogEntry
  * @typedef {import('../frame/types.js').IntentRule} IntentRule
+ * @typedef {import('../frame/types.js').Frame} Frame
  */
 
 /**
@@ -18,8 +21,9 @@ import { createMemory } from './memory.js';
  *   rules: Map<string, IntentRule>;
  *   retired?: Set<string>;
  *   log: ReadonlyArray<LogEntry>;
+ *   onFrame?: (frame: Frame) => void;
  * }} init
- * @returns {{ ok: true; hashes: string[] } | { ok: false; at: number; reason: string }}
+ * @returns {{ ok: true; hashes: string[]; final: string; quanta: number } | { ok: false; at: number; reason: string }}
  */
 export function replay(init) {
   const tick = createTick({
@@ -29,10 +33,19 @@ export function replay(init) {
     retired: init.retired,
     memory: createMemory(),
   });
+  if (init.onFrame) {
+    tick.attach({ draw: init.onFrame });
+  }
   /** @type {string[]} */
   const hashes = [];
   for (let i = 0; i < init.log.length; i = i + 1) {
     const entry = init.log[i];
+    while (tick.frame().tick < entry.tick) {
+      tick.advance();
+    }
+    if (tick.frame().tick > entry.tick) {
+      return { ok: false, at: i, reason: 'entry ' + i + ' was admitted at tick ' + entry.tick + ' but replay is already at ' + tick.frame().tick };
+    }
     const admission = tick.submit(entry.proposal);
     if (!admission.admitted) {
       return { ok: false, at: i, reason: 'replay refused a recorded proposal: ' + admission.reason };
@@ -42,5 +55,6 @@ export function replay(init) {
     }
     hashes.push(admission.hash);
   }
-  return { ok: true, hashes };
+  settle(tick);
+  return { ok: true, hashes, final: tick.frame().hash, quanta: tick.frame().tick };
 }

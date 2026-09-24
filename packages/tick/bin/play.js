@@ -12,7 +12,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { chdir } from 'node:process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createTick } from '../tick.js';
+import { createTick, settle } from '../tick.js';
 import { createWorld } from '../world.js';
 import { createMemory } from '../memory.js';
 import { loadIntentRules } from '../predicates.js';
@@ -61,6 +61,7 @@ for (const p of proposals) {
     refused = refused + 1;
     process.stderr.write('refused ' + p.kind + ': ' + a.reason + '\n');
   }
+  settle(tick);
 }
 
 if (logPath) {

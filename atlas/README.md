@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-24 from commit 7e5d5b4.
+Mapped at 2026-09-24 from commit 71e4487.
 
 ## What this is
 
@@ -8,11 +8,10 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 11 parts, mostly JavaScript (28 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (2455dda)
+## What changed since 2026-09-24 (7e5d5b4)
 
-- write-golden now also runs harness/sim.mjs.
-- packages/propose/model.json is now also read by packages/propose/bin/propose.js.
-- 1 file added and 41 changed content, across 10 parts.
+- fixtures/legacy-play-log.json is now read by packages/tick/tick.test.js.
+- 1 file added and 10 changed content, across 7 parts.
 
 ## What comes in
 
@@ -88,7 +87,7 @@ Read those in order to follow one run of load end to end. This path follows load
 
 ## What this map cannot see
 
-- 4 writes and 5 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.
+- 4 writes and 6 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.
 - Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.

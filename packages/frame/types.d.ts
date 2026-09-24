@@ -110,7 +110,11 @@ export interface Episode {
   detail: string;
 }
 
-/** One admitted proposal and the hash the tick reached after it. */
+/**
+ * One admitted proposal, the tick it was admitted at, and the hash it was
+ * admitted against. Resolution happens in the quanta that follow; replay
+ * advances to `tick` before it submits.
+ */
 export interface LogEntry {
   tick: number;
   proposal: Proposal;

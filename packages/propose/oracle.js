@@ -1,7 +1,7 @@
 // Proves the seat's scene is solvable with the real tick before a model runs.
 // Search depth is two moves on a half-unit grid, which is inside the budget.
 
-import { createTick } from '../tick/tick.js';
+import { createTick, settle } from '../tick/tick.js';
 import { createWorld } from '../tick/world.js';
 import { createMemory } from '../tick/memory.js';
 import { loadIntentRules } from '../tick/predicates.js';
@@ -48,6 +48,7 @@ function play(targets) {
     if (!admission.admitted) {
       return { ok: false, minDist, at: null, x: undefined, y: undefined };
     }
+    settle(tick);
     const body = tick.frame().bodies[0];
     const dx = body.x - GOAL.x;
     const dy = body.y - GOAL.y;

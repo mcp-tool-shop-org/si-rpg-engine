@@ -57,37 +57,29 @@
   "changes": {
     "fileCounts": {
       "added": 1,
-      "changed": 41,
+      "changed": 10,
       "moved": 0,
-      "parts": 10,
+      "parts": 7,
       "removed": 0
     },
     "items": [
       {
-        "kind": "door",
-        "sentence": "write-golden now also runs harness/sim.mjs.",
-        "subjects": [
-          "package.json",
-          "harness/sim.mjs"
-        ]
-      },
-      {
         "kind": "landing",
-        "sentence": "packages/propose/model.json is now also read by packages/propose/bin/propose.js.",
+        "sentence": "fixtures/legacy-play-log.json is now read by packages/tick/tick.test.js.",
         "subjects": [
-          "packages/propose/model.json",
-          "packages/propose/bin/propose.js"
+          "fixtures/legacy-play-log.json",
+          "packages/tick/tick.test.js"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "1 file added and 41 changed content, across 10 parts.",
+        "sentence": "1 file added and 10 changed content, across 7 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "2455dda9cb6aab21cefcb9d812e6ae50cffefd44",
-      "generatedAt": "2026-09-24T19:11:15.397Z"
+      "commit": "7e5d5b47c2a957b16521025ee540dbbb59c0d380",
+      "generatedAt": "2026-09-24T20:02:48.636Z"
     },
     "unchanged": false
   },
@@ -96,8 +88,8 @@
     "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "7e5d5b47c2a957b16521025ee540dbbb59c0d380",
-  "defaultBranch": "seat-freeze",
+  "commit": "71e44875ba2bb5cb1dd1e7f96cdf52109ff096f1",
+  "defaultBranch": "main",
   "derived": "11 parts, mostly JavaScript (28 files). Work enters through 6 doors; the busiest is CI, which reaches 6 parts. People run load, play, propose, replay and write-golden.",
   "doors": [
     {
@@ -369,9 +361,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-24T20:02:48.636Z",
+  "generatedAt": "2026-09-24T20:27:53.426Z",
   "limits": [
-    "4 writes and 5 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.",
+    "4 writes and 6 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.",
     "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions."
   ],
   "mainDoor": ".github/workflows/ci.yml",

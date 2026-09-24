@@ -9,7 +9,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "782e8ee574af651b5410a6fe9959db8cfc73bccc9659017ab14073222c4129e9",
+          "hash": "fd0e366f8fea918b121380b4eb26e7071f43650fdee8021f20c5a8d56fadd508",
           "path": "docs/PHASE-0.md"
         },
         {
@@ -76,6 +76,10 @@
           "path": "fixtures/golden.txt"
         },
         {
+          "hash": "c45b54f694fb41219439ad7bf3a6abb94b2c419e9dafc9c1dae94beefad13de9",
+          "path": "fixtures/legacy-play-log.json"
+        },
+        {
           "hash": "4f870c605d4a529655dec02d9635bbd9cc2b06421a5aa169b5e6bf91ad14af3f",
           "path": "fixtures/proposer-qwen2.5-7b.json"
         }
@@ -114,7 +118,7 @@
           "path": "packages/frame/hash.js"
         },
         {
-          "hash": "54dc12c07bbbc8f1233b516a6606f7a27523f1df2d16b6af04d9c4a10a7008f2",
+          "hash": "d01175171aadbb50d9e50a741102d9ebaabeadac5926fdab281911ea2c1b3e6f",
           "path": "packages/frame/types.d.ts"
         }
       ],
@@ -288,7 +292,7 @@
             "loadHazards",
             "runHazards"
           ],
-          "hash": "a39cb2654c1ea5ce1a644eef25eee85ffac58e15e8035b28ec307cfc2e471e1d",
+          "hash": "080f928dda02697bb8c8aee0676971aa4294a77af2e9326baa73e5dd818a6211",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -402,14 +406,14 @@
                 {
                   "inner": [
                     {
-                      "line": 31,
+                      "line": 37,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
                       }
                     },
                     {
-                      "line": 42,
+                      "line": 58,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -426,43 +430,50 @@
                 {
                   "inner": [
                     {
-                      "line": 73,
+                      "line": 74,
                       "name": "proposalSchema",
                       "target": {
                         "file": "packages/propose/schema.js"
                       }
                     },
                     {
-                      "line": 79,
+                      "line": 80,
                       "name": "goalText",
                       "target": {
                         "file": "packages/propose/scene.js"
                       }
                     },
                     {
-                      "line": 80,
+                      "line": 81,
                       "name": "obstacleText",
                       "target": {
                         "file": "packages/propose/scene.js"
                       }
                     },
                     {
-                      "line": 75,
+                      "line": 76,
                       "name": "proposalPrompt",
                       "target": {
                         "file": "packages/propose/prompt.js"
                       }
                     },
                     {
-                      "line": 85,
+                      "line": 86,
                       "name": "ask",
                       "target": null
                     },
                     {
-                      "line": 86,
+                      "line": 87,
                       "name": "readProposal",
                       "target": {
                         "file": "packages/propose/parse.js"
+                      }
+                    },
+                    {
+                      "line": 111,
+                      "name": "settle",
+                      "target": {
+                        "file": "packages/tick/tick.js"
                       }
                     }
                   ],
@@ -482,22 +493,29 @@
                 {
                   "inner": [
                     {
-                      "line": 27,
+                      "line": 31,
                       "name": "createWorld",
                       "target": {
                         "file": "packages/tick/world.js"
                       }
                     },
                     {
-                      "line": 30,
+                      "line": 34,
                       "name": "createMemory",
                       "target": {
                         "file": "packages/tick/memory.js"
                       }
                     },
                     {
-                      "line": 25,
+                      "line": 29,
                       "name": "createTick",
+                      "target": {
+                        "file": "packages/tick/tick.js"
+                      }
+                    },
+                    {
+                      "line": 58,
+                      "name": "settle",
                       "target": {
                         "file": "packages/tick/tick.js"
                       }
@@ -540,7 +558,7 @@
           "exports": [
             "oracleSearch"
           ],
-          "hash": "540f6f6ce04443b232e8a2958f915540882fd04ad7123942808bbf22e8909f9d",
+          "hash": "f40852fe3fd4b3d7625f5758096d9c9a13908e31262181a8418cdbeb74037459",
           "importsFiles": [
             "packages/propose/scene.js",
             "packages/tick/fixture.js",
@@ -629,14 +647,14 @@
                 {
                   "inner": [
                     {
-                      "line": 31,
+                      "line": 37,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
                       }
                     },
                     {
-                      "line": 42,
+                      "line": 58,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -681,55 +699,63 @@
           "exports": [
             "runSeat"
           ],
-          "hash": "140e00972e373a03b0c029aa946c90cec189a38b46d101f0d80320e22681b95d",
+          "hash": "1aa55db4199059a98467baf2358d8bab9de043463769d2ee5733de862e573203",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/propose/prompt.js",
             "packages/propose/scene.js",
-            "packages/propose/schema.js"
+            "packages/propose/schema.js",
+            "packages/tick/tick.js"
           ],
           "path": "packages/propose/seat.js",
           "sequences": [
             {
               "calls": [
                 {
-                  "line": 73,
+                  "line": 74,
                   "name": "proposalSchema",
                   "target": {
                     "file": "packages/propose/schema.js"
                   }
                 },
                 {
-                  "line": 79,
+                  "line": 80,
                   "name": "goalText",
                   "target": {
                     "file": "packages/propose/scene.js"
                   }
                 },
                 {
-                  "line": 80,
+                  "line": 81,
                   "name": "obstacleText",
                   "target": {
                     "file": "packages/propose/scene.js"
                   }
                 },
                 {
-                  "line": 75,
+                  "line": 76,
                   "name": "proposalPrompt",
                   "target": {
                     "file": "packages/propose/prompt.js"
                   }
                 },
                 {
-                  "line": 85,
+                  "line": 86,
                   "name": "ask",
                   "target": null
                 },
                 {
-                  "line": 86,
+                  "line": 87,
                   "name": "readProposal",
                   "target": {
                     "file": "packages/propose/parse.js"
+                  }
+                },
+                {
+                  "line": 111,
+                  "name": "settle",
+                  "target": {
+                    "file": "packages/tick/tick.js"
                   }
                 }
               ],
@@ -769,7 +795,7 @@
           "path": "LICENSE"
         },
         {
-          "hash": "533627c5df8dd0978d39c538157ab257fc29459a2526990b9330bc250793bcba",
+          "hash": "334cd1a1b4c38184d2dee6529e1c1b526b056aecfe9c627d3cc99869460616d9",
           "path": "README.md"
         },
         {
@@ -807,7 +833,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "31343d4adc1fa5dcc0fc5632d2b46e449fa5ab62f610ae25989de746d3c10134",
+          "hash": "d2e75f4bf6e61b7fb23bc9a4c2376165a1aa28902198b54c5fe8d11d1b6943fc",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -898,7 +924,7 @@
           "exports": [
             "replay"
           ],
-          "hash": "53560a23acb233f0d34551237f3f8012e70e448a63c62fce6c3820c55dda5799",
+          "hash": "ba1911c817305a8cbd7578525289cf6c3c95c6979cd1cfd8f60cd49325e2273a",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -909,22 +935,29 @@
             {
               "calls": [
                 {
-                  "line": 27,
+                  "line": 31,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 30,
+                  "line": 34,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
                   }
                 },
                 {
-                  "line": 25,
+                  "line": 29,
                   "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                },
+                {
+                  "line": 58,
+                  "name": "settle",
                   "target": {
                     "file": "packages/tick/tick.js"
                   }
@@ -941,9 +974,10 @@
           "entry": "createTick",
           "entryRule": 4,
           "exports": [
-            "createTick"
+            "createTick",
+            "settle"
           ],
-          "hash": "d4539a143a60e6614494e693573e3351be50c3836d36b0507a3d8014eb1c3840",
+          "hash": "5db472545f47c3840e77e69a851461b92a42c1a66651c05bb1d3e99e924961ca",
           "importsFiles": [
             "packages/frame/frame.js",
             "packages/frame/hash.js",
@@ -954,14 +988,14 @@
             {
               "calls": [
                 {
-                  "line": 31,
+                  "line": 37,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   }
                 },
                 {
-                  "line": 42,
+                  "line": 58,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
@@ -972,13 +1006,31 @@
               "invokedAtTopLevel": false,
               "isDefaultExport": false,
               "name": "createTick"
+            },
+            {
+              "calls": [
+                {
+                  "line": 250,
+                  "name": "idle",
+                  "target": null
+                },
+                {
+                  "line": 251,
+                  "name": "advance",
+                  "target": null
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "settle"
             }
           ]
         },
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "111d6a6c8e4949044ad79636dbc615f9a209d9629dd379688469cf110036020e",
+          "hash": "f0222dbce024c35dfcd1e1fcbf215395716c642de46f81dfc0dd19037121c62e",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -1001,28 +1053,28 @@
                       }
                     }
                   ],
-                  "line": 15,
+                  "line": 18,
                   "name": "fixtureWorld",
                   "target": {
                     "file": "packages/tick/fixture.js"
                   }
                 },
                 {
-                  "line": 15,
+                  "line": 18,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 15,
+                  "line": 18,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "line": 15,
+                  "line": 18,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
@@ -1031,21 +1083,21 @@
                 {
                   "inner": [
                     {
-                      "line": 31,
+                      "line": 37,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
                       }
                     },
                     {
-                      "line": 42,
+                      "line": 58,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
                       }
                     }
                   ],
-                  "line": 15,
+                  "line": 18,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -1060,12 +1112,12 @@
             {
               "calls": [
                 {
-                  "line": 20,
+                  "line": 23,
                   "name": "frame",
                   "target": null
                 },
                 {
-                  "line": 20,
+                  "line": 23,
                   "name": "submit",
                   "target": null
                 }
@@ -1092,7 +1144,7 @@
       "importConfidence": "full",
       "name": "tick",
       "origin": "authored",
-      "outsideReads": 3,
+      "outsideReads": 4,
       "outsideWrites": 1,
       "role": "code",
       "testedBy": 3,
@@ -1654,8 +1706,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "7e5d5b47c2a957b16521025ee540dbbb59c0d380",
-    "tracked": 55
+    "commit": "71e44875ba2bb5cb1dd1e7f96cdf52109ff096f1",
+    "tracked": 56
   },
   "landings": [
     {
@@ -1673,6 +1725,18 @@
           "confidence": "ast"
         }
       ]
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/tick.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/legacy-play-log.json",
+      "writers": []
     },
     {
       "readers": [

@@ -1,6 +1,7 @@
 // The proposer seat. Both conditions see the previous proposal and its
 // verdict. Only one sees the checker's reason. Replay never calls ask.
 
+import { settle } from '../tick/tick.js';
 import { proposalPrompt } from './prompt.js';
 import { readProposal } from './parse.js';
 import { proposalSchema } from './schema.js';
@@ -107,6 +108,7 @@ export async function runSeat(init) {
       continue;
     }
     const admission = init.tick.submit(read.proposal);
+    settle(init.tick);
     const at = place();
     attempts.push({
       seed,
