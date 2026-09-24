@@ -15,10 +15,11 @@ import { createTick } from '../../tick/tick.js';
 import { createWorld } from '../../tick/world.js';
 import { createMemory } from '../../tick/memory.js';
 import { loadIntentRules } from '../../tick/predicates.js';
-import { FIXTURE_SEED, fixtureWorld } from '../../tick/fixture.js';
+import { FIXTURE_SEED } from '../../tick/fixture.js';
 import { replay } from '../../tick/replay.js';
 import { runSeat } from '../seat.js';
 import { askOllama, pinnedRun } from '../ollama.js';
+import { attemptsToGoal, proposeWorld } from '../scene.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);
@@ -43,7 +44,7 @@ const verbs = [...catalog.rules.keys()];
 function fresh() {
   return createTick({
     seed: FIXTURE_SEED,
-    world: createWorld(fixtureWorld()),
+    world: createWorld(proposeWorld()),
     rules: catalog.rules,
     retired: catalog.retired,
     memory: createMemory(),
@@ -66,7 +67,7 @@ async function oneRun(withReason, run) {
   });
   const checked = replay({
     seed: FIXTURE_SEED,
-    world: fixtureWorld(),
+    world: proposeWorld(),
     rules: catalog.rules,
     retired: catalog.retired,
     log: seat.log,
@@ -79,6 +80,7 @@ async function oneRun(withReason, run) {
     seedBase: seat.seedBase,
     admitted: seat.admitted,
     rate: seat.rate,
+    attemptsToGoal: attemptsToGoal(seat.attempts),
     attempts: seat.attempts,
   };
 }
@@ -125,6 +127,44 @@ function byKind(rows, kind) {
   return { admitted, n };
 }
 
+/**
+ * @param {Array<{ attempts: Array<{ prompt: string }> }>} rows
+ */
+function reasonsShown(rows) {
+  let n = 0;
+  for (const row of rows) {
+    for (const attempt of row.attempts) {
+      if (attempt.prompt.includes('Checker reason:')) {
+        n = n + 1;
+      }
+    }
+  }
+  return n;
+}
+
+/**
+ * @param {Array<{ attemptsToGoal: number | null }>} rows
+ */
+function goalSummary(rows) {
+  /** @type {Array<number | null>} */
+  const attempts = rows.map((row) => row.attemptsToGoal);
+  let reached = 0;
+  let sum = 0;
+  for (const value of attempts) {
+    if (value !== null) {
+      reached = reached + 1;
+      sum = sum + value;
+    }
+  }
+  return { reached, attempts, meanAttempts: reached === 0 ? null : sum / reached };
+}
+
+const shown = reasonsShown(withReason);
+if (shown === 0) {
+  process.stderr.write('refusing to report: the reason condition showed zero checker reasons\n');
+  process.exit(1);
+}
+
 const intent = {
   withReason: byKind(withReason, 'intent'),
   blind: byKind(blind, 'intent'),
@@ -135,6 +175,8 @@ const report = {
   worldSeed: FIXTURE_SEED,
   runs,
   budget,
+  reasonsShown: shown,
+  goal: { withReason: goalSummary(withReason), blind: goalSummary(blind) },
   intent,
   belief: { withReason: byKind(withReason, 'belief'), blind: byKind(blind, 'belief') },
   body: { withReason: byKind(withReason, 'body'), blind: byKind(blind, 'body') },
@@ -144,7 +186,10 @@ const report = {
 const text = JSON.stringify(report, null, 2) + '\n';
 process.stdout.write(
   'intent with-reason ' + intent.withReason.admitted + '/' + intent.withReason.n
-  + ' blind ' + intent.blind.admitted + '/' + intent.blind.n + '\n',
+  + ' blind ' + intent.blind.admitted + '/' + intent.blind.n
+  + ' goal ' + report.goal.withReason.reached + '/' + runs
+  + ' vs ' + report.goal.blind.reached + '/' + runs
+  + ' reasons ' + shown + '\n',
 );
 if (outPath) {
   writeFileSync(outPath, text);

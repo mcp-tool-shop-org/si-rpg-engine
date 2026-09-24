@@ -6,6 +6,8 @@
  *   tick: number;
  *   bodies: Array<{ id: string, x: number, y: number, hw: number, hh: number }>;
  *   episodes: string[];
+ *   goal: string;
+ *   obstacle: string;
  *   previous: string | null;
  *   verdict: 'admitted' | 'rejected' | null;
  *   lastReason: string | null;
@@ -14,12 +16,12 @@
 export function proposalPrompt(view) {
   const lines = [
     'Reply with one JSON object and nothing else.',
-    'Allowed kinds are intent, belief, and body.',
-    'intent: {"kind":"intent","verb":"move","actor":"walker","target":{"x":2,"y":1}}',
-    'belief: {"kind":"belief","subject":"walker","key":"mood","value":"wary","confidence":0.5,"source":"e1"}',
-    'body: {"kind":"body","label":"crate","x":2.5,"y":1,"hw":0.2,"hh":0.2}',
+    'kind is intent, belief, or body. The schema fixes the fields.',
     'The only verb is move. Its range is 3. The floor is everything at y <= 0. Walls block x <= 0 and x >= 4.',
+    view.goal,
+    view.obstacle,
     'A belief source must be an admitted episode. Do not cite the withdrawn episode. Do not propose a line or a new verb.',
+    'A body proposal names a label. It does not name an id.',
     'Frame tick ' + view.tick + '.',
     'Bodies on the frame: ' + view.bodies.map((body) => body.id + ' at x ' + body.x + ' y ' + body.y + ', half-size ' + body.hw + ' by ' + body.hh).join('; ') + '.',
     'Admitted episodes: ' + (view.episodes.length === 0 ? 'none' : view.episodes.join('; ')) + '.',
