@@ -461,3 +461,23 @@ test('the replay command replays a host log, which carries a scene instead of a 
   assert.equal(ran.status, 0, ran.stderr);
   assert.match(ran.stdout, /replay ok: 1 hashes/);
 });
+
+test('a walker resting on the floor can still move and push: touching a swept face is not a crossing', () => {
+  const scene = JSON.parse(readFileSync('scenes/crate-and-door.json', 'utf8'));
+  const world = createWorld({ bodies: scene.bodies, colliders: scene.colliders });
+  const pad = { hw: 0.25, hh: 0.25 };
+  assert.equal(world.segmentHits(1.7, 0.25, 2.7, 0.25, pad), null, 'along the floor at rest');
+  assert.equal(world.segmentHits(1.7, 0.25, 2.1, 0.3, pad), null, 'to the near face of the crate at rest');
+  assert.equal(world.segmentHits(1.7, 0.25, 1.7, -0.5, pad), 'floor', 'into the floor still crosses');
+  assert.equal(world.segmentHits(1.7, 1, 4, 1, pad), 'wall-right', 'into the wall still crosses');
+  assert.equal(world.segmentHits(1.7, 1, 3.75, 1, pad), null, 'ending exactly on the swept wall face is touching');
+  const catalog = loadIntentRules();
+  const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
+  let rested = false;
+  for (let i = 0; i < 60000 && !rested; i = i + 1) {
+    rested = t.advance().bodies[0].y === 0.25;
+  }
+  assert.ok(rested, 'the walker came fully to rest on the floor');
+  const push = t.submit({ kind: 'intent', verb: 'push', actor: 'walker', target: { body: 'crate' }, frameHash: t.frame().hash });
+  assert.ok(push.admitted, JSON.stringify(push));
+});
