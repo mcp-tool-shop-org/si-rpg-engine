@@ -142,8 +142,10 @@ export function behaviourDifferences(expected, actual) {
   if ('walkerZone' in expected || 'walkerZone' in actual) {
     note('body walker final zone', expected.walkerZone, actual.walkerZone);
   }
-  // A changed length means the snapshot's encoding changed. A changed digest
-  // at the same length means the values in it changed. The digest mixes the
+  // A changed length is named as that, with the change in bytes and doubles:
+  // it can be a contact pair more or fewer (five doubles, and seven per point),
+  // not only a changed encoding, so the line does not guess which. A changed digest at
+  // the same length means the values in it changed. The digest mixes the
   // length, so it is named only when the length held.
   if (expected.snapshotBytes || actual.snapshotBytes || expected.snapshotDigest || actual.snapshotDigest) {
     const wantBytes = expected.snapshotBytes || { load: null, last: null };
@@ -154,7 +156,7 @@ export function behaviourDifferences(expected, actual) {
     const moments = [['load', 'at load'], ['last', 'at the last quantum']];
     for (const [key, where] of moments) {
       if (!Object.is(wantBytes[key], gotBytes[key])) {
-        out.push('snapshot bytes ' + where + ': expected ' + String(wantBytes[key]) + ', got ' + String(gotBytes[key]) + ': the encoding changed');
+        out.push('snapshot bytes ' + where + ': expected ' + String(wantBytes[key]) + ', got ' + String(gotBytes[key]) + ': ' + lengthChange(wantBytes[key], gotBytes[key]));
       } else if (!Object.is(wantDigest[key], gotDigest[key])) {
         const why = wantDigest[key] === null ? ': not recorded before' : ': same length, the values changed';
         out.push('snapshot digest ' + where + ': expected ' + String(wantDigest[key]) + ', got ' + String(gotDigest[key]) + why);
@@ -162,6 +164,22 @@ export function behaviourDifferences(expected, actual) {
     }
   }
   return out;
+}
+
+/**
+ * The snapshot length changed, by how much. A snapshot is little-endian
+ * doubles, so the change is also given in doubles when it is whole.
+ * @param {number | null} want
+ * @param {number | null} got
+ */
+function lengthChange(want, got) {
+  if (typeof want !== 'number' || typeof got !== 'number') {
+    return 'the snapshot length changed';
+  }
+  const delta = got - want;
+  const sign = delta > 0 ? '+' : '';
+  const doubles = delta % 8 === 0 ? ' (' + sign + delta / 8 + (Math.abs(delta) === 8 ? ' double)' : ' doubles)') : '';
+  return 'the snapshot length changed by ' + sign + delta + ' bytes' + doubles;
 }
 
 /**

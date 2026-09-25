@@ -41,6 +41,24 @@ export function createHasher() {
   }
 
   return {
+    /**
+     * A byte stream, split across the lanes the way a double is: of every
+     * eight bytes, the first four feed lane 0 and the last four lane 1. For a
+     * stream of little-endian doubles that is exactly what `float` does with
+     * each. A stream fed through `u32` one byte at a time would reach both
+     * lanes alike, and its digest would have two equal halves: 32 bits, not
+     * 64 (S1 pin 13). The frame hash does not call this, so no frame hash moves.
+     * @param {Uint8Array} data
+     */
+    bytes(data) {
+      for (let i = 0; i < data.length; i = i + 1) {
+        if ((i & 4) === 0) {
+          h0 = Math.imul(h0 ^ data[i], 0x01000193) >>> 0;
+        } else {
+          h1 = Math.imul(h1 ^ data[i], 0x01000193) >>> 0;
+        }
+      }
+    },
     float(x) {
       if (x !== x) {
         return false;
