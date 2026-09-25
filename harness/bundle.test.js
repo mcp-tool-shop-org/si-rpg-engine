@@ -180,19 +180,19 @@ test('a malformed bundle is refused with what is wrong and exit 2, before anythi
   assert.equal(run.signal, null, 'not killed by the timeout');
   assert.equal(run.status, 2, run.stdout + run.stderr);
   assert.equal(run.stdout, '');
-  assert.equal(run.stderr, 'not a bundle: ' + path + ': a play bundle has whole-number steps, at least its save tick 20\n');
+  assert.equal(run.stderr, 'not a bundle: ' + path + ': a play bundle has whole-number steps, at least 19, its save tick less one\n');
   // Each run kind is checked for what its replay reads.
   const product = makeBundle({ scene: 'product' }, { name: 'p', tick: 3, image: false });
   const minds = JSON.parse(readFileSync('fixtures/behavior-minds.json', 'utf8'));
   const log = makeBundle({ seed: minds.seed, world: minds.world, log: minds.log }, { name: 'l', tick: 2, image: false });
   /** @type {Array<[Record<string, unknown>, RegExp]>} */
   const cases = [
-    [{ ...bundle, steps: 10 }, /a play bundle has whole-number steps, at least its save tick 20/],
+    [{ ...bundle, steps: 10 }, /a play bundle has whole-number steps, at least 19, its save tick less one/],
     [{ ...bundle, driven: 'walker' }, /a play bundle has a driven array of body ids/],
     [{ ...bundle, world: { bodies: stall.world.bodies } }, /the world has bodies and colliders/],
     [{ ...bundle, hashes: bundle.hashes.slice(1) }, /the hashes run from the load to the save tick, 21 of them/],
     [{ ...bundle, image: { worldId: 1, digest: 'x' } }, /the image is null, or a world id, a digest, a page bitmap, and page data/],
-    [{ ...product, quanta: undefined }, /a product bundle has whole-number quanta, at least its save tick 3/],
+    [{ ...product, quanta: undefined }, /a product bundle has whole-number quanta, at least 2, its save tick less one/],
     [{ ...log, seed: 'seven' }, /a log bundle has a seed/],
     [{ ...log, log: [{ tick: 4, hash: 'x', proposal: {} }, { tick: 2, hash: 'y', proposal: {} }] }, /log entry 1 has a tick no earlier than the entry before, a hash, and a proposal/],
     [{ ...log, law: 'box' }, /a log bundle's law is product or reference/],
@@ -203,6 +203,12 @@ test('a malformed bundle is refused with what is wrong and exit 2, before anythi
   assert.equal(bundleProblem(bundle), null);
   assert.equal(bundleProblem(product), null);
   assert.equal(bundleProblem(log), null);
+  // A run's length may be one short of the save tick, which is how a failure
+  // bundle records where its run stopped (#66); two short is refused.
+  assert.equal(bundleProblem({ ...bundle, steps: 19 }), null);
+  assert.match(String(bundleProblem({ ...bundle, steps: 18 })), /whole-number steps, at least 19, its save tick less one/);
+  assert.equal(bundleProblem({ ...product, quanta: 2 }), null);
+  assert.match(String(bundleProblem({ ...product, quanta: 1 })), /whole-number quanta, at least 2, its save tick less one/);
   // Not JSON at all: refused the same way.
   const garbled = join(dir, 'garbled.bundle.json');
   writeFileSync(garbled, '{ "bundle": 1, ');
@@ -261,6 +267,46 @@ test('every failure writes one: when the corpus\'s untraced and traced product r
   assert.deepEqual(bundle.failure, { test: 'corpus', block: split.block });
   // The bundle is the untraced run to the split, which replays as it ran.
   assert.equal(replayBundle(bundle).status, 'ok');
+});
+
+test('every failure writes one: when the corpus\'s two product runs stop at the same tick short of its quanta, the bundle carries the run through the tick they stopped at, and replay prints the same length block (#66)', () => {
+  const into = join(dir, 'corpus-stop');
+  const was = process.env.SI_RPG_BUNDLES;
+  process.env.SI_RPG_BUNDLES = into;
+  /** @type {ReturnType<typeof runCorpus>} */
+  let results;
+  try {
+    // Planted: the scene's own length is 300 and the corpus asks for 400, so
+    // both runs make frames 0 to 300 and stop, and neither throws.
+    results = runCorpus({ quanta: 400, points: 2, only: 'product scene', plantStop: 300, say: () => {} });
+  } finally {
+    if (was === undefined) {
+      delete process.env.SI_RPG_BUNDLES;
+    } else {
+      process.env.SI_RPG_BUNDLES = was;
+    }
+  }
+  assert.deepEqual(results.map((r) => r.name + ' ' + r.status), ['product scene 400 different']);
+  const [stop] = results;
+  assert.ok(stop.bundle, 'the stop wrote a bundle');
+  const path = stop.bundle || '';
+  // The reproduction first: replay on the bundle stops where the runs did and
+  // prints the block the corpus wrote into it, with the exit of any difference.
+  const bundle = readBundle(path);
+  const replayed = replayCommand(path);
+  assert.equal(replayed.stdout, bundle.failure ? bundle.failure.block : '(no failure block)', 'replay reproduces the stop');
+  assert.equal(replayed.status, 1, replayed.stderr);
+  assert.equal(stop.block, 'first difference at tick 301\nlength\n  bundle continues\n  replay ends after 301 lines\n');
+  assert.deepEqual(bundle.failure, { test: 'corpus', block: stop.block });
+  // Carried through the tick the runs stopped at: frames 0 to 300 as they ran,
+  // and `-` for 301, the frame neither made.
+  assert.equal(bundle.run, 'product');
+  assert.equal(bundle.quanta, 300);
+  assert.equal(bundle.tick, 301);
+  assert.equal(bundle.hashes.length, 302);
+  assert.equal(bundle.hashes[301], '-');
+  assert.match(bundle.hashes[300], /^[0-9a-f]{16}$/);
+  assert.equal(bundle.image, null, 'no capture reaches a frame the run never made');
 });
 
 test('every failure writes one: planted failures in a real test run write bundles, and replay reproduces the restore failure with the same first-difference block', () => {

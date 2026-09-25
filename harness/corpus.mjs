@@ -32,7 +32,7 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { PAGE, bundleFrom, bundleText, denseImage, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
+import { PAGE, bundleFrom, bundleText, denseImage, endedBlock, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
 import { pair } from '../packages/tick/difference.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
 import { validateScene } from '../packages/tick/scene.js';
@@ -383,21 +383,28 @@ function parting(untraced, traced, quanta) {
     return { tick: untraced.thrown.tick, block: failedAt(untraced.thrown.tick, 'the run threw', untraced.thrown.message) };
   }
   if (untraced.end !== quanta) {
-    return { tick: untraced.end, block: 'first difference at tick ' + (untraced.end + 1) + '\nlength\n' + pair('expected', 'both runs', 'continue to ' + quanta, 'end after ' + (untraced.end + 1) + ' lines') };
+    // Both stopped at the same frame, short of `quanta`, and neither threw.
+    // The difference is the next frame, which neither made: the bundle is
+    // saved there, one past the run's last frame, so its replay ends where
+    // they did and prints this same block (issue #66).
+    const tick = untraced.end + 1;
+    return { tick, block: endedBlock(tick) };
   }
   return null;
 }
 
 /**
- * The hashes a failure bundle records to `tick`: the run's own, with NAN, the
- * trace's mark for a step that threw, where the run has none.
+ * The hashes a failure bundle records to `tick`: the run's own, then, for a
+ * frame the run did not make, `missing`: NAN, the trace's mark for a step that
+ * threw, or `-`, no frame, where the run had stopped.
  * @param {string[]} hashes
  * @param {number} tick
+ * @param {'NAN' | '-'} missing
  */
-function hashesTo(hashes, tick) {
+function hashesTo(hashes, tick, missing) {
   const out = hashes.slice(0, tick + 1);
   while (out.length < tick + 1) {
-    out.push('NAN');
+    out.push(missing);
   }
   return out;
 }
@@ -407,9 +414,10 @@ function hashesTo(hashes, tick) {
  * @param {number} count
  * @param {(line: string) => void} say
  * @param {number} [plantSplit] the tests plant a traced run that parts from the untraced one after this tick
+ * @param {number} [plantStop] the tests plant a product scene whose own length is this, so both runs stop there, short of `quanta`
  */
-function productLong(quanta, count, say, plantSplit) {
-  const spec = /** @type {ReplaySpec} */ ({ scene: 'product', quanta });
+function productLong(quanta, count, say, plantSplit, plantStop) {
+  const spec = /** @type {ReplaySpec} */ ({ scene: 'product', quanta: typeof plantStop === 'number' ? plantStop : quanta });
   /** @type {Result[]} */
   const results = [];
   /**
@@ -443,7 +451,8 @@ function productLong(quanta, count, say, plantSplit) {
   say('product scene: traced ' + traced.end + ' quanta in ' + traced.ms.toFixed(0) + ' ms, ' + ((traced.ms / Math.max(1, traced.end)) * 1000).toFixed(1) + ' us per quantum with the trace and its events');
   const split = parting(untraced, traced, quanta);
   if (split) {
-    return fail('product scene ' + quanta, split.tick, hashesTo(untraced.hashes, split.tick), split.block, 'the untraced and traced runs part, or stop short of ' + quanta, untraced.ms + traced.ms);
+    const missing = untraced.thrown && untraced.thrown.tick === split.tick ? 'NAN' : '-';
+    return fail('product scene ' + quanta, split.tick, hashesTo(untraced.hashes, split.tick, missing), split.block, 'the untraced and traced runs part, or stop short of ' + quanta, untraced.ms + traced.ms);
   }
   const end = traced.end;
   const last = traced.hashes[end];
@@ -513,7 +522,7 @@ function productLong(quanta, count, say, plantSplit) {
         return fail('product scene imaging run', t, traced.hashes.slice(0, t + 1), 'first difference at tick ' + (t + 1) + '\nlength\n' + pair('traced', 'imaging', 'continues', 'ends after ' + (t + 1) + ' lines'), 'the third run ends early', performance.now() - i0);
       }
     } catch (error) {
-      return fail('product scene imaging run', t + 1, hashesTo(traced.hashes, t + 1), failedAt(t + 1, 'the run threw', error), 'the third run threw', performance.now() - i0);
+      return fail('product scene imaging run', t + 1, hashesTo(traced.hashes, t + 1, 'NAN'), failedAt(t + 1, 'the run threw', error), 'the third run threw', performance.now() - i0);
     }
   }
 
@@ -593,7 +602,7 @@ function productLong(quanta, count, say, plantSplit) {
 // The job.
 
 /**
- * @param {{ quanta: number, points: number, only: string | null, say: (line: string) => void, plantSplit?: number }} options plantSplit: the tests plant a traced product run that parts from the untraced one after this tick
+ * @param {{ quanta: number, points: number, only: string | null, say: (line: string) => void, plantSplit?: number, plantStop?: number }} options plantSplit: the tests plant a traced product run that parts from the untraced one after this tick; plantStop: a product scene whose own length is this, so both runs stop short of quanta
  * @returns {Result[]}
  */
 export function runCorpus(options) {
@@ -734,7 +743,7 @@ export function runCorpus(options) {
   // 3. The product scene, long.
   if (options.quanta > 0 && wanted('product scene')) {
     const t0 = performance.now();
-    for (const result of productLong(options.quanta, options.points, say, options.plantSplit)) {
+    for (const result of productLong(options.quanta, options.points, say, options.plantSplit, options.plantStop)) {
       results.push(result);
     }
     say('product scene: ' + (performance.now() - t0).toFixed(0) + ' ms in all');

@@ -11,7 +11,11 @@
 //            `world` under `law`, with `retired` verbs); packages/tick/runs.js
 //   seed, world, log   the seed, the world file's contents, the admitted inputs
 //   tick     the save tick; hashes, the T1 trace hashes from the load (tick 0)
-//            to it, one per quantum
+//            to it, one per quantum. A failure bundle may be saved one past
+//            its run's last frame, which is how it records that the run
+//            stopped there: its last hash is `-`, no frame, or `NAN`, the
+//            trace's mark for a step that threw, and its replay reports the
+//            difference at that tick
 //   image    optional: the solver's linear memory at the save tick, sparse.
 //            `pages` is a bitmap of its 512 pages of 64 KiB, bit p of byte
 //            p >> 3 set when page p is not all zero; `data` those pages in
@@ -313,7 +317,9 @@ export function isBundle(value) {
  * Why a value is not a bundle a replay can run, or null. Each run kind is
  * checked for what its replay reads, so a malformed bundle is refused with the
  * field instead of run into a hang (a play bundle with no `steps` never ends)
- * or a crash.
+ * or a crash. A play or product run's length may be one short of the save
+ * tick, no more: a failure bundle is saved one past the frame its run
+ * stopped on, and its replay reports the length difference there (issue #66).
  * @param {any} b
  * @returns {string | null}
  */
@@ -348,15 +354,15 @@ export function bundleProblem(b) {
     return 'the hashes run from the load to the save tick, ' + (b.tick + 1) + ' of them';
   }
   if (b.run === 'play') {
-    if (!Number.isInteger(b.steps) || b.steps < b.tick) {
-      return 'a play bundle has whole-number steps, at least its save tick ' + b.tick;
+    if (!Number.isInteger(b.steps) || b.steps < b.tick - 1) {
+      return 'a play bundle has whole-number steps, at least ' + (b.tick - 1) + ', its save tick less one';
     }
     if (!Array.isArray(b.driven) || !b.driven.every((/** @type {unknown} */ id) => typeof id === 'string')) {
       return 'a play bundle has a driven array of body ids';
     }
   }
-  if (b.run === 'product' && (!Number.isInteger(b.quanta) || b.quanta < b.tick)) {
-    return 'a product bundle has whole-number quanta, at least its save tick ' + b.tick;
+  if (b.run === 'product' && (!Number.isInteger(b.quanta) || b.quanta < b.tick - 1)) {
+    return 'a product bundle has whole-number quanta, at least ' + (b.tick - 1) + ', its save tick less one';
   }
   if (b.run !== 'product' && (typeof b.seed !== 'number' || !Number.isFinite(b.seed))) {
     return 'a ' + b.run + ' bundle has a seed';
@@ -423,6 +429,16 @@ export function readBundle(path) {
  */
 export function traceDifference(whole, restored) {
   return compareLines(whole.concat([endLine(whole.length)]), restored.concat([endLine(restored.length)]), 'whole.trace', 'restored.trace');
+}
+
+/**
+ * The block for a run that ended before the frame at `tick`, which the bundle
+ * has a hash for. The replay prints it; the corpus writes it for two runs that
+ * stopped there, so the bundle it saves replays to the same block (#66).
+ * @param {number} tick
+ */
+export function endedBlock(tick) {
+  return 'first difference at tick ' + tick + '\nlength\n' + pair('bundle', 'replay', 'continues', 'ends after ' + tick + ' lines');
 }
 
 /**
@@ -505,7 +521,7 @@ export function replayBundle(bundle, options) {
     }
     try {
       if (!run.advance()) {
-        return { status: 'different', stage: 'hashes', skipped, block: 'first difference at tick ' + (t + 1) + '\nlength\n' + pair('bundle', 'replay', 'continues', 'ends after ' + (t + 1) + ' lines') };
+        return { status: 'different', stage: 'hashes', skipped, block: endedBlock(t + 1) };
       }
       lines.push(run.line());
     } catch (error) {
@@ -594,7 +610,7 @@ export function replayBundle(bundle, options) {
     const before = again.tick;
     try {
       if (!again.advance()) {
-        return { status: 'different', stage: 'rerun', skipped, block: 'first difference at tick ' + (before + 1) + '\nlength\n' + pair('bundle', 'replay', 'continues', 'ends after ' + (before + 1) + ' lines') };
+        return { status: 'different', stage: 'rerun', skipped, block: endedBlock(before + 1) };
       }
     } catch (error) {
       return threw('rerun', before + 1, error);
