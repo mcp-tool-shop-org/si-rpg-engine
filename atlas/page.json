@@ -34,11 +34,11 @@
       "partLabel": "frame"
     },
     {
-      "doors": 4,
-      "importedBy": [
+      "doors": 3,
+      "importedBy": [],
+      "importedByTests": [
         "tick"
       ],
-      "importedByTests": [],
       "kind": "part",
       "name": "harness",
       "partLabel": "harness"
@@ -91,29 +91,64 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 2,
-      "changed": 19,
+      "added": 6,
+      "changed": 14,
       "moved": 0,
-      "parts": 2,
+      "parts": 4,
       "removed": 0
     },
     "items": [
       {
-        "kind": "unassigned",
-        "sentence": "site/src/content/docs/handbook/testing.md is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "kind": "landing",
+        "sentence": "fixtures/corpus/ is now also read by packages/tick/bundle.js.",
         "subjects": [
-          "site/src/content/docs/handbook/testing.md"
+          "fixtures/corpus/",
+          "packages/tick/bundle.js"
         ]
       },
       {
+        "kind": "landing",
+        "sentence": "packages/tick/sessions.js is now read by harness/source.test.js.",
+        "subjects": [
+          "packages/tick/sessions.js",
+          "harness/source.test.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In harness/bundle.mjs, make bundle gained a step, with records, before capture bundle.",
+        "subjects": [
+          "harness/bundle.mjs"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In harness/bundle.mjs, make bundle gained a step, capture bundle, after with records.",
+        "subjects": [
+          "harness/bundle.mjs"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In harness/bundle.mjs, make bundle lost a step, replay to.",
+        "subjects": [
+          "harness/bundle.mjs"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "And 58 more changes to the order of work.",
+        "subjects": []
+      },
+      {
         "kind": "counts",
-        "sentence": "2 files added and 19 changed content, across 2 parts.",
+        "sentence": "6 files added and 14 changed content, across 4 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "c63817d9658b310bfab53e25978a275647156c3f",
-      "generatedAt": "2026-09-25T12:31:39.566Z"
+      "commit": "7645d6b8682b36631793c7d909a686f566ca4df8",
+      "generatedAt": "2026-09-25T12:36:00.800Z"
     },
     "unchanged": false
   },
@@ -200,9 +235,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 7 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "7645d6b8682b36631793c7d909a686f566ca4df8",
+  "commit": "f9c42b961a033bbec00bfb59fec6f68d8360b021",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (73 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (78 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -278,7 +313,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 18
+          "files": 23
         }
       ],
       "runs": [
@@ -344,11 +379,11 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 8
+          "files": 13
         },
         {
           "boundary": "frame",
-          "depth": 2,
+          "depth": 3,
           "files": 2
         }
       ],
@@ -495,43 +530,6 @@
       "checks": [],
       "checksCount": 0,
       "file": "package.json",
-      "id": "package.json#replay",
-      "kind": "command",
-      "landings": [],
-      "name": "replay",
-      "programs": [
-        "git"
-      ],
-      "pushes": false,
-      "reach": [
-        {
-          "boundary": "tick",
-          "depth": 0,
-          "files": 10
-        },
-        {
-          "boundary": "harness",
-          "depth": 1,
-          "files": 7
-        },
-        {
-          "boundary": "frame",
-          "depth": 3,
-          "files": 2
-        }
-      ],
-      "runs": [
-        "packages/tick/bin/replay.js"
-      ],
-      "runsCount": 1,
-      "sends": [],
-      "stages": [],
-      "triggers": []
-    },
-    {
-      "checks": [],
-      "checksCount": 0,
-      "file": "package.json",
       "id": "package.json#write-golden",
       "kind": "command",
       "landings": [
@@ -554,7 +552,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 4
+          "files": 6
         }
       ],
       "runs": [
@@ -589,6 +587,38 @@
       ],
       "runs": [
         "packages/tick/bin/play.js"
+      ],
+      "runsCount": 1,
+      "sends": [],
+      "stages": [],
+      "triggers": []
+    },
+    {
+      "checks": [],
+      "checksCount": 0,
+      "file": "package.json",
+      "id": "package.json#replay",
+      "kind": "command",
+      "landings": [],
+      "name": "replay",
+      "programs": [
+        "git"
+      ],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "tick",
+          "depth": 0,
+          "files": 15
+        },
+        {
+          "boundary": "frame",
+          "depth": 3,
+          "files": 2
+        }
+      ],
+      "runs": [
+        "packages/tick/bin/replay.js"
       ],
       "runsCount": 1,
       "sends": [],
@@ -648,7 +678,7 @@
     },
     {
       "from": "tick",
-      "fromTests": false,
+      "fromTests": true,
       "to": "harness"
     },
     {
@@ -679,13 +709,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T12:36:00.800Z",
+  "generatedAt": "2026-09-25T13:09:03.526Z",
   "limits": [
     "12 import sites could not be resolved.",
-    "3 writes and 3 reads use paths built at run time and are not named here.",
+    "2 writes and 2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "12 writes and 22 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "16 commands are built at run time and not followed, 12 of them in tests.",
+    "12 writes and 23 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "15 commands are built at run time and not followed, 12 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -715,47 +745,23 @@
       "file": "harness/bundle.mjs",
       "inner": [
         {
-          "file": "harness/replay-to.mjs",
-          "name": "replayTo",
-          "part": "harness",
-          "partLabel": "harness",
-          "phrase": "replay to",
+          "file": "packages/tick/bundle.js",
+          "name": "captureBundle",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "capture bundle",
           "steps": [
             {
-              "name": "productSession",
-              "part": "harness",
-              "partLabel": "harness",
-              "phrase": "product session"
-            },
-            {
-              "name": "loadIntentRules",
+              "name": "replayTo",
               "part": "tick",
               "partLabel": "tick",
-              "phrase": "load intent rules"
+              "phrase": "replay to"
             },
             {
-              "name": "createWorld",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "create world"
-            },
-            {
-              "name": "createMemory",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "create memory"
-            },
-            {
-              "name": "createTick",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "create tick"
-            },
-            {
-              "name": "playSession",
-              "part": "harness",
-              "partLabel": "harness",
-              "phrase": "play session"
+              "name": "subarray",
+              "part": null,
+              "partLabel": null,
+              "phrase": "subarray"
             }
           ]
         }
@@ -765,22 +771,16 @@
       "phrase": "make bundle",
       "steps": [
         {
-          "name": "replayTo",
+          "name": "withRecords",
           "part": "harness",
           "partLabel": "harness",
-          "phrase": "replay to"
+          "phrase": "with records"
         },
         {
-          "name": "subarray",
-          "part": null,
-          "partLabel": null,
-          "phrase": "subarray"
-        },
-        {
-          "name": "productInit",
-          "part": "harness",
-          "partLabel": "harness",
-          "phrase": "product init"
+          "name": "captureBundle",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "capture bundle"
         }
       ]
     },
@@ -1290,20 +1290,21 @@
   "startDoor": ".github/workflows/ci.yml",
   "startHere": [
     ".github/workflows/ci.yml",
-    "harness/bundle.mjs"
+    "harness/bundle.mjs",
+    "packages/tick/bundle.js"
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
   "testFiles": 21,
   "testedBy": {
-    "frame": 12,
+    "frame": 10,
     "host": 1,
     "load": 2,
     "propose": 1,
     "solver": 1,
     "tick": 17
   },
-  "unnamedWrites": 3,
+  "unnamedWrites": 2,
   "unread": [],
   "unreadFiles": 0,
   "unreadNote": [],
