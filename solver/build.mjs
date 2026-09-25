@@ -23,23 +23,18 @@ const cargo = process.env.CARGO || 'cargo';
 // the remainder of each path, so the two hosts never produce identical bytes:
 // the pinned artifact is the Linux build, and only a Linux build may write the
 // digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD default
-// and the memory pin are repeated here. The flag sets the default feature set
-// only; a function marked #[target_feature(enable = "relaxed-simd")] still
-// emits relaxed instructions, so the lint below is what keeps them out. The
-// stack pointer is exported so an image of linear memory can be refused
-// unless it is at its base (see imageSolver below).
+// is repeated here. The flag sets the default feature set only; a function
+// marked #[target_feature(enable = "relaxed-simd")] still emits relaxed
+// instructions, so the lint below is what keeps them out. The stack pointer is
+// exported so an image of linear memory can be refused unless it is at its
+// base (see imageSolver below).
 //
-// The memory is fixed: initial and maximum are the same 256 pages (16 MiB),
-// so the module cannot grow and solver/lint.mjs can hold it to that. At the
-// solver's capacity (64 bodies, 64 colliders, a 256-sample heightfield, a
-// resting pile, 2000 quanta) the old growable build peaked at 71 pages.
-const MEMORY_BYTES = 16 * 1024 * 1024;
+// The memory is not set here: solver/build.rs passes the linker 512 fixed
+// pages and --no-growable-memory, which RUSTFLAGS cannot drop.
 const cargoHome = process.env.CARGO_HOME || join(process.env.HOME || process.env.USERPROFILE || '', '.cargo');
 const rustflags = [
   '-C', 'target-feature=-relaxed-simd',
   '-C', 'link-arg=--export=__stack_pointer',
-  '-C', 'link-arg=--initial-memory=' + MEMORY_BYTES,
-  '-C', 'link-arg=--max-memory=' + MEMORY_BYTES,
   '--remap-path-prefix=' + cargoHome + '=/cargo',
   '--remap-path-prefix=' + solver + '=/solver',
   '--remap-path-prefix=' + root + '=/repo',
@@ -494,6 +489,17 @@ export function imageRefusal() {
 /** The exported stack pointer and its base, for the tests. */
 export function stackPointer() {
   return { value: instantiate().exports.__stack_pointer.value, base: stackBase };
+}
+
+/**
+ * The heap's high-water mark: the highest address any allocation reached, in
+ * bytes, and in pages of the fixed memory. The memory's own page count is fixed,
+ * so this is the number that says how close a world came to trapping.
+ */
+export function heapHighWater() {
+  const exp = instantiate().exports;
+  const bytes = exp.heap_high_water() >>> 0;
+  return { bytes, pages: Math.ceil(bytes / PAGE), of: exp.memory.buffer.byteLength / PAGE };
 }
 
 /** +0 for both signed zeros. NaN stays NaN. */

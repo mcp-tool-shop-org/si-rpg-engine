@@ -1,5 +1,5 @@
-// The heap is fixed. The linker sets the memory's initial and maximum size to
-// the same number of pages (solver/build.mjs), so the binary cannot grow its
+// The heap is fixed. The linker sets the memory at 512 pages and refuses to
+// make it growable (solver/build.rs), so the binary cannot grow its
 // memory, and solver/lint.mjs refuses any `memory.grow` instruction. Rust's std
 // allocator on wasm32 is dlmalloc 0.2.13 asking `memory.grow` for more pages.
 // This is the same crate at the same version, the same algorithm, with one
@@ -61,17 +61,41 @@ unsafe impl dlmalloc::Allocator for Arena {
 
 struct Heap;
 
+// The highest address any allocation has reached. The memory is fixed, so its
+// page count says nothing about use; this is the heap's high-water mark, which
+// harness/caps.test.js prints as pages. It lives in linear memory, so an image
+// carries it.
+static mut HIGH_WATER: usize = 0;
+
+fn reached(ptr: *mut u8, size: usize) -> *mut u8 {
+    if !ptr.is_null() {
+        let end = ptr as usize + size;
+        unsafe {
+            if end > HIGH_WATER {
+                HIGH_WATER = end;
+            }
+        }
+    }
+    ptr
+}
+
+/// The heap's high-water mark in bytes from address 0.
+#[no_mangle]
+pub extern "C" fn heap_high_water() -> usize {
+    unsafe { HIGH_WATER }
+}
+
 static mut DLMALLOC: dlmalloc::Dlmalloc<Arena> = dlmalloc::Dlmalloc::new_with_allocator(Arena { given: AtomicBool::new(false) });
 
 // One thread: the binary is built without atomics, as std's own wasm32
 // allocator is, so no lock is taken.
 unsafe impl GlobalAlloc for Heap {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        (*core::ptr::addr_of_mut!(DLMALLOC)).malloc(layout.size(), layout.align())
+        reached((*core::ptr::addr_of_mut!(DLMALLOC)).malloc(layout.size(), layout.align()), layout.size())
     }
 
     unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
-        (*core::ptr::addr_of_mut!(DLMALLOC)).calloc(layout.size(), layout.align())
+        reached((*core::ptr::addr_of_mut!(DLMALLOC)).calloc(layout.size(), layout.align()), layout.size())
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
@@ -79,7 +103,7 @@ unsafe impl GlobalAlloc for Heap {
     }
 
     unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
-        (*core::ptr::addr_of_mut!(DLMALLOC)).realloc(ptr, layout.size(), layout.align(), new_size)
+        reached((*core::ptr::addr_of_mut!(DLMALLOC)).realloc(ptr, layout.size(), layout.align(), new_size), new_size)
     }
 }
 
