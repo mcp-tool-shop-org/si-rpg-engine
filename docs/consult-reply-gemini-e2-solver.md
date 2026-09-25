@@ -1,6 +1,6 @@
 # Consult reply E2 — Gemini, 2026-09-24
 
-Pasted by the operator. One sentence and one basis line carrying market framing were removed at the Director's instruction, 2026-09-24; nothing else is edited.
+Pasted by the operator. Two sentences and one basis line carrying market framing were removed at the Director's instruction, 2026-09-24; nothing else is edited.
 
 VERDICT: A
 SENTENCE: A 3D RPG requires a robust kinematic character controller to navigate slopes and stairs, not a generalized rigid-body impulse solver that risks cross-engine determinism for stacking physics the game does not need.
@@ -12,7 +12,7 @@ CONFIDENCE: high
 BASIS: speculation based on PhysX and Jolt documentation principles.
 
 Q2
-ANSWER: Slopes, stairs, moving platforms, and terrain are all controller and collision geometry problems, not solver problems. Stacked props are the only row that strictly demands a solver (warm-start impulses, resting contact manifolds, island sleeping). If the studio's game design demands dynamic piles of crates that the player can topple and resolve deterministically, Answer A fails and B is forced. Stacking should be refused at load until a world needs it. Answer A covers everything the genre actually needs.
+ANSWER: Slopes, stairs, moving platforms, and terrain are all controller and collision geometry problems, not solver problems. Stacked props are the only row that strictly demands a solver (warm-start impulses, resting contact manifolds, island sleeping). If the studio's game design demands dynamic piles of crates that the player can topple and resolve deterministically, Answer A fails and B is forced. Stacking should be refused at load until a world needs it. Answer A covers everything the inventory needs.
 CHANGE IN THE SLICE: Stacked props are refused at load; true dynamic stacking is not this slice.
 CONFIDENCE: high
 BASIS: speculation.
