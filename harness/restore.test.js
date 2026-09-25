@@ -16,7 +16,8 @@
 //   records have been scrambled, twice, so a restore is shown to be repeatable.
 //
 // Neither writes into Rapier. The tick itself (memory, minds, actions, log)
-// is T5's bundle; replay rebuilds it here.
+// is T5's bundle; replay rebuilds it here. A restore that does not rerun
+// identically writes a bundle (harness/bundle.mjs) and fails with its path.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -28,6 +29,8 @@ import { createHasher } from '../packages/frame/hash.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
 import { createWorld } from '../packages/tick/world.js';
 import { bytes as binary, imageDigest, imageSolver, instantiate, restoreImage, snapshotBytes, stackPointer } from '../solver/dist/solver.mjs';
+import { expectIdentical } from './bundle.mjs';
+import { asleep as asleepIn, contacts as contactPairs } from './events.mjs';
 import { replayTo } from './replay-to.mjs';
 import { endLine } from './trace-line.mjs';
 import { playVerbs } from './verbs-scene.mjs';
@@ -75,26 +78,11 @@ function scramble(run) {
 }
 
 /**
- * Pairs with at least one contact point, read from the snapshot's layout.
+ * Pairs with at least one contact point.
  * @param {Run} run
  */
 function contacts(run) {
-  const snap = run.world.snapshot();
-  if (!snap || snap.length === 0) {
-    return 0;
-  }
-  const view = new DataView(snap.buffer, snap.byteOffset, snap.byteLength);
-  const solverBodies = run.world.bodies.filter((body) => !run.world.carriedByOf(body.id)).length;
-  let w = solverBodies * 15;
-  const pairs = view.getFloat64(w * 8, true);
-  w = w + 1;
-  let touching = 0;
-  for (let p = 0; p < pairs; p = p + 1) {
-    const points = view.getFloat64((w + 4) * 8, true);
-    touching = touching + (points > 0 ? 1 : 0);
-    w = w + 5 + points * 7;
-  }
-  return touching;
+  return contactPairs(run.world);
 }
 
 /**
@@ -102,7 +90,7 @@ function contacts(run) {
  * @returns {string[]}
  */
 function asleep(run) {
-  return run.world.bodies.filter((body) => run.world.sleeping(body.id)).map((body) => body.id);
+  return asleepIn(run.world);
 }
 
 /**
@@ -168,13 +156,32 @@ function choosePoints(whole, product) {
  * @param {Run} run
  */
 function rerun(whole, run) {
+  const lines = rerunLines(whole, run);
+  lines.push(endLine(lines.length));
+  return lines;
+}
+
+/**
+ * rerun without the end line.
+ * @param {string[]} whole
+ * @param {Run} run
+ */
+function rerunLines(whole, run) {
   const lines = whole.slice(0, run.tick);
   lines.push(run.line());
   while (run.advance()) {
     lines.push(run.line());
   }
-  lines.push(endLine(lines.length));
   return lines;
+}
+
+/**
+ * The hash of each line from the load to `tick`.
+ * @param {string[]} lines
+ * @param {number} tick
+ */
+function hashesTo(lines, tick) {
+  return lines.slice(0, tick + 1).map((line) => line.split(' ')[1]);
 }
 
 /**
@@ -228,11 +235,12 @@ for (const item of cases) {
     const whole = wholeRun(item.spec);
     const points = choosePoints(whole, product);
     t.diagnostic(item.name + ': ' + (whole.lines.length - 1) + ' quanta, restored at ' + points.join(', ') + ' (events ' + JSON.stringify(whole.events) + ')');
-    const expected = whole.lines.concat([endLine(whole.lines.length)]);
+    // A difference writes a bundle (T5 pin 3): the case, the point, the whole
+    // run's hashes to it, and the image that was restored, if one was.
     for (const point of points) {
       evict();
       const replayed = replayTo(item.spec, point);
-      assert.equal(diff(expected, rerun(whole.lines, replayed)), 'identical\n', 'replay to ' + point);
+      expectIdentical(item.name + ' replay to ' + point, whole.lines, rerunLines(whole.lines, replayed), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point) }]);
     }
     const saves = savesAt(item.spec, points, whole.lines);
     for (const point of points) {
@@ -240,12 +248,13 @@ for (const item of cases) {
       if (!saved) {
         throw new Error('no save at ' + point);
       }
+      const image = saved.image ? { bytes: saved.image.bytes, worldId: saved.worldId } : false;
       for (let again = 0; again < 2; again = again + 1) {
         const run = replayTo(item.spec, point);
         evict();
         scramble(run);
         run.world.restore(saved);
-        assert.equal(diff(expected, rerun(whole.lines, run)), 'identical\n', 'image at ' + point + ', restore ' + (again + 1));
+        expectIdentical(item.name + ' image at ' + point + ' restore ' + (again + 1), whole.lines, rerunLines(whole.lines, run), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point), image }]);
       }
     }
   });
