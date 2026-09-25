@@ -7,20 +7,29 @@ import { createMemory } from '../packages/tick/memory.js';
 import { finalPositions, sleepWatch } from './behaviour.mjs';
 
 /**
+ * @typedef {(tick: number, hash: string, world: ReturnType<typeof createWorld>, memory: ReturnType<typeof createMemory>) => void} FrameVisit
+ */
+
+/**
  * @param {{ seed: number, world: Parameters<typeof createWorld>[0], waitSleep?: string, script: Array<{ verb: string, actor: string, target: { x?: number, z?: number, body?: string, zone?: string }, admit: boolean, reason?: string }> }} spec
  * @param {Map<string, import('../packages/frame/types.js').IntentRule>} rules
+ * @param {{ onFrame?: FrameVisit }} [options] onFrame sees each committed frame; harness/restore.test.js traces and restores there
  */
-export function playVerbs(spec, rules) {
+export function playVerbs(spec, rules, options) {
   const world = createWorld(spec.world);
   const memory = createMemory();
   const tick = createTick({ seed: spec.seed, world, rules, memory });
   /** @type {{ tick: number, hash: string }[]} */
   const frames = [];
   const watch = sleepWatch(world, world.bodies.map((body) => body.id));
+  const onFrame = options && options.onFrame;
   tick.attach({
     draw(frame) {
       frames.push({ tick: frame.tick, hash: frame.hash });
       watch.see(frame.tick);
+      if (onFrame) {
+        onFrame(frame.tick, frame.hash, world, memory);
+      }
     },
   });
   if (spec.waitSleep) {

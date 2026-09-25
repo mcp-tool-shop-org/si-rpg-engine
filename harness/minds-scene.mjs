@@ -51,19 +51,24 @@ function episodeSnapshot(memory) {
 /**
  * @param {{ seed: number, world: Parameters<typeof createWorld>[0], script: Array<Record<string, unknown>> }} spec
  * @param {Map<string, import('../packages/frame/types.js').IntentRule>} rules
+ * @param {{ onFrame?: import('./verbs-scene.mjs').FrameVisit }} [options] onFrame sees each committed frame; harness/restore.test.js traces and restores there
  * @returns {MindPlay}
  */
-export function playMinds(spec, rules) {
+export function playMinds(spec, rules, options) {
   const world = createWorld(spec.world);
   const memory = createMemory();
   const tick = createTick({ seed: spec.seed, world, rules, memory });
   /** @type {{ tick: number, hash: string }[]} */
   const frames = [];
   const watch = sleepWatch(world, world.bodies.map((body) => body.id));
+  const onFrame = options && options.onFrame;
   tick.attach({
     draw(frame) {
       frames.push({ tick: frame.tick, hash: frame.hash });
       watch.see(frame.tick);
+      if (onFrame) {
+        onFrame(frame.tick, frame.hash, world, memory);
+      }
     },
   });
   /** @type {string[]} */

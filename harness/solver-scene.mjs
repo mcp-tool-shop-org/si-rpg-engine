@@ -9,11 +9,21 @@ import { finalPositions, sleepWatch } from './behaviour.mjs';
 import { endLine, traceLine } from './trace-line.mjs';
 
 /**
+ * @typedef {ReturnType<ReturnType<typeof createWorld>['save']>} WorldSave
+ */
+
+/**
+ * With `restoreAt`, the run saves after that quantum, builds a fresh world of
+ * the same file, restores the save into it, and plays the remainder there;
+ * `change` may alter the save first. harness/restore.test.js diffs that
+ * trace against the uninterrupted one.
  * @param {{ seed: number, steps: number, driven: string[], world: { bodies: unknown[], colliders: unknown[], heightfield?: unknown } }} spec
- * @param {{ trace?: boolean }} [options]
+ * @param {{ trace?: boolean, restoreAt?: number, change?: (save: WorldSave) => void }} [options]
  */
 export function play(spec, options) {
-  const world = createWorld(/** @type {Parameters<typeof createWorld>[0]} */ (spec.world), 'product');
+  const file = /** @type {Parameters<typeof createWorld>[0]} */ (spec.world);
+  let world = createWorld(file, 'product');
+  const restoreAt = options && typeof options.restoreAt === 'number' ? options.restoreAt : -1;
   const driven = new Set(spec.driven);
   const tracing = Boolean(options && options.trace);
   /** @type {string[]} */
@@ -35,7 +45,23 @@ export function play(spec, options) {
   mixSnapshot(hasher);
   /** @type {{ tick: number, hash: string }[]} */
   const frames = [{ tick: 0, hash: hasher.digest() }];
-  const watch = sleepWatch(world, world.bodies.filter((body) => !driven.has(body.id)).map((body) => body.id));
+  const ids = world.bodies.filter((body) => !driven.has(body.id)).map((body) => body.id);
+  // The watch reads the world through this indirection, so a restore swaps it.
+  const watch = sleepWatch({ sleeping: (id) => world.sleeping(id) }, ids);
+  /** @param {number} tick */
+  function swap(tick) {
+    if (tick !== restoreAt) {
+      return;
+    }
+    const saved = world.save();
+    if (options && options.change) {
+      options.change(saved);
+    }
+    const fresh = createWorld(file, 'product');
+    fresh.restore(saved);
+    world = fresh;
+  }
+  swap(0);
   watch.see(0);
   if (tracing) {
     trace.push(traceLine(0, frames[0].hash, world, null));
@@ -55,6 +81,7 @@ export function play(spec, options) {
     }
     mixSnapshot(hasher);
     frames.push({ tick: i + 1, hash: hasher.digest() });
+    swap(i + 1);
     watch.see(i + 1);
     if (tracing) {
       trace.push(traceLine(i + 1, frames[i + 1].hash, world, null));
