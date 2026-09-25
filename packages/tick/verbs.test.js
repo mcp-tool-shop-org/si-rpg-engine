@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { compileVerb } from '../load/compile.js';
 import { considerDraft } from '../load/admit.js';
 import { loadHazards } from '../load/suite.js';
+import { createHasher } from '../frame/hash.js';
 import { createWorld } from './world.js';
 import { createTick, settle } from './tick.js';
 import { createMemory } from './memory.js';
@@ -59,6 +60,9 @@ test('sleeping is the solver flag, and a carried body leaves the solver', () => 
     ],
     colliders: [{ id: 'floor', minX: -2, maxX: 6, minY: -1, maxY: 0, minZ: -2, maxZ: 2 }],
   });
+  // Never loaded, the binary does not hold it (T5 pin 7).
+  assert.throws(() => world.sleeping('crate'), /sleeping refused: world \d+ is not the world the binary holds/);
+  world.step(new Set());
   assert.equal(world.sleeping('crate'), false);
   for (let i = 0; i < 128 && !world.sleeping('crate'); i = i + 1) {
     world.step(new Set());
@@ -82,6 +86,50 @@ test('sleeping is the solver flag, and a carried body leaves the solver', () => 
   const after = world.snapshot();
   assert.ok(after && after.length < before);
   assert.equal(world.anyCarried(), true);
+});
+
+test('sleeping on a product world the binary does not hold refuses with a reason instead of answering for another (T5 pin 7)', () => {
+  const floor = [{ id: 'floor', minX: -2, maxX: 6, minY: -1, maxY: 0, minZ: -2, maxZ: 2 }];
+  // A: a walker beside a crate that settles until it sleeps. B: the same
+  // bodies with the crate in the air, awake. Same ids, so a read of the
+  // wrong snapshot finds a crate either way.
+  /** @param {string} name @param {number} crateY */
+  const world = (name, crateY) => createWorld({
+    name,
+    bodies: [
+      { id: 'walker', x: 0, y: 0.26, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'crate', x: 1, y: crateY, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 },
+    ],
+    colliders: floor,
+  });
+  const a = world('a', 0.31);
+  const b = world('b', 3);
+  const rules = loadIntentRules();
+  const tick = createTick({ seed: 1, world: a, rules: rules.rules, retired: rules.retired, memory: createMemory() });
+  for (let i = 0; i < 128 && !a.sleeping('crate'); i = i + 1) {
+    tick.advance();
+  }
+  assert.equal(a.sleeping('crate'), true);
+  assert.equal(a.holds(), true);
+  const saved = a.save();
+  // B has loaded and not stepped. Before the fix, B read A's snapshot and
+  // said its crate in the air was asleep.
+  b.mixLoad(createHasher(), new Set());
+  assert.equal(b.holds(), true);
+  assert.equal(a.holds(), false);
+  assert.throws(() => a.sleeping('crate'), /^Error: sleeping refused: world \d+ \(a\) is not the world the binary holds; the solver holds world \d+\. Load, step, or restore this world first\.$/);
+  // The checker refuses a verb aimed at a body of a world it cannot read,
+  // with that reason and not 'body is awake'.
+  const pick = tick.submit({ kind: 'intent', verb: 'pick-up', actor: 'walker', target: { body: 'crate' }, frameHash: tick.frame().hash });
+  assert.deepEqual(pick.admitted ? 'admitted' : pick.reason, 'the solver does not hold this world');
+  // A restore puts A back in the binary, and it reads its own snapshot again.
+  a.restore(saved);
+  assert.equal(a.holds(), true);
+  assert.equal(b.holds(), false);
+  assert.equal(a.sleeping('crate'), true);
+  assert.throws(() => b.sleeping('crate'), /sleeping refused: world \d+ \(b\) is not the world the binary holds/);
+  const again = tick.submit({ kind: 'intent', verb: 'pick-up', actor: 'walker', target: { body: 'crate' }, frameHash: tick.frame().hash });
+  assert.equal(again.admitted, true, again.admitted ? '' : again.reason);
 });
 
 test('each draft admits from its file, and one broken variant of each is refused', () => {

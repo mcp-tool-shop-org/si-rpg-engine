@@ -1,7 +1,7 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
-import { imageRefusal, imageSolver, loadSolver, restoreImage, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { imageRefusal, imageSolver, instantiate, loadSolver, restoreImage, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
 import { subjectText } from './subject.js';
 import { goalsOf as goalsOfMind } from './minds.js';
 
@@ -22,6 +22,18 @@ export const UNDRIVEN_DRAG = 0;
  */
 
 let nextProductId = 1;
+
+// The product world the binary holds: the id of the last product world that
+// loaded, stepped, or restored an image, and the instance it did it on. The
+// solver is one per process, so its snapshot is only this world's; a read of
+// it for any other world answers for the wrong one (T5 pin 7). A restoreImage
+// called outside a world replaces the instance, so it holds no world here.
+let held = { id: 0, instance: /** @type {unknown} */ (null) };
+
+/** @param {number} id */
+function hold(id) {
+  held = { id, instance: instantiate() };
+}
 
 /**
  * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; shape?: 'box' | 'capsule'; name?: string; minds?: import('./minds.js').Mind[] }} init
@@ -160,7 +172,9 @@ export function createWorld(init, law) {
     }
     if (chosen === 'product') {
       solverModes(driving);
-      if (!stepSolver(productId, bodies, colliders, heightfield, driving, shapeId)) {
+      const stepped = stepSolver(productId, bodies, colliders, heightfield, driving, shapeId);
+      hold(productId);
+      if (!stepped) {
         throw new Error('NaN');
       }
       pinCarried();
@@ -515,7 +529,9 @@ export function createWorld(init, law) {
       }
     }
     if (chosen === 'product') {
-      if (!loadSolver(productId, bodies, colliders, heightfield, driven || new Set(), shapeId)) {
+      const loaded = loadSolver(productId, bodies, colliders, heightfield, driven || new Set(), shapeId);
+      hold(productId);
+      if (!loaded) {
         throw new Error('NaN');
       }
     }
@@ -580,6 +596,7 @@ export function createWorld(init, law) {
         throw new Error('restore refused: ' + (saved.image ? imageRefusal() : 'a product world restores from an image'));
       }
       productId = saved.worldId;
+      hold(productId);
     }
     for (let i = 0; i < bodies.length; i = i + 1) {
       const from = saved.bodies[i];
@@ -798,12 +815,31 @@ export function createWorld(init, law) {
   }
 
   /**
-   * Asleep in the solver snapshot. A reference world has no snapshot.
+   * Whether the binary holds this world: it was the last product world to
+   * load, step, or restore, on the instance every call now uses. Only then is
+   * the solver's snapshot this world's.
+   */
+  function holds() {
+    return chosen === 'product' && held.id === productId && held.instance === instantiate();
+  }
+
+  /**
+   * Asleep in the solver snapshot. A reference world has no snapshot. A
+   * product world the binary does not hold refuses with the reason: the
+   * snapshot is another world's, or none, and would answer for it.
    * @param {string} id
    */
   function sleeping(id) {
     if (chosen !== 'product' || carriedBy.has(id) || !snapshot) {
       return false;
+    }
+    if (!holds()) {
+      const why = held.id === 0
+        ? 'no product world has loaded'
+        : held.instance !== instantiate()
+          ? 'an image was restored outside any world'
+          : 'the solver holds world ' + held.id;
+      throw new Error('sleeping refused: world ' + productId + (name ? ' (' + name + ')' : '') + ' is not the world the binary holds; ' + why + '. Load, step, or restore this world first.');
     }
     const snap = snapshot();
     if (!snap) {
@@ -896,7 +932,7 @@ export function createWorld(init, law) {
     minds,
     name,
     bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, restore, zoneOf, zoneIndex, law: chosen,
-    lifted, carry, release, sleeping, supportAt, linkIndex,
+    lifted, carry, release, sleeping, holds, supportAt, linkIndex,
     /**
      * @param {string} mind
      */

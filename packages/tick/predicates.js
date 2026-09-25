@@ -201,6 +201,11 @@ function admitCarry(intent, actor, world, rule, busy) {
   if (other.hx > limit || other.hy > limit || other.hz > limit) {
     return { ok: false, reason: 'body is past maxHalfExtent' };
   }
+  // A product world the binary does not hold cannot say whether a body
+  // sleeps (T5 pin 7); the checker refuses rather than read another world.
+  if (world.law === 'product' && world.holds && !world.holds()) {
+    return { ok: false, reason: 'the solver does not hold this world' };
+  }
   if (!world.sleeping || !world.sleeping(other.id)) {
     return { ok: false, reason: 'body is awake' };
   }
