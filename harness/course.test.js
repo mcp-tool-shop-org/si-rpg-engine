@@ -22,6 +22,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createWorld } from '../packages/tick/world.js';
+import { recordRun, withBundles } from './bundle.mjs';
+
+// A failing case writes a bundle of each run it drove (T5 pin 3): the world,
+// the driven walkers, the quanta, and an image at the end, one command from
+// `replay`.
+/**
+ * @param {string} name
+ * @param {(t: import('node:test').TestContext) => void} body
+ */
+function bundled(name, body) {
+  test(name, withBundles(name, body));
+}
 
 const HALF = 0.25;
 const SKIN = 0.01;
@@ -53,6 +65,9 @@ function feet(b) {
  * @param {(tick: number, world: ReturnType<typeof createWorld>) => void} visit
  */
 function drive(colliders, bodies, quanta, visit) {
+  // The same run as a fixture case: harness/solver-scene.mjs loads, then steps
+  // with the same driven set, which is what this loop's first step does.
+  recordRun({ seed: 0, steps: quanta, driven: bodies.map((b) => b.id), world: { bodies: bodies.map((b) => ({ ...b })), colliders: colliders.map((c) => ({ ...c })) } });
   const world = createWorld({ bodies, colliders }, 'product');
   const driven = new Set(bodies.map((b) => b.id));
   for (let tick = 1; tick <= quanta; tick = tick + 1) {
@@ -87,14 +102,14 @@ function stepRun(height) {
   return get(drive([FLOOR, step], [walker('walker', 10, 0.26, WALK)], STEP_QUANTA, () => {}), 'walker');
 }
 
-test('course 5.1: at 0.4 units per second a 0.29 step is climbed: feet end at its top within 1e-3', (t) => {
+bundled('course 5.1: at 0.4 units per second a 0.29 step is climbed: feet end at its top within 1e-3', (t) => {
   const b = stepRun(0.29);
   t.diagnostic('x ' + b.x + ', feet ' + feet(b));
   assert.ok(Math.abs(feet(b) - 0.29) <= FEET_TOLERANCE, 'feet ' + feet(b));
   assert.ok(b.x - HALF > RISER, 'the walker is on the step: x ' + b.x);
 });
 
-test('course 5.2: at 0.4 units per second a 0.33 step stops the walker: feet stay at the floor within 1e-3 and its face at least the skin short of the riser', (t) => {
+bundled('course 5.2: at 0.4 units per second a 0.33 step stops the walker: feet stay at the floor within 1e-3 and its face at least the skin short of the riser', (t) => {
   const b = stepRun(0.33);
   const gap = RISER - (b.x + HALF);
   t.diagnostic('x ' + b.x + ', feet ' + feet(b) + ', face ' + gap + ' short of the riser');
@@ -133,13 +148,13 @@ function slopeRun(degrees) {
   return { top: 2 * RAMP_HALF.x * Math.sin(angle), highest };
 }
 
-test('course 5.3: at 0.4 units per second a 44 degree slope is climbed to its top within 960 quanta', (t) => {
+bundled('course 5.3: at 0.4 units per second a 44 degree slope is climbed to its top within 960 quanta', (t) => {
   const r = slopeRun(44);
   t.diagnostic('top ' + r.top + ', highest feet ' + r.highest);
   assert.ok(Math.abs(r.highest - r.top) <= 0.01, 'highest feet ' + r.highest + ' against the top ' + r.top);
 });
 
-test('course 5.4: at 0.4 units per second a 46 degree slope is not climbed: the height gained over 960 quanta is below 0.05', (t) => {
+bundled('course 5.4: at 0.4 units per second a 46 degree slope is not climbed: the height gained over 960 quanta is below 0.05', (t) => {
   const r = slopeRun(46);
   // The controller's 1e-4 normal nudge still lifts a refused walker, about
   // 3.5e-5 per quantum at this speed; 0.033 by 960 quanta.
@@ -179,7 +194,7 @@ function dropRun(drop) {
   return { cleared, landed, longest };
 }
 
-test('course 5.5: at 0.4 units per second a 0.19 drop is snapped: at most one airborne quantum, and the feet are at the lower floor within 4 quanta of clearing the edge', (t) => {
+bundled('course 5.5: at 0.4 units per second a 0.19 drop is snapped: at most one airborne quantum, and the feet are at the lower floor within 4 quanta of clearing the edge', (t) => {
   const r = dropRun(0.19);
   t.diagnostic('cleared at ' + r.cleared + ', landed at ' + r.landed + ', longest airborne run ' + r.longest);
   assert.ok(r.cleared !== null && r.landed !== null, 'never cleared or never landed');
@@ -187,7 +202,7 @@ test('course 5.5: at 0.4 units per second a 0.19 drop is snapped: at most one ai
   assert.ok(r.landed - r.cleared <= 4, 'landed ' + (r.landed - r.cleared) + ' quanta after clearing');
 });
 
-test('course 5.6: at 0.4 units per second a 0.22 drop is a fall: airborne for at least 2 quanta in a row', (t) => {
+bundled('course 5.6: at 0.4 units per second a 0.22 drop is a fall: airborne for at least 2 quanta in a row', (t) => {
   const r = dropRun(0.22);
   t.diagnostic('cleared at ' + r.cleared + ', landed at ' + r.landed + ', longest airborne run ' + r.longest);
   assert.ok(r.longest >= 2, 'airborne for only ' + r.longest + ' quanta in a row');
@@ -218,14 +233,14 @@ function insideRun(y, quanta) {
   return { start: y - HALF - SKIN, lowest, standing, final: feet(get(world, 'walker')) };
 }
 
-test('course 5.7: at 0.4 units per second a walker with its feet 0.1 inside the floor ends standing on it after 1300 quanta, never below its start', (t) => {
+bundled('course 5.7: at 0.4 units per second a walker with its feet 0.1 inside the floor ends standing on it after 1300 quanta, never below its start', (t) => {
   const r = insideRun(0.16, 1300);
   t.diagnostic('feet start ' + r.start + ', lowest ' + r.lowest + ', standing at ' + r.standing + ', final ' + r.final);
   assert.ok(r.lowest >= r.start, 'sank to ' + r.lowest);
   assert.ok(Math.abs(r.final) <= FEET_TOLERANCE, 'feet end at ' + r.final);
 });
 
-test('course 5.8: at 0.4 units per second a walker with its centre 0.1 inside the floor ends standing on it after 4000 quanta, never below its start', (t) => {
+bundled('course 5.8: at 0.4 units per second a walker with its centre 0.1 inside the floor ends standing on it after 4000 quanta, never below its start', (t) => {
   const r = insideRun(-0.1, 4000);
   t.diagnostic('feet start ' + r.start + ', lowest ' + r.lowest + ', standing at ' + r.standing + ', final ' + r.final);
   assert.ok(r.lowest >= r.start, 'sank to ' + r.lowest);
@@ -253,7 +268,7 @@ function meetRun(speed) {
   return { closest, final: b.x - a.x, passed, west: a.x, east: b.x };
 }
 
-test('course 5.9: two walkers driven at each other at 1 unit per second stay at least 0.49 apart (the half-extents less the skin) at every quantum, and neither passes the other\'s start', (t) => {
+bundled('course 5.9: two walkers driven at each other at 1 unit per second stay at least 0.49 apart (the half-extents less the skin) at every quantum, and neither passes the other\'s start', (t) => {
   const r = meetRun(1);
   t.diagnostic('closest ' + r.closest + ', final ' + r.final + ' (west ' + r.west + ', east ' + r.east + ')');
   const least = HALF + HALF - SKIN;
@@ -262,7 +277,7 @@ test('course 5.9: two walkers driven at each other at 1 unit per second stay at 
   assert.equal(r.passed, false);
 });
 
-test('course 5.10: two walkers driven at each other at 8 units per second, recorded: the law lets them overlap there, so separation is not asserted', (t) => {
+bundled('course 5.10: two walkers driven at each other at 8 units per second, recorded: the law lets them overlap there, so separation is not asserted', (t) => {
   const r = meetRun(8);
   t.diagnostic('closest ' + r.closest + ', final ' + r.final + ' (west ' + r.west + ', east ' + r.east + '), passed ' + r.passed);
   assert.ok(Number.isFinite(r.closest) && Number.isFinite(r.final));

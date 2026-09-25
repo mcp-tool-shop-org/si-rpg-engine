@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { bundleFailure, traceHashes } from './bundle.mjs';
 import { play } from './solver-scene.mjs';
 
 const dir = mkdtempSync(join(tmpdir(), 'si-rpg-trace-'));
@@ -45,13 +46,21 @@ function planted(tick, change) {
 
 test('two traces of one run are byte-identical, and the last quantum is the golden', () => {
   const second = trace();
-  assert.equal(second, first);
-  assert.equal(lines[lines.length - 1], '');
-  assert.equal(lines[lines.length - 2], 'end 10001');
-  assert.equal(lines[10000].split(' ')[1], golden, 'the trace hashes as harness/sim.mjs does');
-  const same = diff(first, second);
-  assert.equal(same.status, 0, same.stderr);
-  assert.equal(same.stdout, 'identical\n');
+  try {
+    assert.equal(second, first);
+    assert.equal(lines[lines.length - 1], '');
+    assert.equal(lines[lines.length - 2], 'end 10001');
+    assert.equal(lines[10000].split(' ')[1], golden, 'the trace hashes as harness/sim.mjs does');
+    const same = diff(first, second);
+    assert.equal(same.status, 0, same.stderr);
+    assert.equal(same.stdout, 'identical\n');
+  } catch (error) {
+    // A bundle of the product scene carrying the first trace's hashes (T5
+    // pin 3): `replay` names the first tick at which this build differs.
+    const hashes = traceHashes(first);
+    bundleFailure('trace comparison', [{ spec: { scene: 'product' }, tick: hashes.length - 1, hashes, image: false }], diff(first, second).stdout || String(error));
+    throw error;
+  }
 });
 
 test('one hex digit changed in one field is located to its tick, body, and field', () => {

@@ -8,8 +8,18 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createWorld } from '../packages/tick/world.js';
 import { sleepWatch } from './behaviour.mjs';
+import { recordRun, withBundles } from './bundle.mjs';
 import { PRODUCT_STEPS } from './product-run.mjs';
 import { applyProductAct, productDriven, productInit } from './product-scene.mjs';
+
+// A failing outcome writes a bundle of each run it made (T5 pin 3).
+/**
+ * @param {string} name
+ * @param {(t: import('node:test').TestContext) => void} body
+ */
+function bundled(name, body) {
+  test(name, withBundles(name, body));
+}
 
 // The law's contact skin, SKIN in solver/src/rapier_law.rs.
 const SKIN = 0.01;
@@ -39,15 +49,17 @@ const SLAB_QUANTA = 64;
  */
 function slabRun(falling, phase) {
   const offset = (phase / PHASES) * FAST * DT;
-  const world = falling
-    ? createWorld({
+  const init = falling
+    ? {
       bodies: [{ id: 'box', x: 0, y: 1 + offset, z: 0, vx: 0, vy: -FAST, vz: 0, hx: BOX, hy: BOX, hz: BOX }],
       colliders: [{ id: 'slab', minX: -2, maxX: 2, minY: -SLAB, maxY: SLAB, minZ: -2, maxZ: 2 }],
-    }, 'product')
-    : createWorld({
+    }
+    : {
       bodies: [{ id: 'box', x: -1 - offset, y: 0, z: 0, vx: FAST, vy: 0, vz: 0, hx: BOX, hy: BOX, hz: BOX }],
       colliders: [{ id: 'slab', minX: -SLAB, maxX: SLAB, minY: -20, maxY: 20, minZ: -2, maxZ: 2 }],
-    }, 'product');
+    };
+  recordRun({ seed: 0, steps: SLAB_QUANTA, driven: [], world: init });
+  const world = createWorld(init, 'product');
   for (let q = 0; q < SLAB_QUANTA; q = q + 1) {
     world.step(new Set());
   }
@@ -58,7 +70,7 @@ function slabRun(falling, phase) {
   return box;
 }
 
-test('outcome 2: a 0.05 box at 20 units per second ends on the near side of a 0.02 slab, 14 of 14 runs over 64 quanta', (t) => {
+bundled('outcome 2: a 0.05 box at 20 units per second ends on the near side of a 0.02 slab, 14 of 14 runs over 64 quanta', (t) => {
   /** @type {string[]} */
   const ends = [];
   /** @type {string[]} */
@@ -150,7 +162,7 @@ function slide(dir, lane, degrees, speed, quanta) {
     ? { qx: 0, qy: 0, qz: Math.sin(half), qw: Math.cos(half) }
     : { qx: Math.sin(half), qy: 0, qz: 0, qw: Math.cos(half) };
   const across = sign * speed * Math.cos(angle);
-  const world = createWorld({
+  const init = {
     bodies: [{
       id: 'sled', x, y: ground + lift + 0.001, z,
       vx: alongX ? across : 0, vy: -speed * Math.sin(angle), vz: alongX ? 0 : across,
@@ -158,7 +170,9 @@ function slide(dir, lane, degrees, speed, quanta) {
     }],
     colliders: [],
     heightfield: field,
-  }, 'product');
+  };
+  recordRun({ seed: 0, steps: quanta, driven: [], world: init });
+  const world = createWorld(init, 'product');
   let worst = 0;
   let worstAt = 0;
   let rise = 0;
@@ -243,11 +257,11 @@ function assertSeams(t, degrees, speed, quanta) {
   assert.deepEqual(failures, []);
 }
 
-test('outcome 3a: a sled launched at 4 units per second down a 20 degree heightfield crosses every seam within the skin, 0.01, for 128 quanta', (t) => {
+bundled('outcome 3a: a sled launched at 4 units per second down a 20 degree heightfield crosses every seam within the skin, 0.01, for 128 quanta', (t) => {
   assertSeams(t, 20, 4, 128);
 });
 
-test('outcome 3b: a sled launched at 2.5 units per second down a 35 degree heightfield keeps its heading (|qy| <= 0.005) and slides within 10% of Coulomb friction for 160 quanta', (t) => {
+bundled('outcome 3b: a sled launched at 2.5 units per second down a 35 degree heightfield keeps its heading (|qy| <= 0.005) and slides within 10% of Coulomb friction for 160 quanta', (t) => {
   assertSeams(t, 35, 2.5, 160);
 });
 
@@ -289,12 +303,16 @@ const FINAL_DIVERGES = ['walker', 'lower', 'upper', 'slider', 'parcel'];
  */
 function translatedRun(ox, oz) {
   const init = productInit();
-  const world = createWorld({
+  const moved = {
     ...init,
     bodies: init.bodies.map((b) => ({ ...b, x: b.x + ox, z: b.z + oz })),
     colliders: init.colliders.map((c) => ({ ...c, minX: c.minX + ox, maxX: c.maxX + ox, minZ: c.minZ + oz, maxZ: c.maxZ + oz })),
     zones: (init.zones || []).map((c) => ({ ...c, minX: c.minX + ox, maxX: c.maxX + ox, minZ: c.minZ + oz, maxZ: c.maxZ + oz })),
-  }, 'product');
+  };
+  // The product scene's act over the moved records; the bundle's replay also
+  // runs the scene's mind, which observes and does not move a body.
+  recordRun({ scene: 'product', world: moved, quanta: PRODUCT_STEPS });
+  const world = createWorld(moved, 'product');
   const driven = new Set(productDriven);
   const watch = sleepWatch(world, world.bodies.filter((b) => !driven.has(b.id)).map((b) => b.id));
   for (let i = 0; i < PRODUCT_STEPS; i = i + 1) {
@@ -309,7 +327,7 @@ function translatedRun(ox, oz) {
   return { sleep: watch.sleep(), final };
 }
 
-test('outcome 4: the product scene translated by (1e6, 0, 1e6) keeps every sleep quantum and final position within 1e-6 over 10000 quanta, except the divergences listed with their causes', (t) => {
+bundled('outcome 4: the product scene translated by (1e6, 0, 1e6) keeps every sleep quantum and final position within 1e-6 over 10000 quanta, except the divergences listed with their causes', (t) => {
   const home = translatedRun(0, 0);
   const far = translatedRun(OFFSET_X, OFFSET_Z);
   /** @type {string[]} */

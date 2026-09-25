@@ -54,6 +54,10 @@ jobs:
         run: npm ci
       - name: Audit dependencies
         run: npm audit --audit-level=high
+      # A failing restore, outcome, course, trace, or golden check writes a
+      # bundle here (harness/bundle.mjs); the last step uploads them on failure.
+      - name: Where failures write bundles
+        run: echo "SI_RPG_BUNDLES=$RUNNER_TEMP/bundles" >> "$GITHUB_ENV"
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: "1.98.1"
@@ -106,6 +110,9 @@ jobs:
             "$@" harness/trace.mjs > "$traces/$name.trace" || true
             echo "first-difference node $name"
             node harness/first-difference.js "$traces/node.trace" "$traces/$name.trace" || true
+            # A bundle carrying the engine's hashes: `replay` on it under
+            # node names the first tick where node and the engine part.
+            node harness/bundle.mjs --from-trace "$traces/$name.trace" --name "product scene under $name" || true
           }
           compare() {
             local harness="$1"
@@ -184,6 +191,15 @@ jobs:
         with:
           name: traces
           path: ${{ runner.temp }}/traces/
+          if-no-files-found: ignore
+          retention-days: 14
+      # Each bundle replays in one command: `replay <name>.bundle.json`.
+      - name: Upload the failure bundles
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundles
+          path: ${{ runner.temp }}/bundles/
           if-no-files-found: ignore
           retention-days: 14
 

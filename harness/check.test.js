@@ -17,7 +17,7 @@ const saved = JSON.parse(readFileSync('fixtures/golden-behaviour.json', 'utf8'))
 function check(behaviour) {
   const file = join(dir, 'behaviour.json');
   writeFileSync(file, JSON.stringify(behaviour, null, 2) + '\n');
-  return spawnSync(process.execPath, ['harness/check.js', '--behaviour', file], { encoding: 'utf8' });
+  return spawnSync(process.execPath, ['harness/check.js', '--behaviour', file], { encoding: 'utf8', env: { ...process.env, SI_RPG_BUNDLES: join(dir, 'bundles') } });
 }
 
 test('the recorded behaviour passes the check', () => {
@@ -32,6 +32,17 @@ test('a moved sleep quantum fails the check with its body named', () => {
   const run = check(moved);
   assert.equal(run.status, 1);
   assert.match(run.stderr, /^body tip sleep quantum: expected 91, got 90$/m);
+  // The failed check wrote a bundle of the product scene (T5 pin 3), which
+  // replays in one command.
+  const written = /^bundle: (.+\.bundle\.json)$/m.exec(run.stderr);
+  assert.ok(written, run.stderr);
+  const bundle = JSON.parse(readFileSync(written[1], 'utf8'));
+  assert.equal(bundle.failure.test, 'golden check');
+  assert.match(bundle.failure.block, /body tip sleep quantum/);
+  assert.equal(bundle.tick, 10000);
+  const replayed = spawnSync(process.execPath, ['packages/tick/bin/replay.js', written[1]], { encoding: 'utf8' });
+  assert.equal(replayed.stdout, 'bundle ok\n', replayed.stderr);
+  assert.equal(replayed.status, 0);
 });
 
 test('a final position moved in its last bit fails with its body named', () => {

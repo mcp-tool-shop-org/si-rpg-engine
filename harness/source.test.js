@@ -17,6 +17,9 @@ export const BUILDERS = [
   'harness/verbs-scene.mjs',
   'harness/minds-scene.mjs',
   'packages/tick/fixture.js',
+  // The product scene's act and the fixture and product sessions, moved from
+  // the harness so the replay command can run a bundle (T5).
+  'packages/tick/sessions.js',
   'harness/caps.test.js',
 ];
 

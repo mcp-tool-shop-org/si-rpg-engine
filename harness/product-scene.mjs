@@ -23,29 +23,10 @@ export const boxDriven = [
   'push-x', 'push-y', 'push-z',
 ];
 
-export const productDriven = ['walker'];
-
-/**
- * A short lift, then the walker carries the parcel. Both enter the product hash.
- * @param {ReturnType<import('../packages/tick/world.js').createWorld>} world
- * @param {number} step
- */
-export function applyProductAct(world, step) {
-  world.lifted.delete('climber');
-  const driven = new Set(productDriven);
-  if (step >= 200 && step < 260) {
-    const climber = world.body('climber');
-    if (climber) {
-      climber.vy = 0.8;
-      world.lifted.add('climber');
-      driven.add('climber');
-    }
-  }
-  if (step === 400) {
-    world.carry('walker', 'parcel');
-  }
-  return driven;
-}
+// The product scene's act (a short lift, then the walker carries the parcel)
+// and its driven body are packages/tick/sessions.js, since a bundle's replay
+// runs the act without the harness; the records are below.
+export { applyProductAct, productDriven } from '../packages/tick/sessions.js';
 
 export function createBoxProductWorld() {
   return createWorld({
