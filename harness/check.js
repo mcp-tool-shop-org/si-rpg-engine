@@ -44,4 +44,4 @@ if (moved.length > 0) {
   process.stderr.write(moved.length + ' behaviour number' + (moved.length === 1 ? '' : 's') + ' moved from ' + behaviourFile + '\n');
   process.exit(1);
 }
-process.stdout.write('behaviour matches: ' + Object.keys(actual.sleep).length + ' sleep quanta, ' + Object.keys(actual.final).length + ' final positions, walker in ' + actual.walkerZone + ', snapshot ' + actual.snapshotBytes.load + ' then ' + actual.snapshotBytes.last + ' bytes\n');
+process.stdout.write('behaviour matches: ' + Object.keys(actual.sleep).length + ' sleep quanta, ' + Object.keys(actual.final).length + ' final positions, walker in ' + actual.walkerZone + ', snapshot ' + actual.snapshotBytes.load + ' bytes ' + actual.snapshotDigest.load + ' then ' + actual.snapshotBytes.last + ' bytes ' + actual.snapshotDigest.last + '\n');

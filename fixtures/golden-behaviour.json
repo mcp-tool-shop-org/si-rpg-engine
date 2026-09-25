@@ -50,5 +50,9 @@
   "snapshotBytes": {
     "load": 848,
     "last": 1840
+  },
+  "snapshotDigest": {
+    "load": "52bfc19452bfc194",
+    "last": "4d9e0cf64d9e0cf6"
   }
 }
