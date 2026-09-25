@@ -3571,11 +3571,11 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "d691a69a626f5ef734d5bc64f0e8df56ba4faf8bf969f0c52caf2372cdac2e81",
+          "hash": "b6d8ad3ba5487abe7896519eb9d44feeceb8c8e723476c0f91506ba5867d973d",
           "path": "package.json"
         },
         {
-          "hash": "8490ca032bee09ec9407b14756004563715773443aa91c353532cfba43cdb2e7",
+          "hash": "997e68162b20783f6159f470015176414f5c77770f1cc317331eb296c8764e15",
           "path": "tsconfig.json"
         }
       ],
@@ -5520,7 +5520,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "d0cbc6904e1ee3be031c42417cff5cb18bf1c26a18409b1415c001244f064c01",
+          "hash": "ce9e24a68980c7da4dc4f479ffc04388000d7cafe4bcabd3507b037e47ca2cce",
           "path": ".github/workflows/ci.yml"
         },
         {
@@ -6091,6 +6091,7 @@
             "packages/**",
             "predicates/**",
             "solver/**",
+            "tools/**",
             "tsconfig.json",
             "worlds/**"
           ]
@@ -6110,6 +6111,7 @@
             "packages/**",
             "predicates/**",
             "solver/**",
+            "tools/**",
             "tsconfig.json",
             "worlds/**"
           ]
@@ -6786,7 +6788,7 @@
     }
   ],
   "generatedFrom": {
-    "commit": "20c4c51aa6fee0967a989a81fad2bfa96bf56b51",
+    "commit": "132706dbe6a4a71410a9f79c1c23b5e2eaf75ec4",
     "tracked": 230
   },
   "landings": [
@@ -7821,6 +7823,17 @@
     {
       "readers": [
         {
+          "by": "tools/review.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "tools/verdicts.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": ".github/workflows/ci.yml"
         }
       ],
@@ -8016,7 +8029,7 @@
       "path": "site/tsconfig.json"
     },
     {
-      "hash": "6e678b4ce98c0bd9f21f0cc32df20ed77f558fd6fd0c4d66e40488351d112055",
+      "hash": "d7b25ac3fd663db98e5fe04c214180ced34b1729c4413778c896bfca53393e7c",
       "path": "tools/review.mjs"
     }
   ]

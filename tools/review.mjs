@@ -13,8 +13,8 @@
 // Standards compliance (0 missing, 1 partial, 2 present, 3 exemplary):
 // - PIN_PER_STEP 3: every call records the requested and served model id, the provider, and the
 //   SHA-256 of the exact prompt, system rubric, dispatch, checklist, and evidence, and the receipt
-//   carries the SHA-256 of this file, so a review names the exact runner that produced it; the
-//   panel is a constant here.
+//   carries the SHA-256 of this file and of verdicts.js, which holds the rule that decides the
+//   verdict, so a review names the exact runner that produced it; the panel is a constant here.
 // - ANDON_AUTHORITY 2: any reviewer's BLOCK stops the merge until the coordinator checks the
 //   named defect against the code; a reviewer whose served model differs from the one asked for
 //   is discarded, never counted.
@@ -37,6 +37,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { parseVerdict, combine } from './verdicts.js';
 
 const PANEL = [
   { via: 'openrouter', model: 'x-ai/grok-4.7', family: 'xAI' },
@@ -80,7 +81,10 @@ if (!process.env.OPENROUTER_API_KEY) {
 }
 
 const sha = (s) => createHash('sha256').update(s).digest('hex');
-const runnerSha = sha(readFileSync(fileURLToPath(import.meta.url)));
+const runnerSha = {
+  review: sha(readFileSync(fileURLToPath(import.meta.url))),
+  verdicts: sha(readFileSync(fileURLToPath(new URL('./verdicts.js', import.meta.url)))),
+};
 const gh = (args) => execFileSync('gh', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 
 function gather() {
@@ -145,20 +149,6 @@ function buildPrompt(g, checklist, evidence) {
     text = text.slice(0, MAX_PROMPT) + '\n[... prompt truncated at the size cap ...]\n\n# The checklist (repeated)\n\n' + checklist;
   }
   return text;
-}
-
-function parseVerdict(text) {
-  const blocks = [...text.matchAll(/```json\s*([\s\S]*?)```/g)];
-  const candidates = blocks.length ? blocks.map((b) => b[1]) : [];
-  const brace = text.lastIndexOf('{"items"');
-  if (brace >= 0) candidates.push(text.slice(brace));
-  for (let i = candidates.length - 1; i >= 0; i = i - 1) {
-    try {
-      const j = JSON.parse(candidates[i].trim());
-      if (j && Array.isArray(j.items) && (j.verdict === 'MERGE' || j.verdict === 'BLOCK')) return j;
-    } catch {}
-  }
-  return null;
 }
 
 async function callOpenRouter(model, prompt) {
@@ -228,20 +218,7 @@ process.stderr.write(`prompt ${prompt.length} characters; ${g.omitted.length} fi
 const results = await Promise.all(panel.map((seat) => review(seat, prompt)));
 
 const counted = results.filter((r) => !r.error && r.servedOk && r.parsed);
-const blocks = counted.filter((r) => r.parsed.verdict === 'BLOCK');
-// Two BLOCKs corroborate only when they fail the same checklist item; otherwise each is a
-// single dissent the coordinator checks against the code (a lone dissent never decides).
-const failedBy = new Map();
-for (const r of blocks) {
-  for (const i of r.parsed.items) {
-    if (i.result === 'FAILS') failedBy.set(i.n, (failedBy.get(i.n) || []).concat(r.family));
-  }
-}
-const shared = [...failedBy.entries()].filter(([, fams]) => fams.length >= 2);
-const aggregate = counted.length === 0 ? 'NO VALID VERDICTS'
-  : blocks.length === 0 ? 'MERGE (unanimous among valid verdicts)'
-  : shared.length ? 'BLOCK: item ' + shared.map(([n, f]) => n + ' failed by ' + f.join(' and ')).join('; ')
-  : 'CHECK: ' + blocks.length + ' BLOCK' + (blocks.length > 1 ? 's on different items' : '') + '; the coordinator checks each against the code';
+const aggregate = combine(counted).text;
 
 const receipt = {
   pr: Number(pr), repo, head: g.meta.headRefOid, dispatch: dispatchPath,

@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit 20c4c51.
+Mapped at 2026-09-25 from commit 132706d.
 
 ## What this is
 
@@ -8,19 +8,16 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 15 parts, mostly JavaScript (81 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (e6094ab)
+## What changed since 2026-09-25 (20c4c51)
 
-- tools/review.mjs is now read by tools/review.mjs.
-- In harness/corpus.mjs, run corpus gained a step, line, before pair.
-- In harness/corpus.mjs, run corpus gained a step, pair, before pair.
-- In harness/corpus.mjs, run corpus gained a step, pair, before pair.
-- And 17 more changes to the order of work.
-- tools/review.mjs is new and belongs to no part, so atlas check fails on it against the previous map.
-- 1 file added and 9 changed content, across 4 parts.
+- CI's pull request trigger now also names `tools/**`.
+- CI's push trigger now also names `tools/**`.
+- tools/verdicts.js is now read by tools/review.mjs.
+- 4 files changed content, across 2 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 11 paths; on a push to main touching 11 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 26 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 20 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 26 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 20 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **host** (a command people run). Runs packages/host/bin/host.js.

@@ -91,63 +91,44 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 1,
-      "changed": 9,
+      "added": 0,
+      "changed": 4,
       "moved": 0,
-      "parts": 4,
+      "parts": 2,
       "removed": 0
     },
     "items": [
       {
+        "kind": "door",
+        "sentence": "CI's pull request trigger now also names `tools/**`.",
+        "subjects": [
+          ".github/workflows/ci.yml"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI's push trigger now also names `tools/**`.",
+        "subjects": [
+          ".github/workflows/ci.yml"
+        ]
+      },
+      {
         "kind": "landing",
-        "sentence": "tools/review.mjs is now read by tools/review.mjs.",
+        "sentence": "tools/verdicts.js is now read by tools/review.mjs.",
         "subjects": [
-          "tools/review.mjs",
-          "tools/review.mjs"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In harness/corpus.mjs, run corpus gained a step, line, before pair.",
-        "subjects": [
-          "harness/corpus.mjs"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In harness/corpus.mjs, run corpus gained a step, pair, before pair.",
-        "subjects": [
-          "harness/corpus.mjs"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In harness/corpus.mjs, run corpus gained a step, pair, before pair.",
-        "subjects": [
-          "harness/corpus.mjs"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "And 17 more changes to the order of work.",
-        "subjects": []
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/review.mjs is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
+          "tools/verdicts.js",
           "tools/review.mjs"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "1 file added and 9 changed content, across 4 parts.",
+        "sentence": "4 files changed content, across 2 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "e6094ab7d3ec3b0335188973958ed56b83998669",
-      "generatedAt": "2026-09-25T13:22:28.066Z"
+      "commit": "20c4c51aa6fee0967a989a81fad2bfa96bf56b51",
+      "generatedAt": "2026-09-25T14:22:33.351Z"
     },
     "unchanged": false
   },
@@ -234,7 +215,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "20c4c51aa6fee0967a989a81fad2bfa96bf56b51",
+  "commit": "132706dbe6a4a71410a9f79c1c23b5e2eaf75ec4",
   "defaultBranch": "main",
   "derived": "15 parts, mostly JavaScript (81 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -350,8 +331,8 @@
       "sends": [],
       "stages": [],
       "triggers": [
-        "on a pull request touching 11 paths",
-        "on a push to main touching 11 paths",
+        "on a pull request touching 12 paths",
+        "on a push to main touching 12 paths",
         "or by hand"
       ]
     },
@@ -710,7 +691,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T14:22:33.351Z",
+  "generatedAt": "2026-09-25T14:36:00.811Z",
   "limits": [
     "13 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",

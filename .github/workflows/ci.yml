@@ -20,6 +20,7 @@ on:
       - package-lock.json
       - tsconfig.json
       - solver/**
+      - tools/**
       - .github/workflows/ci.yml
   pull_request:
     paths:
@@ -33,6 +34,7 @@ on:
       - package-lock.json
       - tsconfig.json
       - solver/**
+      - tools/**
       - .github/workflows/ci.yml
   workflow_dispatch:
 
