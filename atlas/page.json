@@ -91,88 +91,29 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 11,
-      "changed": 28,
+      "added": 2,
+      "changed": 19,
       "moved": 0,
-      "parts": 7,
+      "parts": 2,
       "removed": 0
     },
     "items": [
       {
-        "kind": "door",
-        "sentence": "CI now also runs harness/bundle.mjs, harness/bundle.test.js, harness/course.test.js and 2 more.",
+        "kind": "unassigned",
+        "sentence": "site/src/content/docs/handbook/testing.md is new and belongs to no part, so atlas check fails on it against the previous map.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/bundle.mjs",
-          "harness/bundle.test.js",
-          "harness/course.test.js",
-          "harness/golden-gate.test.js",
-          "harness/outcome.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks harness/corpus.mjs and harness/events.mjs.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/corpus.mjs",
-          "harness/events.mjs"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "Corpus (.github/workflows/corpus.yml) is a new door. It starts on a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. It runs harness/corpus.mjs and solver/build.mjs.",
-        "subjects": [
-          ".github/workflows/corpus.yml",
-          "harness/corpus.mjs",
-          "solver/build.mjs"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "fixtures/ is now also read by harness/corpus.mjs.",
-        "subjects": [
-          "fixtures/",
-          "harness/corpus.mjs"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "fixtures/behavior-3d.json is now also read by harness/bundle.test.js.",
-        "subjects": [
-          "fixtures/behavior-3d.json",
-          "harness/bundle.test.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "fixtures/behavior-minds.json is now also read by harness/bundle.test.js.",
-        "subjects": [
-          "fixtures/behavior-minds.json",
-          "harness/bundle.test.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 10 more new writers and readers of places.",
-        "subjects": []
-      },
-      {
-        "kind": "sequence",
-        "sentence": "harness/check.js now starts at bundle product; it started at match.",
-        "subjects": [
-          "harness/check.js"
+          "site/src/content/docs/handbook/testing.md"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "11 files added and 28 changed content, across 7 parts.",
+        "sentence": "2 files added and 19 changed content, across 2 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "a276cd715d477579cbf1722a68c8f662210f219e",
-      "generatedAt": "2026-09-25T11:23:48.509Z"
+      "commit": "c63817d9658b310bfab53e25978a275647156c3f",
+      "generatedAt": "2026-09-25T12:31:39.566Z"
     },
     "unchanged": false
   },
@@ -259,7 +200,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 7 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "c63817d9658b310bfab53e25978a275647156c3f",
+  "commit": "7645d6b8682b36631793c7d909a686f566ca4df8",
   "defaultBranch": "main",
   "derived": "15 parts, mostly JavaScript (73 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -738,7 +679,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T12:31:39.566Z",
+  "generatedAt": "2026-09-25T12:36:00.800Z",
   "limits": [
     "12 import sites could not be resolved.",
     "3 writes and 3 reads use paths built at run time and are not named here.",

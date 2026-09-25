@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit c63817d.
+Mapped at 2026-09-25 from commit 7645d6b.
 
 ## What this is
 
@@ -8,17 +8,10 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 15 parts, mostly JavaScript (73 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (a276cd7)
+## What changed since 2026-09-25 (c63817d)
 
-- CI now also runs harness/bundle.mjs, harness/bundle.test.js, harness/course.test.js and 2 more.
-- CI now also checks harness/corpus.mjs and harness/events.mjs.
-- Corpus (.github/workflows/corpus.yml) is a new door. It starts on a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. It runs harness/corpus.mjs and solver/build.mjs.
-- fixtures/ is now also read by harness/corpus.mjs.
-- fixtures/behavior-3d.json is now also read by harness/bundle.test.js.
-- fixtures/behavior-minds.json is now also read by harness/bundle.test.js.
-- And 10 more new writers and readers of places.
-- harness/check.js now starts at bundle product; it started at match.
-- 11 files added and 28 changed content, across 7 parts.
+- site/src/content/docs/handbook/testing.md is new and belongs to no part, so atlas check fails on it against the previous map.
+- 2 files added and 19 changed content, across 2 parts.
 
 ## What comes in
 

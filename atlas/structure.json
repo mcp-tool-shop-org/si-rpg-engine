@@ -40,7 +40,7 @@
           "path": "docs/PHASE-1.md"
         },
         {
-          "hash": "9ba5145e718cfa3ad6d7bae0145e9b3e55ff3775e78b20464837f0a5f65c40d1",
+          "hash": "5d219f08a95c55d900023336220b3516da0520c03450ec5807b4195aa8887588",
           "path": "docs/PHASE-2.md"
         },
         {
@@ -128,7 +128,11 @@
           "path": "docs/dispatch-e5-minds.md"
         },
         {
-          "hash": "3a88af695faec0886e2e4a495d8ba406651f06e7ae0dba82eee9dd05ea19f5ba",
+          "hash": "b7264a1669d1290dc3797f998d90236006ff128d21ba322d14e2472b420581cd",
+          "path": "docs/dispatch-f1-switch-in-place.md"
+        },
+        {
+          "hash": "e598dbb1a3748c5beb74bd2179a7312a30de9c63e888702e5f9da0881918844b",
           "path": "docs/dispatch-s1-soundness.md"
         },
         {
@@ -3771,7 +3775,7 @@
           "path": ".gitignore"
         },
         {
-          "hash": "4f924296e3ed1bbb6850e3b22aea006d5adc82ec20c9060d1abcc8e1941918bf",
+          "hash": "c446021387c90a1c8e50f54abcb98a8f1ef5b3d693c30181e47aa89616054e93",
           "path": "CHANGELOG.md"
         },
         {
@@ -3779,35 +3783,35 @@
           "path": "LICENSE"
         },
         {
-          "hash": "87db46a57cd4835ad183ec41bf9478a72c018deef06bd4616cb34a57fb121f9f",
+          "hash": "0dc9e71e045aa5ff9ec684be5f0283d8b5a399664497caa4467cd75c028f99b4",
           "path": "README.es.md"
         },
         {
-          "hash": "4361695ceac9e92520bad61a2890045865757f9af801194c23d73060d4c1ec9f",
+          "hash": "06b3c63f66726f4f5337f59a266f08b39ef278482dc6da066ebabfa0ed36243f",
           "path": "README.fr.md"
         },
         {
-          "hash": "7f0bbb6d0de8e586df719d561a1c6fdf43ddcd68c3e6ec9239cf096d1e5fa5eb",
+          "hash": "bafe81a07b487330b53365731f0cdad80e58d65510b9eed9e3fe4e5b82bc5e4a",
           "path": "README.hi.md"
         },
         {
-          "hash": "16aebeda3fec34f9322cda96218105e40f7863df90e2b61dbcfb1368ba045758",
+          "hash": "100075ee2fb1010ef1f8c2fa88a54a73cf0cee42c5c964f02e640c000118a153",
           "path": "README.it.md"
         },
         {
-          "hash": "2b6757e2e959373342c60b2c23528f7b5f75965c89c448f4c8ad82e795c64360",
+          "hash": "05ac005d86f08a61976efe1f63e6cb563c579f2348a7b4d60bf4d58a61071876",
           "path": "README.ja.md"
         },
         {
-          "hash": "8f9cabc39950bf7ec8245af55040ac124a9b7b5d619aa215dd0b84df1adabd11",
+          "hash": "74852c7ffb7cf18cea76702b58b92e5d78dde8df41cbbf7babb0361e009635b1",
           "path": "README.md"
         },
         {
-          "hash": "0812ea288cea2dd3b4f4b392280561ec029dfab474a1549290a5c3b9e02814f5",
+          "hash": "e6be62619cd36aa217383e795cea42172666a2bcb29a8b15b3b1808ce6c76dcf",
           "path": "README.pt-BR.md"
         },
         {
-          "hash": "6163e9654b27e340cb97de95eb6b2bf86dfc8032e103e54661e45fc026e5428b",
+          "hash": "8918778142c471b2102c426385b600a16577d2604a40b751d4394c994a8e6b93",
           "path": "README.zh.md"
         },
         {
@@ -6816,8 +6820,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "c63817d9658b310bfab53e25978a275647156c3f",
-    "tracked": 219
+    "commit": "7645d6b8682b36631793c7d909a686f566ca4df8",
+    "tracked": 221
   },
   "landings": [
     {
@@ -7899,31 +7903,35 @@
       "path": "site/src/content.config.ts"
     },
     {
-      "hash": "b612247508ce55edc53571d69c6a46497a40e3569f99b566a2583f418c2b4a6d",
+      "hash": "161a00bbdc7adb2da631cf5d075af6e7ac150508cb6c84e94a6671784b767bf5",
       "path": "site/src/content/docs/handbook/architecture.md"
     },
     {
-      "hash": "a5d08239705d67f3a7174d07e9371fc1ce05ae381a08e7d8e76abb3014ce9447",
+      "hash": "50532f6cbfb9774fbf545db73302474e051e20053f9d759f325fef3cfd5b44d9",
       "path": "site/src/content/docs/handbook/getting-started.md"
     },
     {
-      "hash": "2e2d759e0b38361b1356066f01374451733d01cbe5e221b2140352a34a932d94",
+      "hash": "2220ce81f27492e925160cc4dbeddf1a751102da502286553dad3ee3093f21a8",
       "path": "site/src/content/docs/handbook/index.md"
     },
     {
-      "hash": "95d31e9fa091760adb397e7426bf2c74c271244d78733dedd92d06c2bf9462ac",
+      "hash": "731020abaa0f18c29ec1f0e0372e30a362f708761b66f53fe7b62f86e68e229b",
       "path": "site/src/content/docs/handbook/reference.md"
     },
     {
-      "hash": "bd8c6d6e6785042e7325b7ed8953fcf5be8f7d96f25ff600b4f7bc4ff930d320",
+      "hash": "d6864eb62061354cd84adde052464f7ebf506cb8b41b7989aaaca7a7acb5d10e",
       "path": "site/src/content/docs/handbook/security.md"
     },
     {
-      "hash": "4b4de31970be23b7e522b79b5d3f7a90e501a2d6d2383abee4cb533e7d7bed23",
+      "hash": "d25b2b5cf6d42c209fad2af13a372837ab11aa70a57e31cc4281d57bddc71108",
+      "path": "site/src/content/docs/handbook/testing.md"
+    },
+    {
+      "hash": "12db20d90df00eee34263854672ac1fa23621a3ddefa06cc921992b2ef7697ae",
       "path": "site/src/content/docs/handbook/usage.md"
     },
     {
-      "hash": "4607f06a9603ce174311665335248bd6a8825903eb5b450b547752e2db3a9f06",
+      "hash": "9cda52659c6b53a493a23522849df12e456c3315b77ea8fc3b741e0257a84ade",
       "path": "site/src/content/docs/handbook/world-files.md"
     },
     {
@@ -7931,7 +7939,7 @@
       "path": "site/src/pages/index.astro"
     },
     {
-      "hash": "815e1c53a21eda26dd3382b2336eac1f8ad4088ca12be32fb7cb5c586e68b161",
+      "hash": "e10ac9fd0973edff9a2f12767558886df2c276d7a936c9b22b2b2cbf2e7d5fd7",
       "path": "site/src/site-config.ts"
     },
     {
