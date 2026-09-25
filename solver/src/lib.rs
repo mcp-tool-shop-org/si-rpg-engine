@@ -1,10 +1,76 @@
 // The E1 box step, in the same order the JavaScript kernel runs it.
 // f64 only. No other operation than add, sub, mul, div, and sqrt.
 // The product step lives in rapier_law and does not replace this function.
+//
+// Edition-2024 forms under edition 2021 (S1 pin 8): every export is
+// `#[unsafe(no_mangle)]`, and a `static mut` is reached only through a raw
+// pointer made by `&raw mut` or `&raw const` where the reference is taken, so
+// no reference to a mutable static is ever named directly. The edition stays
+// 2021; `cargo fix --edition` did not make these changes.
+
+// A refusal is a `Result`, and dropping one is a build error, not a warning:
+// `#[must_use]` alone only warns (measured on rustc 1.98.1). S1 pin 5.
+#![deny(unused_must_use)]
 
 #[cfg(target_arch = "wasm32")]
 mod arena;
 mod rapier_law;
+
+/// Why the law refused a quantum. Every export turns a refusal into 0. Inside
+/// the law each check returns `Result<_, Refusal>`, so a refusal cannot be
+/// dropped without the build failing.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Refusal {
+    /// More bodies or colliders than the buffers hold.
+    Limits,
+    /// A heightfield with fewer than two rows or columns, too many cells, or a
+    /// cell size that is not positive.
+    Grid,
+    /// A value that is NaN or infinite.
+    NotFinite,
+    /// Body slot 16 is not exactly 0, 1, 2, or 3.
+    Mode,
+    /// A half-extent or a collider extent that is not positive.
+    Extent,
+    /// A quaternion `canon_quat` cannot normalize.
+    Quaternion,
+    /// A kinematic body with no plan after the world stepped.
+    Plan,
+    /// No world is loaded to step.
+    Unloaded,
+}
+
+/// What body slot 16 says the solver does with the body.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Mode {
+    /// 0: the solver moves it.
+    Dynamic,
+    /// 1: a kinematic action.
+    Kinematic,
+    /// 2: the same action lifted (no gravity, no snap).
+    Lifted,
+    /// 3: carried: the body stays in the record and leaves the solver.
+    Carried,
+}
+
+/// The one reading of body slot 16, for the box step and the product step
+/// alike (S1 pin 2). It accepts exactly 0, 1, 2, and 3 and refuses anything
+/// else, NaN included. Before this, the box step read `!= 0.0` and the product
+/// step read `== 1.0 || == 2.0` then `== 3.0`, so 1.5, 4.0, and NaN were
+/// driven in one and dynamic in the other.
+pub(crate) fn mode(slot: f64) -> Result<Mode, Refusal> {
+    if slot == 0.0 {
+        Ok(Mode::Dynamic)
+    } else if slot == 1.0 {
+        Ok(Mode::Kinematic)
+    } else if slot == 2.0 {
+        Ok(Mode::Lifted)
+    } else if slot == 3.0 {
+        Ok(Mode::Carried)
+    } else {
+        Err(Refusal::Mode)
+    }
+}
 
 const DT: f64 = 1.0 / 64.0;
 const G: f64 = -8.0;
@@ -25,14 +91,14 @@ pub(crate) const COLLIDER_STRIDE: usize = 10;
 pub(crate) static mut BODIES: [f64; MAX_BODIES * BODY_STRIDE] = [0.0; MAX_BODIES * BODY_STRIDE];
 pub(crate) static mut COLLIDERS: [f64; MAX_COLLIDERS * COLLIDER_STRIDE] = [0.0; MAX_COLLIDERS * COLLIDER_STRIDE];
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn bodies_ptr() -> *mut f64 {
-    unsafe { BODIES.as_mut_ptr() }
+    (&raw mut BODIES).cast::<f64>()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn colliders_ptr() -> *mut f64 {
-    unsafe { COLLIDERS.as_mut_ptr() }
+    (&raw mut COLLIDERS).cast::<f64>()
 }
 
 fn js_min(a: f64, b: f64) -> f64 {
@@ -75,6 +141,12 @@ fn field(bodies: &mut [f64], i: usize, slot: usize) -> &mut f64 {
     &mut bodies[body_at(i) + slot]
 }
 
+/// Driven, for the box step: any mode but dynamic. The step has already
+/// refused the quantum when a mode is not 0, 1, 2, or 3.
+fn driven(bodies: &mut [f64], i: usize) -> bool {
+    mode(*field(bodies, i, DRIVEN)) != Ok(Mode::Dynamic)
+}
+
 fn resolve_pair(bodies: &mut [f64], i: usize, j: usize) {
     let ax = *field(bodies, i, 0);
     let ay = *field(bodies, i, 1);
@@ -82,14 +154,14 @@ fn resolve_pair(bodies: &mut [f64], i: usize, j: usize) {
     let ahx = *field(bodies, i, HX);
     let ahy = *field(bodies, i, HY);
     let ahz = *field(bodies, i, HZ);
-    let a_driven = *field(bodies, i, DRIVEN) != 0.0;
+    let a_driven = driven(bodies, i);
     let bx = *field(bodies, j, 0);
     let by = *field(bodies, j, 1);
     let bz = *field(bodies, j, 2);
     let bhx = *field(bodies, j, HX);
     let bhy = *field(bodies, j, HY);
     let bhz = *field(bodies, j, HZ);
-    let b_driven = *field(bodies, j, DRIVEN) != 0.0;
+    let b_driven = driven(bodies, j);
     let overlap_x = js_min(ax + ahx, bx + bhx) - js_max(ax - ahx, bx - bhx);
     let overlap_y = js_min(ay + ahy, by + bhy) - js_max(ay - ahy, by - bhy);
     let overlap_z = js_min(az + ahz, bz + bhz) - js_max(az - ahz, bz - bhz);
@@ -173,8 +245,9 @@ fn resolve_pair(bodies: &mut [f64], i: usize, j: usize) {
     }
 }
 
-/// One quantum. Returns 0 when a pose or a velocity is NaN.
-#[no_mangle]
+/// One quantum. Returns 0 when a pose or a velocity is NaN, and before it
+/// moves anything when a body's mode is not 0, 1, 2, or 3.
+#[unsafe(no_mangle)]
 pub extern "C" fn step(n_bodies: u32, n_colliders: u32) -> u32 {
     if n_bodies as usize > MAX_BODIES || n_colliders as usize > MAX_COLLIDERS {
         return 0;
@@ -182,12 +255,18 @@ pub extern "C" fn step(n_bodies: u32, n_colliders: u32) -> u32 {
     let n = n_bodies as usize;
     let nc = n_colliders as usize;
     unsafe {
-        let bodies = &mut BODIES;
-        let colliders = &COLLIDERS;
+        let bodies = &mut *(&raw mut BODIES);
+        let colliders = &*(&raw const COLLIDERS);
         let mut i = 0usize;
         while i < n {
-            let driven = *field(bodies, i, DRIVEN) != 0.0;
-            if !driven {
+            if mode(*field(bodies, i, DRIVEN)).is_err() {
+                return 0;
+            }
+            i += 1;
+        }
+        let mut i = 0usize;
+        while i < n {
+            if !driven(bodies, i) {
                 let vx = *field(bodies, i, 3);
                 let vz = *field(bodies, i, 5);
                 *field(bodies, i, 3) = vx * UNDRIVEN_DRAG;

@@ -80,3 +80,26 @@ test('the same bodies in another order move the load hash and the first quantum 
   assert.notEqual(b.load, a.load);
   assert.notEqual(b.first, a.first);
 });
+
+// S1 pin 9. Rapier's handle generations come from one counter per set,
+// raised on every removal, so removal history decides handles, and the
+// snapshot records collider handles. The law never removes from a loaded
+// world (a carry or a release builds a new one; solver/src/rapier_law.rs holds
+// that natively), so removal history reaches the hash through the record
+// alone: a body removed and inserted again lands at the end of the list.
+test('a body removed and inserted again moves the load hash and the first quantum hash', () => {
+  const filed = authored(() => {});
+  const reinserted = authored((scene) => {
+    const at = scene.bodies.findIndex((/** @type {{ id: string }} */ body) => body.id === 'walker');
+    const [walker] = scene.bodies.splice(at, 1);
+    scene.bodies.push(walker);
+  });
+  assert.deepEqual(reinserted.bodies.map((body) => body.id), ['crate', 'walker']);
+  assert.deepEqual(reinserted.bodies.find((body) => body.id === 'walker'), filed.bodies.find((body) => body.id === 'walker'));
+
+  assert.notEqual(loadHash(reinserted), loadHash(filed));
+  const a = firstHashes(filed);
+  const b = firstHashes(reinserted);
+  assert.notEqual(b.load, a.load);
+  assert.notEqual(b.first, a.first);
+});

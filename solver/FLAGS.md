@@ -2,14 +2,19 @@
 
 Toolchain `1.98.1`, target `wasm32-unknown-unknown`, profile release, panic abort.
 
-`solver/.cargo/config.toml` passes these rustc flags, and `build.mjs` repeats them because RUSTFLAGS overrides the file:
+`solver/.cargo/config.toml` passes these rustc flags:
 
 ```
 -C target-feature=-relaxed-simd
 -C link-arg=--export=__stack_pointer
 ```
 
-`solver/build.rs` passes the memory to the linker for the cdylib, where RUSTFLAGS cannot drop it:
+`build.mjs` passes them again, with the three `--remap-path-prefix` flags below, in `CARGO_ENCODED_RUSTFLAGS`, and runs `cargo build --release --locked` with its working directory at `solver/`, so `rust-toolchain.toml` pins the toolchain and no dependency outside `Cargo.lock` is resolved. Two facts decide that shape (S1 pin 7):
+
+- **Environment rustflags replace the flags in `.cargo/config.toml`; they do not add to them.** So every flag the build needs lives in `CARGO_ENCODED_RUSTFLAGS`, and the file's copy serves a bare `cargo build` only.
+- **`CARGO_ENCODED_RUSTFLAGS` instead of `RUSTFLAGS`.** It builds the same digest (measured by the knowledge base). Its flags are separated by `0x1f`, not spaces, so a path with a space in it stays one flag, and it takes precedence over `RUSTFLAGS`, so a value inherited from the environment cannot override the build's flags. `build.mjs` also drops any inherited `RUSTFLAGS`.
+
+`solver/build.rs` passes the memory to the linker for the cdylib, where environment rustflags cannot drop it:
 
 ```
 cargo::rustc-link-arg-cdylib=--initial-memory=33554432
@@ -24,6 +29,15 @@ The product step links `rapier3d-f64` 0.35.3 with `enhanced-determinism`. The cr
 
 Any bump of the toolchain or of `rapier3d-f64` reruns the character course (`harness/course.test.js`) and the outcome tests (`harness/outcome.test.js`) before a golden may move; `write-golden` runs both first and refuses to write when either fails.
 
+## The toolchain is part of the law
+
+A toolchain bump can move results with `Cargo.lock` untouched (S1 pin 14, measured by the knowledge base's float-determinism lane). `enhanced-determinism` routes the math in simba and glam through the crates.io `libm`, but parry and glamx call some transcendentals as methods, and on wasm32 those resolve to the toolchain's own copy of libm. A build of `solver/` links the toolchain's `sin`, `cos`, `acos`, and `log2` beside crates.io `libm`, and `log2` is reachable from `solver_step` through parry's tree optimizer. The toolchain's `hypot` already differs from `libm` 0.2.16 on a 100,000-input sweep. So the pin in `rust-toolchain.toml` is a pin of the law's arithmetic, not only of the compiler: any toolchain bump reruns the T4 course and the outcome tests above before a golden may move, as a bump of `rapier3d-f64` does.
+
+Two rules the law keeps, for the same reason:
+
+- **No explicit `mul_add`.** It computes a fused result: deterministic on wasm, where it runs in software, but a different number from the multiply and the add it replaces.
+- **No iteration over a `hashbrown` map where the order reaches the hash.** Its default hasher is randomly seeded, so the order can differ from run to run. Rapier's own maps are `IndexMap`s under `enhanced-determinism`; a map the law adds must be one too, or never be iterated into the snapshot.
+
 ## The relaxed sites the flag keeps out
 
 Two crates in the solver's dependency graph carry relaxed-SIMD code, both behind `#[cfg(target_feature = "relaxed-simd")]`, which `-C target-feature=-relaxed-simd` keeps false (docs/rust-kb-answers.md, answer 6):
@@ -35,13 +49,20 @@ The flag is what keeps these gated paths out if simd128, or a CPU level that imp
 
 ## The pinned artifact is the Linux build
 
-Dependencies embed source paths in panic-location strings. Before remapping, the binary carried 132 strings naming the cargo home and the user; that is why the Linux and Windows builds differed in bytes while printing the same golden. `build.mjs` passes `--remap-path-prefix` for the cargo home, the crate, and the repository. Windows still writes backslashes into each remapped remainder, so the two hosts never produce identical bytes. Therefore `fixtures/solver.sha256` is the digest of the Linux build only: CI enforces it, `build.mjs --check` on another host reports its own digest without failing, and `build.mjs` without `--check` refuses to write the digest anywhere but Linux. The golden hash, not the digest, is the cross-host invariant; the digest pins the artifact CI runs.
+Dependencies embed source paths in panic-location strings. Before remapping, the binary carried 132 strings naming the cargo home and the user. `build.mjs` passes `--remap-path-prefix` for the cargo home, the crate, and the repository. Of the three, only the cargo-home remap changes bytes today; the crate and repository remaps are guards against a path of either reaching the binary later, and they are kept.
+
+Two causes keep another host's bytes from matching the Linux build, and path separators are only the first (S1 pin 7, measured by the knowledge base's ci-reproducible-builds lane):
+
+- **Separators.** Windows writes backslashes into each remapped remainder.
+- **The host triple.** Cargo hashes build scripts and proc-macros with the build machine's host triple, and every wasm crate inherits that hash through `-C metadata`. Replacing every backslash still leaves the Windows bytes different. The same mechanism very likely makes x86_64 and aarch64 Linux builds differ too, which is why T3's ARM lane downloads the x64 artifact and checks its digest instead of rebuilding.
+
+Therefore `fixtures/solver.sha256` is the digest of the x86_64 Linux build only: CI enforces it, `build.mjs --check` on another host reports its own digest without failing, and `build.mjs` without `--check` refuses to write the digest anywhere but Linux. The golden hash, not the digest, is the cross-host invariant; the digest pins the artifact CI runs.
 
 ## The memory is fixed
 
 Before T3 the binary declared its memory with no maximum and carried one `memory.grow`, in std's allocator. Wasmtime names memory growth as a host-chosen outcome, so the build removes both:
 
-- **Size.** 512 pages, 32 MiB, initial and maximum equal. `solver/build.rs` passes `--initial-memory=33554432` and `--no-growable-memory` as `cargo::rustc-link-arg-cdylib=`, which survives the RUSTFLAGS `build.mjs` sets (measured by the knowledge base; the lint confirms 512/512 on every build). No `-Z` flag is needed.
+- **Size.** 512 pages, 32 MiB, initial and maximum equal. `solver/build.rs` passes `--initial-memory=33554432` and `--no-growable-memory` as `cargo::rustc-link-arg-cdylib=`, which survives the environment rustflags `build.mjs` sets (measured by the knowledge base; the lint confirms 512/512 on every build). No `-Z` flag is needed.
 - **Why 512.** The need scales with contact manifolds, not with body count. Under the persistent law the knowledge base measured 21 pages for the product harness over 10,000 quanta, 49 for a settling pile of 64 boxes on a full heightfield, and 147 for 64 heavily overlapping boxes. `harness/caps.test.js` runs 64 overlapping boxes against 64 static colliders for 1,000 quanta and prints the heap's high-water mark: 138 pages. 512 is between three and four times that.
 - **A denser world traps, the same way on every host.** No fixed size covers every world the buffer caps admit: 64 boxes on one spot over a full heightfield need about 3,320 pages. When the heap is exhausted an allocation fails and the binary traps with `unreachable`; the memory does not grow, so no host can succeed where another fails. `harness/caps.test.js` holds that too.
 - **Allocator.** On wasm32, std's global allocator is dlmalloc 0.2.13, and it asks `memory.grow` for pages. `src/arena.rs` links the same crate at the same version (`dlmalloc = "=0.2.13"`, default features off) as the `#[global_allocator]`, with one change: its only source of memory is the span from the linker's `__heap_base` to the end of the fixed memory, handed over once. With no reference to std's system allocator, the linker drops it and no `memory.grow` remains. The arena also keeps the heap's high-water mark in linear memory, exported as `heap_high_water`.
