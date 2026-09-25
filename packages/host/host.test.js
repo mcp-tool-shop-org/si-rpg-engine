@@ -188,7 +188,7 @@ test('the door tick is sticky: a frame drawn late still names the tick the sim r
   if (!loaded.ok) {
     return;
   }
-  const session = createSession(loaded.scene);
+  const session = createSession(loaded.scene, 'reference');
   // Let the walker land first. A push from the air lands the walker on the crate instead of behind it.
   for (let i = 0; i < 200; i = i + 1) {
     session.advance();

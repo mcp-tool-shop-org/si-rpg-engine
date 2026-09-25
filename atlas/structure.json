@@ -9,79 +9,103 @@
       "externals": 0,
       "files": [
         {
-          "hash": "6c115e5a999da10cafcd28b2fd4e6fc1619f827a53a6e2525d7be9f1852f58fe",
+          "hash": "b25f09bb3229872ab6df04a0305ca8c415e4b05566a254048abe48b1dc813ab5",
           "path": "docs/PHASE-0.md"
         },
         {
-          "hash": "93051affce2fb0d296622dc6335385cf6e8c452f3bb8a6cb3bb4cf5f9b2aa009",
+          "hash": "5e016319f8f7400601d6caaa676930a33023d14b26f5631e731fef76178f5bd9",
           "path": "docs/PHASE-1.md"
         },
         {
-          "hash": "2006453106d8e7174ce5657d948e41afe79f4b4db8f15ffb861f95a286927492",
+          "hash": "0603c874876cc07f7921d83e6c8541f09815781e4f881c63784b1255451caf49",
           "path": "docs/atlas-design.md"
         },
         {
-          "hash": "bc5c806559ac3cfb470c05f4ba0695baa5bd0f31a895c465cc0b698ddfdd7020",
+          "hash": "6ec99c346bef861e3735a319d5b3f99ff5e71a6972aced30bd88d0c4d08d92dd",
           "path": "docs/consult-brief-01.md"
         },
         {
-          "hash": "8f0441fad913c9a72144f24e0517de8e0a2abb89d7158b46c2a4850107b48cc6",
+          "hash": "ecd95acc9876ee216e23da4d57b928ec50ed5e840dedeb18e236e0c4b877a219",
+          "path": "docs/consult-brief-e2-solver.md"
+        },
+        {
+          "hash": "bce40bc8c12a2e20b767b8d084988a7ffb5d0e321cc0144d79cfaa67616474f2",
           "path": "docs/consult-brief-host-01.md"
         },
         {
-          "hash": "a8ddeed4f6ec11781d4cce14ab3ae12490f995ac0d0336226d9c2d99baa0d997",
+          "hash": "3e1038792608cc18c0d77f58cb915cd2d4d7c9827e20ce164d00667e946cf7d7",
           "path": "docs/consult-brief-physics-01.md"
         },
         {
-          "hash": "bd0357e0bd3fad3655bd61b8955d98b57aa5124451469627b95b27f32aa3ae1d",
+          "hash": "193abea1cde4709cffb65219a08b01dfb71b7b4ff547f7f490f078fdb2341d59",
           "path": "docs/consult-reply-claude-01.md"
         },
         {
-          "hash": "6d9be18b2e3f1d5869621e04f1889eeeb787728c9e07b6a2b6bdecad4871f42e",
+          "hash": "cc408de92e37c7d4c2413f82925031531220ff33d46a493b4b8dfdd3b2c0bc46",
           "path": "docs/consult-reply-claude-02.md"
         },
         {
-          "hash": "a60b3f3f413b3178c4b24ca35a7a78b12819e2b4a228ac1ae6f4144cb106a14d",
+          "hash": "ee0969f2d3f083d63ad99cd94224d403a5d46ac42f1f1dd3c0a3244158108d36",
           "path": "docs/consult-reply-claude-atlas-01.md"
         },
         {
-          "hash": "543a468de4bf1bec202db99399992ffaad10e1fcbe61d8781df6d4370b621470",
+          "hash": "f74bde616399037f30ed70fbcc8360423dc4b1b968df514afdbbd32e60934e01",
           "path": "docs/consult-reply-claude-host-01.md"
         },
         {
-          "hash": "2686989445d7e38f1ee5fb6d73b295a5249ff29737ece0f6bdf2ec7aaee32e11",
+          "hash": "7f4b8a2e95efb915d33668a75f3b450628d0735a376cd2c41526063bb79ece60",
           "path": "docs/consult-reply-claude-physics-01.md"
         },
         {
-          "hash": "2c7dacb2ac7ba27ed2e4622ef341e8b382130b60ee755f493d00dc2952132291",
+          "hash": "7578181994b72d50723e9517c20eb22ac7aa10be33b2c46ff2e3cca920a82459",
           "path": "docs/consult-reply-gemini-01.md"
         },
         {
-          "hash": "075d3206d2ea2905a27aa7d7c9d3ffb29205bf1a0bf5f2839c17614ca9783276",
+          "hash": "a986d7a952e47bd1cb570766fa6ce0037323d32f9b8c3184cb6ca5d0c466ac65",
+          "path": "docs/consult-reply-gemini-e2-solver.md"
+        },
+        {
+          "hash": "c412039f287ed8e8dc8040e60e27ac91c6aa476c94a092fcf9ee24d2ac0aedde",
+          "path": "docs/consult-reply-grok-e2-solver.md"
+        },
+        {
+          "hash": "8f4261d163efdf172538e63a2dccb02dc2a6565e33133ebf6400a8344474fdf9",
           "path": "docs/dispatch-1c-contact-and-push.md"
         },
         {
-          "hash": "c7b6bf8dd0456775a8192764d69156d24d460c636ba2720775776be527ffb000",
+          "hash": "e3baf5a28e0e8b4ff0338c8fcfd768c75762c6e60849350dfcaee954f06fc3dd",
           "path": "docs/dispatch-1d-the-scene-played.md"
         },
         {
-          "hash": "019bbbcb5b018f67e2cbb4cc5b9a8cfb8c354a306154db53a7958c53ee1a979e",
+          "hash": "65cb5a3e3d638d8f6dce6d40c5d1826749fb9151a2dc57ccbc421ffd2203ff30",
           "path": "docs/dispatch-e1-three-dimensions.md"
         },
         {
-          "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
+          "hash": "07889503246b23da5858ea1bfbf18f83a32dcb3ccf9162d075082b2515c48fe2",
+          "path": "docs/dispatch-e2-solver.md"
+        },
+        {
+          "hash": "64cdee834df343cff0d2651a27f22da0cb454627de5fbe182a067977f3508e17",
           "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
         },
         {
-          "hash": "e3ea920ad0685f5dda0aa0445b7b6347c58a14b7d50583738d4678d3dd6f01b2",
+          "hash": "a95ff0183284c0ad677631be54a361d7cde9f6e33e416b425a506dc8ac3634c3",
           "path": "docs/study-swarm/consult-02.dispatch.md"
         },
         {
-          "hash": "b3e11ed1473ef4af6ddee0ef2bc12c7a3b39fdba5f2fcec514c10e47792889ae",
+          "hash": "f7d3f96afcd616675e8c9a56fdc74faeeaa425763cee2d64f20e573bc6cefa23",
+          "path": "docs/study-swarm/e2-solver.dispatch.citation-receipt.json"
+        },
+        {
+          "hash": "cedf6825941d187ab960bf84548ceb695f6c36535280f007fbdf3d7bcc3f9d10",
+          "path": "docs/study-swarm/e2-solver.dispatch.md"
+        },
+        {
+          "hash": "0331203b7505a9047ac3c95263a0c0f808a3e16b99e65dd2b90c3f3ee876157d",
           "path": "docs/study-swarm/si-rpg-engine.citation-receipt.json"
         },
         {
-          "hash": "6355daacbebd3488b217af7d17446ece88e36c233cf77219633cf892ef353ce8",
+          "hash": "6e1c8f0346eb348486400d201ca0029341beaf52a78a635b4110b3d8ec9e3f4c",
           "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
         }
       ],
@@ -104,40 +128,48 @@
       "externals": 0,
       "files": [
         {
-          "hash": "551560bd2a16bdaf3ceb837ffa0c2140c0d4ffe68dee2c927632d20bbfb1bbf0",
+          "hash": "5cd0e7e51a706a805f66bc2349b8137170a70e4308f7c1feadfb67a53176c0f9",
           "path": "fixtures/behavior-1c.json"
         },
         {
-          "hash": "e9a27cd692bc0a058804e66a67a0077d49392bb78c811aac5a2ebb1123aed132",
+          "hash": "3b686cb1ce90c052dec9ce98769e905b16a7fab0dd71ca5fb1ed6ff0d6f956b3",
           "path": "fixtures/behavior-3d.json"
         },
         {
-          "hash": "5555470b3450b02cd6575387e288d301024b400ecab04a9cef452b2e3ddddf91",
+          "hash": "38d4db8847a089ee6984019a1e7af2fd000e7235b29ef4107d2ae79239caa924",
+          "path": "fixtures/behavior-solver.json"
+        },
+        {
+          "hash": "e04e22f59d02566c01c1c1bb9d9b496a0aebf80880988d49041d8e149874d2cc",
           "path": "fixtures/first-scene-played.json"
         },
         {
-          "hash": "17d4b005bdbe4ac3227ed0dcb1c0633e0958f1acf92f59b6b49d6aac887fad23",
+          "hash": "22ecfee63ab8e18d07208745dfcdc048db9a9d6d2053b734342d646b76011f67",
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "4712e161ff183587b246de51ba2fc2ad87a668a1b04aae7fdfd9c38b252e539b",
+          "hash": "e5f61cb8a791243e416973acf108ecc11b08ecb33fbf663aabfed42e4a1e96f0",
           "path": "fixtures/golden.txt"
         },
         {
-          "hash": "c45b54f694fb41219439ad7bf3a6abb94b2c419e9dafc9c1dae94beefad13de9",
+          "hash": "9ad205cb228f52370dfdfedf0ee58e64e7ff768c397d6d68b8b6a641cb2e7ee8",
           "path": "fixtures/legacy-play-log.json"
         },
         {
-          "hash": "4f870c605d4a529655dec02d9635bbd9cc2b06421a5aa169b5e6bf91ad14af3f",
+          "hash": "81108761b4e0888f9464136e9be72503aad28c985b3bb1157c503f885287364d",
           "path": "fixtures/proposer-qwen2.5-7b.json"
         },
         {
-          "hash": "d29b011a57e082827c6d1ed53145d903ae2abdbcdd97a0d994eb7253d6acd619",
+          "hash": "d32e21bc22d5bf211d4f7c2651c5127b3409c138bf6211e5663e4f30859196b7",
           "path": "fixtures/push-draft.json"
         },
         {
-          "hash": "31165cd7714f449e0eed9db61bb40adecce0200abd841feec3eb1dc45c708735",
+          "hash": "e47d425e54a558818ee36c7d1868a2f5e9499b0d92d33610d9cb97eb68375f7b",
           "path": "fixtures/push-play-log.json"
+        },
+        {
+          "hash": "c712318f97076235825db0ecbb8f35e2616cf8d024bedc764bdfd5d9542e065d",
+          "path": "fixtures/solver.sha256"
         }
       ],
       "globs": [
@@ -162,7 +194,7 @@
           "exports": [
             "commitFrame"
           ],
-          "hash": "979c6ca8e497e690a79bcf4094eb2e17514241a321ede194bd18c0bd8c1af155",
+          "hash": "6f00eb644dd669b7fd12b0210e0a7aec53c12f76867ad9597bb7290e4674788d",
           "path": "packages/frame/frame.js"
         },
         {
@@ -170,11 +202,11 @@
             "createHasher",
             "hex"
           ],
-          "hash": "1dfe0dedf2040da8a181f88a5ee7afdcb5bc4f189838fd298de9d039a888bf61",
+          "hash": "b137f09c7a13f7451dd6360560b36ea346a4a30b3552c898a750a2ce9a604207",
           "path": "packages/frame/hash.js"
         },
         {
-          "hash": "bb16a1d7ba915731e7fbdf9f3b7fc4a2f59a51441a189922ca541233ad8c1934",
+          "hash": "bbf5932385f43215313a8dd37a417ac27e48890b2be241d8f06439dbe88f24cc",
           "path": "packages/frame/types.d.ts"
         }
       ],
@@ -185,7 +217,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 4,
+      "testedBy": 5,
       "unresolvedSites": 0
     },
     {
@@ -199,43 +231,65 @@
       "externals": 0,
       "files": [
         {
-          "hash": "a0da109ed97a59c01ea46d02f7ab9806a9a340f07f7f542cd38cd879edd933e7",
+          "hash": "10297da5f01c44883aebe0603464ee474c8c15dd9bd3c307a6fea30505c6cdba",
           "importsFiles": [
             "packages/frame/hash.js"
           ],
           "path": "harness/arith.mjs"
         },
         {
-          "hash": "65404a241acf1b8f68c4a4a4b78604b4c32f5049168236573f239febeed8313b",
+          "hash": "28a20e1968b8a02f52ea447daab7d51fb53e7cca82543c00531aee92b82ef3fc",
           "path": "harness/check.js"
         },
         {
           "exports": [
+            "createBoxProductWorld",
             "createProductWorld"
           ],
-          "hash": "dd98fa0a58def9c50448dac329f0310cecc0a6693f1dbe2d34902718d272f0b6",
+          "hash": "2f6c2c257684ab5b38076262854d9eaa1fea5ec135e17e6b5d9218e4b6268bcf",
           "importsFiles": [
             "packages/tick/world.js"
           ],
           "path": "harness/product-scene.mjs"
         },
         {
-          "hash": "07ce4a2692fa05c0d46146c5bd9bcc560f579ebfffc9f6b74d234bddc38cde78",
+          "hash": "832cbd98f86c5e8914ff2ee4e598a2306006f56db4d92590ed7ad1151bdc4108",
           "importsFiles": [
-            "harness/product-scene.mjs"
+            "harness/product-scene.mjs",
+            "packages/tick/world.js"
           ],
           "path": "harness/product.test.js"
         },
         {
           "entry": "out",
           "entryRule": 1,
-          "hash": "a3f734cc16a948a8c5f78574981bd67cf8608521f0d3eba627cca91ea8ce60b5",
+          "hash": "a4c7a2ddedc787684e988e90cee3cf53230801b0b4440cf72a1a659f42745e84",
           "importsFiles": [
             "harness/product-scene.mjs",
             "packages/frame/hash.js"
           ],
           "path": "harness/sim.mjs",
           "sequences": []
+        },
+        {
+          "exports": [
+            "play"
+          ],
+          "hash": "fadfceb7a18b22b2327f804ed523bdf1e8e4ef46693ec0a59ffb72a3bbc510fb",
+          "importsFiles": [
+            "packages/frame/hash.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/solver-scene.mjs"
+        },
+        {
+          "hash": "26dcf80168af7e048e61fe3ef95b23a440e6d5f91c3696628964dafce31020a5",
+          "importsFiles": [
+            "harness/solver-scene.mjs",
+            "packages/frame/hash.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/solver.test.js"
         },
         {
           "hash": "1ec6d383b57ca874bcd74399ce878ac01b6a9ebd0edf71be825d9d95232b0408",
@@ -250,8 +304,8 @@
       "origin": "authored",
       "outsideReads": 1,
       "role": "test",
-      "testedBy": 1,
-      "unresolvedSites": 0
+      "testedBy": 2,
+      "unresolvedSites": 2
     },
     {
       "dynamicReads": 0,
@@ -264,23 +318,23 @@
       "externals": 0,
       "files": [
         {
-          "hash": "9ba32a3274f18def2e5914b37d0d570e651fd8f093a7dc779e467cc1a67086c1",
+          "hash": "4b1b836e88def90224b1966be86ae087efa74aa25bd6fe4fb077148f30ee7690",
           "path": "predicates/hazards/beyond-wall.json"
         },
         {
-          "hash": "6519ff0003db187b5fa7ddebc18e33218f2c17846157a97b8fdb6b9d72fed25e",
+          "hash": "a6ee0a6ba3f179738928106b1361a5e2f14ced7d5cba6fc3e863171e01e8ac68",
           "path": "predicates/hazards/clear-step.json"
         },
         {
-          "hash": "d702e1243ea1b37436d24426abda957ab3659c3eca57dc26fdbca3b28c303dca",
+          "hash": "98d89373165c9df8d0e86988efc307863a83ce4bc0d6ba89f13dc3faa380bc02",
           "path": "predicates/hazards/corner-clip.json"
         },
         {
-          "hash": "d3a3aa8263719c094cb0ecee68bc7c7163c9d5b402511ae595f8721b893fcfab",
+          "hash": "4ee97431730e8875ecbc3d231f68fa48886cd4a2b18207989b8b24e256b8acb4",
           "path": "predicates/hazards/index.json"
         },
         {
-          "hash": "0cbff1a7b96b322fd3b6366375e15a51c5f3f39169a76e9cd0734723a7db88ae",
+          "hash": "ea7964e3b876695c9ebb0f74704a75796a603d516f56ad8126b26116d8d5024d",
           "path": "predicates/hazards/through-collider.json"
         }
       ],
@@ -307,7 +361,7 @@
         {
           "entry": "saveLog",
           "entryRule": 1,
-          "hash": "d71f73de5fe15ed322b41d34a7e9d97bffaccd27389ee233cb977c054bb64ed2",
+          "hash": "476e0395300f48d8b8c1f8b861fe3ceca9ba42bbe2b31bcb3bef50ebfe7fd9fe",
           "importsFiles": [
             "packages/host/server.js",
             "packages/host/session.js",
@@ -317,7 +371,7 @@
           "sequences": []
         },
         {
-          "hash": "d5671cef36843d6de579f357497c5fddb899db899250a0c10185996a065cb5d5",
+          "hash": "51d3cae2a31ddfc8951d9c7aac732079e11f9659f2c3090b6c7d118db24479d0",
           "importsFiles": [
             "packages/host/server.js",
             "packages/host/session.js",
@@ -327,14 +381,14 @@
           "path": "packages/host/host.test.js"
         },
         {
-          "hash": "4d80eceae0bcd75397be47acfdea0c801ac4566815c1e653e3e5dc6923a117df",
+          "hash": "b956100d93856326414ff2843844933b2f4f3d912be6efdbc449d9390ca652f3",
           "path": "packages/host/page.html"
         },
         {
           "exports": [
             "createHostServer"
           ],
-          "hash": "1528af6fa1418e5a7b0ba0a9d6391899d2d534aec0600d55e8a3cace49f0c3c8",
+          "hash": "0c5f3fe07d4938e4dfdaab1f3dcfb7d39cf0b4278d60641d581390b8651bea02",
           "path": "packages/host/server.js"
         },
         {
@@ -342,7 +396,7 @@
             "createSession",
             "startPump"
           ],
-          "hash": "6ce8097763901979c9be0e0afcce3eb5d086cb4080ca3b348c201e153ab03fdd",
+          "hash": "9003286027645739ba0a476668b893647c0e3c2df4c210a19a5d376e0061c344",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -363,7 +417,7 @@
             "projectionAxes",
             "worldToCanvas"
           ],
-          "hash": "041fd8b35a2034cd6067ee1dcde5e516e2db751fdde26bef34f49fba78ce336a",
+          "hash": "21f7c2078e7e54b226f169a70c1cc6d79161adb01263bb6c3a30aa193a7d9ecb",
           "path": "packages/host/view.js"
         }
       ],
@@ -376,7 +430,7 @@
       "outsideWrites": 1,
       "role": "code",
       "testedBy": 1,
-      "unresolvedSites": 0
+      "unresolvedSites": 1
     },
     {
       "dynamicReads": 0,
@@ -389,15 +443,15 @@
       "externals": 0,
       "files": [
         {
-          "hash": "96604b01a16e59d35b265fb9bc605febffe6c3f79e7807fe131844b78c004af5",
+          "hash": "159dfee567231d4bd92b47fa9847439bd41e62eb73e8b3dbe79063066518ec1e",
           "path": "predicates/intents/index.json"
         },
         {
-          "hash": "5759de88994a41c13a07acb9c297c0056f928250d34472e24e65f8dcad303f62",
+          "hash": "1bcfc51c47d01b30c976e9af7d0720e3c44f761f823140e396aa4d36d98b3b24",
           "path": "predicates/intents/move.json"
         },
         {
-          "hash": "d29b011a57e082827c6d1ed53145d903ae2abdbcdd97a0d994eb7253d6acd619",
+          "hash": "d32e21bc22d5bf211d4f7c2651c5127b3409c138bf6211e5663e4f30859196b7",
           "path": "predicates/intents/push.json"
         }
       ],
@@ -426,7 +480,7 @@
             "considerDraft",
             "retireVerb"
           ],
-          "hash": "db5f20d75067487ee161fc1a1c330d6315c982904082d9b9f428ccb60a388441",
+          "hash": "4e5ffae8b9fb12e4c5d55820cbba8d3490bb2924dc4b6bdc88a744d2f90c619d",
           "importsFiles": [
             "packages/load/compile.js",
             "packages/load/suite.js"
@@ -436,7 +490,7 @@
         {
           "entry": "readIndex",
           "entryRule": 1,
-          "hash": "4bf9a16c0b40fbc8405a2a9df89685f3580bf41c9426d5cf4791b599008925fd",
+          "hash": "54e2041c6b66c557d5d149253f93f6de2987d86abaa5d521090ce5a068b5cf25",
           "importsFiles": [
             "packages/load/admit.js",
             "packages/load/suite.js"
@@ -448,11 +502,11 @@
           "exports": [
             "compileVerb"
           ],
-          "hash": "813c27c5da49479bd5dd576e0d5233c883118250a085e31bc1278843ae090816",
+          "hash": "0871896337f42d3f0a1139a6862bdb07611b0a97fd31aaa7c3ec9d4608848498",
           "path": "packages/load/compile.js"
         },
         {
-          "hash": "a1db206177dfc316754f0fc1289a968d3d15532592434a939cb4a03bc0e8f892",
+          "hash": "697f82cfadb0ccaabe504e07e386030be3a9d2d665abfda89f0847821b2d1bc7",
           "importsFiles": [
             "packages/load/admit.js",
             "packages/load/compile.js",
@@ -470,7 +524,7 @@
             "loadHazards",
             "runHazards"
           ],
-          "hash": "ebc8a7c8abacf1c66a817138373d1846fb1841a8c1b31742bf9f34cb7832ea56",
+          "hash": "299c19943beb8cb59f0adb5ad9a0375da5efac0b7e0dfeb60156356594ce284c",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -504,7 +558,7 @@
         {
           "entry": "oneRun",
           "entryRule": 1,
-          "hash": "9c425c373baecff58cc7b7c3a33cbfae92b5b2ef6be8dc3f34a30bdfe6bd3607",
+          "hash": "f28e59c6ea2d7007e57fc231349a7ab368620779cf9c9aaeeeb3cc8d93f4416f",
           "importsFiles": [
             "packages/propose/ollama.js",
             "packages/propose/oracle.js",
@@ -592,6 +646,23 @@
                     },
                     {
                       "line": 58,
+                      "name": "mixLoad",
+                      "target": null
+                    },
+                    {
+                      "line": 73,
+                      "name": "snapshot",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 77,
+                      "name": "u32",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 63,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -671,28 +742,28 @@
                 {
                   "inner": [
                     {
-                      "line": 37,
+                      "line": 38,
                       "name": "createWorld",
                       "target": {
                         "file": "packages/tick/world.js"
                       }
                     },
                     {
-                      "line": 40,
+                      "line": 41,
                       "name": "createMemory",
                       "target": {
                         "file": "packages/tick/memory.js"
                       }
                     },
                     {
-                      "line": 35,
+                      "line": 36,
                       "name": "createTick",
                       "target": {
                         "file": "packages/tick/tick.js"
                       }
                     },
                     {
-                      "line": 64,
+                      "line": 65,
                       "name": "settle",
                       "target": {
                         "file": "packages/tick/tick.js"
@@ -721,7 +792,7 @@
           ]
         },
         {
-          "hash": "fc710b404f3484ab1502c7ef59461dee59ed53b68e2ce8a336a8ce2b3e5a1319",
+          "hash": "b011acfc2146ef6a5cad66dff3ff90c9d36f1bcf18004ebe53570322edfa4cc0",
           "path": "packages/propose/model.json"
         },
         {
@@ -729,14 +800,14 @@
             "askOllama",
             "pinnedRun"
           ],
-          "hash": "94b250bc8975af44f7b27fa4c7043cea8daf186bd9f05e5941df4f4a8b90e479",
+          "hash": "fe4a6a27d17370389e400af1b1a8bd77c24dc49ed0da3b216d12b06cf809af75",
           "path": "packages/propose/ollama.js"
         },
         {
           "exports": [
             "oracleSearch"
           ],
-          "hash": "47db0b96422ed9d7430693ddf6225229fe8983c8287ff91ca8527527c7626d46",
+          "hash": "87b240f8a2b4a9bbc9f2830084036bd72f0c34a291553ef7dc9f8a787d4c4f7c",
           "importsFiles": [
             "packages/propose/scene.js",
             "packages/tick/fixture.js",
@@ -753,20 +824,20 @@
             "readProposal",
             "stamp"
           ],
-          "hash": "6882e04d23c265193f8e456e86e3d79f8d075ef7a70a062a9d286169c7438ec2",
+          "hash": "5ad90769d5709f4990ebbb770ef5ebb1ed8c2e5ae6062aafd4f83de577367310",
           "path": "packages/propose/parse.js"
         },
         {
           "exports": [
             "proposalPrompt"
           ],
-          "hash": "4f2a02ecc733a1016c5f38b778444d32ff1038de043d4248f4230a7799b042d8",
+          "hash": "7344e7ca39216e4b0a0ab900cd15f1387821080ea414cde153c39969e138b910",
           "path": "packages/propose/prompt.js"
         },
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "65ee796c271db8476518ece0e34690a3a47c18637a5f8a752b87cb6c038755ae",
+          "hash": "0028185a821dcf3958e57262f1e51316d9c15391f9c35d128157f8cc12e60b33",
           "importsFiles": [
             "packages/propose/oracle.js",
             "packages/propose/parse.js",
@@ -833,6 +904,23 @@
                     },
                     {
                       "line": 58,
+                      "name": "mixLoad",
+                      "target": null
+                    },
+                    {
+                      "line": 73,
+                      "name": "snapshot",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 77,
+                      "name": "u32",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 63,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -861,14 +949,14 @@
             "proposeWorld",
             "reachedGoal"
           ],
-          "hash": "8146356d29bdfc5e66bc3671eb3660c872ee80db006e38e3e5dcc8fcd21bba83",
+          "hash": "7979ab73d07b40022ef5029d06b2263c5d9e5ae6e57d6deea60cc4fa241ec202",
           "path": "packages/propose/scene.js"
         },
         {
           "exports": [
             "proposalSchema"
           ],
-          "hash": "de205bd0924bbc35880f2ae1b56043c82861539d748c2807ad70226895ffbbc4",
+          "hash": "df20474e51d3ae723d3c443520452eb2fc93527f542376c4db93b0915fc08c89",
           "path": "packages/propose/schema.js"
         },
         {
@@ -877,7 +965,7 @@
           "exports": [
             "runSeat"
           ],
-          "hash": "de8e92151b12f835476313221ca7acd9661c53d73241f827790e92d33ca66389",
+          "hash": "a3471529eda66bc552c5ca0330692c6bcfb983ca16c82f325dd8f7e68dba8e30",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/propose/prompt.js",
@@ -965,27 +1053,27 @@
       "externals": 0,
       "files": [
         {
-          "hash": "9aa4f94ff94cae1ce6fe0b76d2bda24a30ea3468bc56b95453f4fe5c93b13885",
+          "hash": "28649ac40c773b030a6a5980ff02ad53e2c0f15a6e366c4a2813624c1c258f22",
           "path": ".gitignore"
         },
         {
-          "hash": "367e5141e4f5884e5791c4021f33a9faa958840a5decf44e1b273a87aad1c459",
+          "hash": "5ae6b3c8f446f0a7cb95176e4dadb91b68aaffb16b3be09f64f5de248b6a973a",
           "path": "LICENSE"
         },
         {
-          "hash": "486ae3b1986b76900df94cea557db3183869d1b37a8b3e8ca152088fba68df65",
+          "hash": "37661577e9805dd2c19a75777cda9291895a966ac0091ae2dd0622c61132f131",
           "path": "README.md"
         },
         {
-          "hash": "48a0b249bde2f791ad61a1c9d75a8877a8d6b4c01b21ed25f8cc69649e03640e",
+          "hash": "04cb9d5ab9e53ba06b2e74d5babf6d48122d2d34d28e138a9568991723d8dfa3",
           "path": "package-lock.json"
         },
         {
-          "hash": "ed0ec3ff5fcc68d30354b92b5cb96a4e1631c0882552581878ce026bf25533c6",
+          "hash": "bddea88eeb48c7339d0ca797f8a98574d4736c6eba44df0edf05ee92b432d7a4",
           "path": "package.json"
         },
         {
-          "hash": "87f2eedd632766a0e24bccac6d0bd4c87a2e52e6ce04a568639211efd591be51",
+          "hash": "4023948bc6c10a342973af02c2202df98a161bd8997edf472af4dcb3a04ba46b",
           "path": "tsconfig.json"
         }
       ],
@@ -1008,7 +1096,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "8454420e0523faf99c62f574f11fb0ca72c69e595dab5069c67c598f8b7cd619",
+          "hash": "e9cdd9474f4db7759b0f5baade748f2b840a3507dc2d4e338c23ad666bfb7afe",
           "path": "scenes/crate-and-door.json"
         }
       ],
@@ -1024,8 +1112,59 @@
     },
     {
       "dynamicReads": 0,
-      "dynamicSpawns": 0,
+      "dynamicSpawns": 1,
       "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "859f353ae6b689bce27ec61d0e2d8871da2a0e63050cc30315961871e4b5c572",
+          "path": "solver/.cargo/config.toml"
+        },
+        {
+          "hash": "ce66841ba06beb7cd21ad546e11bea4178e6490bf372a9b3d65ce519af1d72c8",
+          "path": "solver/Cargo.lock"
+        },
+        {
+          "hash": "391cb23d4b027828e34cf35cf2efa2372029ccfb6ec86806bdada450e8f1c1b1",
+          "path": "solver/Cargo.toml"
+        },
+        {
+          "hash": "6613753906a7e63646b26053541fea2626704a9deeef9635f594bcee6c6f2a3c",
+          "path": "solver/FLAGS.md"
+        },
+        {
+          "hash": "354b9e1e4511c3b00a7397d27e4921f5a5e8208b84583531020efe232ca0e86f",
+          "path": "solver/build.mjs"
+        },
+        {
+          "hash": "2f94b39aa38b64a0ac150325f58e30ec78740a68fb2b280c2d71107292ddf267",
+          "path": "solver/rust-toolchain.toml"
+        },
+        {
+          "hash": "4e9ee03425d1d844d6a5bbb3d62ad2ab18acd0f2ce81702ae5f48e1533e1133f",
+          "path": "solver/src/lib.rs"
+        },
+        {
+          "hash": "dc248897c3c7ec248cd8ee282fc1be5e5b5b45f72bd9eb4f56b6b19e67b62af1",
+          "path": "solver/src/rapier_law.rs"
+        }
+      ],
+      "globs": [
+        "solver/**"
+      ],
+      "importConfidence": "full",
+      "name": "solver",
+      "origin": "authored",
+      "role": "code",
+      "testedBy": 0,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 1,
+      "dynamicSpawns": 3,
+      "dynamicSpawnsInTests": 3,
       "dynamicWrites": 0,
       "entryPoints": [
         "packages/tick/bin/play.js",
@@ -1047,7 +1186,7 @@
         {
           "entry": "isWorld",
           "entryRule": 1,
-          "hash": "876785b25c2d1baed78aa06f231f5013b7a5b4b97ed5073dda5e150a440039a5",
+          "hash": "61d1704bc7858eded70fa6eca3f9852d2e6a1e2ea6fbef6fc06f0d523402052d",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/predicates.js",
@@ -1062,7 +1201,7 @@
           "exports": [
             "fixtureWorld"
           ],
-          "hash": "2b661476fbc3a933d010060e85578bba35811c17faf57993b623b49314f7e94d",
+          "hash": "76cd427252577f378151fe02566c5ee2e385dbbc30835de65c203c470a39f9a2",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -1089,7 +1228,7 @@
           "exports": [
             "createMemory"
           ],
-          "hash": "fc27fababb271b5e23dd90676d7bf6eede15db341c8879be57f650752d092208",
+          "hash": "1dd6737eb54f0fde085997151da3a8fff4eb81deff5a99d5bbf4a61f1255b716",
           "path": "packages/tick/memory.js"
         },
         {
@@ -1099,7 +1238,7 @@
             "admitIntent",
             "loadIntentRules"
           ],
-          "hash": "e5b6e5e8566f5b3d33254779d412f5798d24e2cc5eb7d30860aba25414832646",
+          "hash": "7511abb26fbda982a48b28edf2e0b5c31e09c86675a73d5ec3b747c6b15cbe2a",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -1131,7 +1270,7 @@
           "exports": [
             "replay"
           ],
-          "hash": "bbb04659ed0fa57d76842b630d83d2e074e25609454aad206502f8d03e5f3568",
+          "hash": "439db77841e14186e62b6ebb8fd93ee154f0e55f202f8d12c22a72570d737bca",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -1142,28 +1281,28 @@
             {
               "calls": [
                 {
-                  "line": 37,
+                  "line": 38,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 40,
+                  "line": 41,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
                   }
                 },
                 {
-                  "line": 35,
+                  "line": 36,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
                   }
                 },
                 {
-                  "line": 64,
+                  "line": 65,
                   "name": "settle",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -1183,9 +1322,10 @@
           "exports": [
             "loadScene",
             "reachedGoal",
+            "validateHeightfield",
             "validateScene"
           ],
-          "hash": "b5fa711f1f47d416f85a68a99258018549587f6a9b86563d02da33f0361f94fa",
+          "hash": "02338031a712580fafba38709e51943528307511b2e6e1c2f0c8ec74f750a4cb",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -1194,7 +1334,7 @@
             {
               "calls": [
                 {
-                  "line": 160,
+                  "line": 163,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -1209,7 +1349,7 @@
             {
               "calls": [
                 {
-                  "line": 160,
+                  "line": 163,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -1227,7 +1367,7 @@
         {
           "entry": "broken",
           "entryRule": 1,
-          "hash": "ea8362caf3f27272ea9e6453748449b3b5fdcbbba8f17a12024ce283f4437946",
+          "hash": "b6a8e5b425690069deacc8dd37b45304ec68eeb3696f43b82a0989316dc9128b",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
@@ -1242,7 +1382,7 @@
                 {
                   "inner": [
                     {
-                      "line": 160,
+                      "line": 163,
                       "name": "createWorld",
                       "target": {
                         "file": "packages/tick/world.js"
@@ -1270,7 +1410,7 @@
             "createTick",
             "settle"
           ],
-          "hash": "75a55b79c1ef2f0bf8ec9dfe63f13cdf254ea6c5246bec7fe9cbac8733714fec",
+          "hash": "4e8160079440db4c25ac9dc44b56d2045918486818404cc1da326f185da11907",
           "importsFiles": [
             "packages/frame/frame.js",
             "packages/frame/hash.js",
@@ -1289,6 +1429,23 @@
                 },
                 {
                   "line": 58,
+                  "name": "mixLoad",
+                  "target": null
+                },
+                {
+                  "line": 73,
+                  "name": "snapshot",
+                  "target": null,
+                  "via": "mixSnapshot"
+                },
+                {
+                  "line": 77,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixSnapshot"
+                },
+                {
+                  "line": 63,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
@@ -1303,12 +1460,12 @@
             {
               "calls": [
                 {
-                  "line": 276,
+                  "line": 300,
                   "name": "idle",
                   "target": null
                 },
                 {
-                  "line": 277,
+                  "line": 301,
                   "name": "advance",
                   "target": null
                 }
@@ -1323,7 +1480,7 @@
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "f3ccb3a80b38a75c5e63c3de2f1879320801f2b08b1ffe83484224cd0113b33c",
+          "hash": "b63f9958fd6974cf0a3daeefc16c15ec8af1dfbe92061c6bd1e990f5115c44a8",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -1385,6 +1542,23 @@
                     },
                     {
                       "line": 58,
+                      "name": "mixLoad",
+                      "target": null
+                    },
+                    {
+                      "line": 73,
+                      "name": "snapshot",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 77,
+                      "name": "u32",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 63,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -1443,7 +1617,7 @@
             "createWorld",
             "fixtureColliders"
           ],
-          "hash": "0f8e9f1281ca510c0e18c8b285032b5139f193ef920490908ceb140e5d529027",
+          "hash": "e2ed79497ff2838278e59d83883ef5bbff297b9eb94cdbff567c659859955ced",
           "path": "packages/tick/world.js"
         }
       ],
@@ -1453,11 +1627,11 @@
       "importConfidence": "full",
       "name": "tick",
       "origin": "authored",
-      "outsideReads": 5,
+      "outsideReads": 4,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 6,
-      "unresolvedSites": 0
+      "testedBy": 7,
+      "unresolvedSites": 1
     },
     {
       "dynamicReads": 0,
@@ -1468,7 +1642,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "bbd0fc485e7eb7f7081a19f095afbdbede8ba28df7e5e5456fc482bccc1357f1",
+          "hash": "a672cdd1366cf5e70ed8ebeb30d82f9aec93605001ef597b67c9556a9502e699",
           "path": ".github/workflows/ci.yml"
         }
       ],
@@ -1485,12 +1659,17 @@
   ],
   "doors": [
     {
-      "checksCount": 14,
+      "checksCount": 15,
       "commands": [
         {
           "job": "engines",
           "step": "Install dev dependencies",
           "text": "npm ci"
+        },
+        {
+          "job": "engines",
+          "step": "Rebuild the solver and check its digest",
+          "text": "node solver/build.mjs --check"
         },
         {
           "job": "engines",
@@ -1544,7 +1723,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 6
+          "files": 8
         },
         {
           "boundary": "host",
@@ -1560,6 +1739,11 @@
           "boundary": "propose",
           "depth": 0,
           "files": 9
+        },
+        {
+          "boundary": "solver",
+          "depth": 0,
+          "files": 1
         },
         {
           "boundary": "tick",
@@ -1607,6 +1791,18 @@
           "job": "engines",
           "path": "harness/sim.mjs",
           "runKind": "checks"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "harness/solver-scene.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "harness/solver.test.js",
+          "runKind": "executes"
         },
         {
           "job": "engines",
@@ -1692,9 +1888,14 @@
           "job": "engines",
           "path": "packages/tick/tick.test.js",
           "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "solver/build.mjs",
+          "runKind": "executes"
         }
       ],
-      "runsCount": 20,
+      "runsCount": 23,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -1719,6 +1920,7 @@
             "package.json",
             "packages/**",
             "predicates/**",
+            "solver/**",
             "tsconfig.json"
           ]
         },
@@ -1736,6 +1938,7 @@
             "package.json",
             "packages/**",
             "predicates/**",
+            "solver/**",
             "tsconfig.json"
           ]
         },
@@ -1744,8 +1947,10 @@
         }
       ],
       "uses": [
+        "Swatinem/rust-cache",
         "actions/checkout",
-        "actions/setup-node"
+        "actions/setup-node",
+        "dtolnay/rust-toolchain"
       ],
       "usesWorkflowToken": false
     },
@@ -2139,8 +2344,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "3ba2a840e6dbb425fb4fef484af5383435c39736",
-    "tracked": 85
+    "commit": "a6479da4940c6deb480f50b7e92e9da7b907d219",
+    "tracked": 103
   },
   "landings": [
     {
@@ -2165,6 +2370,18 @@
         }
       ],
       "target": "fixtures/behavior-3d.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/solver.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/behavior-solver.json",
       "writers": []
     },
     {
@@ -2235,6 +2452,26 @@
       ],
       "target": "fixtures/push-play-log.json",
       "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "solver/build.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "fixtures/solver.sha256",
+      "writers": [
+        {
+          "by": "solver/build.mjs",
+          "confidence": "ast",
+          "stamps": true,
+          "unless": [
+            "--check"
+          ]
+        }
+      ]
     },
     {
       "readers": [
@@ -2510,6 +2747,28 @@
       "writers": []
     },
     {
+      "readers": [],
+      "target": "solver/dist",
+      "tracked": false,
+      "writers": [
+        {
+          "by": "solver/build.mjs",
+          "confidence": "ast"
+        }
+      ]
+    },
+    {
+      "readers": [
+        {
+          "by": "solver/build.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "solver/target/wasm32-unknown-unknown/release/si_solver.wasm",
+      "writers": []
+    },
+    {
       "readers": [
         {
           "by": ".github/workflows/ci.yml"
@@ -2522,6 +2781,6 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 6,
+  "testFiles": 7,
   "unassigned": []
 }

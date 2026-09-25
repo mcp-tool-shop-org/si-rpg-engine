@@ -17,9 +17,11 @@
     "host": "./packages/host/bin/host.js"
   },
   "scripts": {
+    "solver": "node solver/build.mjs",
     "check": "node harness/check.js",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test packages/tick/tick.test.js packages/tick/scene.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js harness/product.test.js"
+    "pretest": "node solver/build.mjs --check",
+    "test": "node --test packages/tick/tick.test.js packages/tick/scene.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js harness/product.test.js harness/solver.test.js"
   },
   "devDependencies": {
     "@types/node": "22.19.0",

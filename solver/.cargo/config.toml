@@ -1,0 +1,6 @@
+# Toolchain 1.98.1. rustc rejects clang's -fno-fast-math as an llvm-arg
+# ("Unknown command line argument"). The wasm32 f64 instruction set has no
+# fused multiply-add unless the relaxed-simd feature is enabled. This build
+# turns that feature off. No flag here flushes subnormals.
+[target.wasm32-unknown-unknown]
+rustflags = ["-C", "target-feature=-relaxed-simd"]

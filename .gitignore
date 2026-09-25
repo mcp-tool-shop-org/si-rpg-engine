@@ -1,2 +1,4 @@
 node_modules/
 .jsvu/
+solver/target/
+solver/dist/

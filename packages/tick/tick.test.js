@@ -19,7 +19,7 @@ import { FIXTURE_SEED, fixtureWorld } from './fixture.js';
 import { validateScene } from './scene.js';
 
 function fresh(seed = FIXTURE_SEED, retired = loadIntentRules().retired) {
-  return createTick({ seed, world: createWorld(fixtureWorld()), rules: loadIntentRules().rules, retired, memory: createMemory() });
+  return createTick({ seed, world: createWorld(fixtureWorld(), 'reference'), rules: loadIntentRules().rules, retired, memory: createMemory() });
 }
 
 /** @param {ReturnType<typeof fresh>} t @param {number} x */
@@ -260,15 +260,15 @@ test('replay: the seed and the admitted-input log reproduce every hash without t
   const log = JSON.parse(JSON.stringify(t.log()));
   assert.ok(log[1].tick > log[0].tick + 1, 'the log records the tick of admission across the idle gap');
   const catalog = loadIntentRules();
-  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log });
+  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log, law: 'reference' });
   assert.ok(again.ok, JSON.stringify(again));
   assert.deepEqual(/** @type {any} */ (again).hashes, log.map((e) => e.hash));
   assert.equal(/** @type {any} */ (again).final, t.frame().hash);
-  const wrongSeed = replay({ seed: FIXTURE_SEED + 1, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log });
+  const wrongSeed = replay({ seed: FIXTURE_SEED + 1, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log, law: 'reference' });
   assert.equal(wrongSeed.ok, false);
   const early = JSON.parse(JSON.stringify(log));
   early[1].tick = 0;
-  const outOfOrder = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log: early });
+  const outOfOrder = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: catalog.rules, retired: catalog.retired, log: early, law: 'reference' });
   assert.equal(outOfOrder.ok, false);
 });
 
@@ -324,7 +324,7 @@ function pushWorld(crate) {
 
 test('push moves the crate at least one unit on x and on z, then the crate rests', () => {
   const catalog = loadIntentRules();
-  const alongX = createWorld(pushWorld({ id: 'crate', x: 1.6, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }));
+  const alongX = createWorld(pushWorld({ id: 'crate', x: 1.6, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }), 'reference');
   const tick = createTick({ seed: FIXTURE_SEED, world: alongX, rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
   const crateBefore = alongX.body('crate');
   if (!crateBefore) {
@@ -343,7 +343,7 @@ test('push moves the crate at least one unit on x and on z, then the crate rests
   assert.equal(crateX.vx, 0);
   assert.equal(crateX.x, rested);
 
-  const alongZ = createWorld(pushWorld({ id: 'crate', x: 1, y: 0.25, z: 0.6, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }));
+  const alongZ = createWorld(pushWorld({ id: 'crate', x: 1, y: 0.25, z: 0.6, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }), 'reference');
   const zed = createTick({ seed: FIXTURE_SEED, world: alongZ, rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
   const crateZBefore = alongZ.body('crate');
   if (!crateZBefore) {
@@ -360,7 +360,7 @@ test('push moves the crate at least one unit on x and on z, then the crate rests
 
   const busy = createTick({
     seed: FIXTURE_SEED,
-    world: createWorld(pushWorld({ id: 'crate', x: 1.6, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 })),
+    world: createWorld(pushWorld({ id: 'crate', x: 1.6, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }), 'reference'),
     rules: catalog.rules,
     retired: catalog.retired,
     memory: createMemory(),
@@ -378,7 +378,7 @@ test('an undriven body yields to a driven one, and two undriven bodies split', (
       { id: 'crate', x: 0.8, y: 3, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.5, hy: 0.5, hz: 0.5 },
     ],
     colliders: [],
-  });
+  }, 'reference');
   const beforeBody = world.body('crate');
   if (!beforeBody) {
     throw new Error('crate');
@@ -400,7 +400,7 @@ test('an undriven body yields to a driven one, and two undriven bodies split', (
       { id: 'b', x: 0.8, y: 3, z: 0, vx: 0.3, vy: 0, vz: 0, hx: 0.5, hy: 0.5, hz: 0.5 },
     ],
     colliders: [],
-  });
+  }, 'reference');
   pair.step(new Set());
   const a = pair.body('a');
   const b = pair.body('b');
@@ -438,6 +438,7 @@ test('the 3D behavior fixture replays frame for frame', () => {
     rules: catalog.rules,
     retired: catalog.retired,
     log: saved.log,
+    law: 'reference',
     onFrame: (f) => void frames.push({ tick: f.tick, hash: f.hash }),
   });
   assert.ok(result.ok, JSON.stringify(result));
@@ -448,7 +449,7 @@ test('the 3D behavior fixture replays frame for frame', () => {
 test('the replay command replays a host log, which carries a scene instead of a world', () => {
   const scene = JSON.parse(readFileSync('scenes/crate-and-door.json', 'utf8'));
   const catalog = loadIntentRules();
-  const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
+  const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }, 'reference'), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
   for (let i = 0; i < 30; i = i + 1) {
     t.advance();
   }
@@ -456,7 +457,7 @@ test('the replay command replays a host log, which carries a scene instead of a 
   settle(t);
   const dir = mkdtempSync(join(tmpdir(), 'si-rpg-'));
   const path = join(dir, 'host-log.json');
-  writeFileSync(path, JSON.stringify({ seed: scene.seed, scene, when: 'goal', log: t.log() }));
+  writeFileSync(path, JSON.stringify({ seed: scene.seed, scene, law: 'reference', when: 'goal', log: t.log() }));
   const ran = spawnSync(process.execPath, ['packages/tick/bin/replay.js', path], { encoding: 'utf8' });
   assert.equal(ran.status, 0, ran.stderr);
   assert.match(ran.stdout, /replay ok: 1 hashes/);
@@ -472,7 +473,7 @@ test('a walker resting on the floor can still move and push: touching a swept fa
   assert.equal(world.segmentHits(1.7, 1, 0, 4, 1, 0, pad), 'wall-right', 'into the wall still crosses');
   assert.equal(world.segmentHits(1.7, 1, 0, 3.75, 1, 0, pad), null, 'ending exactly on the swept wall face is touching');
   const catalog = loadIntentRules();
-  const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
+  const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }, 'reference'), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
   let rested = false;
   for (let i = 0; i < 60000 && !rested; i = i + 1) {
     rested = t.advance().bodies[0].y === 0.25;
@@ -551,7 +552,7 @@ test('a wall stops a body on each ground axis', () => {
       body.vz = 2;
       wall = { id: 'wall', minX: -2, maxX: 4, minY: 0, maxY: 4, minZ: 2, maxZ: 3 };
     }
-    const world = createWorld({ bodies: [body], colliders: [wall] });
+    const world = createWorld({ bodies: [body], colliders: [wall] }, 'reference');
     world.step(new Set(['walker']));
     const after = world.body('walker');
     if (!after) {

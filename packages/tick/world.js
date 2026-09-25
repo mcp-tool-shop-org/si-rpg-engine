@@ -1,5 +1,7 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
-// Arithmetic is add, subtract, multiply, divide, and square root.
+// The product step is the WASM binary. The JavaScript below it is the reference.
+
+import { clearWarmstart, loadSolver, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
 
 export const DT = 1 / 64;
 export const G = -8;
@@ -14,9 +16,18 @@ export const UNDRIVEN_DRAG = 0;
  */
 
 /**
- * @param {{ bodies: Body[]; colliders: StaticCollider[] }} init
+ * @typedef {{ rows: number, cols: number, cell: number, heights: number[] }} Heightfield
  */
-export function createWorld(init) {
+
+let nextProductId = 1;
+
+/**
+ * @param {{ bodies: Body[]; colliders: StaticCollider[]; heightfield?: Heightfield | null }} init
+ * @param {'product' | 'box' | 'reference'} [law] product is the Rapier step; box is the E1 binary; reference is the JavaScript kernel
+ */
+export function createWorld(init, law) {
+  const chosen = law || 'product';
+  const productId = chosen === 'product' ? nextProductId++ : 0;
   /** @type {Body[]} */
   const bodies = init.bodies.map((b) => ({
     id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz, hx: b.hx, hy: b.hy, hz: b.hz,
@@ -25,6 +36,13 @@ export function createWorld(init) {
   const colliders = init.colliders.map((c) => ({
     id: c.id, minX: c.minX, maxX: c.maxX, minY: c.minY, maxY: c.maxY, minZ: c.minZ, maxZ: c.maxZ,
   }));
+  /** @type {Heightfield | null} */
+  const heightfield = init.heightfield ? {
+    rows: init.heightfield.rows,
+    cols: init.heightfield.cols,
+    cell: init.heightfield.cell,
+    heights: init.heightfield.heights.slice(),
+  } : null;
 
   /** @param {string} id */
   function body(id) {
@@ -43,6 +61,18 @@ export function createWorld(init) {
    */
   function step(driven) {
     const driving = driven || new Set();
+    if (chosen === 'box') {
+      if (!stepBodies(bodies, colliders, driving)) {
+        throw new Error('NaN');
+      }
+      return;
+    }
+    if (chosen === 'product') {
+      if (!stepSolver(productId, bodies, colliders, heightfield, driving)) {
+        throw new Error('NaN');
+      }
+      return;
+    }
     for (let i = 0; i < bodies.length; i = i + 1) {
       const b = bodies[i];
       if (!driving.has(b.id)) {
@@ -289,7 +319,40 @@ export function createWorld(init) {
     return null;
   }
 
-  return { bodies, colliders, body, step, segmentHits, overlaps };
+  /**
+   * Heights enter the hash once, in record order, before the first frame.
+   * @param {import('../frame/types.js').Hasher} hasher
+   * @param {ReadonlySet<string>} [driven]
+   */
+  function mixLoad(hasher, driven) {
+    if (heightfield) {
+      hasher.u32(heightfield.rows);
+      hasher.u32(heightfield.cols);
+      if (!hasher.float(heightfield.cell)) {
+        throw new Error('NaN');
+      }
+      for (let i = 0; i < heightfield.heights.length; i = i + 1) {
+        if (!hasher.float(heightfield.heights[i])) {
+          throw new Error('NaN');
+        }
+      }
+    }
+    if (chosen === 'product') {
+      if (!loadSolver(productId, bodies, colliders, heightfield, driven || new Set())) {
+        throw new Error('NaN');
+      }
+    }
+  }
+
+  /** Canonical solver snapshot, or null when this world is not the product law. */
+  function snapshot() {
+    if (chosen !== 'product') {
+      return null;
+    }
+    return snapshotBytes();
+  }
+
+  return { bodies, colliders, heightfield, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, law: chosen };
 }
 
 /** The fixture room: a floor and two walls, extruded through z. */

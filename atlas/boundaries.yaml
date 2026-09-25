@@ -1,5 +1,8 @@
 summary: "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames."
 boundaries:
+  - name: solver
+    globs: [solver/**]
+    role: code
   - name: tick
     globs: [packages/tick/**]
     role: code

@@ -5,7 +5,7 @@ import { createTick, settle } from './tick.js';
 import { createWorld } from './world.js';
 import { createMemory } from './memory.js';
 import { loadIntentRules } from './predicates.js';
-import { loadScene, reachedGoal, validateScene } from './scene.js';
+import { loadScene, reachedGoal, validateHeightfield, validateScene } from './scene.js';
 
 const scene = JSON.parse(readFileSync('scenes/crate-and-door.json', 'utf8'));
 
@@ -45,6 +45,15 @@ test('the crate-and-door scene loads, and each malformed scene is refused', () =
   const outside = structuredClone(scene);
   outside.goal.zone = { minX: 3.3, maxX: 9, minY: 0, maxY: 1, minZ: -0.5, maxZ: 0.5 };
   assert.match(/** @type {{ reason: string }} */ (validateScene(outside)).reason, /outside/);
+  const sloped = structuredClone(scene);
+  sloped.heightfield = { rows: 2, cols: 2, cell: 1, heights: [0, 0.5, 0, 0.5] };
+  const accepted = validateScene(sloped);
+  assert.equal(accepted.ok, true);
+  if (accepted.ok) {
+    assert.equal(accepted.scene.heightfield && accepted.scene.heightfield.heights.length, 4);
+  }
+  assert.match(/** @type {{ reason: string }} */ (validateHeightfield({ rows: 1, cols: 2, cell: 1, heights: [0, 0] })).reason, /rows/);
+  assert.match(/** @type {{ reason: string }} */ (validateHeightfield({ rows: 2, cols: 2, cell: 1, heights: [0] })).reason, /heights/);
 });
 
 test('the oracle puts the crate in the door within eight moves', () => {
@@ -66,7 +75,7 @@ test('the oracle puts the crate in the door within eight moves', () => {
   function solves(seq) {
     const tick = createTick({
       seed: room.seed,
-      world: createWorld({ bodies: room.bodies, colliders: room.colliders }),
+      world: createWorld({ bodies: room.bodies, colliders: room.colliders }, 'reference'),
       rules: catalog.rules,
       retired: catalog.retired,
       memory: createMemory(),
