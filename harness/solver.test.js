@@ -14,6 +14,7 @@ const ramp = JSON.parse(readFileSync('fixtures/behavior-ramp.json', 'utf8'));
 test('the E2 solver fixture first differs at tick 0', () => {
   for (const spec of saved.cases) {
     const played = play(spec);
+    assert.deepEqual(played.behaviour, spec.behaviour, spec.name + ' behaviour');
     let first = null;
     for (let i = 0; i < spec.frames.length; i = i + 1) {
       if (played.frames[i].hash !== spec.frames[i].hash) {
@@ -29,6 +30,7 @@ test('the rotation fixture replays frame for frame', () => {
   for (const spec of rotation.cases) {
     const played = play(spec);
     assert.deepEqual(played.frames, spec.frames, spec.name);
+    assert.deepEqual(played.behaviour, spec.behaviour, spec.name + ' behaviour');
   }
   const tip = play(rotation.cases.find((/** @type {{ name: string }} */ item) => item.name === 'tip')).bodies[0];
   assert.ok(tip.qw < 0.95, 'a box dropped on an edge tips');
@@ -53,6 +55,7 @@ test('a body slides down a rotated ramp', () => {
   const spec = ramp.cases[0];
   const played = play(spec);
   assert.deepEqual(played.frames, spec.frames);
+  assert.deepEqual(played.behaviour, spec.behaviour, 'slide behaviour');
   const body = played.bodies[0];
   const start = spec.world.bodies[0];
   assert.ok(body.x < start.x - 1, 'the box moves down the ramp');

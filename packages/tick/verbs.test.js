@@ -160,6 +160,7 @@ test('the verb fixture replays frame for frame', () => {
     }
     assert.deepEqual(played.frames, spec.frames, spec.name);
     assert.deepEqual(played.episodes, spec.episodes, spec.name);
+    assert.deepEqual(played.behaviour, spec.behaviour, spec.name + ' behaviour');
   }
   const carryCase = saved.cases.find((/** @type {{ name: string }} */ item) => item.name === 'carry');
   const carry = playVerbs(carryCase, catalog.rules);

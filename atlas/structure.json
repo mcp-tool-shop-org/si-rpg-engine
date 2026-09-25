@@ -40,6 +40,10 @@
           "path": "docs/PHASE-1.md"
         },
         {
+          "hash": "4948b77043c34df8ee31372fc21bd519d82ae4f1549244544e1c2d30024888b4",
+          "path": "docs/PHASE-2.md"
+        },
+        {
           "hash": "0603c874876cc07f7921d83e6c8541f09815781e4f881c63784b1255451caf49",
           "path": "docs/atlas-design.md"
         },
@@ -124,6 +128,10 @@
           "path": "docs/dispatch-e5-minds.md"
         },
         {
+          "hash": "7e5881a90e73ad04d87bb6846376514c1eee629acc8c5d85ea45c3d0bfcf01d3",
+          "path": "docs/dispatch-t1-the-first-difference.md"
+        },
+        {
           "hash": "64cdee834df343cff0d2651a27f22da0cb454627de5fbe182a067977f3508e17",
           "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
         },
@@ -140,7 +148,7 @@
           "path": "docs/study-swarm/e2-solver.dispatch.md"
         },
         {
-          "hash": "1647f24b6af76e7fd2b871c78ad8c9776ac4fc7b1d08bebe650a0c8c4c437b51",
+          "hash": "4174328d671eaf095d48878166dc6c4fbeae4b3f076580deb000c4b87e67b283",
           "path": "docs/study-swarm/product-alignment.dispatch.citation-receipt.json"
         },
         {
@@ -156,7 +164,7 @@
           "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
         },
         {
-          "hash": "fc5fda98423822a11c9d2db52d82c2bd0e36363d40b56c7aa6ae3afc84a93d3c",
+          "hash": "49d6a746b3afe7beb437a337274ca569368077d4224fe3043b01ab5d4b2d0870",
           "path": "docs/study-swarm/testing-3d.dispatch.citation-receipt.json"
         },
         {
@@ -187,27 +195,27 @@
           "path": "fixtures/behavior-1c.json"
         },
         {
-          "hash": "3b686cb1ce90c052dec9ce98769e905b16a7fab0dd71ca5fb1ed6ff0d6f956b3",
+          "hash": "cc458d92e4eb9d2cfba1c09a18e14c17ffaccdf88a4e6583c795c0cdb4411777",
           "path": "fixtures/behavior-3d.json"
         },
         {
-          "hash": "6b03ee07e3c7672594f9c30256a12f30079b07e37f16cf6cf4807348f42b1754",
+          "hash": "6b13a458d717819325098c3bf0a33c636ff785d7314627ba04b263e6dfca62ab",
           "path": "fixtures/behavior-minds.json"
         },
         {
-          "hash": "e125e20157aa1357d322422f838817aad7736808c140ec4bdb2fd66b8288cbc0",
+          "hash": "d707fdcc516a90a0638e919e8869b980544226a93c5179ac0a6b00bc63befca8",
           "path": "fixtures/behavior-ramp.json"
         },
         {
-          "hash": "92ea1128b4fab4c8342e954058a1e35e19e9468394839550ae15ca52cb5bc056",
+          "hash": "65c9f578e5b69b8d06aa30dd51f59b5d27dffdfae78383d1014a8452d003ac12",
           "path": "fixtures/behavior-rotation.json"
         },
         {
-          "hash": "38d4db8847a089ee6984019a1e7af2fd000e7235b29ef4107d2ae79239caa924",
+          "hash": "40a2e37d4353c682cb3db46b04ae02529a9c5bedc74ccc576af30f11e1c99bcb",
           "path": "fixtures/behavior-solver.json"
         },
         {
-          "hash": "d688223456b11da3d27964b33d5c216670417ab03fab5e4307daf199d0ec1ad0",
+          "hash": "639d322e4b81c3a8be064a2f72dfe531252095e7412afab7a9be6dbc5624759c",
           "path": "fixtures/behavior-verbs.json"
         },
         {
@@ -225,6 +233,10 @@
         {
           "hash": "22ecfee63ab8e18d07208745dfcdc048db9a9d6d2053b734342d646b76011f67",
           "path": "fixtures/golden-arith.txt"
+        },
+        {
+          "hash": "a8d2c800452554efd6ead6e49724ceb220f533a3d58d01725b67f1a122b9f918",
+          "path": "fixtures/golden-behaviour.json"
         },
         {
           "hash": "82ba911964ec1a74dc304a48247b04f3a6daaad58503e0cd681321c75a76303f",
@@ -308,13 +320,13 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 7,
+      "testedBy": 8,
       "unresolvedSites": 0
     },
     {
       "dynamicReads": 1,
-      "dynamicSpawns": 1,
-      "dynamicSpawnsInTests": 0,
+      "dynamicSpawns": 3,
+      "dynamicSpawnsInTests": 2,
       "dynamicWrites": 0,
       "entryPoints": [
         "harness/write-golden.js"
@@ -329,8 +341,48 @@
           "path": "harness/arith.mjs"
         },
         {
-          "hash": "28a20e1968b8a02f52ea447daab7d51fb53e7cca82543c00531aee92b82ef3fc",
-          "path": "harness/check.js"
+          "exports": [
+            "behaviourDifferences",
+            "finalPositions",
+            "productBehaviour",
+            "sleepWatch"
+          ],
+          "hash": "8301d23dd6a71db55cb4501acedbfc2faa1eab42f4b2603c6d36b758c5a30792",
+          "importsFiles": [
+            "harness/product-run.mjs",
+            "harness/product-scene.mjs"
+          ],
+          "path": "harness/behaviour.mjs"
+        },
+        {
+          "entry": "match",
+          "entryRule": 1,
+          "hash": "2ba2b7d630163ecf84e4c09f0ae2bc8a66e338bcf0ba0816c9142b2068d62602",
+          "importsFiles": [
+            "harness/behaviour.mjs"
+          ],
+          "path": "harness/check.js",
+          "sequences": []
+        },
+        {
+          "entry": "check",
+          "entryRule": 1,
+          "hash": "9c538e680fd0016ea8ba06a29aa314c8505c681269b0a32d3abffdfd302b62f5",
+          "importsFiles": [
+            "harness/behaviour.mjs"
+          ],
+          "path": "harness/check.test.js",
+          "sequences": []
+        },
+        {
+          "entry": "lineReader",
+          "entryRule": 1,
+          "hash": "4d0750f61a4c35aa7170712b9175f260a2cca55b9fb2416d838fe5b7ef159eab",
+          "importsFiles": [
+            "packages/tool/guard.js"
+          ],
+          "path": "harness/first-difference.js",
+          "sequences": []
         },
         {
           "exports": [
@@ -338,14 +390,28 @@
             "playMinds",
             "replayMinds"
           ],
-          "hash": "1726b9ad303c59a922a8abb0792934e66359962b9bf1a60bb0345a765bff31d9",
+          "hash": "07a23aa743dd4374c71df9532d3cdb0fe229efe97a4ded246d9ae349b39830ba",
           "importsFiles": [
+            "harness/behaviour.mjs",
             "packages/tick/beliefs.js",
             "packages/tick/memory.js",
             "packages/tick/tick.js",
             "packages/tick/world.js"
           ],
           "path": "harness/minds-scene.mjs"
+        },
+        {
+          "exports": [
+            "runProduct"
+          ],
+          "hash": "e8232e74eb95aff5cd6db6391d70e2ebdcb1632f9420efcff49bad0d7c4833a4",
+          "importsFiles": [
+            "harness/product-scene.mjs",
+            "packages/frame/hash.js",
+            "packages/tick/memory.js",
+            "packages/tick/minds.js"
+          ],
+          "path": "harness/product-run.mjs"
         },
         {
           "exports": [
@@ -384,15 +450,17 @@
           "exports": [
             "play"
           ],
-          "hash": "555cd94decfc258d2fab9b63b96be838fb4b96bc9c804e8555e713543433973a",
+          "hash": "b5779801d73b27b47a9f7512e4a56e391fa09e6a8174984ae5d29c37b0d29030",
           "importsFiles": [
+            "harness/behaviour.mjs",
+            "harness/trace-line.mjs",
             "packages/frame/hash.js",
             "packages/tick/world.js"
           ],
           "path": "harness/solver-scene.mjs"
         },
         {
-          "hash": "677b92b84964ccb825446a97db9782e6bb747b16b2c339b111062eb87f83a41b",
+          "hash": "9ae160266e919044e69087f25b55c653e223d3c4d93e8522f74b6bf0e9116ffb",
           "importsFiles": [
             "harness/solver-scene.mjs",
             "packages/frame/hash.js",
@@ -402,10 +470,46 @@
         },
         {
           "exports": [
+            "bits",
+            "endLine",
+            "snapshotField",
+            "thrownLine",
+            "traceLine"
+          ],
+          "hash": "f613c59d9b70a7a1e34a24603f58aba3e0b9f683a495406a2532d8aac7fddcd5",
+          "importsFiles": [
+            "packages/frame/hash.js"
+          ],
+          "path": "harness/trace-line.mjs"
+        },
+        {
+          "entry": "out",
+          "entryRule": 1,
+          "hash": "e50325569298bb1a98781a3ac6001b010a7162703aed1aedcb918a3e9ba4d3e3",
+          "importsFiles": [
+            "harness/product-run.mjs",
+            "harness/trace-line.mjs"
+          ],
+          "path": "harness/trace.mjs",
+          "sequences": []
+        },
+        {
+          "entry": "trace",
+          "entryRule": 1,
+          "hash": "6da170e74443ac2b7f9792622257ccd6fd5ed4401289f1f0cedd8e4ecf17d1af",
+          "importsFiles": [
+            "harness/solver-scene.mjs"
+          ],
+          "path": "harness/trace.test.js",
+          "sequences": []
+        },
+        {
+          "exports": [
             "playVerbs"
           ],
-          "hash": "7878cd1b9663c8df5a1ed6cdf9cb014686ae592a2bfe7e12472759fb1dff775e",
+          "hash": "9326cced83f71325fe17f1b9fbb59c6d8efd6ce679ba723f5ef2967456e70d83",
           "importsFiles": [
+            "harness/behaviour.mjs",
             "packages/tick/memory.js",
             "packages/tick/tick.js",
             "packages/tick/world.js"
@@ -413,8 +517,9 @@
           "path": "harness/verbs-scene.mjs"
         },
         {
-          "hash": "4e880dc59931c5dbd5fcaddcb3e92ae6d57cbee89c0536fd7b970742d7d4b688",
+          "hash": "7880c07b0df4d5ff48ec2e73679eb5c08a8ce7a93d4064db75a19d75e542111f",
           "importsFiles": [
+            "harness/behaviour.mjs",
             "packages/tool/guard.js"
           ],
           "path": "harness/write-golden.js"
@@ -426,10 +531,10 @@
       "importConfidence": "full",
       "name": "harness",
       "origin": "authored",
-      "outsideReads": 1,
+      "outsideReads": 3,
       "role": "test",
-      "testedBy": 4,
-      "unresolvedSites": 2
+      "testedBy": 7,
+      "unresolvedSites": 3
     },
     {
       "dynamicReads": 0,
@@ -1294,11 +1399,11 @@
       "externals": 0,
       "files": [
         {
-          "hash": "a67dbb23aa3667e1f67769912b480014a9075dfd12deaa1aabc1a98371a19e6f",
+          "hash": "aca7ee64a4cc04ce03b026a56d2fbec41dab3a0797a0972c8a3510479933cce1",
           "path": ".gitignore"
         },
         {
-          "hash": "a75322a24127d5ac497b041c956efbf6f5f352919dad4861c19e3ce54978f8a7",
+          "hash": "4f924296e3ed1bbb6850e3b22aea006d5adc82ec20c9060d1abcc8e1941918bf",
           "path": "CHANGELOG.md"
         },
         {
@@ -1306,35 +1411,35 @@
           "path": "LICENSE"
         },
         {
-          "hash": "a01d7e8a4de7386d474ba011e76ed4c0f8eec8562ad917a5bc3f5a3dcdc41a45",
+          "hash": "87db46a57cd4835ad183ec41bf9478a72c018deef06bd4616cb34a57fb121f9f",
           "path": "README.es.md"
         },
         {
-          "hash": "fc622f494d9ca8c9f107bf06791e956d5318abfd030c419e27882fb57d7fcb1a",
+          "hash": "4361695ceac9e92520bad61a2890045865757f9af801194c23d73060d4c1ec9f",
           "path": "README.fr.md"
         },
         {
-          "hash": "482ecf3fda03b0847784933dcd39bf61b50941c89a15ed5eb67f4c4d2ed5ce33",
+          "hash": "7f0bbb6d0de8e586df719d561a1c6fdf43ddcd68c3e6ec9239cf096d1e5fa5eb",
           "path": "README.hi.md"
         },
         {
-          "hash": "30947a1e748fc94abf384db6cee135a455d56b7d1a819cad57af10f5f7deba72",
+          "hash": "16aebeda3fec34f9322cda96218105e40f7863df90e2b61dbcfb1368ba045758",
           "path": "README.it.md"
         },
         {
-          "hash": "e3cc2ff723b0ed8a1a6bdfe191329b7620b6bbf3f0a34060d1f352f5b0f77530",
+          "hash": "2b6757e2e959373342c60b2c23528f7b5f75965c89c448f4c8ad82e795c64360",
           "path": "README.ja.md"
         },
         {
-          "hash": "df46cc0e386aefe43211e2954e7d84597bb54dc4cd5956f6c711e060d42b8398",
+          "hash": "8f9cabc39950bf7ec8245af55040ac124a9b7b5d619aa215dd0b84df1adabd11",
           "path": "README.md"
         },
         {
-          "hash": "4158766befe72248104acd305009b6abb4f69c9c00fa62692a41c78ae94a09d3",
+          "hash": "0812ea288cea2dd3b4f4b392280561ec029dfab474a1549290a5c3b9e02814f5",
           "path": "README.pt-BR.md"
         },
         {
-          "hash": "1023421ead5626f1ba202d599b4d67dba931d5c89b8258a3c0da959d9f3a0ae6",
+          "hash": "6163e9654b27e340cb97de95eb6b2bf86dfc8032e103e54661e45fc026e5428b",
           "path": "README.zh.md"
         },
         {
@@ -1342,7 +1447,7 @@
           "path": "SCORECARD.md"
         },
         {
-          "hash": "aa303a386895cda4707db7d1dd1148334268dc6a8cfa02458aab4127f9c32870",
+          "hash": "da48b8be52ebfd9c51f5774534289fc228224c52116380e99244bb6fc63ac2a1",
           "path": "SECURITY.md"
         },
         {
@@ -1354,7 +1459,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "6b155fe2fd9b5dc6de5ac8494c5e59e93253a5acbbd7879103cfb3ad5b616f8c",
+          "hash": "eac8066629b46f96d5521121398d40e5dd5e43f987d739e04f94ff2695992e9c",
           "path": "package.json"
         },
         {
@@ -1535,7 +1640,7 @@
         {
           "entry": "minded",
           "entryRule": 1,
-          "hash": "e9eaee766bab0527452b7ebb8a8f9fdd6393227fcf0cc822fe79ed1022c8cbf2",
+          "hash": "6ab18b3e057796d188973fedf9b825dc99dbd2f01d87f8432ba0f77f650e07c6",
           "importsFiles": [
             "harness/minds-scene.mjs",
             "packages/frame/hash.js",
@@ -2174,8 +2279,9 @@
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "7089c3d23f32383e173b0f004ebf53fd74f17629791da79dfe37ce18000af9c7",
+          "hash": "5b0216a3e78dadd55edac926e98ca9e7cf69365e964891f0a4ead8f50f73afb1",
           "importsFiles": [
+            "harness/behaviour.mjs",
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
@@ -2198,28 +2304,28 @@
                       }
                     }
                   ],
-                  "line": 22,
+                  "line": 23,
                   "name": "fixtureWorld",
                   "target": {
                     "file": "packages/tick/fixture.js"
                   }
                 },
                 {
-                  "line": 22,
+                  "line": 23,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 22,
+                  "line": 23,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "line": 22,
+                  "line": 23,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
@@ -2273,7 +2379,7 @@
                       }
                     }
                   ],
-                  "line": 22,
+                  "line": 23,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -2288,12 +2394,12 @@
             {
               "calls": [
                 {
-                  "line": 27,
+                  "line": 28,
                   "name": "frame",
                   "target": null
                 },
                 {
-                  "line": 27,
+                  "line": 28,
                   "name": "submit",
                   "target": null
                 }
@@ -2306,7 +2412,7 @@
             {
               "calls": [
                 {
-                  "line": 280,
+                  "line": 281,
                   "name": "validateScene",
                   "target": {
                     "file": "packages/tick/scene.js"
@@ -2321,7 +2427,7 @@
           ]
         },
         {
-          "hash": "53ec3cfc865484f422107c944d165996bed1f7ff024caacfe154a27418e2b17c",
+          "hash": "8c9bc78903e71174a139189c06e70c11d57b14cd53f087de5e97752b83ae22f5",
           "importsFiles": [
             "harness/verbs-scene.mjs",
             "packages/load/admit.js",
@@ -2356,7 +2462,7 @@
       "outsideReads": 9,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 9,
+      "testedBy": 10,
       "unresolvedSites": 2
     },
     {
@@ -2368,11 +2474,11 @@
       "externals": 0,
       "files": [
         {
-          "hash": "1cdcd8b95708d03e753875053aa28a2ff5f494ec17917ef2a216cd6d871e959f",
+          "hash": "9ad16dd24acb06187889bc7089a98a1463e80401965f8503d2e3d3ab48b0532f",
           "path": ".github/workflows/ci.yml"
         },
         {
-          "hash": "fe1db5f18ca42c6e2363f0860db9c117b03a6bff39b375189f7c9d2f1882b4a1",
+          "hash": "0e703d7cc2b7143a8b9ef8fa67cb783bd74929143382a954e00f6db6a02b4c09",
           "path": ".github/workflows/pages.yml"
         }
       ],
@@ -2418,7 +2524,7 @@
   ],
   "doors": [
     {
-      "checksCount": 18,
+      "checksCount": 20,
       "commands": [
         {
           "job": "engines",
@@ -2442,18 +2548,28 @@
         },
         {
           "job": "engines",
-          "step": "Run the kernel fixture",
-          "text": "npm test"
-        },
-        {
-          "job": "engines",
           "step": "Install pinned engines",
           "text": "set -euo pipefail\nnpm install -g jsvu@3.0.5\njsvu --os=linux64 v8@15.6.61\njsvu --os=linux64 spidermonkey@156.0.1\njsvu --os=linux64 javascriptcore@319571\n"
         },
         {
           "job": "engines",
           "step": "Compare each engine to the golden hash",
-          "text": "set -euo pipefail\ncompare() {\n  local harness=\"$1\"\n  local golden_file=\"$2\"\n  local golden\n  golden=$(tr -d '\\r\\n' < \"$golden_file\")\n  local v8 sm jsc\n  v8=$(\"$HOME/.jsvu/bin/v8-15.6.61\" --module \"$harness\" | tr -d '\\r\\n')\n  sm=$(\"$HOME/.jsvu/bin/spidermonkey-156.0.1\" -m \"$harness\" | tr -d '\\r\\n')\n  jsc=$(\"$HOME/.jsvu/bin/javascriptcore-319571\" -m \"$harness\" | tr -d '\\r\\n')\n  if [ \"$v8\" != \"$golden\" ] || [ \"$sm\" != \"$golden\" ] || [ \"$jsc\" != \"$golden\" ]; then\n    echo \"$harness\"\n    echo \"v8 [$v8]\"\n    echo \"spidermonkey [$sm]\"\n    echo \"javascriptcore [$jsc]\"\n    echo \"golden [$golden]\"\n    exit 1\n  fi\n  echo \"$harness three engines match $golden\"\n}\ncompare harness/sim.mjs fixtures/golden.txt\ncompare harness/arith.mjs fixtures/golden-arith.txt\n"
+          "text": "set -euo pipefail\ntraces=\"$RUNNER_TEMP/traces\"\n# On a mismatch: trace the product scene under node and under the\n# engine, and print the first quantum, body, and field that differ.\nfirst_difference() {\n  local name=\"$1\"\n  shift\n  mkdir -p \"$traces\"\n  if [ ! -f \"$traces/node.trace\" ]; then\n    node harness/trace.mjs > \"$traces/node.trace\" || true\n  fi\n  \"$@\" harness/trace.mjs > \"$traces/$name.trace\" || true\n  echo \"first-difference node $name\"\n  node harness/first-difference.js \"$traces/node.trace\" \"$traces/$name.trace\" || true\n}\ncompare() {\n  local harness=\"$1\"\n  local golden_file=\"$2\"\n  local golden\n  golden=$(tr -d '\\r\\n' < \"$golden_file\")\n  local v8 sm jsc\n  v8=$(\"$HOME/.jsvu/bin/v8-15.6.61\" --module \"$harness\" | tr -d '\\r\\n')\n  sm=$(\"$HOME/.jsvu/bin/spidermonkey-156.0.1\" -m \"$harness\" | tr -d '\\r\\n')\n  jsc=$(\"$HOME/.jsvu/bin/javascriptcore-319571\" -m \"$harness\" | tr -d '\\r\\n')\n  if [ \"$v8\" != \"$golden\" ] || [ \"$sm\" != \"$golden\" ] || [ \"$jsc\" != \"$golden\" ]; then\n    echo \"$harness\"\n    echo \"v8 [$v8]\"\n    echo \"spidermonkey [$sm]\"\n    echo \"javascriptcore [$jsc]\"\n    echo \"golden [$golden]\"\n    if [ \"$harness\" = \"harness/sim.mjs\" ]; then\n      if [ \"$v8\" != \"$golden\" ]; then\n        first_difference v8 \"$HOME/.jsvu/bin/v8-15.6.61\" --module\n      fi\n      if [ \"$sm\" != \"$golden\" ]; then\n        first_difference spidermonkey \"$HOME/.jsvu/bin/spidermonkey-156.0.1\" -m\n      fi\n      if [ \"$jsc\" != \"$golden\" ]; then\n        first_difference javascriptcore \"$HOME/.jsvu/bin/javascriptcore-319571\" -m\n      fi\n    fi\n    exit 1\n  fi\n  echo \"$harness three engines match $golden\"\n}\ncompare harness/sim.mjs fixtures/golden.txt\ncompare harness/arith.mjs fixtures/golden-arith.txt\n"
+        },
+        {
+          "job": "engines",
+          "step": "Trace the product scene under every engine",
+          "text": "set -euo pipefail\ntraces=\"$RUNNER_TEMP/traces\"\nmkdir -p \"$traces\"\nnode harness/trace.mjs > \"$traces/node.trace\"\n\"$HOME/.jsvu/bin/v8-15.6.61\" --module harness/trace.mjs > \"$traces/v8.trace\"\n\"$HOME/.jsvu/bin/spidermonkey-156.0.1\" -m harness/trace.mjs > \"$traces/spidermonkey.trace\"\n\"$HOME/.jsvu/bin/javascriptcore-319571\" -m harness/trace.mjs > \"$traces/javascriptcore.trace\"\nfor engine in v8 spidermonkey javascriptcore; do\n  if out=$(node harness/first-difference.js \"$traces/node.trace\" \"$traces/$engine.trace\"); then\n    echo \"node $engine $out\"\n  else\n    echo \"node $engine\"\n    echo \"$out\"\n    exit 1\n  fi\ndone\n"
+        },
+        {
+          "job": "engines",
+          "step": "Run the kernel fixture",
+          "text": "npm test"
+        },
+        {
+          "job": "engines",
+          "step": "Check the golden behaviour numbers",
+          "text": "npm run check"
         },
         {
           "job": "engines",
@@ -2487,7 +2603,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 10
+          "files": 17
         },
         {
           "boundary": "host",
@@ -2535,14 +2651,36 @@
         {
           "job": "engines",
           "matched": true,
+          "path": "harness/behaviour.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
           "path": "harness/check.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "harness/check.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "harness/first-difference.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "harness/minds-scene.mjs",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
         },
         {
           "job": "engines",
           "matched": true,
-          "path": "harness/minds-scene.mjs",
+          "path": "harness/product-run.mjs",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
         },
@@ -2573,6 +2711,23 @@
         {
           "job": "engines",
           "path": "harness/solver.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "harness/trace-line.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "harness/trace.mjs",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "harness/trace.test.js",
           "runKind": "executes"
         },
         {
@@ -2691,7 +2846,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 28,
+      "runsCount": 35,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -2748,6 +2903,7 @@
         "Swatinem/rust-cache",
         "actions/checkout",
         "actions/setup-node",
+        "actions/upload-artifact",
         "dtolnay/rust-toolchain"
       ],
       "usesWorkflowToken": false
@@ -3121,6 +3277,7 @@
       "file": "package.json",
       "kind": "command",
       "landings": [
+        "fixtures/golden-behaviour.json",
         "fixtures/golden.txt"
       ],
       "mentions": [],
@@ -3131,7 +3288,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 3
+          "files": 5
         },
         {
           "boundary": "frame",
@@ -3155,8 +3312,46 @@
       "readers": [
         {
           "by": "harness/check.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "target": "fixtures/golden-behaviour.json"
+        },
+        {
+          "by": "harness/check.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true,
+          "target": "fixtures/golden-behaviour.json"
+        },
+        {
+          "by": "harness/write-golden.js",
+          "call": "existsSync",
+          "confidence": "ast",
+          "target": "fixtures/golden-behaviour.json"
+        },
+        {
+          "by": "harness/write-golden.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "target": "fixtures/golden-behaviour.json"
+        },
+        {
+          "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast",
+          "target": "fixtures/golden.txt"
+        },
+        {
+          "by": "harness/check.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "target": "fixtures/golden.txt"
+        },
+        {
+          "by": "harness/trace.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true,
           "target": "fixtures/golden.txt"
         }
       ],
@@ -3234,8 +3429,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "2e82fc7f790ba0e8b6beca2d344b204c099e9a0e",
-    "tracked": 181
+    "commit": "cd21fe8af8e7f38585f83c97e18b61570fc0f43e",
+    "tracked": 191
   },
   "landings": [
     {
@@ -3312,6 +3507,12 @@
       "readers": [
         {
           "by": "harness/solver.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "harness/trace.test.js",
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
@@ -3395,8 +3596,52 @@
       "readers": [
         {
           "by": "harness/check.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "harness/check.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "harness/write-golden.js",
+          "call": "existsSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "harness/write-golden.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "fixtures/golden-behaviour.json",
+      "writers": [
+        {
+          "by": "harness/write-golden.js",
+          "confidence": "ast",
+          "stamps": true
+        }
+      ]
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "harness/check.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "harness/trace.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "fixtures/golden.txt",
@@ -3483,6 +3728,30 @@
     {
       "readers": [
         {
+          "by": "harness/check.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/check.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/trace.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/first-difference.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
@@ -3494,6 +3763,18 @@
         }
       ],
       "target": "harness/sim.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/trace.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/trace.mjs",
       "writers": []
     },
     {
@@ -3874,13 +4155,13 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 9,
+  "testFiles": 11,
   "unassigned": [
     {
       "exports": [
         "guard"
       ],
-      "hash": "dfaa62a151a4cdc137e7beea14462f07cc24f23d99e17bb18b13718fb508e59f",
+      "hash": "6a8e03e8613ae1186c3857cee6ddabea7cae109d2b863e562cc0b799270c7b62",
       "path": "packages/tool/guard.js"
     },
     {
@@ -3888,15 +4169,15 @@
       "path": "site/astro.config.mjs"
     },
     {
-      "hash": "6ee5c6164bb4c4d13dd0e94ec62a20e7ac09da1692092fa8e82eaad9c3968571",
+      "hash": "43203132f998bcf47109da2746f8c1cdf6aea2c12beebd6303de8507d837bd07",
       "path": "site/package-lock.json"
     },
     {
-      "hash": "9c39e620ebae2c5718ecd8c6188bd3451409a614ec8f5308dc15d5fd886e5b91",
+      "hash": "63e243a6cd0982fbd76982d8a97befcba3fee3d1ba826d6852af727593ef5423",
       "path": "site/package.json"
     },
     {
-      "hash": "db3c76ae1d22efa9f6c9a1cf3d8b1f45a5e94210d34e4b518006018e7d3d097d",
+      "hash": "b195facf7609f7e48d9e032968b00751c82068c2810fba508ad2642883706ae8",
       "path": "site/public/favicon.svg"
     },
     {
@@ -3904,39 +4185,39 @@
       "path": "site/src/assets/logo.png"
     },
     {
-      "hash": "ee756dfba4122d2acc94a39b2555d9f200fff56a87a8c0b10f9cd01df26a8b62",
+      "hash": "ec030f2e4bf6dc57eaca075d390c228b3212cf29db267e32ef92e110de1acdcc",
       "path": "site/src/content.config.ts"
     },
     {
-      "hash": "015770ab1415027a88942e9ffd10ec353fe5360c66de05436d90df65049740b5",
+      "hash": "b612247508ce55edc53571d69c6a46497a40e3569f99b566a2583f418c2b4a6d",
       "path": "site/src/content/docs/handbook/architecture.md"
     },
     {
-      "hash": "429be980224a8e05dc2bf6a85264557ba009278dce64a008e3afea23b5b22ef9",
+      "hash": "a5d08239705d67f3a7174d07e9371fc1ce05ae381a08e7d8e76abb3014ce9447",
       "path": "site/src/content/docs/handbook/getting-started.md"
     },
     {
-      "hash": "602b79ad314c2a4426887a93c489af0b3d3860c51e8b325b1de9147aac022c66",
+      "hash": "2e2d759e0b38361b1356066f01374451733d01cbe5e221b2140352a34a932d94",
       "path": "site/src/content/docs/handbook/index.md"
     },
     {
-      "hash": "89b6986b007bfe7ed699cacf68640f3ee4647cba77f326c4a37a9ae058de11a7",
+      "hash": "95d31e9fa091760adb397e7426bf2c74c271244d78733dedd92d06c2bf9462ac",
       "path": "site/src/content/docs/handbook/reference.md"
     },
     {
-      "hash": "3ab2096068d625dfb3c7e99dc4c2b536ba7222fde2d3518aac4bf567f442c495",
+      "hash": "bd8c6d6e6785042e7325b7ed8953fcf5be8f7d96f25ff600b4f7bc4ff930d320",
       "path": "site/src/content/docs/handbook/security.md"
     },
     {
-      "hash": "2d3b2da579eafcdbb0890a2660c4584b5aa6ed6aa64e98627af9aa4b25b87c9b",
+      "hash": "4b4de31970be23b7e522b79b5d3f7a90e501a2d6d2383abee4cb533e7d7bed23",
       "path": "site/src/content/docs/handbook/usage.md"
     },
     {
-      "hash": "67cc332dcd086a684a91116f8c333bebe7711f340408649caf95a93c0c94006f",
+      "hash": "4607f06a9603ce174311665335248bd6a8825903eb5b450b547752e2db3a9f06",
       "path": "site/src/content/docs/handbook/world-files.md"
     },
     {
-      "hash": "4fb84a646c4d833c33f4058e1ed1775849e855c65e5adb7e45d2a633674bd603",
+      "hash": "66b6108253a5ac83f7a43b4d71aa7b04c12d5b41e31612332bca230a5314d855",
       "path": "site/src/pages/index.astro"
     },
     {
@@ -3944,15 +4225,15 @@
       "path": "site/src/site-config.ts"
     },
     {
-      "hash": "29ee8df91833e694bdba973126b34a6177de4cf01dab6d9ef7d3126e8e2b67fb",
+      "hash": "5995279a40a9a63426a93feec129006b261cc7200426a398914d0317722ef19b",
       "path": "site/src/styles/global.css"
     },
     {
-      "hash": "caf3bea3424477e9528b80490e442ff4fad4ccc7562df9457497382c5bd62339",
+      "hash": "8442ff84a1bb12ba4d7d0aa268c1316c3fc61ebf822facdcdffd6033ecef491e",
       "path": "site/src/styles/starlight-custom.css"
     },
     {
-      "hash": "b5b0a5b04a14cddd7713c5e1c82e86c79c17c2f86b170e26e9b170b3d5e01cd9",
+      "hash": "61fc24492db9aef7ec38eb91cfeebaef96155014bb5f22648fd8ed2327c6cae2",
       "path": "site/tsconfig.json"
     }
   ]

@@ -1,8 +1,10 @@
-// One product-law run of a verb script. The fixture stores the frames this returns.
+// One product-law run of a verb script. The fixture stores the frames and the
+// behaviour numbers this returns.
 
 import { createTick, settle } from '../packages/tick/tick.js';
 import { createWorld } from '../packages/tick/world.js';
 import { createMemory } from '../packages/tick/memory.js';
+import { finalPositions, sleepWatch } from './behaviour.mjs';
 
 /**
  * @param {{ seed: number, world: Parameters<typeof createWorld>[0], waitSleep?: string, script: Array<{ verb: string, actor: string, target: { x?: number, z?: number, body?: string, zone?: string }, admit: boolean, reason?: string }> }} spec
@@ -14,9 +16,11 @@ export function playVerbs(spec, rules) {
   const tick = createTick({ seed: spec.seed, world, rules, memory });
   /** @type {{ tick: number, hash: string }[]} */
   const frames = [];
+  const watch = sleepWatch(world, world.bodies.map((body) => body.id));
   tick.attach({
     draw(frame) {
       frames.push({ tick: frame.tick, hash: frame.hash });
+      watch.see(frame.tick);
     },
   });
   if (spec.waitSleep) {
@@ -42,5 +46,5 @@ export function playVerbs(spec, rules) {
       settle(tick);
     }
   }
-  return { ok: true, frames, episodes: memory.episodes.map((item) => item.detail), bodies: world.bodies };
+  return { ok: true, frames, episodes: memory.episodes.map((item) => item.detail), bodies: world.bodies, behaviour: { sleep: watch.sleep(), final: finalPositions(world.bodies) } };
 }

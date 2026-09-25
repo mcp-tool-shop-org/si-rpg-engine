@@ -1,15 +1,23 @@
 // One product-law run, hashed the way the tick hashes a quantum: the seed,
 // the heightfield once, then each frame's bodies and the solver snapshot.
+// It returns the case's behaviour numbers, and with `trace` the lines
+// harness/trace.mjs would print, so a fixture diffs with first-difference.
 
 import { createHasher } from '../packages/frame/hash.js';
 import { createWorld } from '../packages/tick/world.js';
+import { finalPositions, sleepWatch } from './behaviour.mjs';
+import { endLine, traceLine } from './trace-line.mjs';
 
 /**
  * @param {{ seed: number, steps: number, driven: string[], world: { bodies: unknown[], colliders: unknown[], heightfield?: unknown } }} spec
+ * @param {{ trace?: boolean }} [options]
  */
-export function play(spec) {
+export function play(spec, options) {
   const world = createWorld(/** @type {Parameters<typeof createWorld>[0]} */ (spec.world), 'product');
   const driven = new Set(spec.driven);
+  const tracing = Boolean(options && options.trace);
+  /** @type {string[]} */
+  const trace = [];
   const hasher = createHasher();
   hasher.u32(spec.seed);
   world.mixLoad(hasher, driven);
@@ -27,6 +35,11 @@ export function play(spec) {
   mixSnapshot(hasher);
   /** @type {{ tick: number, hash: string }[]} */
   const frames = [{ tick: 0, hash: hasher.digest() }];
+  const watch = sleepWatch(world, world.bodies.filter((body) => !driven.has(body.id)).map((body) => body.id));
+  watch.see(0);
+  if (tracing) {
+    trace.push(traceLine(0, frames[0].hash, world, null));
+  }
   for (let i = 0; i < spec.steps; i = i + 1) {
     world.step(driven);
     hasher.u32(i + 1);
@@ -42,6 +55,13 @@ export function play(spec) {
     }
     mixSnapshot(hasher);
     frames.push({ tick: i + 1, hash: hasher.digest() });
+    watch.see(i + 1);
+    if (tracing) {
+      trace.push(traceLine(i + 1, frames[i + 1].hash, world, null));
+    }
   }
-  return { frames, bodies: world.bodies };
+  if (tracing) {
+    trace.push(endLine(trace.length));
+  }
+  return { frames, bodies: world.bodies, behaviour: { sleep: watch.sleep(), final: finalPositions(world.bodies) }, trace };
 }
