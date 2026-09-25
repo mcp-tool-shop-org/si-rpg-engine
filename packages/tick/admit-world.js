@@ -78,13 +78,23 @@ export function lowest(box) {
 
 /**
  * The lowest collider's minimum: a body whose centre is below it has left the
- * world. The settle hazard and the sweep (T6) both hold a body to it.
+ * world. The settle hazard and the sweep (T6) both hold a body to it. The
+ * sweep passes the heightfield too, which the solver collides with as it does
+ * a box, so a world made of a heightfield alone has a floor at its lowest
+ * sample and not at infinity; a world file always has a box, and the settle
+ * hazard reads the boxes alone, as it did.
  * @param {ReadonlyArray<import('../frame/types.js').StaticCollider>} colliders
+ * @param {{ heights: ReadonlyArray<number> } | null} [heightfield]
  */
-export function worldFloor(colliders) {
+export function worldFloor(colliders, heightfield) {
   let floor = Infinity;
   for (let i = 0; i < colliders.length; i = i + 1) {
     floor = Math.min(floor, lowest(colliders[i]));
+  }
+  if (heightfield) {
+    for (let i = 0; i < heightfield.heights.length; i = i + 1) {
+      floor = Math.min(floor, heightfield.heights[i]);
+    }
   }
   return floor;
 }

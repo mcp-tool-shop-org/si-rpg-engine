@@ -26,14 +26,16 @@
 // world has settled within SETTLE_QUANTA (512) quanta of the action ending. The
 // sweep stops at the first quantum at which every body is asleep in the solver
 // (a carried body, which has left the solver and cannot sleep, counts as
-// settled while carried). It waits for sleep rather than for rest because a
-// body at rest but awake still changes state when it falls asleep, and pick-up
-// refuses a body that is awake: every action rebuilds the solver's world today,
-// which wakes every body (F1 removes that), so stopping at rest would archive
-// states from which no pick-up is ever admitted. When SETTLE_QUANTA pass
-// without that, the load hazard's own criterion decides at the last of them:
-// every body asleep or at rest (speed and spin at most AT_REST, 1e-2) is
-// settled, anything else is a finding.
+// settled while carried). It waits for sleep rather than for rest because rest
+// is a velocity at one quantum and sleep is the solver's own word that nothing
+// will change while nothing acts: when an action ends the actor stands still a
+// controller's skin above where it will come to rest, and a body at rest but
+// awake still changes state when it falls asleep, which pick-up reads, since
+// it refuses a body that is awake. The sweep has no action that waits, so a
+// state it archives must be one that waiting would not change. When
+// SETTLE_QUANTA pass without that, the load hazard's own criterion decides at
+// the last of them: every body asleep or at rest (speed and spin at most
+// AT_REST, 1e-2) is settled, anything else is a finding.
 //
 // Actions (pin 5), tried in this order from each archived cell, one at a time,
 // each citing the newest frame's hash and going through submit. The verbs are
@@ -58,17 +60,21 @@
 // witnesses, and the same verdicts.
 //
 // Findings (pin 7). An admitted action after which a body's centre is below
-// the lowest collider's minimum (it left the world), after which the tick
+// the lowest collider's minimum, a heightfield's lowest sample counted as a
+// collider (it left the world), after which the tick
 // throws, or after which the world does not settle within SETTLE_QUANTA. Each
 // is written as a T5 bundle, a `log` bundle whose log is the witness plus the
 // action and whose length runs to the quantum it was found at, which `replay`
 // reproduces. The first finding of each kind for each body and actor writes a
 // bundle; the rest are counted.
 //
-// Budget (pin 9). The sweep stops when it has run budget.quanta quanta or made
-// budget.restores restores, checked before each proposal, so it may overrun by
-// one action and its settle. It is then deferred: whatever it has found stands,
-// and no zone is refused as unreached.
+// Budget (pin 9). A sweep may run budget.quanta quanta and make
+// budget.restores restores. The actors share it: each may spend an equal part
+// of what the actors before it left, so an actor that finishes early passes
+// the rest on and a large one cannot starve those after it. An actor stops
+// when its part is spent, checked before each proposal, so it may overrun by
+// one action and its settle. A sweep with any actor stopped is deferred:
+// whatever it has found stands, and no zone is refused as unreached.
 
 import { worldFloor } from '../tick/admit-world.js';
 import { bundleFrom, captureBundle, writeBundle } from '../tick/bundle.js';
@@ -200,6 +206,61 @@ export function cellKey(world, actorId, pitch) {
 }
 
 /**
+ * Which collider's footprint, on the ground plane, holds a point, or null
+ * when none does. A rotated collider's footprint is the box around its eight
+ * corners, so a point near one reads as under it; a heightfield's is its
+ * extent, centred on the origin as the solver centres it. It says whether a
+ * body that left the world went past an edge or fell through something.
+ * @param {ReturnType<typeof createWorld>} world
+ * @param {number} x
+ * @param {number} z
+ * @returns {string | null}
+ */
+export function footprintAt(world, x, z) {
+  for (const box of world.colliders) {
+    const cx = (box.minX + box.maxX) / 2;
+    const cz = (box.minZ + box.maxZ) / 2;
+    const hx = (box.maxX - box.minX) / 2;
+    const hy = (box.maxY - box.minY) / 2;
+    const hz = (box.maxZ - box.minZ) / 2;
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minZ = Infinity;
+    let maxZ = -Infinity;
+    for (const sx of [-1, 1]) {
+      for (const sy of [-1, 1]) {
+        for (const sz of [-1, 1]) {
+          const px = sx * hx;
+          const py = sy * hy;
+          const pz = sz * hz;
+          const tx = 2 * (box.qy * pz - box.qz * py);
+          const ty = 2 * (box.qz * px - box.qx * pz);
+          const tz = 2 * (box.qx * py - box.qy * px);
+          const wx = cx + px + box.qw * tx + (box.qy * tz - box.qz * ty);
+          const wz = cz + pz + box.qw * tz + (box.qx * ty - box.qy * tx);
+          minX = Math.min(minX, wx);
+          maxX = Math.max(maxX, wx);
+          minZ = Math.min(minZ, wz);
+          maxZ = Math.max(maxZ, wz);
+        }
+      }
+    }
+    if (x >= minX && x <= maxX && z >= minZ && z <= maxZ) {
+      return box.id;
+    }
+  }
+  const field = world.heightfield;
+  if (field) {
+    const halfX = ((field.cols - 1) * field.cell) / 2;
+    const halfZ = ((field.rows - 1) * field.cell) / 2;
+    if (x >= -halfX && x <= halfX && z >= -halfZ && z <= halfZ) {
+      return 'heightfield';
+    }
+  }
+  return null;
+}
+
+/**
  * Every settled state along a cell's path from the load, the load's first.
  * @param {Cell} cell
  * @returns {PathPoint[]}
@@ -307,7 +368,7 @@ export function sweep(input, options) {
   const set = actionSet(rules);
   const world = createWorld(input.world, 'product');
   const tick = createRestorableTick({ seed: input.seed, world, rules, retired: catalog.retired, memory: createMemory() });
-  const floor = worldFloor(world.colliders);
+  const floor = worldFloor(world.colliders, world.heightfield);
   const put = options.restore || ((t, saved) => t.restore(saved));
   const budget = options.budget;
   const counts = { tried: 0, admitted: 0, refused: 0, quanta: 0, restores: 0, saves: 0, restoreMs: 0, saveMs: 0 };
@@ -320,6 +381,17 @@ export function sweep(input, options) {
   const archives = [];
   /** @type {ActorCosts[]} */
   const perActor = [];
+
+  /**
+   * Where a body that left the world is, in words: its ground-plane point, and
+   * whether that point is past every collider's edge or under one's footprint.
+   * @param {string} id
+   */
+  function whereLeft(id) {
+    const body = /** @type {import('../frame/types.js').Body} */ (world.body(id));
+    const under = footprintAt(world, body.x, body.z);
+    return ' at (x, z) (' + body.x.toFixed(3) + ', ' + body.z.toFixed(3) + '), ' + (under === null ? 'past the edge of every collider' : 'under the footprint of ' + under + ', so it fell through');
+  }
 
   /** @returns {'ok' | { kind: 'throws', message: string } | { kind: 'leaves', body: string, y: number }} */
   function step() {
@@ -485,7 +557,7 @@ export function sweep(input, options) {
     complete = false;
     const actor = input.actors[0] || '-';
     if (loadEnd.kind === 'leaves') {
-      note('leaves', actor, loadEnd.body, null, null, rootWitness(), loadEnd.body + ' leaves the world after the load, below ' + floor + ' at tick ' + tick.frame().tick);
+      note('leaves', actor, loadEnd.body, null, null, rootWitness(), loadEnd.body + ' leaves the world after the load, below ' + floor + ' at tick ' + tick.frame().tick + whereLeft(loadEnd.body));
     } else if (loadEnd.kind === 'throws') {
       note('throws', actor, null, null, null, { ...rootWitness(), tick: tick.frame().tick + 1, hash: 'NAN' }, 'the tick throws after the load at tick ' + (tick.frame().tick + 1) + ': ' + loadEnd.message);
     } else {
@@ -510,6 +582,11 @@ export function sweep(input, options) {
     }
     const pitch = pitchOf(actorBody);
     const before = { ...counts };
+    const left = input.actors.length - input.actors.indexOf(actorId);
+    const share = {
+      quanta: before.quanta + (budget.quanta - before.quanta) / left,
+      restores: before.restores + (budget.restores - before.restores) / left,
+    };
     restoreTo(/** @type {TickSave} */ (root));
     /** @type {Map<string, Cell>} */
     const archive = new Map();
@@ -530,7 +607,7 @@ export function sweep(input, options) {
       }
       const actions = actionsFor(actorId, pitch);
       for (const action of actions) {
-        if (counts.quanta >= budget.quanta || counts.restores >= budget.restores) {
+        if (counts.quanta >= share.quanta || counts.restores >= share.restores) {
           stopped = true;
           next = next - 1;
           break;
@@ -557,7 +634,7 @@ export function sweep(input, options) {
           return { actor: actorId, log: logOf(cell).concat([entry]), tick: now.tick, hash: now.hash, path };
         };
         if (end.kind === 'leaves') {
-          note('leaves', actorId, end.body, action, cell.key, here(), end.body + ' leaves the world after ' + describe(action) + ' by ' + actorId + ': its centre is at y ' + end.y + ', below the lowest collider minimum ' + floor + ', at tick ' + now.tick);
+          note('leaves', actorId, end.body, action, cell.key, here(), end.body + ' leaves the world after ' + describe(action) + ' by ' + actorId + ': its centre is at y ' + end.y + ', below the lowest collider minimum ' + floor + ', at tick ' + now.tick + whereLeft(end.body));
           continue;
         }
         if (end.kind === 'throws') {
@@ -565,7 +642,9 @@ export function sweep(input, options) {
           continue;
         }
         if (end.kind === 'unsettled') {
-          note('unsettled', actorId, end.bodies[0], action, cell.key, here(), 'the world does not settle within ' + SETTLE_QUANTA + ' quanta after ' + describe(action) + ' by ' + actorId + ': ' + end.bodies.join(', ') + ' still moving at tick ' + now.tick);
+          const moving = /** @type {import('../frame/types.js').Body} */ (world.body(end.bodies[0]));
+          note('unsettled', actorId, end.bodies[0], action, cell.key, here(), 'the world does not settle within ' + SETTLE_QUANTA + ' quanta after ' + describe(action) + ' by ' + actorId + ': ' + end.bodies.join(', ') + ' still moving at tick ' + now.tick
+            + ', ' + moving.id + ' at (' + moving.x.toFixed(3) + ', ' + moving.y.toFixed(3) + ', ' + moving.z.toFixed(3) + ') moving at ' + Math.hypot(moving.vx, moving.vy, moving.vz).toFixed(3) + ' and turning at ' + Math.hypot(moving.wx, moving.wy, moving.wz).toFixed(3));
           continue;
         }
         seeZones(() => ({ ...here(), path: here().path.concat([{ tick: now.tick, hash: now.hash }]) }), actorId);
@@ -582,8 +661,8 @@ export function sweep(input, options) {
         cell.state = null;
       }
     }
-    const left = order.length - next;
-    if (left > 0) {
+    const unexplored = order.length - next;
+    if (unexplored > 0) {
       complete = false;
     }
     for (const cell of order.slice(0, next)) {
@@ -599,19 +678,11 @@ export function sweep(input, options) {
       admitted: counts.admitted - before.admitted,
       quanta: counts.quanta - before.quanta,
       restores: counts.restores - before.restores,
-      complete: left === 0,
-      frontier: left,
+      complete: unexplored === 0,
+      frontier: unexplored,
     });
     archives.push({ actor: actorId, cells: order.map((cell) => ({ key: cell.key, tick: cell.tick, hash: cell.hash, witness: () => witnessOf(cell) })) });
-    say(actorId + ': ' + order.length + ' cells, ' + (counts.tried - before.tried) + ' actions tried, ' + (counts.admitted - before.admitted) + ' admitted' + (left > 0 ? ', ' + left + ' left in the frontier' : ''));
-    if (stopped) {
-      // The budget is shared; an actor after this one is not swept.
-      const rest = input.actors.slice(input.actors.indexOf(actorId) + 1);
-      for (const skipped of rest) {
-        perActor.push({ actor: skipped, pitch: pitchOf(/** @type {import('../frame/types.js').Body} */ (world.body(skipped))), cells: 0, tried: 0, admitted: 0, quanta: 0, restores: 0, complete: false, frontier: 1 });
-      }
-      break;
-    }
+    say(actorId + ': ' + order.length + ' cells, ' + (counts.tried - before.tried) + ' actions tried, ' + (counts.admitted - before.admitted) + ' admitted' + (unexplored > 0 ? ', ' + unexplored + ' left in the frontier' : ''));
   }
 
   const findings = Array.from(found.values());
@@ -718,7 +789,7 @@ export function sweepVerdict(report) {
       notes.push('not settled, admitted until the scheduled job shows how often it happens: ' + finding.detail + more(finding) + bundle(finding));
     }
   }
-  if (report.complete) {
+  if (report.complete && report.actors.length > 0) {
     for (const zone of report.zones) {
       if (!zone.reached) {
         reasons.push('zone ' + zone.id + ' is not reached: actors ' + report.actors.join(', ') + '; ' + report.cells + ' cells explored; ' + report.actionSet);
