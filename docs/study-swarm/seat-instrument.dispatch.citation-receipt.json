@@ -8,8 +8,8 @@
   "advisory": true,
   "citations_sha256": "d1c1166fbb4ff97c5c0b4b47e870785c5ac6f4304f18c6403b4538031198a71a",
   "prism_receipt": {
-    "id": "prism-01m3cpyh76447ff2c932bzzczk",
-    "signature": "5df14cf9162bae5bff4e5964aa71f4156976d86e16d75e68c23180a7da0331fc1241d5a7624db13de74ec1aa76f0455dad6caeca754214226d776a4614718103",
+    "id": "prism-01m3cqhgrtcgb9rr3xs154jh3r",
+    "signature": "f241294f50ee44f38c8c2a41874b4c7855528728be11089545abde6128fbda7b1cbfb2b563bbc7309a0b4547e64c30356dd4fa58516efdeb602b05c05843d108",
     "verdict": "revise"
   },
   "retrieval_pins": [
@@ -225,5 +225,5 @@
     }
   ],
   "local_panel": null,
-  "chain_sha256": "2e2f5d093812f6dd8d2037b6bda04142695b6a6c13c4b0a63b3abbcd540f6e0f"
+  "chain_sha256": "48886b6138a2bde0070dda6940562f5c1b91405d49aa91a1cc8c2d1d2a1aec3e"
 }

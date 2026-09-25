@@ -120,7 +120,7 @@ T7 splits into two slices, each built from its own dispatch.
 - **Typed outputs and bounded free text.** A role may reason in a bounded free span before its proposal; only the proposal is parsed, and no output class writes a consequence. (16, 31, 34, 37, 38)
 - **The later role is declared now and frozen.** A role that proposes intents and beliefs for a character during play gets its manifest in T7a, frozen. Its limits are enforced by code, and its prompts are built fresh from typed state. Thawing it needs the Director, an adversarial run, and an evaluation with players. (33, 34, 35, 36, 37, 40)
 
-**T7b — the test instrument, the first role thawed.** It depends on T6's sweep and on T7a.
+**T7b — the test instrument, the first role to be thawed.** It depends on T6's sweep and on T7a, and it thaws the role only after an adversarial run: a diff written to steer the instrument must produce no proposal outside the manifest and change no verdict.
 
 - **Inputs.** The instrument receives the dispatch, the diff mapped to anchors in the tick and the law, access information naming which admitted verbs reach each changed function, and each round's feedback: what the last proposals reached, and why the checker refused any it refused. (9, 10, 11)
 - **A cheap proposer first.** A grammar-driven proposer over the verb table, aimed at the change the way a directed fuzzer is, runs first; the model is called when it stops reaching anything new. States the model reaches become sweep cells. (4, 10, 14)
