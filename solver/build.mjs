@@ -252,6 +252,52 @@ export function snapshotBytes() {
   return new Uint8Array(exp.memory.buffer, ptr, len).slice();
 }
 
+/** A copy of the current snapshot's bytes: what restoreSolver takes back. */
+export function saveSolver() {
+  return snapshotBytes();
+}
+
+/**
+ * Rebuild the Rapier world from a snapshot this binary produced, for the
+ * world the records describe. False, and the solver unchanged, when the
+ * bytes do not describe that world; restoreRefusal() says why.
+ * @param {number} worldId
+ * @param {Array<{ x: number, y: number, z: number, vx: number, vy: number, vz: number, hx: number, hy: number, hz: number, id: string }>} bodies
+ * @param {Array<{ minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number }>} colliders
+ * @param {{ rows: number, cols: number, cell: number, heights: number[] } | null} heightfield
+ * @param {ReadonlySet<string>} driven
+ * @param {number} shapeId
+ * @param {Uint8Array} bytes
+ */
+export function restoreSolver(worldId, bodies, colliders, heightfield, driven, shapeId, bytes) {
+  const exp = instantiate().exports;
+  if (!(bytes instanceof Uint8Array) || bytes.length > exp.restore_cap()) {
+    return false;
+  }
+  const shape = writeInputs(exp, bodies, colliders, heightfield, driven);
+  new Uint8Array(exp.memory.buffer, exp.restore_ptr(), bytes.length).set(bytes);
+  const ok = exp.solver_restore(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0, bytes.length);
+  return ok === 1;
+}
+
+const REFUSALS = [
+  'none',
+  'the records do not describe a world the solver can load',
+  'the length is not the layout for this world',
+  'a float is NaN',
+  'a quaternion is not unit within 1e-9',
+  'a sleep field is not a count and a flag',
+  "a body's pose or velocity is not its record's",
+  'the pairs or points after the collision pass are not the snapshot\\'s',
+  'the rebuilt snapshot is not the bytes given',
+];
+
+/** Why the last restoreSolver returned false, or 'none'. */
+export function restoreRefusal() {
+  const exp = instantiate().exports;
+  return REFUSALS[exp.solver_restore_refusal()] || 'refused';
+}
+
 /** Zeros the warm-start cache. Returns how many contact points were cleared. */
 export function clearWarmstart() {
   return instantiate().exports.solver_clear_warmstart();

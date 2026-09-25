@@ -1,7 +1,7 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
-import { clearWarmstart, loadSolver, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { clearWarmstart, loadSolver, restoreRefusal, restoreSolver, saveSolver, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
 import { subjectText } from './subject.js';
 import { goalsOf as goalsOfMind } from './minds.js';
 
@@ -514,9 +514,95 @@ export function createWorld(init, law) {
       }
     }
     if (chosen === 'product') {
+      // The records carry the mode the solver was loaded with, so a save
+      // taken before the first quantum restores the same signature.
+      solverModes(driven || new Set());
       if (!loadSolver(productId, bodies, colliders, heightfield, driven || new Set(), shapeId)) {
         throw new Error('NaN');
       }
+    }
+  }
+
+  /**
+   * @typedef {{ id: string, x: number, y: number, z: number, vx: number, vy: number, vz: number, qx: number, qy: number, qz: number, qw: number, wx: number, wy: number, wz: number, hx: number, hy: number, hz: number, solverMode: number | null }} SavedBody
+   * @typedef {{ bodies: SavedBody[], lifted: string[], carried: Array<[string, string]>, snapshot: Uint8Array | null }} WorldSave
+   */
+
+  /**
+   * The solver half of a save: the body records as plain numbers, the lifted
+   * and carried sets as arrays, and the solver snapshot's bytes. The reference
+   * and box laws have no snapshot. The tick's memory, minds, and actions are
+   * not here; T5's bundle saves those.
+   * @returns {WorldSave}
+   */
+  function save() {
+    return {
+      bodies: bodies.map((b) => {
+        const tagged = /** @type {Body & { solverMode?: number }} */ (b);
+        return {
+          id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz,
+          qx: b.qx, qy: b.qy, qz: b.qz, qw: b.qw, wx: b.wx, wy: b.wy, wz: b.wz,
+          hx: b.hx, hy: b.hy, hz: b.hz,
+          solverMode: typeof tagged.solverMode === 'number' ? tagged.solverMode : null,
+        };
+      }),
+      lifted: Array.from(lifted),
+      carried: Array.from(carrying),
+      snapshot: chosen === 'product' ? saveSolver() : null,
+    };
+  }
+
+  /**
+   * Writes a save's records and sets back, and for the product law rebuilds
+   * the solver from its snapshot. Throws with the reason on a refusal; the
+   * solver is then unchanged, and so are the records.
+   * @param {WorldSave} saved
+   */
+  function restore(saved) {
+    if (!saved || !Array.isArray(saved.bodies) || saved.bodies.length !== bodies.length) {
+      throw new Error('restore refused: the save has ' + (saved && Array.isArray(saved.bodies) ? saved.bodies.length : 'no') + ' bodies and this world has ' + bodies.length);
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const from = saved.bodies[i];
+      const b = bodies[i];
+      if (from.id !== b.id || from.hx !== b.hx || from.hy !== b.hy || from.hz !== b.hz) {
+        throw new Error('restore refused: body ' + i + ' is ' + from.id + ' in the save and ' + b.id + ' here');
+      }
+    }
+    if (chosen === 'product' && !(saved.snapshot instanceof Uint8Array)) {
+      throw new Error('restore refused: a product world restores from a snapshot');
+    }
+    const before = bodies.map((b) => ({ ...b }));
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const from = saved.bodies[i];
+      const b = /** @type {Body & { solverMode?: number }} */ (bodies[i]);
+      b.x = from.x; b.y = from.y; b.z = from.z;
+      b.vx = from.vx; b.vy = from.vy; b.vz = from.vz;
+      b.qx = from.qx; b.qy = from.qy; b.qz = from.qz; b.qw = from.qw;
+      b.wx = from.wx; b.wy = from.wy; b.wz = from.wz;
+      if (typeof from.solverMode === 'number') {
+        b.solverMode = from.solverMode;
+      } else {
+        delete b.solverMode;
+      }
+    }
+    if (chosen === 'product' && saved.snapshot && !restoreSolver(productId, bodies, colliders, heightfield, new Set(), shapeId, saved.snapshot)) {
+      for (let i = 0; i < bodies.length; i = i + 1) {
+        const b = /** @type {Body & { solverMode?: number }} */ (bodies[i]);
+        delete b.solverMode;
+        Object.assign(b, before[i]);
+      }
+      throw new Error('restore refused: ' + restoreRefusal());
+    }
+    lifted.clear();
+    for (const id of saved.lifted) {
+      lifted.add(id);
+    }
+    carrying.clear();
+    carriedBy.clear();
+    for (const [actorId, bodyId] of saved.carried) {
+      carrying.set(actorId, bodyId);
+      carriedBy.set(bodyId, actorId);
     }
   }
 
@@ -793,7 +879,7 @@ export function createWorld(init, law) {
     mindsInstalled: false,
     minds,
     name,
-    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, zoneOf, zoneIndex, law: chosen,
+    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, restore, clearWarmstart, zoneOf, zoneIndex, law: chosen,
     lifted, carry, release, sleeping, supportAt, linkIndex,
     /**
      * @param {string} mind
