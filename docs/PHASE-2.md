@@ -26,6 +26,22 @@ Each slice is one pull request from a written dispatch, built by one seat, revie
 
 Collision from meshes is the slice after this phase; it needs T2's restore and T4's outcome pattern to be provable. The survey of the studio's glb files and of the facet and armature repositories is in the coordinator's memory and becomes that dispatch.
 
+## The trace format
+
+Fixed by T1. `harness/trace.mjs` prints it for the product scene under node and the three shells; `play(spec, { trace: true })` in `harness/solver-scene.mjs` returns it for a fixture case; `harness/first-difference.js` reads it. One line per quantum, tokens separated by one space, line 0 the load:
+
+```
+<tick> <hash> body <id> <x> <y> <z> <vx> <vy> <vz> <qx> <qy> <qz> <qw> <wx> <wy> <wz> <zone> <links> ... snap <len> <digest> mind <body> <met> <belief> ...
+end <lines>
+```
+
+- `hash` is the running frame hash as sixteen hex digits, `NAN` when a float would not mix; a line of only `<tick> NAN` means the step threw.
+- Each of the thirteen floats is its IEEE bit pattern as sixteen hex digits, high word first.
+- `zone` is the zone index in file order or `-`; `links` is `-`, or `>id` for the body it carries and `<id` for the body carrying it.
+- `snap` is the snapshot's byte length and the FNV digest of its length and bytes, or `snap - -` with no snapshot.
+- Each mind: its body, one `0` or `1` per goal for met or `-` with no goals, and its newest belief id or `-`.
+- The last line counts the quantum lines before it. A trace without it is truncated, and `first-difference` exits 2.
+
 ## What this phase does not do
 
 No error thresholds in place of bit-exact agreement (finding 7). No vision model judging the debug view (finding 23 is a benchmark, not a licence). No test whose oracle is a model. No genre, presentation, or market framing anywhere in the engine's law, contracts, or briefs. The seat stays frozen until T7, and T7 thaws it as an instrument only.
