@@ -91,138 +91,41 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 8,
-      "changed": 8,
+      "added": 3,
+      "changed": 19,
       "moved": 0,
-      "parts": 7,
+      "parts": 4,
       "removed": 0
     },
     "items": [
       {
-        "kind": "door",
-        "sentence": "CI's pull request trigger now also names `tools/**`.",
-        "subjects": [
-          ".github/workflows/ci.yml"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI's push trigger now also names `tools/**`.",
-        "subjects": [
-          ".github/workflows/ci.yml"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also runs tools/panel.test.js, tools/prompt.test.js and tools/verdicts.test.js.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "tools/panel.test.js",
-          "tools/prompt.test.js",
-          "tools/verdicts.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "And 1 more change to a door.",
-        "subjects": []
-      },
-      {
-        "kind": "landing",
-        "sentence": "tools/panel.js is now read by tools/review.mjs and tsconfig.json.",
-        "subjects": [
-          "tools/panel.js",
-          "tools/review.mjs",
-          "tsconfig.json"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "tools/panel.test.js is now read by tsconfig.json.",
-        "subjects": [
-          "tools/panel.test.js",
-          "tsconfig.json"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "tools/prompt.js is now read by tools/review.mjs and tsconfig.json.",
-        "subjects": [
-          "tools/prompt.js",
-          "tools/review.mjs",
-          "tsconfig.json"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 4 more new writers and readers of places.",
-        "subjects": []
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In harness/corpus.mjs, run corpus gained a step, ended block, before make bundle.",
-        "subjects": [
-          "harness/corpus.mjs"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In harness/corpus.mjs, run corpus lost a step, pair.",
-        "subjects": [
-          "harness/corpus.mjs"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/bundle.js, replay bundle lost a step, pair.",
-        "subjects": [
-          "packages/tick/bundle.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "And 1 more change to the order of work.",
-        "subjects": []
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/panel.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/panel.js"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/panel.test.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/panel.test.js"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/prompt.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/prompt.js"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "And 4 more new files that belong to no part.",
-        "subjects": []
-      },
-      {
         "kind": "counts",
-        "sentence": "8 files added and 8 changed content, across 7 parts.",
+        "sentence": "Nothing structural changed since 2026-09-25; 3 files added and 19 changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "ab579ad7430038ae513678ad3e35bfdb13b1943c",
-      "generatedAt": "2026-09-25T15:00:07.639Z"
+      "commit": "39ba1fe01bbf2dc960a59309fe32ce983f01b3ea",
+      "generatedAt": "2026-09-25T15:34:19.832Z"
     },
-    "unchanged": false
+    "unchanged": true
   },
   "changesTogether": [
+    {
+      "a": "harness/bundle.test.js",
+      "b": "harness/corpus.mjs",
+      "either": 7,
+      "partLabels": [
+        "harness",
+        "harness"
+      ],
+      "parts": [
+        "harness",
+        "harness"
+      ],
+      "relation": "inside",
+      "shared": 6
+    },
     {
       "a": "packages/propose/prompt.js",
       "b": "packages/propose/propose.test.js",
@@ -282,21 +185,6 @@
       ],
       "relation": "inside",
       "shared": 6
-    },
-    {
-      "a": "packages/load/load.test.js",
-      "b": "packages/tick/predicates.js",
-      "either": 7,
-      "partLabels": [
-        "load",
-        "tick"
-      ],
-      "parts": [
-        "load",
-        "tick"
-      ],
-      "relation": "both",
-      "shared": 5
     }
   ],
   "changesTogetherNote": [
@@ -305,7 +193,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "39ba1fe01bbf2dc960a59309fe32ce983f01b3ea",
+  "commit": "de71607c02455b7e9f01b7d62b885962c3dbb60c",
   "defaultBranch": "main",
   "derived": "15 parts, mostly JavaScript (88 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -789,7 +677,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T15:34:19.832Z",
+  "generatedAt": "2026-09-25T16:31:11.374Z",
   "limits": [
     "14 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",
