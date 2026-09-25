@@ -47,7 +47,7 @@ export function indexReason(scene, index) {
  * Lowest world-space corner of a collider, rotation included.
  * @param {import('../frame/types.js').StaticCollider} box
  */
-function lowest(box) {
+export function lowest(box) {
   const qx = box.qx ?? 0;
   const qy = box.qy ?? 0;
   const qz = box.qz ?? 0;
@@ -77,6 +77,19 @@ function lowest(box) {
 }
 
 /**
+ * The lowest collider's minimum: a body whose centre is below it has left the
+ * world. The settle hazard and the sweep (T6) both hold a body to it.
+ * @param {ReadonlyArray<import('../frame/types.js').StaticCollider>} colliders
+ */
+export function worldFloor(colliders) {
+  let floor = Infinity;
+  for (let i = 0; i < colliders.length; i = i + 1) {
+    floor = Math.min(floor, lowest(colliders[i]));
+  }
+  return floor;
+}
+
+/**
  * @param {import('./scene.js').Scene} scene
  */
 export function settles(scene) {
@@ -86,10 +99,7 @@ export function settles(scene) {
     zones: scene.zones,
     heightfield: scene.heightfield,
   }, 'product');
-  let floor = Infinity;
-  for (let i = 0; i < scene.colliders.length; i = i + 1) {
-    floor = Math.min(floor, lowest(scene.colliders[i]));
-  }
+  const floor = worldFloor(scene.colliders);
   try {
     for (let i = 0; i < 512; i = i + 1) {
       world.step(new Set());

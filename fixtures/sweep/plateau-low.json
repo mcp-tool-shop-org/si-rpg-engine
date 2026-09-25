@@ -1,0 +1,20 @@
+{
+  "name": "sweep-plateau-low",
+  "seed": 12,
+  "bodies": [
+    { "id": "walker", "x": 0.75, "y": 0.3, "z": 1.75, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 }
+  ],
+  "colliders": [
+    { "id": "floor", "minX": -1, "maxX": 6, "minY": -1, "maxY": 0, "minZ": -1, "maxZ": 4.5 },
+    { "id": "wall-west", "minX": -1, "maxX": 0, "minY": 0, "maxY": 3.5, "minZ": -1, "maxZ": 4.5 },
+    { "id": "wall-east", "minX": 5, "maxX": 6, "minY": 0, "maxY": 3.5, "minZ": -1, "maxZ": 4.5 },
+    { "id": "wall-south", "minX": -1, "maxX": 6, "minY": 0, "maxY": 3.5, "minZ": -1, "maxZ": 0 },
+    { "id": "wall-north", "minX": -1, "maxX": 6, "minY": 0, "maxY": 3.5, "minZ": 3.5, "maxZ": 4.5 },
+    { "id": "plateau", "minX": 3, "maxX": 4.5, "minY": 0, "maxY": 1, "minZ": 1, "maxZ": 2.5 }
+  ],
+  "zones": [
+    { "id": "floor-zone", "minX": 0, "maxX": 3, "minY": 0, "maxY": 1, "minZ": 0, "maxZ": 3.5 },
+    { "id": "summit", "minX": 3, "maxX": 4.5, "minY": 1, "maxY": 2, "minZ": 1, "maxZ": 2.5 }
+  ],
+  "goal": { "actor": "walker", "zone": "summit" }
+}

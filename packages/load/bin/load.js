@@ -8,6 +8,12 @@
 // A draft that compiles and passes predicates/hazards is written under
 // predicates/intents and named by the index. Retire moves it to index.retired.
 // Play does not call this.
+//
+// A world is validated, must settle, must hash the same twice, and is swept
+// for reachability (T6, packages/load/world.js): an authored zone no explored
+// state reaches, a body that leaves the world, or a throw refuses it, and the
+// refusal names the zone or the bundle that replays the finding. The sweep's
+// report goes to stderr; stdout stays the load hash alone, as before.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { chdir } from 'node:process';
@@ -15,8 +21,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { considerDraft, retireVerb } from '../admit.js';
 import { loadHazards } from '../suite.js';
+import { considerWorld } from '../world.js';
+import { bundleDir } from '../../tick/bundle.js';
 import { loadScene } from '../../tick/scene.js';
-import { loadHash, settles } from '../../tick/admit-world.js';
 import { guard } from '../../tool/guard.js';
 
 guard('load admit <draft.json> | load retire <verb> | load world <world.json>');
@@ -58,15 +65,15 @@ if (command === 'admit' && subject) {
     process.stderr.write(loaded.reason + '\n');
     process.exit(1);
   }
-  if (!settles(loaded.scene)) {
-    process.stderr.write('world does not settle\n');
+  const considered = considerWorld(loaded.scene, { bundles: bundleDir() });
+  for (const line of considered.lines) {
+    process.stderr.write(line + '\n');
+  }
+  if (!considered.ok) {
+    process.stderr.write(considered.reason + '\n');
     process.exit(1);
   }
-  const hash = loadHash(loaded.scene);
-  if (hash !== loadHash(loaded.scene)) {
-    process.stderr.write('load hash is not stable\n');
-    process.exit(1);
-  }
+  const hash = considered.hash;
   const indexPath = 'worlds/index.json';
   /** @type {{ worlds: Record<string, string> }} */
   let index = { worlds: {} };

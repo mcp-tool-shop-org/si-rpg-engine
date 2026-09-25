@@ -5,7 +5,8 @@
 // imports the harness. This is the harness's side:
 //
 //   bundleDir     where failures write: $SI_RPG_BUNDLES, or a directory under
-//                 the temporary one; CI sets it and uploads it on failure
+//                 the temporary one; CI sets it and uploads it on failure (it
+//                 is packages/tick/bundle.js's, re-exported)
 //   makeBundle    a bundle of a run, with the product scene's own records when
 //                 a product spec names none
 //   recordRun, withBundles, bundleFailure, expectIdentical   the hooks a test
@@ -18,13 +19,12 @@
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { captureBundle, traceDifference, writeBundle } from '../packages/tick/bundle.js';
+import { bundleDir, captureBundle, traceDifference, writeBundle } from '../packages/tick/bundle.js';
 import { withRecords } from './replay-to.mjs';
 
-export { traceDifference };
+export { bundleDir, traceDifference };
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -34,11 +34,6 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
  * @typedef {import('../packages/tick/bundle.js').DenseImage} DenseImage
  * @typedef {import('../packages/tick/bundle.js').Failure} Failure
  */
-
-/** Where failures write bundles: $SI_RPG_BUNDLES, or a directory under the temporary one. */
-export function bundleDir() {
-  return process.env.SI_RPG_BUNDLES || join(tmpdir(), 'si-rpg-bundles');
-}
 
 /**
  * A bundle of the spec's run (packages/tick/bundle.js captureBundle), with the
