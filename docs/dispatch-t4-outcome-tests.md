@@ -38,6 +38,12 @@ Answer 8: autostep's limit is `max_height` plus the controller's offset, and fee
 - Starting inside the floor: the walker rises by the controller's 1e-4 nudge and needs about 1,300 quanta; the test runs long enough and says so.
 - Native tests of loading run with `--release`, because Rapier's island-manager `debug_assert` fires when bodies touch at load.
 
+## Pin 4, decided after the build (2026-09-25)
+
+The translated scene did not hold. Only `tip` and `climber` agreed within 1e-6; the walker and parcel ended 0.038 apart, the stack by up to 1.2e-3, and the slider 0.47 apart and asleep at quantum 233 instead of 189. The builder traced three causes: the walker loses most of a quantum's travel on about one quantum in 28 on flat ground, and which quanta changes with the offset; the world rebuild at quantum 260, when the climber's lift changes the driven set, re-solves the sleeping stack without its warm start; and the slider tumbles down the ramp, which amplifies any difference.
+
+Decision: pin 4 lands as a characterization test. It asserts exactly the set of divergences above, so it goes red on a new divergence and on a fix, and a fix must rewrite it to the outcome the pin first asked for. The two defects are named work, not tolerances: the walker's stall on flat ground goes to the Rust knowledge base for its cause first, and the rebuild at a driven-set change is the in-place switch the knowledge base is already researching. When both are fixed, pin 4 is rewritten as an outcome test over a scene whose bodies do not tumble.
+
 ## Acceptance
 
 - Every test in pins 2 through 5 exists, is named for its outcome, states its number and tolerance, and passes.
