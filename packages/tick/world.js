@@ -756,7 +756,9 @@ export function createWorld(init, law) {
    * is column j + 1 (+x), so the cell is cut from (x0, z1) to (x1, z0). The
    * law builds the field with no subdivision flag (build_world in
    * solver/src/rapier_law.rs); if a later slice sets ZIGZAG_SUBDIVISION, the
-   * diagonal flips and this function changes with it.
+   * diagonal flips and this function changes with it. The field's one flag,
+   * FIX_INTERNAL_EDGES (T4), corrects contact normals at the triangles' shared
+   * edges and leaves the triangles, and so this function, as they were.
    * @param {Heightfield} field
    * @param {number} x
    * @param {number} z
