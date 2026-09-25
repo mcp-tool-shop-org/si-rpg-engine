@@ -18,6 +18,8 @@ Three JavaScript engines, V8, SpiderMonkey, and JavaScriptCore, print the same h
 - Watch dynamic boxes fall, slide, tip, and tumble under a solver whose whole state is hashed each quantum.
 - Give a body a mind that sees, writes beliefs citing what it saw, and refuses a belief that rests on older evidence.
 - Record a play, replay it anywhere, and fail on the first hash that differs.
+- Find the first step, body, and value where two runs part, from a trace of every step in exact bits.
+- Save a world and restore it, by replaying its inputs or by copying the physics module's memory, and prove the rerun exact.
 - Watch the committed frames in a debug view on your own machine.
 
 ## Where to start
@@ -26,7 +28,8 @@ Three JavaScript engines, V8, SpiderMonkey, and JavaScriptCore, print the same h
 2. [Usage](usage/) walks through the six commands.
 3. [World files](world-files/) describes the content format and every reason a file is refused.
 4. [Reference](reference/) lists every command, flag, exit code, and file format.
-5. [Architecture](architecture/) explains the tick, the hash, the solver, and replay.
-6. [Security](security/) states what the engine touches and what it never does.
+5. [Testing](testing/) explains how the engine is checked on every commit, and what is not yet proven.
+6. [Architecture](architecture/) explains the tick, the hash, the solver, and replay.
+7. [Security](security/) states what the engine touches and what it never does.
 
-The design of record is `docs/PHASE-0.md` in the repository, and the plan that built the current engine is `docs/PHASE-1.md`.
+The design of record is `docs/PHASE-0.md` in the repository, the plan that built the current engine is `docs/PHASE-1.md`, and the test suite being built now is `docs/PHASE-2.md`.

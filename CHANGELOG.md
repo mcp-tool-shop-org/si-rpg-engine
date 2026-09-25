@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **A trace and the first difference.** `harness/trace.mjs` prints one line per step with every body's numbers as exact bit patterns, under node and the three engine shells. `harness/first-difference.js` names the first step, body, and field where two traces part. CI prints that block when an engine leaves the golden.
+- **Behaviour numbers beside the golden.** `fixtures/golden-behaviour.json` records each dynamic body's sleep step, every final position, the walker's zone, and the snapshot's length and digest. `npm run check` verifies them, and `write-golden` names each one that moves.
+- **Save and restore.** A world restores by replaying its inputs to a step (`harness/replay-to.mjs`) or by copying the physics module's memory (`imageSolver`, `restoreImage`). Both are proven to continue exactly from several steps chosen at contacts, sleeps, and wakes. An image from another binary, of the wrong length, with a changed byte, or taken during a call is refused.
+- **An ARM64 job in CI.** It runs the pinned x64 binary under node on an ARM64 runner and requires both goldens and an identical trace.
+- **A lint on the compiled physics.** `solver/lint.mjs` runs after every build and refuses relaxed-SIMD instructions, memory or table growth, a growable memory, a start section, passive segments, and bulk-memory initialisation.
+- **Tests of outcomes.** A character course at the controller's measured limits, a thin fast body against a thin wall, terrain seams, and the terrain surface checked against where a dropped box comes to rest. `write-golden` refuses to write while any of them fails.
+
+### Changed
+
+- **The product golden is `e6b312eda2741c30`.** The product scene's climber now stands on a floor; before, it fell for the whole run.
+- **Fixed memory.** The solver's memory is fixed at 512 pages, 32 MiB, with an allocator over that span, and `heapHighWater()` reports its peak. The build exports the stack pointer so a memory image is only taken between calls.
+- **Terrain and fast bodies.** Heightfields are built with Rapier's internal-edge fix, and `max_ccd_substeps` is set to 1 explicitly.
+- **The Linux solver digest is `c311d3aa78ff4fd1d0f66c280f3e9fab572e3517a1915ddd367f6d24ad49cc0b`.**
+
+### Fixed
+
+- **Undefined behaviour in the solver.** `solver_clear_warmstart` wrote warm-start impulses through a pointer cast from a shared reference. It is removed, and the engine no longer writes into Rapier's state from any path.
+- **Memory growth.** The 0.1.0 binary declared no memory maximum, and its allocator could grow memory, which a host may allow or refuse. Memory is now fixed.
+- **The terrain surface.** The actions' support query read a smoothly blended heightfield, while the physics collides with two flat triangles per cell. It now reads the physics' own surface.
+
 ## [0.1.0] - 2026-09-25
 
 The first release. Version numbers before 0.1.0 were internal slice counters and were never tagged or published.

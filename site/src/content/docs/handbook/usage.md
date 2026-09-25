@@ -68,10 +68,26 @@ Open `http://127.0.0.1:4173`. The page is a debug view of the tick and says so. 
 
 The host serves only a world whose file hashes to what `worlds/index.json` holds. An unlisted or drifted world is refused before the first frame.
 
+## Find where two runs part
+
+```bash
+node harness/trace.mjs > a.trace
+node harness/first-difference.js a.trace b.trace
+```
+
+`harness/trace.mjs` runs the product scene and prints one line per step: the fingerprint, then every body's position, velocity, orientation, and angular velocity as exact bit patterns, its zone, what it carries, the solver snapshot's length and digest, and each mind's goals and newest belief. It runs under node and under the V8, SpiderMonkey, and JavaScriptCore shells. `harness/first-difference.js` reads two traces a chunk at a time and prints `identical`, or the first step and the first body and field that differ, with both values in hex and in decimal. It exits 0 when the traces are identical, 1 when they differ, and 2 when one is malformed or cut short.
+
+## Save and restore
+
+A world restores two ways, and neither writes into the physics engine's internal state, which is why both are exact.
+
+- **By replay.** `replayTo(spec, tick)` in `harness/replay-to.mjs` rebuilds a world from its seed and replays its accepted inputs up to a step, ready to continue.
+- **By image.** The generated solver module's `imageSolver()` copies the WebAssembly module's whole linear memory, 32 MiB, and `restoreImage(image)` puts it back. An image carries the binary's SHA-256 and a digest of its own bytes; a restore refuses an image from another binary, one of the wrong length, one with a changed byte, or one taken while a call was still running. `world.save()` and `world.restore(saved)` pair the image with the world's records.
+
 ## Rewrite the golden
 
 ```bash
 npx write-golden
 ```
 
-Runs `harness/sim.mjs` and writes its output to `fixtures/golden.txt`. This is the one command that moves the product golden, and it is used once per change to the law, with the reason in the commit message. It never touches the arithmetic golden.
+Runs the character course and the outcome tests first, and refuses to write while any of them fails. Then it runs `harness/sim.mjs`, writes `fixtures/golden.txt` and `fixtures/golden-behaviour.json`, and prints every behaviour number that moved, so the commit can say what changed and why. This is the one command that moves the product golden, and it is used once per change to the law. It never touches the arithmetic golden.

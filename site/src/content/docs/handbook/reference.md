@@ -45,7 +45,7 @@ The proposer instrument. Frozen: exits 2 without `--unfreeze`. When unfrozen it 
 
 ### `write-golden`
 
-Runs `harness/sim.mjs` and writes its output to `fixtures/golden.txt`.
+Runs the character course and the outcome tests, and refuses to write while any fails. Then runs `harness/sim.mjs`, writes `fixtures/golden.txt` and `fixtures/golden-behaviour.json`, and prints each behaviour number that moved.
 
 Every command accepts `--help` and `--debug`.
 
@@ -77,19 +77,33 @@ A rule without `effect` compiles as `drive`.
 |---|---|
 | `fixtures/golden.txt` | the product golden from `harness/sim.mjs` |
 | `fixtures/golden-arith.txt` | the arithmetic contract from `harness/arith.mjs`, `0d38671370d12d1e` |
+| `fixtures/golden-behaviour.json` | the behaviour numbers beside the product golden: sleep steps, final positions, the walker's zone, the snapshot's length and digest |
 | `fixtures/solver.sha256` | the SHA-256 of the Linux build of the solver binary |
 | `fixtures/behavior-*.json` | captures that replay frame for frame on the product law |
 | `fixtures/shape-traversal.json` | the traversal frames that settled the character's shape as a box |
 | `fixtures/*-draft.json` | the verb drafts admitted into the catalog |
 | `fixtures/first-scene-played.json` and three other captures | records from before the law was three-dimensional; the loader refuses each, and a test holds that |
 
+## Harness tools
+
+| Tool | What it does | Exit codes |
+|---|---|---|
+| `node harness/trace.mjs` | prints the product scene's trace, one line per step; also runs under the three engine shells | 0 |
+| `node harness/first-difference.js <a.trace> <b.trace>` | names the first step, body, and field where two traces part | 0 identical, 1 different, 2 malformed |
+| `node solver/lint.mjs [file.wasm]` | refuses a binary with host-chosen instructions, memory or table growth, a growable memory, a start section, passive segments, or bulk-memory initialisation | 0 clean, 1 refused |
+| `node harness/check.js` | both goldens and the behaviour numbers under node (`npm run check`) | 0 matches, 1 differs |
+
+## The solver module
+
+`node solver/build.mjs` generates `solver/dist/solver.mjs`, which exports `loadSolver` and `stepSolver` for the product law, `snapshotBytes`, `imageSolver` and `restoreImage` for memory images, `imageRefusal` with the reason for the last refusal, `binaryDigest`, `stackPointer`, `heapHighWater` with the allocator's peak, and `canonZero`.
+
 ## Scripts
 
 | Script | Runs |
 |---|---|
-| `npm run verify` | typecheck, the suite, both goldens under node |
-| `npm test` | builds the solver, then the suite |
+| `npm run verify` | typecheck, the suite, both goldens and the behaviour numbers under node |
+| `npm test` | builds and lints the solver, then the suite |
 | `npm run typecheck` | `tsc -p tsconfig.json`, nothing emitted |
-| `npm run check` | both harnesses against their golden files |
+| `npm run check` | both harnesses against their golden files, and the behaviour numbers |
 | `npm run solver` | builds the solver and writes the digest on Linux |
 | `npm run audit:deps` | `npm audit --audit-level=high` |
