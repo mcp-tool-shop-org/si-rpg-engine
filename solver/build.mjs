@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { facts, lintWasm } from './lint.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const solver = join(root, 'solver');
@@ -21,9 +22,15 @@ const cargo = process.env.CARGO || 'cargo';
 // between hosts. Remapping strips both. Windows still writes backslashes into
 // the remainder of each path, so the two hosts never produce identical bytes:
 // the pinned artifact is the Linux build, and only a Linux build may write the
-// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD pin is
-// repeated here. The stack pointer is exported so an image of linear memory
-// can be refused unless it is at its base (see imageSolver below).
+// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD default
+// is repeated here. The flag sets the default feature set only; a function
+// marked #[target_feature(enable = "relaxed-simd")] still emits relaxed
+// instructions, so the lint below is what keeps them out. The stack pointer is
+// exported so an image of linear memory can be refused unless it is at its
+// base (see imageSolver below).
+//
+// The memory is not set here: solver/build.rs passes the linker 512 fixed
+// pages and --no-growable-memory, which RUSTFLAGS cannot drop.
 const cargoHome = process.env.CARGO_HOME || join(process.env.HOME || process.env.USERPROFILE || '', '.cargo');
 const rustflags = [
   '-C', 'target-feature=-relaxed-simd',
@@ -45,6 +52,16 @@ if (built.status !== 0) {
 }
 
 const wasm = readFileSync(wasmPath);
+// The lint runs on every build, before the digest: a binary with a relaxed-SIMD
+// instruction, a memory.grow, or a memory that can grow is not emitted.
+const lint = lintWasm(wasm);
+if (!lint.ok) {
+  for (const reason of lint.reasons) {
+    process.stderr.write('lint refused ' + wasmPath + ': ' + reason + '\n');
+  }
+  process.exit(1);
+}
+process.stderr.write(facts(lint) + '\n');
 const digest = createHash('sha256').update(wasm).digest('hex');
 const linux = process.platform === 'linux';
 if (check) {
@@ -472,6 +489,17 @@ export function imageRefusal() {
 /** The exported stack pointer and its base, for the tests. */
 export function stackPointer() {
   return { value: instantiate().exports.__stack_pointer.value, base: stackBase };
+}
+
+/**
+ * The heap's high-water mark: the highest address any allocation reached, in
+ * bytes, and in pages of the fixed memory. The memory's own page count is fixed,
+ * so this is the number that says how close a world came to trapping.
+ */
+export function heapHighWater() {
+  const exp = instantiate().exports;
+  const bytes = exp.heap_high_water() >>> 0;
+  return { bytes, pages: Math.ceil(bytes / PAGE), of: exp.memory.buffer.byteLength / PAGE };
 }
 
 /** +0 for both signed zeros. NaN stays NaN. */

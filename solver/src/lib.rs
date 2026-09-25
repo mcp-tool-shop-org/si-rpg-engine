@@ -2,6 +2,8 @@
 // f64 only. No other operation than add, sub, mul, div, and sqrt.
 // The product step lives in rapier_law and does not replace this function.
 
+#[cfg(target_arch = "wasm32")]
+mod arena;
 mod rapier_law;
 
 const DT: f64 = 1.0 / 64.0;

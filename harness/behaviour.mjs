@@ -4,11 +4,12 @@
 
 import { runProduct, PRODUCT_STEPS } from './product-run.mjs';
 import { productDriven } from './product-scene.mjs';
+import { snapshotDigest } from './trace-line.mjs';
 
 /**
  * @typedef {{ x: number, y: number, z: number }} Position
  * @typedef {{ sleep: Record<string, number | null>, final: Record<string, Position> }} CaseBehaviour
- * @typedef {CaseBehaviour & { scene: string, quanta: number, walkerZone: string | null, snapshotBytes: { load: number | null, last: number | null } }} ProductBehaviour
+ * @typedef {CaseBehaviour & { scene: string, quanta: number, walkerZone: string | null, snapshotBytes: { load: number | null, last: number | null }, snapshotDigest: { load: string | null, last: string | null } }} ProductBehaviour
  */
 
 /** @param {number} v */
@@ -68,6 +69,10 @@ export function productBehaviour() {
   /** @type {number | null} */
   let last = null;
   /** @type {string | null} */
+  let loadDigest = null;
+  /** @type {Uint8Array | null} */
+  let lastSnap = null;
+  /** @type {string | null} */
   let walkerZone = null;
   /** @type {Record<string, Position>} */
   let final = {};
@@ -79,8 +84,10 @@ export function productBehaviour() {
     const snap = world.snapshot();
     if (tick === 0) {
       load = snap ? snap.length : null;
+      loadDigest = snap ? snapshotDigest(snap) : null;
     }
     last = snap ? snap.length : null;
+    lastSnap = snap;
     walkerZone = world.zoneOf('walker');
     final = finalPositions(world.bodies);
   });
@@ -91,6 +98,7 @@ export function productBehaviour() {
     final,
     walkerZone,
     snapshotBytes: { load, last },
+    snapshotDigest: { load: loadDigest, last: lastSnap ? snapshotDigest(lastSnap) : null },
     hash,
   };
 }
@@ -134,11 +142,24 @@ export function behaviourDifferences(expected, actual) {
   if ('walkerZone' in expected || 'walkerZone' in actual) {
     note('body walker final zone', expected.walkerZone, actual.walkerZone);
   }
-  if (expected.snapshotBytes || actual.snapshotBytes) {
-    const want = expected.snapshotBytes || { load: null, last: null };
-    const got = actual.snapshotBytes || { load: null, last: null };
-    note('snapshot bytes at load', want.load, got.load);
-    note('snapshot bytes at the last quantum', want.last, got.last);
+  // A changed length means the snapshot's encoding changed. A changed digest
+  // at the same length means the values in it changed. The digest mixes the
+  // length, so it is named only when the length held.
+  if (expected.snapshotBytes || actual.snapshotBytes || expected.snapshotDigest || actual.snapshotDigest) {
+    const wantBytes = expected.snapshotBytes || { load: null, last: null };
+    const gotBytes = actual.snapshotBytes || { load: null, last: null };
+    const wantDigest = expected.snapshotDigest || { load: null, last: null };
+    const gotDigest = actual.snapshotDigest || { load: null, last: null };
+    /** @type {Array<['load' | 'last', string]>} */
+    const moments = [['load', 'at load'], ['last', 'at the last quantum']];
+    for (const [key, where] of moments) {
+      if (!Object.is(wantBytes[key], gotBytes[key])) {
+        out.push('snapshot bytes ' + where + ': expected ' + String(wantBytes[key]) + ', got ' + String(gotBytes[key]) + ': the encoding changed');
+      } else if (!Object.is(wantDigest[key], gotDigest[key])) {
+        const why = wantDigest[key] === null ? ': not recorded before' : ': same length, the values changed';
+        out.push('snapshot digest ' + where + ': expected ' + String(wantDigest[key]) + ', got ' + String(gotDigest[key]) + why);
+      }
+    }
   }
   return out;
 }

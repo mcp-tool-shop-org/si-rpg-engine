@@ -263,7 +263,7 @@
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "736c2177f2b62a689bb55a816051a7781b519aed22a872a8203b8da04b3e410d",
+          "hash": "38e3c849175a809472576a732a4022db37cb89ec5de3e9eaee1e8c9a7b278d6e",
           "path": "fixtures/golden-behaviour.json"
         },
         {
@@ -295,7 +295,7 @@
           "path": "fixtures/shape-traversal.json"
         },
         {
-          "hash": "1093b16c3ed9092a5842feb932edbfc57a5f795b72275319d7de172bfc567350",
+          "hash": "cdfea0c6531a3000d2da825db0b1e290e312b5130693dd54b71cd87a8de51f22",
           "path": "fixtures/solver.sha256"
         },
         {
@@ -348,7 +348,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 9,
+      "testedBy": 11,
       "unresolvedSites": 0
     },
     {
@@ -375,17 +375,32 @@
             "productBehaviour",
             "sleepWatch"
           ],
-          "hash": "afd948bfd0a795261b0ced8f111f979d8a3b9ed990890ec8fb8f57153ac980a7",
+          "hash": "fb0a4e005a69b09865beb46d367d76288b84c8b9adf6c8d7d6a8c045efdd526e",
           "importsFiles": [
             "harness/product-run.mjs",
-            "harness/product-scene.mjs"
+            "harness/product-scene.mjs",
+            "harness/trace-line.mjs"
           ],
           "path": "harness/behaviour.mjs"
         },
         {
+          "entry": "capsWorld",
+          "entryRule": 1,
+          "exports": [
+            "capsWorld"
+          ],
+          "hash": "f230868cf1d36f002c65722210c5ae0eb41ef9d44046ca714b756639b720a373",
+          "importsFiles": [
+            "packages/frame/hash.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/caps.test.js",
+          "sequences": []
+        },
+        {
           "entry": "match",
           "entryRule": 1,
-          "hash": "2694eaec99c03a2bb68c5dcc5ca4aa77ed829857e88d335cef577791a2e2c707",
+          "hash": "dbf3050379dbdbbbd38b989ad2ce719978ad8599e521104cd3917ce7f46d51bd",
           "importsFiles": [
             "harness/behaviour.mjs"
           ],
@@ -395,7 +410,7 @@
         {
           "entry": "check",
           "entryRule": 1,
-          "hash": "f6a48c346ae70e28e7d1979a39c2b4fdf51ddbb2d879342e3557fbbe058c56bd",
+          "hash": "524680484cf946d91ca39a1ed054de41d23755a0e559f0b71eda59ac4bf3da19",
           "importsFiles": [
             "harness/behaviour.mjs"
           ],
@@ -748,7 +763,7 @@
         {
           "entry": "restingStack",
           "entryRule": 1,
-          "hash": "182e0dea2cc25a1b4ea78032b1fe904af42cd6ec651ce174e374b26306603a17",
+          "hash": "bac97f8a2fa2bc66afa790a4582da8c615eed445169f3be1576a5047b9f1c926",
           "importsFiles": [
             "harness/product-scene.mjs",
             "harness/solver-scene.mjs",
@@ -788,6 +803,16 @@
               "name": "snapDigest"
             }
           ]
+        },
+        {
+          "entry": "hostChosen",
+          "entryRule": 1,
+          "exports": [
+            "hostChosen"
+          ],
+          "hash": "8e1b8d5e92f62141e63453f371b350cb1d80b770eb080c2071f8b8dc8a10740a",
+          "path": "harness/source.test.js",
+          "sequences": []
         },
         {
           "entry": "assertOracle",
@@ -837,11 +862,12 @@
           "exports": [
             "bits",
             "endLine",
+            "snapshotDigest",
             "snapshotField",
             "thrownLine",
             "traceLine"
           ],
-          "hash": "de1cf0ea04d0c2d59e42b620ab9ce37b62c7e4f7be08cffb494c7119e568f89d",
+          "hash": "353411af262a39a45fc0756ea21278b9638b5604eac7f4cbdfff524a996cba35",
           "importsFiles": [
             "packages/frame/hash.js"
           ],
@@ -865,11 +891,27 @@
             {
               "calls": [
                 {
-                  "line": 43,
+                  "line": 42,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "snapshotDigest"
+            },
+            {
+              "calls": [
+                {
+                  "line": 42,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  },
+                  "via": "snapshotDigest"
                 }
               ],
               "exported": true,
@@ -888,35 +930,35 @@
                   "via": "bits"
                 },
                 {
-                  "line": 71,
+                  "line": 80,
                   "name": "zoneIndex",
                   "target": null
                 },
                 {
-                  "line": 73,
+                  "line": 82,
                   "name": "carryingOf",
                   "target": null
                 },
                 {
-                  "line": 74,
+                  "line": 83,
                   "name": "carriedByOf",
                   "target": null
                 },
                 {
-                  "line": 78,
+                  "line": 87,
                   "name": "snapshot",
                   "target": null
                 },
                 {
-                  "line": 43,
+                  "line": 42,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   },
-                  "via": "snapshotField"
+                  "via": "snapshotDigest"
                 },
                 {
-                  "line": 86,
+                  "line": 95,
                   "name": "mindBeliefs",
                   "target": null
                 }
@@ -980,7 +1022,7 @@
       "outsideReads": 3,
       "role": "test",
       "testedBy": 8,
-      "unresolvedSites": 4
+      "unresolvedSites": 5
     },
     {
       "dynamicReads": 0,
@@ -1905,11 +1947,11 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "a332870096e7772576d16f076d6878884036d5f06a60cafe49dff1380af34fd8",
+          "hash": "4e00ba64dde35fbe17d4a2b3fda3743be2b869eac9cdff061474eb9955760ef7",
           "path": "package.json"
         },
         {
-          "hash": "4023948bc6c10a342973af02c2202df98a161bd8997edf472af4dcb3a04ba46b",
+          "hash": "55fbb4be1bff25a8056987c29a9274107d5b969366bd7f782ef8c92a54a89b52",
           "path": "tsconfig.json"
         }
       ],
@@ -1925,42 +1967,628 @@
     },
     {
       "dynamicReads": 0,
-      "dynamicSpawns": 1,
-      "dynamicSpawnsInTests": 0,
+      "dynamicSpawns": 3,
+      "dynamicSpawnsInTests": 2,
       "dynamicWrites": 0,
       "entryPoints": [],
       "externals": 0,
       "files": [
         {
-          "hash": "033def90906e1b0c4519436b1826feaa50911a52eca4d59deb1a182cd996d931",
+          "hash": "2704a712551f5569da8f4d3105dce97beb23dcdae498234a1bcd1b6e3f4b1903",
           "path": "solver/.cargo/config.toml"
         },
         {
-          "hash": "ce66841ba06beb7cd21ad546e11bea4178e6490bf372a9b3d65ce519af1d72c8",
+          "hash": "697226cc350e0ebc7a620175fc14c6a11b282de3b98ae8d4b491bbfc9af5430b",
           "path": "solver/Cargo.lock"
         },
         {
-          "hash": "391cb23d4b027828e34cf35cf2efa2372029ccfb6ec86806bdada450e8f1c1b1",
+          "hash": "f85018d264beb7987e6d70dfb39dd2df9808b360d2c19b580f265f46bbe78c96",
           "path": "solver/Cargo.toml"
         },
         {
-          "hash": "8dd97557bab42ca26868c5f7a67ff8ca5d49e95777da970270cec86209f6cd8d",
+          "hash": "b47a7b4a20bd2db36ee3464bde21c990e2e8506c89c3c2b5e795fd4c4da23bf9",
           "path": "solver/FLAGS.md"
         },
         {
-          "hash": "2d2ecc3ec08919ce7b2ebc33601d763ff6f226d94c3ab816de7ac1039eec5302",
+          "hash": "04d202e88fa23734c42f9567b6286be5109de4e43a979c5bb332fa88fe51c0c0",
+          "importsFiles": [
+            "solver/lint.mjs"
+          ],
           "path": "solver/build.mjs"
+        },
+        {
+          "hash": "5b0c9aebb99ca948b24fcf2f3219dfd0df5731cac65beeab8fdac40691259688",
+          "path": "solver/build.rs"
+        },
+        {
+          "entry": "lintWasm",
+          "entryRule": 1,
+          "exports": [
+            "facts",
+            "lintWasm"
+          ],
+          "hash": "d94d89d54ee6c293ec8a277c66a7d44b3653b79996a32100bbb6cc13b782d5dc",
+          "path": "solver/lint.mjs",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 127,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 131,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "limits"
+            },
+            {
+              "calls": [
+                {
+                  "line": 140,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "memarg"
+            },
+            {
+              "calls": [
+                {
+                  "line": 152,
+                  "name": "signed",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "heaptype"
+            },
+            {
+              "calls": [
+                {
+                  "line": 161,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 152,
+                  "name": "signed",
+                  "target": null,
+                  "via": "heaptype"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "valtype"
+            },
+            {
+              "calls": [
+                {
+                  "line": 174,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "branch": "b === 0x63 || b === 0x64",
+                  "line": 152,
+                  "name": "signed",
+                  "target": null,
+                  "via": "heaptype"
+                },
+                {
+                  "line": 186,
+                  "name": "signed",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "blocktype"
+            },
+            {
+              "calls": [
+                {
+                  "line": 197,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 202,
+                  "name": "signed",
+                  "target": null
+                },
+                {
+                  "line": 206,
+                  "name": "skip",
+                  "target": null
+                },
+                {
+                  "line": 210,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 152,
+                  "name": "signed",
+                  "target": null,
+                  "via": "heaptype"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "constExpr"
+            },
+            {
+              "calls": [
+                {
+                  "line": 229,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 161,
+                  "name": "byte",
+                  "target": null,
+                  "via": "valtype"
+                },
+                {
+                  "line": 152,
+                  "name": "signed",
+                  "target": null,
+                  "via": "heaptype"
+                },
+                {
+                  "line": 236,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 186,
+                  "name": "signed",
+                  "target": null,
+                  "via": "blocktype"
+                },
+                {
+                  "line": 244,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 268,
+                  "name": "signed",
+                  "target": null
+                },
+                {
+                  "line": 272,
+                  "name": "skip",
+                  "target": null
+                },
+                {
+                  "line": 300,
+                  "name": "u32",
+                  "target": null,
+                  "via": "misc"
+                },
+                {
+                  "line": 339,
+                  "name": "skip",
+                  "target": null,
+                  "via": "simd"
+                },
+                {
+                  "line": 341,
+                  "name": "byte",
+                  "target": null,
+                  "via": "simd"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "body"
+            },
+            {
+              "calls": [
+                {
+                  "line": 300,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "misc"
+            },
+            {
+              "calls": [
+                {
+                  "line": 327,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 339,
+                  "name": "skip",
+                  "target": null
+                },
+                {
+                  "line": 341,
+                  "name": "byte",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "simd"
+            },
+            {
+              "calls": [
+                {
+                  "line": 354,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 197,
+                  "name": "byte",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 202,
+                  "name": "signed",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 206,
+                  "name": "skip",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 210,
+                  "name": "u32",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 152,
+                  "name": "signed",
+                  "target": null,
+                  "via": "heaptype"
+                },
+                {
+                  "line": 161,
+                  "name": "byte",
+                  "target": null,
+                  "via": "valtype"
+                },
+                {
+                  "line": 380,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "elements"
+            },
+            {
+              "calls": [
+                {
+                  "line": 397,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 197,
+                  "name": "byte",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 202,
+                  "name": "signed",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 206,
+                  "name": "skip",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 210,
+                  "name": "u32",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 152,
+                  "name": "signed",
+                  "target": null,
+                  "via": "heaptype"
+                },
+                {
+                  "line": 412,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 412,
+                  "name": "skip",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "data"
+            },
+            {
+              "calls": [
+                {
+                  "line": 161,
+                  "name": "byte",
+                  "target": null,
+                  "via": "valtype"
+                },
+                {
+                  "line": 152,
+                  "name": "signed",
+                  "target": null,
+                  "via": "heaptype"
+                },
+                {
+                  "line": 127,
+                  "name": "byte",
+                  "target": null,
+                  "via": "limits"
+                },
+                {
+                  "line": 131,
+                  "name": "u32",
+                  "target": null,
+                  "via": "limits"
+                },
+                {
+                  "line": 197,
+                  "name": "byte",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 202,
+                  "name": "signed",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 206,
+                  "name": "skip",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 210,
+                  "name": "u32",
+                  "target": null,
+                  "via": "constExpr"
+                },
+                {
+                  "line": 377,
+                  "name": "byte",
+                  "target": null,
+                  "via": "elements"
+                },
+                {
+                  "line": 380,
+                  "name": "u32",
+                  "target": null,
+                  "via": "elements"
+                },
+                {
+                  "line": 236,
+                  "name": "byte",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 186,
+                  "name": "signed",
+                  "target": null,
+                  "via": "blocktype"
+                },
+                {
+                  "line": 244,
+                  "name": "u32",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 268,
+                  "name": "signed",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 272,
+                  "name": "skip",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 300,
+                  "name": "u32",
+                  "target": null,
+                  "via": "misc"
+                },
+                {
+                  "line": 339,
+                  "name": "skip",
+                  "target": null,
+                  "via": "simd"
+                },
+                {
+                  "line": 341,
+                  "name": "byte",
+                  "target": null,
+                  "via": "simd"
+                },
+                {
+                  "line": 397,
+                  "name": "u32",
+                  "target": null,
+                  "via": "data"
+                },
+                {
+                  "line": 412,
+                  "name": "skip",
+                  "target": null,
+                  "via": "data"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "lintWasm"
+            }
+          ]
+        },
+        {
+          "entry": "reasons",
+          "entryRule": 1,
+          "hash": "040b47984e8909d2e5c994791df741b5b35b2ac440592d72294c022761c8dd9a",
+          "importsFiles": [
+            "solver/lint.mjs"
+          ],
+          "path": "solver/lint.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 161,
+                      "name": "byte",
+                      "target": null,
+                      "via": "valtype"
+                    },
+                    {
+                      "line": 152,
+                      "name": "signed",
+                      "target": null,
+                      "via": "heaptype"
+                    },
+                    {
+                      "line": 127,
+                      "name": "byte",
+                      "target": null,
+                      "via": "limits"
+                    },
+                    {
+                      "line": 131,
+                      "name": "u32",
+                      "target": null,
+                      "via": "limits"
+                    },
+                    {
+                      "line": 197,
+                      "name": "byte",
+                      "target": null,
+                      "via": "constExpr"
+                    },
+                    {
+                      "line": 202,
+                      "name": "signed",
+                      "target": null,
+                      "via": "constExpr"
+                    },
+                    {
+                      "line": 206,
+                      "name": "skip",
+                      "target": null,
+                      "via": "constExpr"
+                    },
+                    {
+                      "line": 210,
+                      "name": "u32",
+                      "target": null,
+                      "via": "constExpr"
+                    },
+                    {
+                      "line": 377,
+                      "name": "byte",
+                      "target": null,
+                      "via": "elements"
+                    },
+                    {
+                      "line": 380,
+                      "name": "u32",
+                      "target": null,
+                      "via": "elements"
+                    },
+                    {
+                      "line": 236,
+                      "name": "byte",
+                      "target": null,
+                      "via": "body"
+                    },
+                    {
+                      "line": 186,
+                      "name": "signed",
+                      "target": null,
+                      "via": "blocktype"
+                    }
+                  ],
+                  "innerTruncated": true,
+                  "line": 171,
+                  "name": "lintWasm",
+                  "target": {
+                    "file": "solver/lint.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "reasons"
+            }
+          ]
         },
         {
           "hash": "2f94b39aa38b64a0ac150325f58e30ec78740a68fb2b280c2d71107292ddf267",
           "path": "solver/rust-toolchain.toml"
         },
         {
-          "hash": "ec1e27ef8843354eed33b6c70d795a36246011d482aafe4450ffa1e614a6c7cf",
+          "hash": "2b88b1acb314f70c85c855a09f2e964ddff4f675c8b0db208975e38a569061ce",
+          "path": "solver/src/arena.rs"
+        },
+        {
+          "hash": "99c149bbb150d22f45e6c2b179e6cf6896dccf58291161e88b7f51c7c60b7501",
           "path": "solver/src/lib.rs"
         },
         {
-          "hash": "fc4d05a0cf0a1c956011069cea3569857fd271cb084893e50463dc43fb2b30df",
+          "hash": "0bcda7583353eb8e9f4076eec4d94d617b894b4388152fdd3aa7e9ad89151491",
           "path": "solver/src/rapier_law.rs"
         }
       ],
@@ -1970,9 +2598,10 @@
       "importConfidence": "full",
       "name": "solver",
       "origin": "authored",
+      "outsideReads": 1,
       "role": "code",
-      "testedBy": 0,
-      "unresolvedSites": 0
+      "testedBy": 1,
+      "unresolvedSites": 1
     },
     {
       "dynamicReads": 1,
@@ -2129,6 +2758,120 @@
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
               "name": "minded"
+            }
+          ]
+        },
+        {
+          "entry": "firstHashes",
+          "entryRule": 1,
+          "hash": "173c107d298a5e88e295d69f267291f57089fe3b6663c9b8147e49e2ea5e691d",
+          "importsFiles": [
+            "packages/tick/admit-world.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/scene.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/order.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 25,
+                  "name": "validateScene",
+                  "target": {
+                    "file": "packages/tick/scene.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "authored"
+            },
+            {
+              "calls": [
+                {
+                  "line": 37,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 38,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 38,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 39,
+                      "name": "createHasher",
+                      "target": {
+                        "file": "packages/frame/hash.js"
+                      }
+                    },
+                    {
+                      "line": 59,
+                      "name": "installMinds",
+                      "target": {
+                        "file": "packages/tick/minds.js"
+                      }
+                    },
+                    {
+                      "line": 62,
+                      "name": "mixLoad",
+                      "target": null
+                    },
+                    {
+                      "line": 64,
+                      "name": "mixMinds",
+                      "target": {
+                        "file": "packages/tick/minds.js"
+                      }
+                    },
+                    {
+                      "line": 78,
+                      "name": "snapshot",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 82,
+                      "name": "u32",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 68,
+                      "name": "commitFrame",
+                      "target": {
+                        "file": "packages/frame/frame.js"
+                      }
+                    }
+                  ],
+                  "line": 38,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "firstHashes"
             }
           ]
         },
@@ -2908,7 +3651,7 @@
       "outsideReads": 9,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 12,
+      "testedBy": 14,
       "unresolvedSites": 2
     },
     {
@@ -2920,7 +3663,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "6f14a316347367c1d9e31e1d4d417c635204af788cb69d4438be591739562e90",
+          "hash": "115f6970c197683a1977bd9bde83e89a9e7aa5b88bac6133d97a02b40d8e7427",
           "path": ".github/workflows/ci.yml"
         },
         {
@@ -2989,6 +3732,11 @@
         },
         {
           "job": "engines",
+          "step": "Lint the pinned binary",
+          "text": "node solver/lint.mjs"
+        },
+        {
+          "job": "engines",
           "step": "Check the kernel contract",
           "text": "npm run typecheck"
         },
@@ -3021,12 +3769,52 @@
           "job": "engines",
           "step": "Check the Atlas map",
           "text": "npx --yes @dogfood-lab/atlas@1.17.0 check"
+        },
+        {
+          "job": "engines",
+          "step": "Collect the x64 artifacts for the ARM lane",
+          "text": "set -euo pipefail\nmkdir -p \"$RUNNER_TEMP/x64\"\ncp solver/dist/solver.mjs \"$RUNNER_TEMP/x64/solver.mjs\"\ncp \"$RUNNER_TEMP/traces/node.trace\" \"$RUNNER_TEMP/x64/node.trace\"\n"
+        },
+        {
+          "job": "arm",
+          "step": "Install the x64 solver module and check its bytes",
+          "text": "set -euo pipefail\nuname -m\nmkdir -p solver/dist\ncp \"$RUNNER_TEMP/x64/solver.mjs\" solver/dist/solver.mjs\nnode --input-type=module -e \"\n  import { createHash } from 'node:crypto';\n  import { readFileSync, writeFileSync } from 'node:fs';\n  import { bytes } from './solver/dist/solver.mjs';\n  const digest = createHash('sha256').update(bytes).digest('hex');\n  const pinned = readFileSync('fixtures/solver.sha256', 'utf8').trim();\n  if (digest !== pinned) {\n    console.error('the x64 module embeds ' + digest + ', not the pinned ' + pinned);\n    process.exit(1);\n  }\n  writeFileSync(process.env.RUNNER_TEMP + '/si_solver.wasm', bytes);\n  console.log('the module embeds the pinned binary ' + digest);\n\"\nnode solver/lint.mjs \"$RUNNER_TEMP/si_solver.wasm\"\n"
+        },
+        {
+          "job": "arm",
+          "step": "Compare node on ARM64 to the golden hashes",
+          "text": "set -euo pipefail\nfor pair in \"harness/sim.mjs fixtures/golden.txt\" \"harness/arith.mjs fixtures/golden-arith.txt\"; do\n  set -- $pair\n  golden=$(tr -d '\\r\\n' < \"$2\")\n  got=$(node \"$1\" | tr -d '\\r\\n')\n  if [ \"$got\" != \"$golden\" ]; then\n    echo \"$1 node arm64 [$got] golden [$golden]\"\n    exit 1\n  fi\n  echo \"$1 node arm64 matches $golden\"\ndone\n"
+        },
+        {
+          "job": "arm",
+          "step": "Trace the product scene and diff it against the x64 trace",
+          "text": "set -euo pipefail\nmkdir -p \"$RUNNER_TEMP/traces\"\nnode harness/trace.mjs > \"$RUNNER_TEMP/traces/arm64.trace\"\nif out=$(node harness/first-difference.js \"$RUNNER_TEMP/x64/node.trace\" \"$RUNNER_TEMP/traces/arm64.trace\"); then\n  echo \"x64 arm64 $out\"\nelse\n  echo \"x64 arm64\"\n  echo \"$out\"\n  exit 1\nfi\n"
         }
       ],
       "elsewhere": [],
       "file": ".github/workflows/ci.yml",
       "landings": [],
       "mentions": [
+        {
+          "job": "arm",
+          "path": "fixtures/golden-arith.txt"
+        },
+        {
+          "job": "arm",
+          "path": "fixtures/golden.txt"
+        },
+        {
+          "job": "arm",
+          "path": "fixtures/solver.sha256"
+        },
+        {
+          "job": "arm",
+          "path": "harness/arith.mjs"
+        },
+        {
+          "job": "arm",
+          "path": "harness/sim.mjs"
+        },
         {
           "job": "engines",
           "path": "tsconfig.json"
@@ -3049,7 +3837,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 20
+          "files": 22
         },
         {
           "boundary": "host",
@@ -3069,12 +3857,12 @@
         {
           "boundary": "solver",
           "depth": 0,
-          "files": 1
+          "files": 3
         },
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 17
+          "files": 18
         }
       ],
       "readers": [],
@@ -3103,12 +3891,22 @@
         },
         {
           "job": "engines",
+          "path": "harness/caps.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "harness/check.js",
           "runKind": "executes"
         },
         {
           "job": "engines",
           "path": "harness/check.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "arm",
+          "path": "harness/first-difference.js",
           "runKind": "executes"
         },
         {
@@ -3173,6 +3971,11 @@
         },
         {
           "job": "engines",
+          "path": "harness/source.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "harness/surface.test.js",
           "runKind": "executes"
         },
@@ -3182,6 +3985,11 @@
           "path": "harness/trace-line.mjs",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "arm",
+          "path": "harness/trace.mjs",
+          "runKind": "executes"
         },
         {
           "job": "engines",
@@ -3282,6 +4090,11 @@
         },
         {
           "job": "engines",
+          "path": "packages/tick/order.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "packages/tick/scene.test.js",
           "runKind": "executes"
         },
@@ -3307,9 +4120,24 @@
           "job": "engines",
           "path": "solver/build.mjs",
           "runKind": "executes"
+        },
+        {
+          "job": "arm",
+          "path": "solver/lint.mjs",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "solver/lint.mjs",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "solver/lint.test.js",
+          "runKind": "executes"
         }
       ],
-      "runsCount": 38,
+      "runsCount": 43,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -3365,6 +4193,7 @@
       "uses": [
         "Swatinem/rust-cache",
         "actions/checkout",
+        "actions/download-artifact",
         "actions/setup-node",
         "actions/upload-artifact",
         "dtolnay/rust-toolchain"
@@ -3751,7 +4580,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 5
+          "files": 6
         },
         {
           "boundary": "frame",
@@ -3797,6 +4626,10 @@
           "call": "readFileSync",
           "confidence": "ast",
           "target": "fixtures/golden-behaviour.json"
+        },
+        {
+          "by": ".github/workflows/ci.yml",
+          "target": "fixtures/golden.txt"
         },
         {
           "by": "harness/check.js",
@@ -3892,8 +4725,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "8e86882da021c62be065a647f79ec8047df0604d",
-    "tracked": 201
+    "commit": "a276cd715d477579cbf1722a68c8f662210f219e",
+    "tracked": 208
   },
   "landings": [
     {
@@ -4083,6 +4916,9 @@
     {
       "readers": [
         {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
@@ -4126,6 +4962,9 @@
     },
     {
       "readers": [
+        {
+          "by": ".github/workflows/ci.yml"
+        },
         {
           "by": "harness/check.js",
           "call": "literal",
@@ -4196,6 +5035,9 @@
     {
       "readers": [
         {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "solver/build.mjs",
           "call": "readFileSync",
           "confidence": "ast"
@@ -4216,12 +5058,33 @@
     {
       "readers": [
         {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "harness/arith.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/caps.test.js",
       "writers": []
     },
     {
@@ -4257,9 +5120,54 @@
     {
       "readers": [
         {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/minds-scene.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/product-run.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/product-scene.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         },
         {
           "by": "site/src/content/docs/handbook/getting-started.md",
@@ -4273,6 +5181,18 @@
     {
       "readers": [
         {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/solver-scene.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "harness/trace.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -4280,6 +5200,18 @@
         }
       ],
       "target": "harness/trace.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/verbs-scene.mjs",
       "writers": []
     },
     {
@@ -4381,6 +5313,18 @@
         }
       ],
       "target": "packages/tick/bin/replay.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/tick/fixture.js",
       "writers": []
     },
     {
@@ -4552,7 +5496,40 @@
     {
       "readers": [
         {
+          "by": "solver/lint.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "solver/lint.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "solver/lint.test.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "solver/build.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "solver/lint.mjs",
           "call": "readFileSync",
           "confidence": "ast"
         }
@@ -4630,6 +5607,12 @@
           "fromTests": true
         },
         {
+          "by": "packages/tick/order.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/scene.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -4660,7 +5643,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 13,
+  "testFiles": 17,
   "unassigned": [
     {
       "exports": [
