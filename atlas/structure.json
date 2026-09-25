@@ -215,23 +215,23 @@
           "path": "fixtures/behavior-3d.json"
         },
         {
-          "hash": "29bdfdbfc9c12ff7e584fe451f11b2a3e827fe008dc89cb4c534a9a8b38fa5c9",
+          "hash": "68b1f799d1eef967ca3ebdd2b6273cdf086f300b4742c34cb5af08c50c778a5b",
           "path": "fixtures/behavior-minds.json"
         },
         {
-          "hash": "32bb6394c8cc9ce1c2fb20230555e81e05925787d11bcccedf3177ffb57c2429",
+          "hash": "3342d5cc96194e95bb41928da05aff7975a5a81d68a8f7e6bd903a09a6910f14",
           "path": "fixtures/behavior-ramp.json"
         },
         {
-          "hash": "133c0e51c436ad497efb1d1b2782bb0037df5948878119a26c390c5c33f0f1d3",
+          "hash": "f964a2087648507488e4b743f4c79837e5afac4172ef37371f6fa21a10d3c950",
           "path": "fixtures/behavior-rotation.json"
         },
         {
-          "hash": "c7a72a67ab990a4096248810478a4dc5da3e971983c6da4e7246bd0fd6c3e46b",
+          "hash": "dda6753e04a4cf8128cf2b68852253f4d4c3ee87e76d647a2dea9942bf1d33f0",
           "path": "fixtures/behavior-solver.json"
         },
         {
-          "hash": "426a9a915725fce987781a9f7419a1430613b2accc7c14d43042f61112d2a007",
+          "hash": "85a15d3b25f7505886210e3268feafb765e909918d155b1e31afd299a0bbe2ae",
           "path": "fixtures/behavior-verbs.json"
         },
         {
@@ -251,11 +251,11 @@
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "752d8ef34001a5b2050372af03f85371d484c9c53941f69e2733d8c6113d39fd",
+          "hash": "9a65cc3082cba313976af687e0d397248ca19f351177d736906f0f8f89cdc293",
           "path": "fixtures/golden-behaviour.json"
         },
         {
-          "hash": "b8508391e1fedf118508feb077f539302efb84e2af363bcf9433e23f27f2a7ab",
+          "hash": "82526df2cad95c02f6b3ad5a214fd9ce0710c0087eae03a48ca663e877df81f0",
           "path": "fixtures/golden.txt"
         },
         {
@@ -279,11 +279,11 @@
           "path": "fixtures/push-play-log.json"
         },
         {
-          "hash": "a8f3917d987ebbae56bd3fc5e93c71a87da53352308fce3f4c0be1f9b133d282",
+          "hash": "b29abcc813caeb73bb2a6719af83184e0a7d01f7416ff528ee59bc8903d8b0db",
           "path": "fixtures/shape-traversal.json"
         },
         {
-          "hash": "1093b16c3ed9092a5842feb932edbfc57a5f795b72275319d7de172bfc567350",
+          "hash": "9b6c7b4b135975aa6aff055a8bd692fc718f6f8a4f1fe39b07037461a3bf2df9",
           "path": "fixtures/solver.sha256"
         },
         {
@@ -336,7 +336,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 9,
+      "testedBy": 10,
       "unresolvedSites": 0
     },
     {
@@ -363,17 +363,18 @@
             "productBehaviour",
             "sleepWatch"
           ],
-          "hash": "afd948bfd0a795261b0ced8f111f979d8a3b9ed990890ec8fb8f57153ac980a7",
+          "hash": "fb0a4e005a69b09865beb46d367d76288b84c8b9adf6c8d7d6a8c045efdd526e",
           "importsFiles": [
             "harness/product-run.mjs",
-            "harness/product-scene.mjs"
+            "harness/product-scene.mjs",
+            "harness/trace-line.mjs"
           ],
           "path": "harness/behaviour.mjs"
         },
         {
           "entry": "match",
           "entryRule": 1,
-          "hash": "2694eaec99c03a2bb68c5dcc5ca4aa77ed829857e88d335cef577791a2e2c707",
+          "hash": "dbf3050379dbdbbbd38b989ad2ce719978ad8599e521104cd3917ce7f46d51bd",
           "importsFiles": [
             "harness/behaviour.mjs"
           ],
@@ -383,7 +384,7 @@
         {
           "entry": "check",
           "entryRule": 1,
-          "hash": "ceb0ffa1d7a45492baeebdec25793d08b1d170bb9366bfdc55be2ac2b9bd11ec",
+          "hash": "534feccbcdb3ab0d9788846e79c611503330521b9f306739b5a791ac720e1f54",
           "importsFiles": [
             "harness/behaviour.mjs"
           ],
@@ -565,35 +566,35 @@
                       "via": "bits"
                     },
                     {
-                      "line": 71,
+                      "line": 80,
                       "name": "zoneIndex",
                       "target": null
                     },
                     {
-                      "line": 73,
+                      "line": 82,
                       "name": "carryingOf",
                       "target": null
                     },
                     {
-                      "line": 74,
+                      "line": 83,
                       "name": "carriedByOf",
                       "target": null
                     },
                     {
-                      "line": 78,
+                      "line": 87,
                       "name": "snapshot",
                       "target": null
                     },
                     {
-                      "line": 43,
+                      "line": 42,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
                       },
-                      "via": "snapshotField"
+                      "via": "snapshotDigest"
                     },
                     {
-                      "line": 86,
+                      "line": 95,
                       "name": "mindBeliefs",
                       "target": null
                     }
@@ -690,16 +691,27 @@
           "path": "harness/solver.test.js"
         },
         {
+          "entry": "hostChosen",
+          "entryRule": 1,
+          "exports": [
+            "hostChosen"
+          ],
+          "hash": "5da556b5902f69665fa57bac91c8d4723097271ab262fe644e5936264f854ff9",
+          "path": "harness/source.test.js",
+          "sequences": []
+        },
+        {
           "entry": "traceLine",
           "entryRule": 4,
           "exports": [
             "bits",
             "endLine",
+            "snapshotDigest",
             "snapshotField",
             "thrownLine",
             "traceLine"
           ],
-          "hash": "de1cf0ea04d0c2d59e42b620ab9ce37b62c7e4f7be08cffb494c7119e568f89d",
+          "hash": "353411af262a39a45fc0756ea21278b9638b5604eac7f4cbdfff524a996cba35",
           "importsFiles": [
             "packages/frame/hash.js"
           ],
@@ -723,11 +735,27 @@
             {
               "calls": [
                 {
-                  "line": 43,
+                  "line": 42,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "snapshotDigest"
+            },
+            {
+              "calls": [
+                {
+                  "line": 42,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  },
+                  "via": "snapshotDigest"
                 }
               ],
               "exported": true,
@@ -746,35 +774,35 @@
                   "via": "bits"
                 },
                 {
-                  "line": 71,
+                  "line": 80,
                   "name": "zoneIndex",
                   "target": null
                 },
                 {
-                  "line": 73,
+                  "line": 82,
                   "name": "carryingOf",
                   "target": null
                 },
                 {
-                  "line": 74,
+                  "line": 83,
                   "name": "carriedByOf",
                   "target": null
                 },
                 {
-                  "line": 78,
+                  "line": 87,
                   "name": "snapshot",
                   "target": null
                 },
                 {
-                  "line": 43,
+                  "line": 42,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   },
-                  "via": "snapshotField"
+                  "via": "snapshotDigest"
                 },
                 {
-                  "line": 86,
+                  "line": 95,
                   "name": "mindBeliefs",
                   "target": null
                 }
@@ -1763,11 +1791,11 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "c9a1b756aafe712b8cfe14e1cb4a2c17d4c998274dd05c6990c3d05552365063",
+          "hash": "ab5016d861a8ed6d24c2c4534c736203feb04dc1012ec2a6e2fc70ba3f10dafc",
           "path": "package.json"
         },
         {
-          "hash": "4023948bc6c10a342973af02c2202df98a161bd8997edf472af4dcb3a04ba46b",
+          "hash": "f62b659a7c786c071f4aa9fda2a606b2b041ddc83166dbb1b266665efc7a2e3c",
           "path": "tsconfig.json"
         }
       ],
@@ -1783,42 +1811,314 @@
     },
     {
       "dynamicReads": 0,
-      "dynamicSpawns": 1,
-      "dynamicSpawnsInTests": 0,
+      "dynamicSpawns": 3,
+      "dynamicSpawnsInTests": 2,
       "dynamicWrites": 0,
       "entryPoints": [],
       "externals": 0,
       "files": [
         {
-          "hash": "859f353ae6b689bce27ec61d0e2d8871da2a0e63050cc30315961871e4b5c572",
+          "hash": "08398ab16db4bea1739a50d031ed96657e66d5dd41a2fcc8de1007ff14c65061",
           "path": "solver/.cargo/config.toml"
         },
         {
-          "hash": "ce66841ba06beb7cd21ad546e11bea4178e6490bf372a9b3d65ce519af1d72c8",
+          "hash": "02c4b920f8c963fb122c6d3f07c5a34ff7b011960779591ebfaea57620cd37a5",
           "path": "solver/Cargo.lock"
         },
         {
-          "hash": "391cb23d4b027828e34cf35cf2efa2372029ccfb6ec86806bdada450e8f1c1b1",
+          "hash": "f85018d264beb7987e6d70dfb39dd2df9808b360d2c19b580f265f46bbe78c96",
           "path": "solver/Cargo.toml"
         },
         {
-          "hash": "8dd97557bab42ca26868c5f7a67ff8ca5d49e95777da970270cec86209f6cd8d",
+          "hash": "991b56faa5221a7bdd4b19a86d105c9f11dabe05324dfb0bf32c00dde1ea7f88",
           "path": "solver/FLAGS.md"
         },
         {
-          "hash": "c78ac9f37e8c3420fdecfbeeb33c215ca372f7c1ce47ff8ffbead4befb21fe7e",
+          "hash": "2be1c6f1ff9fc1ae3a0f123275c347bc551e3edf985852fd51d9e890c16e3d2f",
+          "importsFiles": [
+            "solver/lint.mjs"
+          ],
           "path": "solver/build.mjs"
+        },
+        {
+          "entry": "lintWasm",
+          "entryRule": 1,
+          "exports": [
+            "facts",
+            "lintWasm"
+          ],
+          "hash": "1072ed2eb3cca58b2de0dafa218d297f864c6c8e32f7175c4e1d80e002f677d2",
+          "path": "solver/lint.mjs",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 102,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 106,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "limits"
+            },
+            {
+              "calls": [
+                {
+                  "line": 115,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "memarg"
+            },
+            {
+              "calls": [
+                {
+                  "line": 126,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 131,
+                  "name": "signed",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "blocktype"
+            },
+            {
+              "calls": [
+                {
+                  "line": 142,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 145,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 131,
+                  "name": "signed",
+                  "target": null,
+                  "via": "blocktype"
+                },
+                {
+                  "line": 157,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 168,
+                  "name": "skip",
+                  "target": null
+                },
+                {
+                  "line": 170,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 179,
+                  "name": "signed",
+                  "target": null
+                },
+                {
+                  "line": 183,
+                  "name": "skip",
+                  "target": null
+                },
+                {
+                  "line": 189,
+                  "name": "byte",
+                  "target": null
+                },
+                {
+                  "line": 210,
+                  "name": "u32",
+                  "target": null,
+                  "via": "misc"
+                },
+                {
+                  "line": 241,
+                  "name": "skip",
+                  "target": null,
+                  "via": "simd"
+                },
+                {
+                  "line": 243,
+                  "name": "byte",
+                  "target": null,
+                  "via": "simd"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "body"
+            },
+            {
+              "calls": [
+                {
+                  "line": 210,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "misc"
+            },
+            {
+              "calls": [
+                {
+                  "line": 232,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 241,
+                  "name": "skip",
+                  "target": null
+                },
+                {
+                  "line": 243,
+                  "name": "byte",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "simd"
+            },
+            {
+              "calls": [
+                {
+                  "line": 102,
+                  "name": "byte",
+                  "target": null,
+                  "via": "limits"
+                },
+                {
+                  "line": 106,
+                  "name": "u32",
+                  "target": null,
+                  "via": "limits"
+                },
+                {
+                  "line": 145,
+                  "name": "byte",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 131,
+                  "name": "signed",
+                  "target": null,
+                  "via": "blocktype"
+                },
+                {
+                  "line": 157,
+                  "name": "u32",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 168,
+                  "name": "skip",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 170,
+                  "name": "u32",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 179,
+                  "name": "signed",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 183,
+                  "name": "skip",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 189,
+                  "name": "byte",
+                  "target": null,
+                  "via": "body"
+                },
+                {
+                  "line": 210,
+                  "name": "u32",
+                  "target": null,
+                  "via": "misc"
+                },
+                {
+                  "line": 241,
+                  "name": "skip",
+                  "target": null,
+                  "via": "simd"
+                },
+                {
+                  "line": 243,
+                  "name": "byte",
+                  "target": null,
+                  "via": "simd"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "lintWasm"
+            }
+          ]
+        },
+        {
+          "entry": "module",
+          "entryRule": 1,
+          "hash": "eab7d58564c80868cc152af0425062e8e37dfa654467f50260713bc3675cf292",
+          "importsFiles": [
+            "solver/lint.mjs"
+          ],
+          "path": "solver/lint.test.js",
+          "sequences": []
         },
         {
           "hash": "2f94b39aa38b64a0ac150325f58e30ec78740a68fb2b280c2d71107292ddf267",
           "path": "solver/rust-toolchain.toml"
         },
         {
-          "hash": "ec1e27ef8843354eed33b6c70d795a36246011d482aafe4450ffa1e614a6c7cf",
+          "hash": "145dca58cf4aebf806d7882282ef62d2ae6c0bbd052eb2731435550fc418d954",
+          "path": "solver/src/arena.rs"
+        },
+        {
+          "hash": "99c149bbb150d22f45e6c2b179e6cf6896dccf58291161e88b7f51c7c60b7501",
           "path": "solver/src/lib.rs"
         },
         {
-          "hash": "d001f84c69edbf22a59659a9e420734c116297c5b507e202a17a733f19b3f550",
+          "hash": "447e0745df86fff3f82ae4cfb511b520524fac5789fc7ce6400e0d82fb274729",
           "path": "solver/src/rapier_law.rs"
         }
       ],
@@ -1828,9 +2128,10 @@
       "importConfidence": "full",
       "name": "solver",
       "origin": "authored",
+      "outsideReads": 1,
       "role": "code",
-      "testedBy": 0,
-      "unresolvedSites": 0
+      "testedBy": 1,
+      "unresolvedSites": 1
     },
     {
       "dynamicReads": 1,
@@ -1987,6 +2288,120 @@
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
               "name": "minded"
+            }
+          ]
+        },
+        {
+          "entry": "firstHashes",
+          "entryRule": 1,
+          "hash": "3639d5ebd5f2272547001e0fe55bd38c9b07eb6f3adbe878115af7ba492a2a09",
+          "importsFiles": [
+            "packages/tick/admit-world.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/scene.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/order.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 25,
+                  "name": "validateScene",
+                  "target": {
+                    "file": "packages/tick/scene.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "authored"
+            },
+            {
+              "calls": [
+                {
+                  "line": 37,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 38,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 38,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 39,
+                      "name": "createHasher",
+                      "target": {
+                        "file": "packages/frame/hash.js"
+                      }
+                    },
+                    {
+                      "line": 59,
+                      "name": "installMinds",
+                      "target": {
+                        "file": "packages/tick/minds.js"
+                      }
+                    },
+                    {
+                      "line": 62,
+                      "name": "mixLoad",
+                      "target": null
+                    },
+                    {
+                      "line": 64,
+                      "name": "mixMinds",
+                      "target": {
+                        "file": "packages/tick/minds.js"
+                      }
+                    },
+                    {
+                      "line": 78,
+                      "name": "snapshot",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 82,
+                      "name": "u32",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 68,
+                      "name": "commitFrame",
+                      "target": {
+                        "file": "packages/frame/frame.js"
+                      }
+                    }
+                  ],
+                  "line": 38,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "firstHashes"
             }
           ]
         },
@@ -2766,7 +3181,7 @@
       "outsideReads": 9,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 11,
+      "testedBy": 12,
       "unresolvedSites": 2
     },
     {
@@ -2778,7 +3193,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "6f14a316347367c1d9e31e1d4d417c635204af788cb69d4438be591739562e90",
+          "hash": "115f6970c197683a1977bd9bde83e89a9e7aa5b88bac6133d97a02b40d8e7427",
           "path": ".github/workflows/ci.yml"
         },
         {
@@ -2847,6 +3262,11 @@
         },
         {
           "job": "engines",
+          "step": "Lint the pinned binary",
+          "text": "node solver/lint.mjs"
+        },
+        {
+          "job": "engines",
           "step": "Check the kernel contract",
           "text": "npm run typecheck"
         },
@@ -2879,12 +3299,52 @@
           "job": "engines",
           "step": "Check the Atlas map",
           "text": "npx --yes @dogfood-lab/atlas@1.17.0 check"
+        },
+        {
+          "job": "engines",
+          "step": "Collect the x64 artifacts for the ARM lane",
+          "text": "set -euo pipefail\nmkdir -p \"$RUNNER_TEMP/x64\"\ncp solver/dist/solver.mjs \"$RUNNER_TEMP/x64/solver.mjs\"\ncp \"$RUNNER_TEMP/traces/node.trace\" \"$RUNNER_TEMP/x64/node.trace\"\n"
+        },
+        {
+          "job": "arm",
+          "step": "Install the x64 solver module and check its bytes",
+          "text": "set -euo pipefail\nuname -m\nmkdir -p solver/dist\ncp \"$RUNNER_TEMP/x64/solver.mjs\" solver/dist/solver.mjs\nnode --input-type=module -e \"\n  import { createHash } from 'node:crypto';\n  import { readFileSync, writeFileSync } from 'node:fs';\n  import { bytes } from './solver/dist/solver.mjs';\n  const digest = createHash('sha256').update(bytes).digest('hex');\n  const pinned = readFileSync('fixtures/solver.sha256', 'utf8').trim();\n  if (digest !== pinned) {\n    console.error('the x64 module embeds ' + digest + ', not the pinned ' + pinned);\n    process.exit(1);\n  }\n  writeFileSync(process.env.RUNNER_TEMP + '/si_solver.wasm', bytes);\n  console.log('the module embeds the pinned binary ' + digest);\n\"\nnode solver/lint.mjs \"$RUNNER_TEMP/si_solver.wasm\"\n"
+        },
+        {
+          "job": "arm",
+          "step": "Compare node on ARM64 to the golden hashes",
+          "text": "set -euo pipefail\nfor pair in \"harness/sim.mjs fixtures/golden.txt\" \"harness/arith.mjs fixtures/golden-arith.txt\"; do\n  set -- $pair\n  golden=$(tr -d '\\r\\n' < \"$2\")\n  got=$(node \"$1\" | tr -d '\\r\\n')\n  if [ \"$got\" != \"$golden\" ]; then\n    echo \"$1 node arm64 [$got] golden [$golden]\"\n    exit 1\n  fi\n  echo \"$1 node arm64 matches $golden\"\ndone\n"
+        },
+        {
+          "job": "arm",
+          "step": "Trace the product scene and diff it against the x64 trace",
+          "text": "set -euo pipefail\nmkdir -p \"$RUNNER_TEMP/traces\"\nnode harness/trace.mjs > \"$RUNNER_TEMP/traces/arm64.trace\"\nif out=$(node harness/first-difference.js \"$RUNNER_TEMP/x64/node.trace\" \"$RUNNER_TEMP/traces/arm64.trace\"); then\n  echo \"x64 arm64 $out\"\nelse\n  echo \"x64 arm64\"\n  echo \"$out\"\n  exit 1\nfi\n"
         }
       ],
       "elsewhere": [],
       "file": ".github/workflows/ci.yml",
       "landings": [],
       "mentions": [
+        {
+          "job": "arm",
+          "path": "fixtures/golden-arith.txt"
+        },
+        {
+          "job": "arm",
+          "path": "fixtures/golden.txt"
+        },
+        {
+          "job": "arm",
+          "path": "fixtures/solver.sha256"
+        },
+        {
+          "job": "arm",
+          "path": "harness/arith.mjs"
+        },
+        {
+          "job": "arm",
+          "path": "harness/sim.mjs"
+        },
         {
           "job": "engines",
           "path": "tsconfig.json"
@@ -2907,7 +3367,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 18
+          "files": 19
         },
         {
           "boundary": "host",
@@ -2927,12 +3387,12 @@
         {
           "boundary": "solver",
           "depth": 0,
-          "files": 1
+          "files": 3
         },
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 17
+          "files": 18
         }
       ],
       "readers": [],
@@ -2967,6 +3427,11 @@
         {
           "job": "engines",
           "path": "harness/check.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "arm",
+          "path": "harness/first-difference.js",
           "runKind": "executes"
         },
         {
@@ -3024,10 +3489,20 @@
         },
         {
           "job": "engines",
+          "path": "harness/source.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "matched": true,
           "path": "harness/trace-line.mjs",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "arm",
+          "path": "harness/trace.mjs",
+          "runKind": "executes"
         },
         {
           "job": "engines",
@@ -3128,6 +3603,11 @@
         },
         {
           "job": "engines",
+          "path": "packages/tick/order.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "packages/tick/scene.test.js",
           "runKind": "executes"
         },
@@ -3153,9 +3633,24 @@
           "job": "engines",
           "path": "solver/build.mjs",
           "runKind": "executes"
+        },
+        {
+          "job": "arm",
+          "path": "solver/lint.mjs",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "solver/lint.mjs",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "solver/lint.test.js",
+          "runKind": "executes"
         }
       ],
-      "runsCount": 36,
+      "runsCount": 40,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -3211,6 +3706,7 @@
       "uses": [
         "Swatinem/rust-cache",
         "actions/checkout",
+        "actions/download-artifact",
         "actions/setup-node",
         "actions/upload-artifact",
         "dtolnay/rust-toolchain"
@@ -3597,7 +4093,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 5
+          "files": 6
         },
         {
           "boundary": "frame",
@@ -3643,6 +4139,10 @@
           "call": "readFileSync",
           "confidence": "ast",
           "target": "fixtures/golden-behaviour.json"
+        },
+        {
+          "by": ".github/workflows/ci.yml",
+          "target": "fixtures/golden.txt"
         },
         {
           "by": "harness/check.js",
@@ -3738,8 +4238,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "fa7496e8b75d5088cc0112bfdc5b5760eeb89ed6",
-    "tracked": 196
+    "commit": "03d1d53c37f91b7d69669f34f87eede947b508fa",
+    "tracked": 201
   },
   "landings": [
     {
@@ -3923,6 +4423,9 @@
     {
       "readers": [
         {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
@@ -3966,6 +4469,9 @@
     },
     {
       "readers": [
+        {
+          "by": ".github/workflows/ci.yml"
+        },
         {
           "by": "harness/check.js",
           "call": "literal",
@@ -4036,6 +4542,9 @@
     {
       "readers": [
         {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "solver/build.mjs",
           "call": "readFileSync",
           "confidence": "ast"
@@ -4056,9 +4565,18 @@
     {
       "readers": [
         {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "harness/arith.mjs",
@@ -4097,9 +4615,54 @@
     {
       "readers": [
         {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/minds-scene.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/product-run.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/product-scene.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": ".github/workflows/ci.yml"
+        },
+        {
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         },
         {
           "by": "site/src/content/docs/handbook/getting-started.md",
@@ -4113,6 +4676,18 @@
     {
       "readers": [
         {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/solver-scene.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "harness/trace.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -4120,6 +4695,18 @@
         }
       ],
       "target": "harness/trace.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "harness/verbs-scene.mjs",
       "writers": []
     },
     {
@@ -4221,6 +4808,18 @@
         }
       ],
       "target": "packages/tick/bin/replay.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/source.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/tick/fixture.js",
       "writers": []
     },
     {
@@ -4392,7 +4991,40 @@
     {
       "readers": [
         {
+          "by": "solver/lint.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "solver/lint.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "solver/lint.test.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "solver/build.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "solver/lint.mjs",
           "call": "readFileSync",
           "confidence": "ast"
         }
@@ -4470,6 +5102,12 @@
           "fromTests": true
         },
         {
+          "by": "packages/tick/order.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/scene.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -4500,7 +5138,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 12,
+  "testFiles": 15,
   "unassigned": [
     {
       "exports": [
