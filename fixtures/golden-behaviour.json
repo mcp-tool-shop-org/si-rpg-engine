@@ -6,7 +6,7 @@
     "upper": 46,
     "tip": 90,
     "slider": 189,
-    "climber": null,
+    "climber": 44,
     "parcel": 44
   },
   "final": {
@@ -36,8 +36,8 @@
       "z": 4.000000000000071
     },
     "climber": {
-      "x": 2,
-      "y": -50873.80412597653,
+      "x": 2.0006199297063296,
+      "y": 0.19994370669306397,
       "z": 5
     },
     "parcel": {
@@ -49,6 +49,6 @@
   "walkerZone": "east",
   "snapshotBytes": {
     "load": 848,
-    "last": 1840
+    "last": 2104
   }
 }

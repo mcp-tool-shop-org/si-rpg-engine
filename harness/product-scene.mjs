@@ -78,8 +78,12 @@ export function createBoxProductWorld() {
   }, 'box');
 }
 
-export function createProductWorld() {
-  return createWorld({
+/**
+ * The product scene as plain records. harness/outcome.test.js translates it.
+ * @returns {Parameters<typeof createWorld>[0]}
+ */
+export function productInit() {
+  return {
     bodies: [
       { id: 'walker', x: 10, y: 0.26, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
       { id: 'lower', x: 6, y: 0.3, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
@@ -94,6 +98,9 @@ export function createProductWorld() {
       { id: 'rail', minX: 7.7, maxX: 8, minY: 0, maxY: 0.4, minZ: -1.8, maxZ: -1.2 },
       // 45° about Z. Half-extents stay at 1.4, 0.35, 0.5: a longer rotated cuboid is missed after the broad-phase warm.
       { id: 'ramp', minX: 20.6, maxX: 23.4, minY: 0.5424621202458748, maxY: 1.2424621202458748, minZ: 3.5, maxZ: 4.5, qx: 0, qy: 0, qz: 0.3826834323650898, qw: 0.9238795325112867 },
+      // The climber's floor (T4 pin 8). Before it the climber fell for the
+      // whole run and never slept; the hash hid that.
+      { id: 'pad', minX: 1, maxX: 3, minY: -1, maxY: 0, minZ: 4, maxZ: 6 },
     ],
     heightfield: {
       rows: 2,
@@ -112,5 +119,9 @@ export function createProductWorld() {
       goals: [{ kind: 'reach', zone: 'east' }],
       beliefs: [],
     }],
-  }, 'product');
+  };
+}
+
+export function createProductWorld() {
+  return createWorld(productInit(), 'product');
 }
