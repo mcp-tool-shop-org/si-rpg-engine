@@ -1,0 +1,945 @@
+{
+ "dispatch": "docs/study-swarm/seat-instrument.dispatch.md",
+ "what": "Full-text groundedness check of every finding the citation gate did not support from a title and abstract in either of its runs. A deterministic retrieval step fetched each source's full text (arXiv HTML, else the PDF through pdftotext) and cut the passages around each stated number or phrase; two model families other than the author's, Z.ai GLM-5.3 and Moonshot Kimi K3 through Ollama Cloud, each judged one claim against its passages without the author's reasoning. 'final' holds the verdicts on the text as committed; 'history' holds every pass.",
+ "date": "2026-09-25",
+ "final": [
+  {
+   "finding": 1,
+   "claim": "Meta kept a model-written test only if it built, passed, passed repeated reruns, and added coverage; on Instagram 75% of candidates built, 57% passed reliably, and 25% added coverage, and across its Instagram and Facebook test-a-thons engineers accepted 73% of its recommendations.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "In an evaluation on Reels and Stories products for Instagram, 75% of TestGen-LLM's test cases built correctly, 57% passed reliably, and 25% increased coverage. During Meta's Instagram and Facebook test-a-thons, it improved 11.5% of all classes to which it was applied, with 73% of its recommendations being accepted for production deployment by Meta software engineers. ... TestGen-LLM discards any test case that does not pass on first execution. ... a test that does not pass on every one of five executions is deemed flaky. ... 25% of test classes had at least one test case that builds correctly, passes and increases line coverage compared to all other test classes that share the same build target."
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "In an evaluation on Reels and Stories products for Instagram, 75% of TestGen-LLM's test cases built correctly, 57% passed reliably, and 25% increased coverage. During Meta's Instagram and Facebook test-a-thons, it improved 11.5% of all classes to which it was applied, with 73% of its recommendations being accepted for production deployment by Meta software engineers. ... a test that does not pass on every one of five executions is deemed flaky."
+    }
+   }
+  },
+  {
+   "finding": 2,
+   "claim": "Meta's mutation-guided generator plants faults the suite misses and writes tests that catch them, 571 tests from 9,095 mutants with 73% accepted, but its model judge of mutant equivalence scored 0.79 precision and 0.47 recall until simple pre-processing raised them to 0.95 and 0.96.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "it focuses on generating currently undetected faults that are specific to an issue of concern. From these currently uncaught faults, ACH generates tests that can catch them [...] from which it generated 9,095 mutants and 571 privacy-hardening test cases. ACH also deploys an LLM-based equivalent mutant detection agent that achieves a precision of 0.79 and a recall of 0.47 (rising to 0.95 and 0.96 with simple pre-processing) [...] engineers accepted 73% of its tests"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "it generated 9,095 mutants and 571 privacy-hardening test cases. ACH also deploys an LLM-based equivalent mutant detection agent that achieves a precision of 0.79 and a recall of 0.47 (rising to 0.95 and 0.96 with simple pre-processing). ACH was used by Messenger and WhatsApp test-a-thons where engineers accepted 73% of its tests"
+    }
+   }
+  },
+  {
+   "finding": 3,
+   "claim": "Fuzz4All averaged 36.8% more coverage than language-specific fuzzers over 24 hours and found 64 confirmed new bugs, but made 43.0% fewer inputs with 56.0% lower validity.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "Figure 4 shows the 24-hour coverage trend of Fuzz4All compared with the baselines ... Fuzz4All achieves the highest coverage by the end of the fuzzing campaign across all targets, with an average improvement of 36.8% compared to the top performing baselines ... universal fuzzing achieves higher coverage than existing, language-specific fuzzers ... detects 98 bugs, with 64 already confirmed as previously unknown ... Fuzz4All has a lower percentage of valid fuzzing inputs generated (56.0% average reduction compared to baseline tools) ... leading to 43.0% fewer fuzzing inputs compared to traditional fuzzers"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "Fuzz4All achieves the highest coverage by the end of the fuzzing campaign across all targets, with an average improvement of 36.8% compared to the top performing baselines. ... Fuzz4All detects 98 bugs across our studied SUTs, with 64 already confirmed by developers as previously unknown. ... Fuzz4All has a lower percentage of valid fuzzing inputs generated (56.0% average reduction compared to baseline tools). ... leading to 43.0% fewer fuzzing inputs compared to traditional fuzzers."
+    }
+   }
+  },
+  {
+   "finding": 4,
+   "claim": "Asking a model for tests only when search-based generation stalled beat search alone on 173 of 486 benchmarks, was worse on 10, and beat the model alone on 279.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "Takeaway. CODAMOSA achieves significantly higher coverage on many more of our benchmarks (173 vs MOSA, 279 vs CODEXONLY) than it reduces coverage on (10 vs MOSA, 4 vs CODEXONLY). | 'We conduct a large-scale evaluation of CODAMOSA on 486 Python modules.' | 'When CODAMOSA notices a stall in coverage, it identifies callables in the PUT that have low coverage. Then, it queries Codex to generate tests for these callables.'"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "CODAMOSA achieves significantly higher coverage on many more of our benchmarks (173 vs MOSA, 279 vs CODEXONLY) than it reduces coverage on (10 vs MOSA, 4 vs CODEXONLY)."
+    }
+   }
+  },
+  {
+   "finding": 5,
+   "claim": "Open models served through Ollama as fuzzing mutators beat plain AFL++ on four of six benchmarks in one-hour runs, but the lead did not hold in four-hour runs, where some benchmarks lost coverage, and about 35% of their queries to Ollama timed out.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "Among the six benchmarks evaluated for branch coverage with 3-shot prompts, four benchmarks show positive CIPs in one-hour runs, indicating that LLM-guided fuzzers generally outperform the AFL++ baseline in short runs, though this trend does not always hold for longer runs. ... libpng_libpng_read_fuzzer and openh264_decoder_fuzzer even exhibit reduced coverage in four-hour runs. ... Log analysis shows that approximately 35% of LLM queries timed out using Ollama"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "Among the six benchmarks evaluated for branch coverage with 3-shot prompts, four benchmarks show positive CIPs in one-hour runs, indicating that LLM-guided fuzzers generally outperform the AFL++ baseline in short runs, though this trend does not always hold for longer runs. ... libpng_libpng_read_fuzzer and openh264_decoder_fuzzer even exhibit reduced coverage in four-hour runs. ... approximately 35% of LLM queries timed out using Ollama"
+    }
+   }
+  },
+  {
+   "finding": 6,
+   "claim": "Of the tests gpt-3.5-turbo wrote for 1,000 Java methods, 42.1% compiled and 24.8% ran cleanly, and the most frequent compilation errors came from symbols that could not be resolved: classes, methods, or variables that do not exist.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "Table 2 presents the correctness of the 1,000 tests generated by ChatGPT ... 42.1% of the generated tests are successfully compiled while only 24.8% of the generated tests are executed successfully without any execution errors. ... the most frequent compilation errors are caused by un-resolvable symbols, e.g., the generated tests include some undefined classes, methods, or variables. ... we focus on the gpt-3.5-turbo model rather than GPT-4"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "42.1% of the generated tests are successfully compiled while only 24.8% of the generated tests are executed successfully without any execution errors ... the most frequent compilation errors are caused by un-resolvable symbols, e.g., the generated tests include some undefined classes, methods, or variables. ... we focus on the gpt-3.5-turbo model rather than GPT-4"
+    }
+   }
+  },
+  {
+   "finding": 8,
+   "claim": "An LLM game-testing agent completed 95% of test tasks in two commercial MMORPGs, against 82% for a reinforcement-learning tester, and its overall false-alarm rate was 30%.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "We implement TITAN and evaluate it on two large-scale commercial MMORPGs spanning both PC and mobile platforms. [...] TITAN completes 95% of the evaluated tasks successfully [...] the DRL-based Wuji completed approximately 82% of tasks [...] The overall false alarm rate of TITAN is 30%"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "TITAN achieves significantly higher task completion rates (95%)... We implement TITAN and evaluate it on two large-scale commercial MMORPGs spanning both PC and mobile platforms... the DRL-based Wuji completed approximately 82% of tasks... The overall false alarm rate of TITAN is 30%, which is relatively low in practice"
+    }
+   }
+  },
+  {
+   "finding": 10,
+   "claim": "Given a commit's message and diff with execution feedback, a model found in under two minutes on average as many commit-introduced bugs as a directed greybox fuzzer found in 24 hours; more feedback rounds moved the most cases into bug-triggering; giving only the message or only the diff changed its average score little; and using its tests as a fuzzer's seed corpus doubled the bugs found.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "In under 2 minutes, on average, Cleverest found as many bugs as the state-of-the-art directed greybox fuzzer WAFLGo in 24 hours ... If we amplify the Cleverest -generated test cases using those as a seed corpus in coverage-guided greybox fuzzing, the number of bugs found doubles ... Overall, we see the greatest change into the bug-triggering category when number of iterations is increased ... providing only the commit message or diff only changes the score slightly from 1.37 (meaning 'sometimes output-changing') to 1.41 and 1.36, respectively."
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "In under 2 minutes, on average, Cleverest found as many bugs as the state-of-the-art directed greybox fuzzer WAFLGo in 24 hours ... Overall, we see the greatest change into the bug-triggering category when number of iterations is increased ... providing only the commit message or diff only changes the score slightly from 1.37 (meaning 'sometimes output-changing') to 1.41 and 1.36, respectively ... If we amplify the Cleverest -generated test cases using those as a seed corpus in coverage-guided greybox fuzzing, the number of bugs found doubles."
+    }
+   }
+  },
+  {
+   "finding": 11,
+   "claim": "Looping on coverage of the changed lines in both the old and new versions exposed behaviour differences in 350 of 439 pull requests, and telling the model how to reach the changed functions gave the largest single gain.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "DiffTestGen identifies the largest number of PRs with behavioral differences, detecting 350 PRs. ... This results in a final dataset of 439 PRs ... DiffTestGen iteratively improves our newly introduced union coverage metric, which combines coverage of modified code in the old and the new version, by providing targeted coverage feedback to the LLM ... DiffTestGen leverages static call graph analysis and project documentation to identify valid entry points for test generation and to guide the LLM toward reaching the changed code ... Only Coverage Feedback identifies 261 PRs with behavioral differences and achieves 80.7% union coverage. Only Access Information identifies 330 PRs with behavioral differences and achieves 85.8% coverage, significantly outperforming Testora (251 PRs and 77.1% coverage) ... Only Coverage Feedback also yields improvements, yet less pronounced ... The combination of both components in DiffTestGen shows the best results, identifying 350 PRs with behavioral differences"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "DiffTestGen identifies the largest number of PRs with behavioral differences, detecting 350 PRs. In comparison, Testora and Testora++ detect 251 and 277 PRs, respectively. ... Only Coverage Feedback identifies 261 PRs with behavioral differences and achieves 80.7% union coverage. Only Access Information identifies 330 PRs with behavioral differences and achieves 85.8% coverage, significantly outperforming Testora (251 PRs and 77.1% coverage). This improvement can be attributed to the inclusion of informative access information in the prompt ... This results in a final dataset of 439 PRs"
+    }
+   }
+  },
+  {
+   "finding": 13,
+   "claim": "Generating tests meant to fail on a code change before it lands, change-aware methods produced candidate catches 4 times as often as hardening tests and 20 times as often as tests that fail by coincidence, and of 41 candidates reported to engineers, 8 were confirmed.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "catching tests are meant to fail, surfacing bugs before code lands. ... code-change-aware methods improve candidate catch generation 4x over hardening tests and 20x over coincidentally failing tests. ... We reported 41 candidate catches to engineers; 8 were confirmed to be true positives"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "we show code-change-aware methods improve candidate catch generation 4x over hardening tests and 20x over coincidentally failing tests... We reported 41 candidate catches to engineers; 8 were confirmed to be true positives"
+    }
+   }
+  },
+  {
+   "finding": 15,
+   "claim": "Six design patterns for securing agents share one guiding principle: once an agent has read untrusted input, that input must be unable to trigger any consequential action; the authors hold that general-purpose agents cannot yet be secured, and application-specific agents can be, by design.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "The design patterns we propose share a common guiding principle: once an LLM agent has ingested untrusted input, it must be constrained so that it is impossible for that input to trigger any consequential actions ... While securing general-purpose agents remains out of reach with current capabilities, we argue that application-specific agents can be secured through principled system design. To support this claim, we propose six design patterns for making AI agents resilient to prompt injection attacks."
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "The design patterns we propose share a common guiding principle: once an LLM agent has ingested untrusted input, it must be constrained so that it is impossible for that input to trigger any consequential actions ... While securing general-purpose agents remains out of reach with current capabilities, we argue that application-specific agents can be secured through principled system design. ... we propose six design patterns for making AI agents resilient to prompt injection attacks."
+    }
+   }
+  },
+  {
+   "finding": 16,
+   "claim": "CaMeL takes control flow only from the user's query, parses untrusted data with a quarantined model that has no tool access, and attaches capability metadata to every value; it solved 77% of AgentDojo tasks with provable security against 84% undefended, and states that it cannot defend against text-to-text attacks that leave the data flow unchanged.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "CaMeL explicitly extracts the control and data flows from the (trusted) query; therefore, the untrusted data retrieved by the LLM can never impact the program flow … The Quarantined LLM (Q-LLM) is a large language model that has no tool access and can be used to parse unstructured data into data with a predefined schema … CaMeL associates, to every value, some metadata (commonly called capabilities … solving 77 % 77\\% of tasks with provable security (compared to 84 % 84\\% with an undefended system) in AgentDojo … we recognize that it cannot defend against text-to-text attacks which have no consequences on the data flow"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "CaMeL explicitly extracts the control and data flows from the (trusted) query ... The Quarantined LLM (Q-LLM) is a large language model that has no tool access and can be used to parse unstructured data ... CaMeL associates, to every value, some metadata (commonly called capabilities ... ) ... solving 77 % of tasks with provable security (compared to 84 % with an undefended system) in AgentDojo ... it cannot defend against text-to-text attacks which have no consequences on the data flow"
+    }
+   }
+  },
+  {
+   "finding": 17,
+   "claim": "Deterministic least-privilege checks on every tool call cut attack success from 39.9% to 1.0% without losing utility, applying narrowings automatically and holding every widening for approval.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "Every tool call is checked against such a policy through a deterministic procedure, enforcing the principle of least privilege. ... Each proposed update is determined by an SMT solver to be either a narrowing (applied automatically) or an expansion (requiring explicit approval) ... Progent significantly reduces ASR from 39.9% with the no defense baseline to 1.0%, while maintaining utility scores in both no-attack and under-attack scenarios."
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "Every tool call is checked against such a policy through a deterministic procedure, enforcing the principle of least privilege... a narrowing (applied automatically) or an expansion (requiring explicit approval)... Progent reduces the attack success rate (ASR) from 39.9% to 1.0% on AgentDojo... while maintaining the agent's utility"
+    }
+   }
+  },
+  {
+   "finding": 19,
+   "claim": "Labelling tool results for integrity and confidentiality and enforcing policy on the labels let 1 of 949 AgentDojo attacks through with gpt-4o, against 163 for the planner without it.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "We conduct all 949 949 attacks on Fides and the baselines from the AgentDojo benchmark. [...] Table 1: Successful injections with the Tool Knowledge attack on gpt-4o based defenses [...] Basic 163 (156) [...] Fides ⋆ 1 (0)"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "The instrumentation dynamically tracks confidentiality and integrity labels, and uses a policy engine to deterministically enforce security policies. [...] We conduct all 949 attacks on Fides and the baselines from the AgentDojo benchmark. [...] Policy-checking defenses are marked ⋆ . Defense Total Basic 163 (156) Tool Filter 28 (23) Variable Passing 12 (0) Fides 24 (23) Basic ⋆ 9 (0) Variable Passing ⋆ 14 (0) Fides ⋆ 1 (0) [...] Table 1: Successful injections with the Tool Knowledge attack on gpt-4o based defenses"
+    }
+   }
+  },
+  {
+   "finding": 21,
+   "claim": "Adaptive attacks bypassed 12 recent defenses, prompting defenses such as Spotlighting among them, with attack success above 90% for most, although most had reported near-zero attack success.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "we bypass 12 recent defenses (based on a diverse set of techniques) with attack success rate above 90% for most; importantly, the majority of defenses originally reported near-zero attack success rates. ... In particular, we focus on Spotlighting ( Hines et al., 2024 ) , Prompt Sandwiching ( Schulhoff, 2024 ) , and RPO ( Zhou et al., 2024 ) ."
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "we bypass 12 recent defenses (based on a diverse set of techniques) with attack success rate above 90% for most; importantly, the majority of defenses originally reported near-zero attack success rates. ... 5.1 Prompting Defenses ... In particular, we focus on Spotlighting ( Hines et al., 2024 ) ... Spotlighting marks trusted text with special delimiter tokens"
+    }
+   }
+  },
+  {
+   "finding": 31,
+   "claim": "On real-world JSON schemas, llama.cpp's grammar-constrained output with a 1B model was valid for 95% of the GlaiveAI function-call schemas and 39% of the GitHub Hard set, and over a third of the hard schemas it declared it could handle still produced invalid output.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "Dataset Framework Declared Empirical Compliance Rate ... GlaiveAI LM only 1.00 0.90 0.90 Guidance 0.98 0.96 0.98 Llamacpp 0.98 0.95 0.97 ... GitHub Hard ∗ LM only 1.00 0.13 0.13 Guidance 0.60 0.41 0.69 Llamacpp 0.61 0.39 0.63 ... differences in the underlying model (Llama 3.2-1B vs. proprietary models)"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "GlaiveAI ... Llamacpp 0.98 0.95 0.97 ... GitHub Hard ∗ LM only 1.00 0.13 0.13 Guidance 0.60 0.41 0.69 Llamacpp 0.61 0.39 0.63 ... Empirical coverage between Open Source engines and OpenAI/Gemini are not directly comparable due to differences in the underlying model (Llama 3.2-1B vs. proprietary models)."
+    }
+   }
+  },
+  {
+   "finding": 35,
+   "claim": "Generative agents with memory, reflection, and planning were rated far more believable than ablations, yet embellished facts, agreed too readily, and entered shops after closing time.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "the full generative agent architecture produced the most believable behavior ... Performance degraded with the removal of each component in the ablation conditions ... they still exhibited instances of hallucination where they embellished their knowledge ... the instruction tuning also seemed to make the agents overly cooperative with one another ... she rarely said no ... occasionally, a few agents enter the store after 5 pm, not understanding that the shop has already closed"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "the full architecture of generative agents generates the most believable behavior among all the conditions... they still exhibited instances of hallucination where they embellished their knowledge... the instruction tuning also seemed to make the agents overly cooperative with one another... a few agents enter the store after 5 pm, not understanding that the shop has already closed."
+    }
+   }
+  },
+  {
+   "finding": 37,
+   "claim": "Across 100 trading dialogues, prices the model computed itself were right 79.7% and 82.3% of the time in two trading stages, against 100% and 99.7% when it wrote a placeholder and code filled in the price.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "SIBP+PPP reached 100.0% in the OFFER_SELL state, compared to 79.7% with basic SIBP. This improvement also extended to subsequent states, where SIBP+PPP achieved 99.7% accuracy versus 82.3% for basic SIBP."
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "SIBP+PPP reached 100.0% in the OFFER_SELL state, compared to 79.7% with basic SIBP. This improvement also extended to subsequent states, where SIBP+PPP achieved 99.7% accuracy versus 82.3% for basic SIBP. [...] the rule \"use __PRICE__ for the final price amount\" [...] The system calculates the correct price based on responded item information and replaces the placeholder [...] Evaluation across 100 trading dialogues"
+    }
+   }
+  },
+  {
+   "finding": 38,
+   "claim": "Forcing all output through a strict grammar provably limits what a model can compute, and letting it reason freely before switching to the grammar gained up to 10 points.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "Building on these theoretical insights, we propose a reasoning-augmented constrained decoding algorithm, CRANE , which effectively balances the correctness of constrained generation with the flexibility of unconstrained generation. Experiments on multiple open-source LLMs and benchmarks show that CRANE significantly outperforms both state-of-the-art constrained decoding strategies and standard unconstrained decoding, showing up to 10% points accuracy improvement over baselines on challenging symbolic reasoning benchmarks GSM-symbolic and FOLIO."
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "Building on these theoretical insights, we propose a reasoning-augmented constrained decoding algorithm, CRANE... CRANE effectively alternates between unconstrained generation for reasoning and constrained generation for producing structurally correct outputs. This allows the model to produce syntactically valid outputs while enabling the LLM to reason... showing up to 10% points accuracy improvement over baselines on challenging symbolic reasoning benchmarks GSM-symbolic and FOLIO. [Table of contents:] 3 Expressivity of Constrained Decoding, 3.1 Limitation of Constrained Decoding"
+    }
+   }
+  },
+  {
+   "finding": 39,
+   "claim": "On an 8 GB consumer GPU, a 7B model fine-tuned on one character took 5.49 s per reply and kept 93% of its facts, while a 1.1B model took under 2 s and kept 55%.",
+   "verdicts": {
+    "Z.ai": {
+     "model": "glm-5.3:cloud",
+     "served": "glm-5.3",
+     "verdict": "SUPPORTED",
+     "quote": "OliverS's moderate latency (5.49s); factuality (93%); CasperS (TinyLlama) emerges as a balanced alternative combining good dialogue quality metrics (e.g., factuality 55%, context retention 63.3%, world knowledge retrieval 76.7%) with reduced latency (1.91 seconds); an NVIDIA RTX 2070 Super GPU (8GB VRAM)"
+    },
+    "Moonshot": {
+     "model": "kimi-k3:cloud",
+     "served": "kimi-k3",
+     "verdict": "SUPPORTED",
+     "quote": "All experiments... has been conducted locally on a Windows 11 Desktop PC with... an NVIDIA RTX 2070 Super GPU (8GB VRAM)... OliverS, based on the Mistral-7B-Instruct model fine-tuned with a smaller dataset... OliverS's moderate latency (5.49s)... OliverS significantly outperformed all other variants (93%)... CasperS (TinyLlama) emerges as a balanced alternative combining good dialogue quality metrics (e.g., factuality 55%, context retention 63.3%, world knowledge retrieval 76.7%) with reduced latency (1.91 seconds)... TinyLlama-1.1B-Chat... each fine-tuned SLM encodes a fixed persona"
+    }
+   }
+  }
+ ],
+ "history": [
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 3,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 3,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 4,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 4,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 5,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "That the four models did not consistently beat plain AFL++ (the passages compare prompt-shot variants as benchmark-dependent but provide no direct LLM-vs-AFL++ outcome comparison; the AFL++ benchmark values are cut from the table)"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 5,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "That the four models did not consistently beat plain AFL++ — the passages never state coverage results relative to plain AFL++ (Table II's AFL++ column values are cut off, and the benchmark-dependent coverage discussion compares prompt shots, not AFL++)."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 6,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "that the model was gpt-3.5-turbo (passages say only \"ChatGPT\"), and that the commonest error was naming things that do not exist (passages list \"undefined symbols\" only as one example among compilation errors, without ranking it as the most common)"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 6,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "The claim that the commonest error 'named things that do not exist' (i.e., undefined symbols was the most frequent error): the passages only list 'using undefined symbols' as one example among several compilation errors, with no ranking. The passages also attribute the tests to 'ChatGPT' and refer to '1,000 tests,' never specifying 'gpt-3.5-turbo' or that the methods were Java."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 8,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "Attribution of the 30% false alarm rate to 'its model bug judge' (the LLM-based oracle); the passages report an overall framework-wide false alarm rate of 30% caused mostly by state abstraction, not specifically by the bug judge."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 8,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 10,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "bugs triggered in 18 of 50 commits; under two minutes on average; five rounds of execution feedback; fuzzing seeded with its tests found bugs in 38; explicit statement that dropping feedback cost the most (only a 'No feed.' table header and unlabeled averages appear, with the discussion truncated)"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 10,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "The passages never state that the model triggered bugs in 18 of 50 commits, that this took under two minutes on average, that five rounds of execution feedback were used (only an 'Iter 10' ablation is named), or that fuzzing seeded with the tests found bugs in 38; 'dropping feedback cost the most' is also never stated in prose, only weakly inferable from a garbled 'No feed.' table column."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 13,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 13,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 15,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "the single uniform rule that untrusted input once read cannot trigger a consequential action (several patterns let injections alter action inputs, and context-minimization addresses user-prompt injection instead); the claim that each pattern pays for this with lost flexibility"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 15,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "That all six enforce the same single rule (passages say only 'some degree of isolation' and note that 'a prompt injection can still manipulate the inputs to these tool calls' and can 'arbitrarily alter the body of the email'); and that each pattern's protection is bought with lost flexibility (no passage states any flexibility trade-off)."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 16,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "parsing untrusted data with a model that has no tools; tagging every value with its provenance (only tracing the origin of content shown to the user is mentioned)"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 16,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "parsing untrusted data with a model that has no tools is not mentioned in the passages; tagging every value with its provenance is not stated (the passages only say the data flow graph 'enables tracing the origin of the content shown to the user')"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 17,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 17,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 19,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "The claim that only 1 attack got through (no success count for Fides is given in the passage) and the description of the defense as labelling every tool result for integrity and confidentiality (the passage only mentions enforcing per-tool policies P, not the labeling mechanism)."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 19,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "The result that only 1 of the 949 attacks succeeded is not shown in the passages (the relevant table contents are omitted), and the passages do not state that Fides labels every tool result for integrity and confidentiality."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 21,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "claim says the defense marks 'untrusted' text, but the passages say Spotlighting 'marks trusted text with special delimiter tokens'; claim says attacks succeed 'at over 95%' on this defense, but one model (GPT-5 Mini) shows only 47% attack success"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 21,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "The description 'marking untrusted text inside the prompt' is contradicted: the passages say Spotlighting marks trusted text with delimiter tokens, not untrusted text. Additionally, 'at over 95%' holds against Spotlighting for only three of four models (99%, 99%, 99%), while GPT-5 Mini showed 47%."
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 31,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "llama.cpp output valid for 95% of simple schemas and 39% of hard ones; over a third of accepted hard schemas still failed"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 31,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "the specific llama.cpp results: 95% valid output on simple schemas, 39% on hard schemas, and over a third of accepted hard schemas still failing — none of these figures appear in the passages"
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 35,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 35,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 37,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 37,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 38,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 38,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 39,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 1: the claims as first written",
+   "finding": 39,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 5,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 5,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 6,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 6,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 8,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 8,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 10,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 10,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 15,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 15,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 16,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 16,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 19,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "UNPARSED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 19,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 21,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 21,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 31,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "The passages never state the total number of schemas (\"about 10,000 real schemas\"); no dataset size or total count appears anywhere in the provided text."
+  },
+  {
+   "pass": "pass 2: eleven claims restated to their sources",
+   "finding": 31,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "The passages never state that the benchmark covers about 10,000 real schemas (no schema count appears anywhere), and they do not identify GlaiveAI — the dataset where Llamacpp's empirical coverage is 0.95 — as 'the simplest set'; the only dataset labeled easiest, GitHub Easy, shows Llamacpp empirical coverage of 0.75."
+  },
+  {
+   "pass": "pass 3: finding 31 restated to its table",
+   "finding": 31,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 3: finding 31 restated to its table",
+   "finding": 31,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 4: finding 19 with the passages that describe its labels",
+   "finding": 19,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 4: finding 19 with the passages that describe its labels",
+   "finding": 19,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 5: findings 1, 2, and 11, which the gate's second run could not confirm",
+   "finding": 1,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "PARTIAL",
+   "unsupported": "The 73% acceptance rate is attributed to Instagram, but the passages report it for the combined Instagram and Facebook test-a-thons, not Instagram specifically; additionally, the 75%/57%/25% figures are percentages of test classes with at least one qualifying case, not of candidate tests."
+  },
+  {
+   "pass": "pass 5: findings 1, 2, and 11, which the gate's second run could not confirm",
+   "finding": 1,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "PARTIAL",
+   "unsupported": "The 73% acceptance rate is reported only for the combined Instagram and Facebook test-a-thons (73% of 'recommendations'/'test improvements' accepted by Meta engineers/developers), not for Instagram alone; the passages give no Instagram-specific acceptance rate and do not state that engineers accepted 73% of the tests surviving the Instagram (Reels and Stories) evaluation."
+  },
+  {
+   "pass": "pass 5: findings 1, 2, and 11, which the gate's second run could not confirm",
+   "finding": 2,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 5: findings 1, 2, and 11, which the gate's second run could not confirm",
+   "finding": 2,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 5: findings 1, 2, and 11, which the gate's second run could not confirm",
+   "finding": 11,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 5: findings 1, 2, and 11, which the gate's second run could not confirm",
+   "finding": 11,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 6: finding 1 restated",
+   "finding": 1,
+   "family": "Moonshot",
+   "model": "kimi-k3:cloud",
+   "served": "kimi-k3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  },
+  {
+   "pass": "pass 6: finding 1 restated",
+   "finding": 1,
+   "family": "Z.ai",
+   "model": "glm-5.3:cloud",
+   "served": "glm-5.3",
+   "verdict": "SUPPORTED",
+   "unsupported": ""
+  }
+ ]
+}
