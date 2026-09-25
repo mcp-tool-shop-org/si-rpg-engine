@@ -30,6 +30,9 @@ boundaries:
   - name: beliefs
     globs: [predicates/beliefs/**]
     role: data
+  - name: roles
+    globs: [predicates/roles/**]
+    role: data
   - name: fixtures
     globs: [fixtures/**]
     role: data
