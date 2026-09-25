@@ -33,10 +33,6 @@ on:
   schedule:
     - cron: "17 6 * * 1"
   workflow_dispatch:
-  # THROWAWAY: registers the workflow from this branch; reverted next commit.
-  push:
-    branches: [slice-t5-replay-corpus]
-    paths: [.github/workflows/corpus.yml]
 
 permissions:
   contents: read
@@ -48,7 +44,6 @@ concurrency:
 
 jobs:
   corpus:
-    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
