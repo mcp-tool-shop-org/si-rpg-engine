@@ -9,7 +9,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "4d03649aeb6305166b8cb3b4b68bfc2442bb80ca136603c947a1ada4dce30007",
+          "hash": "423e78e3c4588b07d0b2f798f31846fa948de250b6238b1cfeb1f3dde3c06073",
           "path": "predicates/beliefs/keys.json"
         }
       ],
@@ -44,7 +44,7 @@
           "path": "docs/atlas-design.md"
         },
         {
-          "hash": "bc5c806559ac3cfb470c05f4ba0695baa5bd0f31a895c465cc0b698ddfdd7020",
+          "hash": "6ec99c346bef861e3735a319d5b3f99ff5e71a6972aced30bd88d0c4d08d92dd",
           "path": "docs/consult-brief-01.md"
         },
         {
@@ -60,15 +60,15 @@
           "path": "docs/consult-brief-physics-01.md"
         },
         {
-          "hash": "bd0357e0bd3fad3655bd61b8955d98b57aa5124451469627b95b27f32aa3ae1d",
+          "hash": "193abea1cde4709cffb65219a08b01dfb71b7b4ff547f7f490f078fdb2341d59",
           "path": "docs/consult-reply-claude-01.md"
         },
         {
-          "hash": "6d9be18b2e3f1d5869621e04f1889eeeb787728c9e07b6a2b6bdecad4871f42e",
+          "hash": "cc408de92e37c7d4c2413f82925031531220ff33d46a493b4b8dfdd3b2c0bc46",
           "path": "docs/consult-reply-claude-02.md"
         },
         {
-          "hash": "a60b3f3f413b3178c4b24ca35a7a78b12819e2b4a228ac1ae6f4144cb106a14d",
+          "hash": "ee0969f2d3f083d63ad99cd94224d403a5d46ac42f1f1dd3c0a3244158108d36",
           "path": "docs/consult-reply-claude-atlas-01.md"
         },
         {
@@ -80,7 +80,7 @@
           "path": "docs/consult-reply-claude-physics-01.md"
         },
         {
-          "hash": "2c7dacb2ac7ba27ed2e4622ef341e8b382130b60ee755f493d00dc2952132291",
+          "hash": "7578181994b72d50723e9517c20eb22ac7aa10be33b2c46ff2e3cca920a82459",
           "path": "docs/consult-reply-gemini-01.md"
         },
         {
@@ -124,11 +124,11 @@
           "path": "docs/dispatch-e5-minds.md"
         },
         {
-          "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
+          "hash": "64cdee834df343cff0d2651a27f22da0cb454627de5fbe182a067977f3508e17",
           "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
         },
         {
-          "hash": "e3ea920ad0685f5dda0aa0445b7b6347c58a14b7d50583738d4678d3dd6f01b2",
+          "hash": "a95ff0183284c0ad677631be54a361d7cde9f6e33e416b425a506dc8ac3634c3",
           "path": "docs/study-swarm/consult-02.dispatch.md"
         },
         {
@@ -140,12 +140,28 @@
           "path": "docs/study-swarm/e2-solver.dispatch.md"
         },
         {
-          "hash": "b3e11ed1473ef4af6ddee0ef2bc12c7a3b39fdba5f2fcec514c10e47792889ae",
+          "hash": "1647f24b6af76e7fd2b871c78ad8c9776ac4fc7b1d08bebe650a0c8c4c437b51",
+          "path": "docs/study-swarm/product-alignment.dispatch.citation-receipt.json"
+        },
+        {
+          "hash": "8e498ffcfdcfe95e56af1930eedf4321ddb8e82ca7718cbf4cb7e9e9c5b579fd",
+          "path": "docs/study-swarm/product-alignment.dispatch.md"
+        },
+        {
+          "hash": "0331203b7505a9047ac3c95263a0c0f808a3e16b99e65dd2b90c3f3ee876157d",
           "path": "docs/study-swarm/si-rpg-engine.citation-receipt.json"
         },
         {
-          "hash": "6355daacbebd3488b217af7d17446ece88e36c233cf77219633cf892ef353ce8",
+          "hash": "6e1c8f0346eb348486400d201ca0029341beaf52a78a635b4110b3d8ec9e3f4c",
           "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
+        },
+        {
+          "hash": "fc5fda98423822a11c9d2db52d82c2bd0e36363d40b56c7aa6ae3afc84a93d3c",
+          "path": "docs/study-swarm/testing-3d.dispatch.citation-receipt.json"
+        },
+        {
+          "hash": "e137791019411a5703bcaa03ec6f09ba0a289127ca9d9f24f2eedf858bedeaa3",
+          "path": "docs/study-swarm/testing-3d.dispatch.md"
         }
       ],
       "globs": [
@@ -175,7 +191,7 @@
           "path": "fixtures/behavior-3d.json"
         },
         {
-          "hash": "7071c5ef1e83f5a979504d38d89ea6815eefeccf3fb0941c47c33b085140631f",
+          "hash": "6b03ee07e3c7672594f9c30256a12f30079b07e37f16cf6cf4807348f42b1754",
           "path": "fixtures/behavior-minds.json"
         },
         {
@@ -211,7 +227,7 @@
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "729fc4eb11853df41f80ae0a178761754510f66ea593b1a73f28487c13f9057a",
+          "hash": "82ba911964ec1a74dc304a48247b04f3a6daaad58503e0cd681321c75a76303f",
           "path": "fixtures/golden.txt"
         },
         {
@@ -322,7 +338,7 @@
             "playMinds",
             "replayMinds"
           ],
-          "hash": "0ecb4b33a2170947fdeecd2fbf4f0e5167ccb6403c9ed7352420ea33b24aba48",
+          "hash": "1726b9ad303c59a922a8abb0792934e66359962b9bf1a60bb0345a765bff31d9",
           "importsFiles": [
             "packages/tick/beliefs.js",
             "packages/tick/memory.js",
@@ -397,7 +413,10 @@
           "path": "harness/verbs-scene.mjs"
         },
         {
-          "hash": "0d7aa99b00bcd7efc884d60bbf7f14a40dad7b49d24649be228b2f1bdc1ddaad",
+          "hash": "4e880dc59931c5dbd5fcaddcb3e92ae6d57cbee89c0536fd7b970742d7d4b688",
+          "importsFiles": [
+            "packages/tool/guard.js"
+          ],
           "path": "harness/write-golden.js"
         }
       ],
@@ -530,12 +549,13 @@
         {
           "entry": "saveLog",
           "entryRule": 1,
-          "hash": "99ff47ca64db52e09e4d1422e345b4052e30bf19da4296c744b6036ef6ef515f",
+          "hash": "b8161c2ec543d11da88d46dcd3e49f11dd0480345e21f40953ff86d947fb27cb",
           "importsFiles": [
             "packages/host/server.js",
             "packages/host/session.js",
             "packages/tick/admit-world.js",
-            "packages/tick/scene.js"
+            "packages/tick/scene.js",
+            "packages/tool/guard.js"
           ],
           "path": "packages/host/bin/host.js",
           "sequences": []
@@ -679,12 +699,13 @@
         {
           "entry": "readIndex",
           "entryRule": 1,
-          "hash": "d27a860e7d81d77dd61335177f8538d2c9d3264685003c5406afffb9e40598c5",
+          "hash": "499dcbeffd15b317307dc2812ef0e889a6b6cf8a7631adb753bb58c587df85d4",
           "importsFiles": [
             "packages/load/admit.js",
             "packages/load/suite.js",
             "packages/tick/admit-world.js",
-            "packages/tick/scene.js"
+            "packages/tick/scene.js",
+            "packages/tool/guard.js"
           ],
           "path": "packages/load/bin/load.js",
           "sequences": []
@@ -749,7 +770,7 @@
         {
           "entry": "oneRun",
           "entryRule": 1,
-          "hash": "f28e59c6ea2d7007e57fc231349a7ab368620779cf9c9aaeeeb3cc8d93f4416f",
+          "hash": "70178e0472008e965fab975e2f186be50770f95756d53ea3657246863bfaa55c",
           "importsFiles": [
             "packages/propose/ollama.js",
             "packages/propose/oracle.js",
@@ -760,35 +781,36 @@
             "packages/tick/predicates.js",
             "packages/tick/replay.js",
             "packages/tick/tick.js",
-            "packages/tick/world.js"
+            "packages/tick/world.js",
+            "packages/tool/guard.js"
           ],
           "path": "packages/propose/bin/propose.js",
           "sequences": [
             {
               "calls": [
                 {
-                  "line": 60,
+                  "line": 63,
                   "name": "proposeWorld",
                   "target": {
                     "file": "packages/propose/scene.js"
                   }
                 },
                 {
-                  "line": 60,
+                  "line": 63,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 63,
+                  "line": 66,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
                   }
                 },
                 {
-                  "line": 58,
+                  "line": 61,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -803,7 +825,7 @@
             {
               "calls": [
                 {
-                  "line": 60,
+                  "line": 63,
                   "name": "proposeWorld",
                   "target": {
                     "file": "packages/propose/scene.js"
@@ -811,7 +833,7 @@
                   "via": "fresh"
                 },
                 {
-                  "line": 60,
+                  "line": 63,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -819,7 +841,7 @@
                   "via": "fresh"
                 },
                 {
-                  "line": 63,
+                  "line": 66,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
@@ -874,7 +896,7 @@
                       }
                     }
                   ],
-                  "line": 58,
+                  "line": 61,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -931,14 +953,14 @@
                       }
                     }
                   ],
-                  "line": 72,
+                  "line": 75,
                   "name": "runSeat",
                   "target": {
                     "file": "packages/propose/seat.js"
                   }
                 },
                 {
-                  "line": 83,
+                  "line": 86,
                   "name": "proposeWorld",
                   "target": {
                     "file": "packages/propose/scene.js"
@@ -975,14 +997,14 @@
                       }
                     }
                   ],
-                  "line": 81,
+                  "line": 84,
                   "name": "replay",
                   "target": {
                     "file": "packages/tick/replay.js"
                   }
                 },
                 {
-                  "line": 96,
+                  "line": 99,
                   "name": "attemptsToGoal",
                   "target": {
                     "file": "packages/propose/scene.js"
@@ -1272,23 +1294,67 @@
       "externals": 0,
       "files": [
         {
-          "hash": "28649ac40c773b030a6a5980ff02ad53e2c0f15a6e366c4a2813624c1c258f22",
+          "hash": "a67dbb23aa3667e1f67769912b480014a9075dfd12deaa1aabc1a98371a19e6f",
           "path": ".gitignore"
         },
         {
-          "hash": "367e5141e4f5884e5791c4021f33a9faa958840a5decf44e1b273a87aad1c459",
+          "hash": "a75322a24127d5ac497b041c956efbf6f5f352919dad4861c19e3ce54978f8a7",
+          "path": "CHANGELOG.md"
+        },
+        {
+          "hash": "5ae6b3c8f446f0a7cb95176e4dadb91b68aaffb16b3be09f64f5de248b6a973a",
           "path": "LICENSE"
         },
         {
-          "hash": "8621b7b0eca0f4ca0d8ce65995f2df1178fa5de37038938901257870123342ff",
+          "hash": "a01d7e8a4de7386d474ba011e76ed4c0f8eec8562ad917a5bc3f5a3dcdc41a45",
+          "path": "README.es.md"
+        },
+        {
+          "hash": "fc622f494d9ca8c9f107bf06791e956d5318abfd030c419e27882fb57d7fcb1a",
+          "path": "README.fr.md"
+        },
+        {
+          "hash": "482ecf3fda03b0847784933dcd39bf61b50941c89a15ed5eb67f4c4d2ed5ce33",
+          "path": "README.hi.md"
+        },
+        {
+          "hash": "30947a1e748fc94abf384db6cee135a455d56b7d1a819cad57af10f5f7deba72",
+          "path": "README.it.md"
+        },
+        {
+          "hash": "e3cc2ff723b0ed8a1a6bdfe191329b7620b6bbf3f0a34060d1f352f5b0f77530",
+          "path": "README.ja.md"
+        },
+        {
+          "hash": "df46cc0e386aefe43211e2954e7d84597bb54dc4cd5956f6c711e060d42b8398",
           "path": "README.md"
+        },
+        {
+          "hash": "4158766befe72248104acd305009b6abb4f69c9c00fa62692a41c78ae94a09d3",
+          "path": "README.pt-BR.md"
+        },
+        {
+          "hash": "1023421ead5626f1ba202d599b4d67dba931d5c89b8258a3c0da959d9f3a0ae6",
+          "path": "README.zh.md"
+        },
+        {
+          "hash": "ec6fdf33b0bc708e7cb37bc582c3891d70c61598b0cdfc7fcde08fd9135f55bb",
+          "path": "SCORECARD.md"
+        },
+        {
+          "hash": "aa303a386895cda4707db7d1dd1148334268dc6a8cfa02458aab4127f9c32870",
+          "path": "SECURITY.md"
+        },
+        {
+          "hash": "dfe9669b6d685b9a45239c8dc0d731f8af2d0879788795e65664532f875f0ce8",
+          "path": "SHIP_GATE.md"
         },
         {
           "hash": "04cb9d5ab9e53ba06b2e74d5babf6d48122d2d34d28e138a9568991723d8dfa3",
           "path": "package-lock.json"
         },
         {
-          "hash": "eb2f0affb08717f7e696128221229d4f4968707e9a4f3d4b42605ddb1e49da8a",
+          "hash": "6b155fe2fd9b5dc6de5ac8494c5e59e93253a5acbbd7879103cfb3ad5b616f8c",
           "path": "package.json"
         },
         {
@@ -1386,31 +1452,33 @@
             "beliefKeys",
             "beliefRefusal"
           ],
-          "hash": "8f9a346ebdcc8fa8a88ef885e697c63ff590d66a6cf59eed34d7b94eb75fba36",
+          "hash": "b2257e583b5081afe2b96f2e6f213bcc9e47fc84317ba070b64728090e5ed2c7",
           "importsFiles": [
             "packages/tick/subject.js"
           ],
           "path": "packages/tick/beliefs.js"
         },
         {
-          "hash": "b92531e8cfc45403945986d23feeac8106e9c57b4243e5d5a7955acc9f72a4b9",
+          "hash": "7da5c99e7285a9ba44a169001299031883337d8258a916b3905488a17abff4aa",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
             "packages/tick/tick.js",
-            "packages/tick/world.js"
+            "packages/tick/world.js",
+            "packages/tool/guard.js"
           ],
           "path": "packages/tick/bin/play.js"
         },
         {
           "entry": "isWorld",
           "entryRule": 1,
-          "hash": "61d1704bc7858eded70fa6eca3f9852d2e6a1e2ea6fbef6fc06f0d523402052d",
+          "hash": "2fd44d0c0e32b5820eb0965e0ce435ef50845de2ca3dda34348f5c52015990fa",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/predicates.js",
-            "packages/tick/replay.js"
+            "packages/tick/replay.js",
+            "packages/tool/guard.js"
           ],
           "path": "packages/tick/bin/replay.js",
           "sequences": []
@@ -1458,7 +1526,7 @@
             "mixMinds",
             "observeMinds"
           ],
-          "hash": "f9fab63d50fac510f1022eae9df4cc9336ef04bfe1a1b73d37e67b28260aed39",
+          "hash": "deedbd4fc09f97ada33547f4cfe0b0efe67342c277daee4c4b0f8b2f2c96a633",
           "importsFiles": [
             "packages/tick/subject.js"
           ],
@@ -1467,7 +1535,7 @@
         {
           "entry": "minded",
           "entryRule": 1,
-          "hash": "9a17b8dc983a14a68f2792752d08204ec061a655b1b35f689a7be8ee3fca6ba6",
+          "hash": "e9eaee766bab0527452b7ebb8a8f9fdd6393227fcf0cc822fe79ed1022c8cbf2",
           "importsFiles": [
             "harness/minds-scene.mjs",
             "packages/frame/hash.js",
@@ -2010,7 +2078,7 @@
             "subjectKind",
             "subjectText"
           ],
-          "hash": "9717253673f4b20dac1763cd770707247b44e9542a84314b324b0664809c4bc4",
+          "hash": "3d57dd92746b1053040f1d6f3940fa1405b27da2c391b4087a056f403ee76f63",
           "path": "packages/tick/subject.js"
         },
         {
@@ -2300,8 +2368,12 @@
       "externals": 0,
       "files": [
         {
-          "hash": "a672cdd1366cf5e70ed8ebeb30d82f9aec93605001ef597b67c9556a9502e699",
+          "hash": "1cdcd8b95708d03e753875053aa28a2ff5f494ec17917ef2a216cd6d871e959f",
           "path": ".github/workflows/ci.yml"
+        },
+        {
+          "hash": "fe1db5f18ca42c6e2363f0860db9c117b03a6bff39b375189f7c9d2f1882b4a1",
+          "path": ".github/workflows/pages.yml"
         }
       ],
       "globs": [
@@ -2346,12 +2418,17 @@
   ],
   "doors": [
     {
-      "checksCount": 17,
+      "checksCount": 18,
       "commands": [
         {
           "job": "engines",
           "step": "Install dev dependencies",
           "text": "npm ci"
+        },
+        {
+          "job": "engines",
+          "step": "Audit dependencies",
+          "text": "npm audit --audit-level=high"
         },
         {
           "job": "engines",
@@ -2601,12 +2678,20 @@
           "runKind": "executes"
         },
         {
+          "directory": true,
+          "job": "engines",
+          "matched": true,
+          "path": "packages/tool/",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
           "job": "engines",
           "path": "solver/build.mjs",
           "runKind": "executes"
         }
       ],
-      "runsCount": 27,
+      "runsCount": 28,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -2632,7 +2717,8 @@
             "packages/**",
             "predicates/**",
             "solver/**",
-            "tsconfig.json"
+            "tsconfig.json",
+            "worlds/**"
           ]
         },
         {
@@ -2650,7 +2736,8 @@
             "packages/**",
             "predicates/**",
             "solver/**",
-            "tsconfig.json"
+            "tsconfig.json",
+            "worlds/**"
           ]
         },
         {
@@ -2662,6 +2749,86 @@
         "actions/checkout",
         "actions/setup-node",
         "dtolnay/rust-toolchain"
+      ],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [
+        {
+          "job": "build",
+          "step": "Install site dependencies",
+          "text": "npm ci"
+        },
+        {
+          "job": "build",
+          "step": "Build site",
+          "text": "npm run build"
+        }
+      ],
+      "elsewhere": [],
+      "file": ".github/workflows/pages.yml",
+      "landings": [],
+      "mentions": [],
+      "name": "Deploy site to GitHub Pages",
+      "permissions": [
+        "contents:read",
+        "id-token:write",
+        "pages:write"
+      ],
+      "pushes": false,
+      "reach": [],
+      "readers": [],
+      "runs": [
+        {
+          "job": "build",
+          "matched": true,
+          "path": "site/astro.config.mjs",
+          "runKind": "executes",
+          "via": "astro build"
+        },
+        {
+          "directory": true,
+          "job": "build",
+          "matched": true,
+          "path": "site/src/",
+          "runKind": "executes",
+          "via": "astro build"
+        }
+      ],
+      "runsCount": 2,
+      "secrets": [],
+      "sends": {
+        "deploysPages": true,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [
+        {
+          "branches": [
+            "main"
+          ],
+          "event": "push",
+          "paths": [
+            ".github/workflows/pages.yml",
+            "site/**"
+          ]
+        },
+        {
+          "event": "workflow_dispatch"
+        }
+      ],
+      "uses": [
+        "actions/checkout",
+        "actions/deploy-pages",
+        "actions/setup-node",
+        "actions/upload-pages-artifact"
       ],
       "usesWorkflowToken": false
     },
@@ -3067,10 +3234,32 @@
     }
   ],
   "generatedFrom": {
-    "commit": "7122b6c1b795ef66b1b1585da8b08f8d35ec7429",
-    "tracked": 146
+    "commit": "2e82fc7f790ba0e8b6beca2d344b204c099e9a0e",
+    "tracked": 181
   },
   "landings": [
+    {
+      "readers": [
+        {
+          "by": "docs/study-swarm/product-alignment.dispatch.citation-receipt.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "docs/study-swarm/product-alignment.dispatch.md",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "docs/study-swarm/testing-3d.dispatch.citation-receipt.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "docs/study-swarm/testing-3d.dispatch.md",
+      "writers": []
+    },
     {
       "readers": [
         {
@@ -3297,6 +3486,11 @@
           "by": "harness/check.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "site/src/content/docs/handbook/getting-started.md",
+          "call": "--module",
+          "confidence": "text"
         }
       ],
       "target": "harness/sim.mjs",
@@ -3537,6 +3731,28 @@
       "writers": []
     },
     {
+      "readers": [
+        {
+          "by": "site/astro.config.mjs",
+          "call": "content-collection",
+          "confidence": "ast"
+        }
+      ],
+      "target": "site/src/content/docs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "site/astro.config.mjs",
+          "call": "autogenerate",
+          "confidence": "ast"
+        }
+      ],
+      "target": "site/src/content/docs/handbook",
+      "writers": []
+    },
+    {
       "readers": [],
       "target": "solver/dist",
       "tracked": false,
@@ -3570,7 +3786,42 @@
     {
       "readers": [
         {
+          "by": "README.es.md",
+          "call": "--world",
+          "confidence": "text"
+        },
+        {
+          "by": "README.fr.md",
+          "call": "--world",
+          "confidence": "text"
+        },
+        {
+          "by": "README.hi.md",
+          "call": "--world",
+          "confidence": "text"
+        },
+        {
+          "by": "README.it.md",
+          "call": "--world",
+          "confidence": "text"
+        },
+        {
+          "by": "README.ja.md",
+          "call": "--world",
+          "confidence": "text"
+        },
+        {
           "by": "README.md",
+          "call": "--world",
+          "confidence": "text"
+        },
+        {
+          "by": "README.pt-BR.md",
+          "call": "--world",
+          "confidence": "text"
+        },
+        {
+          "by": "README.zh.md",
           "call": "--world",
           "confidence": "text"
         },
@@ -3609,6 +3860,11 @@
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "site/src/content/docs/handbook/usage.md",
+          "call": "--world",
+          "confidence": "text"
         }
       ],
       "target": "worlds/crate-and-door.json",
@@ -3619,5 +3875,85 @@
   "submodules": [],
   "symlinks": [],
   "testFiles": 9,
-  "unassigned": []
+  "unassigned": [
+    {
+      "exports": [
+        "guard"
+      ],
+      "hash": "dfaa62a151a4cdc137e7beea14462f07cc24f23d99e17bb18b13718fb508e59f",
+      "path": "packages/tool/guard.js"
+    },
+    {
+      "hash": "cfc9febcdebb87fa05829c54d3bbf5ff29595420be27fadd14f6a4f497ed2e1c",
+      "path": "site/astro.config.mjs"
+    },
+    {
+      "hash": "6ee5c6164bb4c4d13dd0e94ec62a20e7ac09da1692092fa8e82eaad9c3968571",
+      "path": "site/package-lock.json"
+    },
+    {
+      "hash": "9c39e620ebae2c5718ecd8c6188bd3451409a614ec8f5308dc15d5fd886e5b91",
+      "path": "site/package.json"
+    },
+    {
+      "hash": "db3c76ae1d22efa9f6c9a1cf3d8b1f45a5e94210d34e4b518006018e7d3d097d",
+      "path": "site/public/favicon.svg"
+    },
+    {
+      "hash": "e74bb939891dc933e5d149ae798091b1914b385846d4e5d34154f2205db02122",
+      "path": "site/src/assets/logo.png"
+    },
+    {
+      "hash": "ee756dfba4122d2acc94a39b2555d9f200fff56a87a8c0b10f9cd01df26a8b62",
+      "path": "site/src/content.config.ts"
+    },
+    {
+      "hash": "015770ab1415027a88942e9ffd10ec353fe5360c66de05436d90df65049740b5",
+      "path": "site/src/content/docs/handbook/architecture.md"
+    },
+    {
+      "hash": "429be980224a8e05dc2bf6a85264557ba009278dce64a008e3afea23b5b22ef9",
+      "path": "site/src/content/docs/handbook/getting-started.md"
+    },
+    {
+      "hash": "602b79ad314c2a4426887a93c489af0b3d3860c51e8b325b1de9147aac022c66",
+      "path": "site/src/content/docs/handbook/index.md"
+    },
+    {
+      "hash": "89b6986b007bfe7ed699cacf68640f3ee4647cba77f326c4a37a9ae058de11a7",
+      "path": "site/src/content/docs/handbook/reference.md"
+    },
+    {
+      "hash": "3ab2096068d625dfb3c7e99dc4c2b536ba7222fde2d3518aac4bf567f442c495",
+      "path": "site/src/content/docs/handbook/security.md"
+    },
+    {
+      "hash": "2d3b2da579eafcdbb0890a2660c4584b5aa6ed6aa64e98627af9aa4b25b87c9b",
+      "path": "site/src/content/docs/handbook/usage.md"
+    },
+    {
+      "hash": "67cc332dcd086a684a91116f8c333bebe7711f340408649caf95a93c0c94006f",
+      "path": "site/src/content/docs/handbook/world-files.md"
+    },
+    {
+      "hash": "4fb84a646c4d833c33f4058e1ed1775849e855c65e5adb7e45d2a633674bd603",
+      "path": "site/src/pages/index.astro"
+    },
+    {
+      "hash": "815e1c53a21eda26dd3382b2336eac1f8ad4088ca12be32fb7cb5c586e68b161",
+      "path": "site/src/site-config.ts"
+    },
+    {
+      "hash": "29ee8df91833e694bdba973126b34a6177de4cf01dab6d9ef7d3126e8e2b67fb",
+      "path": "site/src/styles/global.css"
+    },
+    {
+      "hash": "caf3bea3424477e9528b80490e442ff4fad4ccc7562df9457497382c5bd62339",
+      "path": "site/src/styles/starlight-custom.css"
+    },
+    {
+      "hash": "b5b0a5b04a14cddd7713c5e1c82e86c79c17c2f86b170e26e9b170b3d5e01cd9",
+      "path": "site/tsconfig.json"
+    }
+  ]
 }

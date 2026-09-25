@@ -17,6 +17,9 @@ import { considerDraft, retireVerb } from '../admit.js';
 import { loadHazards } from '../suite.js';
 import { loadScene } from '../../tick/scene.js';
 import { loadHash, settles } from '../../tick/admit-world.js';
+import { guard } from '../../tool/guard.js';
+
+guard('load admit <draft.json> | load retire <verb> | load world <world.json>');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);

@@ -15,6 +15,9 @@ import { createSession, startPump } from '../session.js';
 import { createHostServer } from '../server.js';
 import { loadScene } from '../../tick/scene.js';
 import { indexReason } from '../../tick/admit-world.js';
+import { guard } from '../../tool/guard.js';
+
+guard('host [--world <world.json>] [--port N] [--log out.json]');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);

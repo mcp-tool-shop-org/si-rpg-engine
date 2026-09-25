@@ -14,6 +14,7 @@ on:
       - fixtures/**
       - packages/**
       - predicates/**
+      - worlds/**
       - atlas/**
       - package.json
       - package-lock.json
@@ -26,6 +27,7 @@ on:
       - fixtures/**
       - packages/**
       - predicates/**
+      - worlds/**
       - atlas/**
       - package.json
       - package-lock.json
@@ -50,6 +52,8 @@ jobs:
           cache: npm
       - name: Install dev dependencies
         run: npm ci
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: "1.98.1"

@@ -21,6 +21,9 @@ import { runSeat } from '../seat.js';
 import { askOllama, pinnedRun } from '../ollama.js';
 import { attemptsToGoal, proposeWorld } from '../scene.js';
 import { oracleSearch } from '../oracle.js';
+import { guard } from '../../tool/guard.js';
+
+guard('propose [--unfreeze] [--out <file>]');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);

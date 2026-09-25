@@ -17,6 +17,9 @@ import { createWorld } from '../world.js';
 import { createMemory } from '../memory.js';
 import { loadIntentRules } from '../predicates.js';
 import { FIXTURE_SEED, fixtureWorld } from '../fixture.js';
+import { guard } from '../../tool/guard.js';
+
+guard('play <proposals.json> [--seed N] [--log out.json]');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);

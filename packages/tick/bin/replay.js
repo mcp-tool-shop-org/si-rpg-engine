@@ -14,6 +14,9 @@ import { fileURLToPath } from 'node:url';
 import { replay } from '../replay.js';
 import { loadIntentRules } from '../predicates.js';
 import { fixtureWorld } from '../fixture.js';
+import { guard } from '../../tool/guard.js';
+
+guard('replay <log.json>');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);

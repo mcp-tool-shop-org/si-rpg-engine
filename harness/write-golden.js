@@ -3,6 +3,9 @@ import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { guard } from '../packages/tool/guard.js';
+
+guard('write-golden');
 
 // Rewrites fixtures/golden.txt from harness/sim.mjs, the product solver.
 // It does not rewrite fixtures/golden-arith.txt. CI does not run this.
