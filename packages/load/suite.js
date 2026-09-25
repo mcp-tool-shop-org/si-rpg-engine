@@ -17,6 +17,12 @@ import { createMemory } from '../tick/memory.js';
  *   actor: string;
  *   target: { x: number; z: number };
  *   targetBody?: string;
+ *   targetZone?: string;
+ *   asleep?: string[];
+ *   carrying?: string;
+ *   zones?: import('../frame/types.js').Zone[];
+ *   heightfield?: { rows: number, cols: number, cell: number, heights: number[] } | null;
+ *   effect?: string;
  *   expect: 'admit' | 'refuse';
  * }} HazardScenario
  */
@@ -26,8 +32,12 @@ export function loadHazards() {
   const index = JSON.parse(readFileSync('predicates/hazards/index.json', 'utf8'));
   /** @type {HazardScenario[]} */
   const scenarios = [];
-  for (const file of index.scenarios) {
-    scenarios.push(JSON.parse(readFileSync('predicates/hazards/' + file, 'utf8')));
+  for (const entry of index.scenarios) {
+    const file = typeof entry === 'string' ? entry : entry.file;
+    const effect = typeof entry === 'string' ? 'drive' : entry.effect;
+    const scenario = JSON.parse(readFileSync('predicates/hazards/' + file, 'utf8'));
+    scenario.effect = effect;
+    scenarios.push(scenario);
   }
   return scenarios;
 }
@@ -40,22 +50,48 @@ export function loadHazards() {
 export function runHazards(rule, scenarios) {
   /** @type {string[]} */
   const failures = [];
+  const effect = rule.effect || 'drive';
   for (const scenario of scenarios) {
+    if ((scenario.effect || 'drive') !== effect) {
+      continue;
+    }
     const rules = new Map([[rule.verb, rule]]);
+    const world = createWorld({
+      bodies: scenario.bodies,
+      colliders: scenario.colliders,
+      zones: scenario.zones,
+      heightfield: scenario.heightfield,
+    });
+    if (scenario.carrying && !world.carry(scenario.actor, scenario.carrying)) {
+      failures.push(scenario.id + ' could not start carrying');
+      continue;
+    }
     const tick = createTick({
       seed: 1,
-      world: createWorld({ bodies: scenario.bodies, colliders: scenario.colliders }),
+      world,
       rules,
       memory: createMemory(),
     });
-    /** @type {{ x: number, z: number } | { body: string }} */
+    if (Array.isArray(scenario.asleep)) {
+      for (let n = 0; n < 128; n = n + 1) {
+        if (scenario.asleep.every((id) => world.sleeping(id))) {
+          break;
+        }
+        tick.advance();
+      }
+    }
+    /** @type {{ x: number, z: number } | { body: string } | { zone: string }} */
     let target = scenario.target;
-    if (rule.targetKind === 'body') {
-      if (typeof scenario.targetBody !== 'string') {
+    if (effect === 'episode' && scenario.targetZone) {
+      target = { zone: scenario.targetZone };
+    } else if (effect === 'carry' || effect === 'episode' || rule.targetKind === 'body') {
+      if (effect !== 'episode' && typeof scenario.targetBody !== 'string') {
         failures.push(scenario.id + ' has no targetBody');
         continue;
       }
-      target = { body: scenario.targetBody };
+      if (typeof scenario.targetBody === 'string') {
+        target = { body: scenario.targetBody };
+      }
     }
     const result = tick.submit({
       kind: 'intent',

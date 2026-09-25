@@ -110,7 +110,7 @@ export function stepBodies(bodies, colliders, driven) {
     view[at + 13] = body.hx;
     view[at + 14] = body.hy;
     view[at + 15] = body.hz;
-    view[at + 16] = driven.has(body.id) ? 1 : 0;
+    view[at + 16] = typeof body.solverMode === 'number' ? body.solverMode : (driven.has(body.id) ? 1 : 0);
   }
   for (let j = 0; j < colliders.length; j = j + 1) {
     const box = colliders[j];
@@ -164,7 +164,7 @@ function writeInputs(exp, bodies, colliders, heightfield, driven) {
     view[at + 13] = body.hx;
     view[at + 14] = body.hy;
     view[at + 15] = body.hz;
-    view[at + 16] = driven && driven.has(body.id) ? 1 : 0;
+    view[at + 16] = typeof body.solverMode === 'number' ? body.solverMode : (driven && driven.has(body.id) ? 1 : 0);
   }
   for (let j = 0; j < colliders.length; j = j + 1) {
     const box = colliders[j];

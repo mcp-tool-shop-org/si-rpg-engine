@@ -1,7 +1,11 @@
 {
   "rules": [
     "move.json",
-    "push.json"
+    "push.json",
+    "climb.json",
+    "pick-up.json",
+    "drop.json",
+    "use.json"
   ],
   "retired": []
 }

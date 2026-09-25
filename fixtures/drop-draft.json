@@ -1,0 +1,8 @@
+{
+  "verb": "drop",
+  "effect": "release",
+  "speed": 1,
+  "maxDistance": 3,
+  "requiresClearPath": true,
+  "maxQuanta": 256
+}

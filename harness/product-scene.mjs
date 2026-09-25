@@ -25,6 +25,28 @@ export const boxDriven = [
 
 export const productDriven = ['walker'];
 
+/**
+ * A short lift, then the walker carries the parcel. Both enter the product hash.
+ * @param {ReturnType<import('../packages/tick/world.js').createWorld>} world
+ * @param {number} step
+ */
+export function applyProductAct(world, step) {
+  world.lifted.delete('climber');
+  const driven = new Set(productDriven);
+  if (step >= 200 && step < 260) {
+    const climber = world.body('climber');
+    if (climber) {
+      climber.vy = 0.8;
+      world.lifted.add('climber');
+      driven.add('climber');
+    }
+  }
+  if (step === 400) {
+    world.carry('walker', 'parcel');
+  }
+  return driven;
+}
+
 export function createBoxProductWorld() {
   return createWorld({
     bodies: [
@@ -64,6 +86,8 @@ export function createProductWorld() {
       { id: 'upper', x: 6, y: 0.85, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
       { id: 'tip', x: 8.15, y: 0.7, z: -1.5, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
       { id: 'slider', x: 22.53760930650349, y: 2.3347518010647184, z: 4, vx: 0, vy: 0, vz: 0, hx: 0.12, hy: 0.12, hz: 0.12 },
+      { id: 'climber', x: 2, y: 0.3, z: 5, vx: 0, vy: 0, vz: 0, hx: 0.2, hy: 0.2, hz: 0.2 },
+      { id: 'parcel', x: 14, y: 0.3, z: 2, vx: 0, vy: 0, vz: 0, hx: 0.2, hy: 0.2, hz: 0.2 },
     ],
     colliders: [
       { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 },

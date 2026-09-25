@@ -43,6 +43,7 @@ struct Signature {
     cols: u32,
     cell: u64,
     driven: u64,
+    carried: u64,
     geom: u64,
     shape: u32,
 }
@@ -51,7 +52,7 @@ struct Loaded {
     world: PhysicsWorld,
     n_bodies: usize,
     kinematic: Vec<bool>,
-    handles: Vec<RigidBodyHandle>,
+    handles: Vec<Option<RigidBodyHandle>>,
     halves: Vec<Vector>,
     signature: Signature,
     controller: KinematicCharacterController,
@@ -183,6 +184,7 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
         return None;
     }
     let mut driven = 0u64;
+    let mut carried = 0u64;
     for i in 0..n_bodies as usize {
         let b = body_at(i);
         for k in 0..13 {
@@ -193,8 +195,12 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
         if canon_quat(b[QX], b[QY], b[QZ], b[QW]).is_none() {
             return None;
         }
-        if b[DRIVEN] != 0.0 {
+        // 1 is a kinematic action, 2 is the same action lifted (no gravity, no snap).
+        // 3 is carried: the body stays in the record and leaves the solver.
+        if b[DRIVEN] == 1.0 || b[DRIVEN] == 2.0 {
             driven |= 1u64 << i;
+        } else if b[DRIVEN] == 3.0 {
+            carried |= 1u64 << i;
         }
     }
     // Half-extents and static geometry identify the world. Pose and velocity do not,
@@ -247,7 +253,7 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
         geom = mix_u64(geom, cols as u64);
     }
     geom = mix_u64(geom, shape as u64);
-    Some(Signature { world_id, n_bodies, n_colliders, rows, cols, cell: cell.to_bits(), driven, geom, shape })
+    Some(Signature { world_id, n_bodies, n_colliders, rows, cols, cell: cell.to_bits(), driven, carried, geom, shape })
 }
 
 fn same_sig(a: &Signature, b: &Signature) -> bool {
@@ -258,6 +264,7 @@ fn same_sig(a: &Signature, b: &Signature) -> bool {
         && a.cols == b.cols
         && a.cell == b.cell
         && a.driven == b.driven
+        && a.carried == b.carried
         && a.geom == b.geom
         && a.shape == b.shape
 }
@@ -382,10 +389,17 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         let vel = Vector::new(b[3], b[4], b[5]);
         let half = Vector::new(b[HX], b[HY], b[HZ]);
         let driven = (sig.driven & (1u64 << i)) != 0;
+        let carried_body = (sig.carried & (1u64 << i)) != 0;
         let Some(rotation) = quat_from_body(&b) else {
             return None;
         };
         let ang = Vector::new(b[WX], b[WY], b[WZ]);
+        if carried_body {
+            handles.push(None);
+            kinematic.push(false);
+            halves.push(half);
+            continue;
+        }
         let body = if driven {
             let mut body = RigidBodyBuilder::kinematic_position_based()
                 .translation(pos)
@@ -420,7 +434,7 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         .build();
         let (handle, ch) = world.insert(body, co);
         collider_handles.push(ch);
-        handles.push(handle);
+        handles.push(Some(handle));
         kinematic.push(driven);
         halves.push(half);
     }
@@ -441,6 +455,7 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
             cols: sig.cols,
             cell: sig.cell,
             driven: sig.driven,
+            carried: sig.carried,
             geom: sig.geom,
             shape: sig.shape,
         },
@@ -466,13 +481,30 @@ fn integrate(loaded: &mut Loaded) -> bool {
         if !loaded.kinematic[i] {
             continue;
         }
+        let Some(handle) = loaded.handles[i] else {
+            continue;
+        };
         let b = body_at(i);
+        // A lifted kinematic takes its vertical velocity from the record.
+        // Gravity and the controller's snap stay off for that quantum.
+        if b[DRIVEN] == 2.0 {
+            let vy = b[4];
+            if bad(vy) || bad(b[3]) || bad(b[5]) {
+                return false;
+            }
+            let pos = *loaded.world.bodies[handle].position();
+            let translation = pos.translation + Vector::new(b[3], vy, b[5]) * DT;
+            if bad(translation.x) || bad(translation.y) || bad(translation.z) {
+                return false;
+            }
+            plans.push(Plan { index: i, handle, translation, vy, vx: b[3], vz: b[5], collisions: Vec::new() });
+            continue;
+        }
         let mut vy = b[4] + G * DT;
         if bad(vy) || bad(b[3]) || bad(b[5]) {
             return false;
         }
         let desired = Vector::new(b[3], vy, b[5]) * DT;
-        let handle = loaded.handles[i];
         let half = loaded.halves[i];
         let shape = character_shape(loaded.signature.shape, half);
         let mut collisions = Vec::new();
@@ -520,7 +552,9 @@ fn integrate(loaded: &mut Loaded) -> bool {
     loaded.world.step();
 
     for i in 0..n {
-        let handle = loaded.handles[i];
+        let Some(handle) = loaded.handles[i] else {
+            continue;
+        };
         let body = &loaded.world.bodies[handle];
         let p = body.translation();
         if loaded.kinematic[i] {
@@ -550,7 +584,9 @@ fn push_f64(out: &mut Vec<u8>, x: f64) {
 fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) -> bool {
     out.clear();
     for i in 0..loaded.n_bodies {
-        let handle = loaded.handles[i];
+        let Some(handle) = loaded.handles[i] else {
+            continue;
+        };
         let body = &loaded.world.bodies[handle];
         let p = body.translation();
         let (qx, qy, qz, qw, wx, wy, wz) = if loaded.kinematic[i] {

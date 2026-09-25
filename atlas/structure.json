@@ -13,7 +13,7 @@
           "path": "docs/PHASE-0.md"
         },
         {
-          "hash": "9f796af40fca02ca17ba864e2413b96c7a262d440474c7a7d729fa86fba5331c",
+          "hash": "0fd37c406180d7c86daa5baa8066cc607c8830d7d918a5671ccf191739c5d6d4",
           "path": "docs/PHASE-1.md"
         },
         {
@@ -89,8 +89,12 @@
           "path": "docs/dispatch-e2b-rotation.md"
         },
         {
-          "hash": "8a5b1699781eae930067d62bcfa61a95d77e90c28d8c6720101562004dcebc13",
+          "hash": "3d7cc93dadf56140cde8ca51c0360dcb32daa2d07fab7b4cffa4600093c1bde4",
           "path": "docs/dispatch-e3-world-file.md"
+        },
+        {
+          "hash": "ecb9a29cc3f96b8027c0aba3385a120f49f2d87f4954b3f0b14b5a1c19d32a4c",
+          "path": "docs/dispatch-e4-verbs.md"
         },
         {
           "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
@@ -144,16 +148,28 @@
           "path": "fixtures/behavior-3d.json"
         },
         {
-          "hash": "8e6b64332d4b1a93c4831dcf75c1a8846657b827bc76f0c85342ec5454754774",
+          "hash": "e125e20157aa1357d322422f838817aad7736808c140ec4bdb2fd66b8288cbc0",
           "path": "fixtures/behavior-ramp.json"
         },
         {
-          "hash": "2802739b5abb97553879eaa9d7e7072ecd16670e71711329eb5285342d2fa006",
+          "hash": "92ea1128b4fab4c8342e954058a1e35e19e9468394839550ae15ca52cb5bc056",
           "path": "fixtures/behavior-rotation.json"
         },
         {
-          "hash": "4475c44a023c9169f92807bdb79bac77253584abf9090d751eb55497bd2c3155",
+          "hash": "38d4db8847a089ee6984019a1e7af2fd000e7235b29ef4107d2ae79239caa924",
           "path": "fixtures/behavior-solver.json"
+        },
+        {
+          "hash": "0ebcd344ae75a22b569887d3e171fb003ea516518fb51395a11fb172305a174d",
+          "path": "fixtures/behavior-verbs.json"
+        },
+        {
+          "hash": "ab7de65917369f1ccce49f5eb707beb93454f3962a0ae82b89b3b893d6af3741",
+          "path": "fixtures/climb-draft.json"
+        },
+        {
+          "hash": "e64ff7d0dff5ece9216e9ebb5297863025ce15e50667e12aa210e03bf2721a8c",
+          "path": "fixtures/drop-draft.json"
         },
         {
           "hash": "e04e22f59d02566c01c1c1bb9d9b496a0aebf80880988d49041d8e149874d2cc",
@@ -164,12 +180,16 @@
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "c88823fe0a1b9f0a92618e7c42192a93ec90d362440cd70d358475cf5b328734",
+          "hash": "394dcf280ddb3ea230bbde43d14939ae15e531d31fe2eff8d9250e7ef22754a2",
           "path": "fixtures/golden.txt"
         },
         {
           "hash": "9ad205cb228f52370dfdfedf0ee58e64e7ff768c397d6d68b8b6a641cb2e7ee8",
           "path": "fixtures/legacy-play-log.json"
+        },
+        {
+          "hash": "5a5888194f3e106548822370f693b2e68f24428d8b05dd9502f72fd909a17930",
+          "path": "fixtures/pick-up-draft.json"
         },
         {
           "hash": "81108761b4e0888f9464136e9be72503aad28c985b3bb1157c503f885287364d",
@@ -184,12 +204,16 @@
           "path": "fixtures/push-play-log.json"
         },
         {
-          "hash": "a8f3917d987ebbae56bd3fc5e93c71a87da53352308fce3f4c0be1f9b133d282",
+          "hash": "b29abcc813caeb73bb2a6719af83184e0a7d01f7416ff528ee59bc8903d8b0db",
           "path": "fixtures/shape-traversal.json"
         },
         {
-          "hash": "c4fadd11bf077a0e89cbb7bf953870dc29a5613f0763ad2447ddc7e1cee321cc",
+          "hash": "7d0d40649425482b9be36b06b71ad9e09bbde43718d0bd4624dd9de1d1816c15",
           "path": "fixtures/solver.sha256"
+        },
+        {
+          "hash": "7f11c7e6a10ab8d4c33c43ee5e48c55e66c115f82ac45bd0ef7ce10827bc5607",
+          "path": "fixtures/use-draft.json"
         }
       ],
       "globs": [
@@ -226,7 +250,7 @@
           "path": "packages/frame/hash.js"
         },
         {
-          "hash": "7cd07b9215a3517dbf4653c43ff58cd44aa2df825810db76b209daf1ace980f9",
+          "hash": "fd38b1f53b15eb58b76715a49a15488414f3bc2c1f9dac67c1a25c27c62ac18b",
           "path": "packages/frame/types.d.ts"
         }
       ],
@@ -237,7 +261,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 5,
+      "testedBy": 6,
       "unresolvedSites": 0
     },
     {
@@ -263,10 +287,11 @@
         },
         {
           "exports": [
+            "applyProductAct",
             "createBoxProductWorld",
             "createProductWorld"
           ],
-          "hash": "0fbbef699189d92a98f1dd53d799e832263cad7723a524d196064f74abf9e2a4",
+          "hash": "59710d6ebd1017f9c3c31bdd4973b4d4b5170c6a91d675808832ca84ebfd487f",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -283,7 +308,7 @@
         {
           "entry": "out",
           "entryRule": 1,
-          "hash": "9ece86abe3746067710c254b2a295b09f6bf6bf3d88ffd50fa2c9dd6531337df",
+          "hash": "bef2b3a50a40f734738e5fe95d137362fa4bf4fbdd656337d72b609a841da50c",
           "importsFiles": [
             "harness/product-scene.mjs",
             "packages/frame/hash.js"
@@ -295,7 +320,7 @@
           "exports": [
             "play"
           ],
-          "hash": "c54ccfec347dcb3df8f1f07e8fccc9bb2e6516f9736f5864364706aee9d6d5b3",
+          "hash": "555cd94decfc258d2fab9b63b96be838fb4b96bc9c804e8555e713543433973a",
           "importsFiles": [
             "packages/frame/hash.js",
             "packages/tick/world.js"
@@ -303,13 +328,25 @@
           "path": "harness/solver-scene.mjs"
         },
         {
-          "hash": "9b651b24ff3f04024a2e82ee62676923e63b8678f822e20a7cf2428f65c511cd",
+          "hash": "677b92b84964ccb825446a97db9782e6bb747b16b2c339b111062eb87f83a41b",
           "importsFiles": [
             "harness/solver-scene.mjs",
             "packages/frame/hash.js",
             "packages/tick/world.js"
           ],
           "path": "harness/solver.test.js"
+        },
+        {
+          "exports": [
+            "playVerbs"
+          ],
+          "hash": "ac1f92e46a98570e1756280516d7f984ccfe91641b5de75c895eadf997b84c94",
+          "importsFiles": [
+            "packages/tick/memory.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/verbs-scene.mjs"
         },
         {
           "hash": "0d7aa99b00bcd7efc884d60bbf7f14a40dad7b49d24649be228b2f1bdc1ddaad",
@@ -324,7 +361,7 @@
       "origin": "authored",
       "outsideReads": 1,
       "role": "test",
-      "testedBy": 2,
+      "testedBy": 3,
       "unresolvedSites": 2
     },
     {
@@ -342,20 +379,84 @@
           "path": "predicates/hazards/beyond-wall.json"
         },
         {
+          "hash": "95f39915a8e73ce747ffe711238e9308aacf4642df1d1b0c7ca59c3e8b7899f2",
+          "path": "predicates/hazards/carry-awake.json"
+        },
+        {
+          "hash": "a667a4781675783786169b446853bb330efa9ccabb0d7366a0da7ab730a22f01",
+          "path": "predicates/hazards/carry-rest.json"
+        },
+        {
+          "hash": "a3b15653fec32117857371b649d8acc9a5e6c9e64d22b1dc0d7f3e376d789119",
+          "path": "predicates/hazards/carry-size.json"
+        },
+        {
+          "hash": "b8b23b121c0179a82a6d7e0a3ae7ecee097c622dc3cb49d16b2bd4a3194c4ccc",
+          "path": "predicates/hazards/carry-wall.json"
+        },
+        {
           "hash": "a6ee0a6ba3f179738928106b1361a5e2f14ced7d5cba6fc3e863171e01e8ac68",
           "path": "predicates/hazards/clear-step.json"
+        },
+        {
+          "hash": "9f31b600324c77fb2155b984f68db8ed4e9731bf71131d7078530edbd73ef131",
+          "path": "predicates/hazards/climb-blocked.json"
+        },
+        {
+          "hash": "90aae800a7effbac25c78bb48ca47ccfa1bea4fbff3e6621f6e490caca7bf3ea",
+          "path": "predicates/hazards/climb-ledge.json"
+        },
+        {
+          "hash": "06397188d6867c9a78920f105f7b24046a7d0b4364bbeed6447ba95e14021387",
+          "path": "predicates/hazards/climb-rise.json"
+        },
+        {
+          "hash": "5f2a8ee6a85b940b1bfd3bb4929ca966db5310378283347acbc8c28b5d0a4d35",
+          "path": "predicates/hazards/climb-step.json"
         },
         {
           "hash": "98d89373165c9df8d0e86988efc307863a83ce4bc0d6ba89f13dc3faa380bc02",
           "path": "predicates/hazards/corner-clip.json"
         },
         {
-          "hash": "4ee97431730e8875ecbc3d231f68fa48886cd4a2b18207989b8b24e256b8acb4",
+          "hash": "c3ff61a27ac626fdf9cb25d7ed5db892a8c34e11df5916b738b381ab11ebbde6",
           "path": "predicates/hazards/index.json"
+        },
+        {
+          "hash": "327e35c17bf570ae69332754b128b5874f5dc5812c3cb9fcbe518d495c21d557",
+          "path": "predicates/hazards/release-blocked.json"
+        },
+        {
+          "hash": "b99e6b96ba27896c83931ad5ef6a9c57fa6e0fc2b882ebca976e6a60caf8a98b",
+          "path": "predicates/hazards/release-clear.json"
+        },
+        {
+          "hash": "1abbf14250f2b230cf1f708bc7b34098fa5124652a81ca1796a1e3c9d0f56a24",
+          "path": "predicates/hazards/release-empty.json"
+        },
+        {
+          "hash": "b250130d7ef1d64a9bdc5ddcd3f0046efcf6fbc700e5955e9ababfb4e9ac916d",
+          "path": "predicates/hazards/release-near.json"
         },
         {
           "hash": "ea7964e3b876695c9ebb0f74704a75796a603d516f56ad8126b26116d8d5024d",
           "path": "predicates/hazards/through-collider.json"
+        },
+        {
+          "hash": "ba6a769f9fbd1bfaa6c4c517b66d6ebc4c5405163306f63ea97370eb50efe7cb",
+          "path": "predicates/hazards/use-body.json"
+        },
+        {
+          "hash": "5e0862867ec0b46cd251200cceb33e61307693f8c7e5f24d56f840654ebab219",
+          "path": "predicates/hazards/use-far.json"
+        },
+        {
+          "hash": "9c52043b540e495d975ddfd1a57226b9136b823343cdb5183bbcfb7c35e714e9",
+          "path": "predicates/hazards/use-other-zone.json"
+        },
+        {
+          "hash": "c349d747902abbdf76f9f924e1fbe83eb2dcdd1c3a7fca5dbff6022b27e7424d",
+          "path": "predicates/hazards/use-zone.json"
         }
       ],
       "globs": [
@@ -402,7 +503,7 @@
           "path": "packages/host/host.test.js"
         },
         {
-          "hash": "b731ad8fe2aadce98e7670a6ed96c8bfaf49fa9ac047ede3b5be384d38891cef",
+          "hash": "2b134e73b52ade191ca7c1bb80e205a95c8363f8759e8ec4d8f0d4053b92011f",
           "path": "packages/host/page.html"
         },
         {
@@ -417,7 +518,7 @@
             "createSession",
             "startPump"
           ],
-          "hash": "4f95ad046aab3df9f889a0a43e7fff5ab12efbc00b7d9168e6d5a394828e0192",
+          "hash": "d8943892dadd5b517b7f86a5280563de7e833c150874c9fbfa6b564a5b911a17",
           "importsFiles": [
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
@@ -466,7 +567,15 @@
       "externals": 0,
       "files": [
         {
-          "hash": "159dfee567231d4bd92b47fa9847439bd41e62eb73e8b3dbe79063066518ec1e",
+          "hash": "fffec7f511dcbd7c3301016deabd720eee57ccd1b421fcb45627f39005128bda",
+          "path": "predicates/intents/climb.json"
+        },
+        {
+          "hash": "6272ddfe93f5300e053503741e77a225f94bbc50a25503a6723cde4dc32a7cf0",
+          "path": "predicates/intents/drop.json"
+        },
+        {
+          "hash": "9605fcc81e8c841d0b8ceb99dadfaccf0a33a212007a16575abf7a0512f7528c",
           "path": "predicates/intents/index.json"
         },
         {
@@ -474,8 +583,16 @@
           "path": "predicates/intents/move.json"
         },
         {
+          "hash": "f49a888f061c705c197fc5633c233f471dc4793a6f6989a4b602ca167ed9df35",
+          "path": "predicates/intents/pick-up.json"
+        },
+        {
           "hash": "d32e21bc22d5bf211d4f7c2651c5127b3409c138bf6211e5663e4f30859196b7",
           "path": "predicates/intents/push.json"
+        },
+        {
+          "hash": "6de287e624088ad97de6a3c9f6f6191e70a38856fc3aa250dce4530136241e55",
+          "path": "predicates/intents/use.json"
         }
       ],
       "globs": [
@@ -527,11 +644,11 @@
           "exports": [
             "compileVerb"
           ],
-          "hash": "0871896337f42d3f0a1139a6862bdb07611b0a97fd31aaa7c3ec9d4608848498",
+          "hash": "33d8a8dcfc462cd7ba9aaca20c56cdad8afce93b555430e145de24d7f444763b",
           "path": "packages/load/compile.js"
         },
         {
-          "hash": "697f82cfadb0ccaabe504e07e386030be3a9d2d665abfda89f0847821b2d1bc7",
+          "hash": "357fc8c926a50b16bfba06a813f51e7e2b7f633f2fcd4fc176cf84c0da6040c0",
           "importsFiles": [
             "packages/load/admit.js",
             "packages/load/compile.js",
@@ -549,7 +666,7 @@
             "loadHazards",
             "runHazards"
           ],
-          "hash": "299c19943beb8cb59f0adb5ad9a0375da5efac0b7e0dfeb60156356594ce284c",
+          "hash": "1e024dd764e984563571ef8c87b864c8a02f7c327b6c6eeddc6764857fca9beb",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/tick.js",
@@ -567,7 +684,7 @@
       "outsideReads": 3,
       "outsideWrites": 3,
       "role": "code",
-      "testedBy": 1,
+      "testedBy": 2,
       "unresolvedSites": 0
     },
     {
@@ -670,24 +787,24 @@
                       }
                     },
                     {
-                      "line": 58,
+                      "line": 59,
                       "name": "mixLoad",
                       "target": null
                     },
                     {
-                      "line": 73,
+                      "line": 74,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 77,
+                      "line": 78,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 63,
+                      "line": 64,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -928,24 +1045,24 @@
                       }
                     },
                     {
-                      "line": 58,
+                      "line": 59,
                       "name": "mixLoad",
                       "target": null
                     },
                     {
-                      "line": 73,
+                      "line": 74,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 77,
+                      "line": 78,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 63,
+                      "line": 64,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -1078,7 +1195,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "26b869344e6754d21354c5cc3ae4f619fe80a0a0a757df02ac4614e7b6a822f0",
+          "hash": "28649ac40c773b030a6a5980ff02ad53e2c0f15a6e366c4a2813624c1c258f22",
           "path": ".gitignore"
         },
         {
@@ -1094,7 +1211,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "bddea88eeb48c7339d0ca797f8a98574d4736c6eba44df0edf05ee92b432d7a4",
+          "hash": "eae5df97e9cfb673602a37f8386cd782234e71e9c0672c8eefd7a9ee2d17bf1b",
           "path": "package.json"
         },
         {
@@ -1121,15 +1238,15 @@
       "externals": 0,
       "files": [
         {
-          "hash": "a4d8c859e383a1e466cd3b7348476545c41eaecc67e1fcf1421c6708f47f0683",
+          "hash": "859f353ae6b689bce27ec61d0e2d8871da2a0e63050cc30315961871e4b5c572",
           "path": "solver/.cargo/config.toml"
         },
         {
-          "hash": "fccbc5a4d6d8430d94c9ecb05c09f7f86ed26ee1a403dbbaea633b76d74c5449",
+          "hash": "ce66841ba06beb7cd21ad546e11bea4178e6490bf372a9b3d65ce519af1d72c8",
           "path": "solver/Cargo.lock"
         },
         {
-          "hash": "2066ff3aa727d891b3cdf9372d885c24eb44bb4c9201da43033bd158c15ea473",
+          "hash": "391cb23d4b027828e34cf35cf2efa2372029ccfb6ec86806bdada450e8f1c1b1",
           "path": "solver/Cargo.toml"
         },
         {
@@ -1137,19 +1254,19 @@
           "path": "solver/FLAGS.md"
         },
         {
-          "hash": "2d41388f365e36a1b243018a8a9fc7aa643d34e52a2b9d4704e532720b735c7a",
+          "hash": "cdf6dcdf5530abf067a66d6df961c7600ce7d20d03ef627810a094bcf35a5af9",
           "path": "solver/build.mjs"
         },
         {
-          "hash": "dbc9ef41d801c3173680ffbadb5b0afbd818eb8b06fee6ed6d88cc8f375984dd",
+          "hash": "2f94b39aa38b64a0ac150325f58e30ec78740a68fb2b280c2d71107292ddf267",
           "path": "solver/rust-toolchain.toml"
         },
         {
-          "hash": "5c7e79a92346bf060b66bdb5a51d11c278aac6072e67d2a91577792dae700cc2",
+          "hash": "ec1e27ef8843354eed33b6c70d795a36246011d482aafe4450ffa1e614a6c7cf",
           "path": "solver/src/lib.rs"
         },
         {
-          "hash": "00a4a23a06eaac375ec95beaa856e31fc35f6f514947e15a982c07ccc98b66fe",
+          "hash": "787702c8ccfd8f7102d4bc83cb88e4199b9b392bf4fc72261ac0bc074d686da6",
           "path": "solver/src/rapier_law.rs"
         }
       ],
@@ -1180,7 +1297,7 @@
             "loadHash",
             "settles"
           ],
-          "hash": "ad7b8992fcda3927dbc7fdb8345a38b9d8bc7506e385a6c3aefc759675b7cecc",
+          "hash": "c4e177aceab4798a69da00b951708fe773bc93cc0072a30077cf55f09bf81188",
           "importsFiles": [
             "packages/frame/hash.js",
             "packages/tick/world.js"
@@ -1253,7 +1370,7 @@
             "admitIntent",
             "loadIntentRules"
           ],
-          "hash": "7511abb26fbda982a48b28edf2e0b5c31e09c86675a73d5ec3b747c6b15cbe2a",
+          "hash": "d41ac9f23ffa43613f98e84befe774ccbe82de1e9c92e4286077c826ac1fc05b",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -1262,12 +1379,274 @@
             {
               "calls": [
                 {
-                  "line": 97,
+                  "line": 100,
+                  "name": "carriedByOf",
+                  "target": null
+                },
+                {
+                  "line": 107,
+                  "name": "overlaps",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "volumeClear"
+            },
+            {
+              "calls": [
+                {
+                  "line": 138,
+                  "name": "supportAt",
+                  "target": null
+                },
+                {
+                  "line": 100,
+                  "name": "carriedByOf",
+                  "target": null,
+                  "via": "volumeClear"
+                },
+                {
+                  "line": 107,
+                  "name": "overlaps",
+                  "target": null,
+                  "via": "volumeClear"
+                },
+                {
+                  "line": 154,
+                  "name": "segmentHits",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "admitClimb"
+            },
+            {
+              "calls": [
+                {
+                  "line": 180,
+                  "name": "carryingOf",
+                  "target": null
+                },
+                {
+                  "line": 187,
                   "name": "body",
                   "target": null
                 },
                 {
-                  "line": 128,
+                  "line": 197,
+                  "name": "carriedByOf",
+                  "target": null
+                },
+                {
+                  "line": 204,
+                  "name": "sleeping",
+                  "target": null
+                },
+                {
+                  "line": 218,
+                  "name": "segmentHits",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "admitCarry"
+            },
+            {
+              "calls": [
+                {
+                  "line": 234,
+                  "name": "carryingOf",
+                  "target": null
+                },
+                {
+                  "line": 238,
+                  "name": "body",
+                  "target": null
+                },
+                {
+                  "line": 252,
+                  "name": "supportAt",
+                  "target": null
+                },
+                {
+                  "line": 100,
+                  "name": "carriedByOf",
+                  "target": null,
+                  "via": "volumeClear"
+                },
+                {
+                  "line": 107,
+                  "name": "overlaps",
+                  "target": null,
+                  "via": "volumeClear"
+                },
+                {
+                  "line": 262,
+                  "name": "segmentHits",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "admitRelease"
+            },
+            {
+              "calls": [
+                {
+                  "branch": "typeof target.zone === 'string'",
+                  "line": 281,
+                  "name": "zoneOf",
+                  "target": null
+                },
+                {
+                  "line": 290,
+                  "name": "body",
+                  "target": null
+                },
+                {
+                  "line": 308,
+                  "name": "segmentHits",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "admitEpisode"
+            },
+            {
+              "calls": [
+                {
+                  "line": 332,
+                  "name": "body",
+                  "target": null
+                },
+                {
+                  "branch": "effect === 'climb'",
+                  "line": 138,
+                  "name": "supportAt",
+                  "target": null,
+                  "via": "admitClimb"
+                },
+                {
+                  "branch": "effect === 'climb'",
+                  "line": 100,
+                  "name": "carriedByOf",
+                  "target": null,
+                  "via": "volumeClear"
+                },
+                {
+                  "branch": "effect === 'climb'",
+                  "line": 107,
+                  "name": "overlaps",
+                  "target": null,
+                  "via": "volumeClear"
+                },
+                {
+                  "branch": "effect === 'climb'",
+                  "line": 154,
+                  "name": "segmentHits",
+                  "target": null,
+                  "via": "admitClimb"
+                },
+                {
+                  "branch": "effect === 'carry'",
+                  "line": 180,
+                  "name": "carryingOf",
+                  "target": null,
+                  "via": "admitCarry"
+                },
+                {
+                  "branch": "effect === 'carry'",
+                  "line": 187,
+                  "name": "body",
+                  "target": null,
+                  "via": "admitCarry"
+                },
+                {
+                  "branch": "effect === 'carry'",
+                  "line": 197,
+                  "name": "carriedByOf",
+                  "target": null,
+                  "via": "admitCarry"
+                },
+                {
+                  "branch": "effect === 'carry'",
+                  "line": 204,
+                  "name": "sleeping",
+                  "target": null,
+                  "via": "admitCarry"
+                },
+                {
+                  "branch": "effect === 'carry'",
+                  "line": 218,
+                  "name": "segmentHits",
+                  "target": null,
+                  "via": "admitCarry"
+                },
+                {
+                  "branch": "effect === 'release'",
+                  "line": 234,
+                  "name": "carryingOf",
+                  "target": null,
+                  "via": "admitRelease"
+                },
+                {
+                  "branch": "effect === 'release'",
+                  "line": 238,
+                  "name": "body",
+                  "target": null,
+                  "via": "admitRelease"
+                },
+                {
+                  "branch": "effect === 'release'",
+                  "line": 252,
+                  "name": "supportAt",
+                  "target": null,
+                  "via": "admitRelease"
+                },
+                {
+                  "branch": "effect === 'release'",
+                  "line": 262,
+                  "name": "segmentHits",
+                  "target": null,
+                  "via": "admitRelease"
+                },
+                {
+                  "branch": "effect === 'episode'",
+                  "line": 281,
+                  "name": "zoneOf",
+                  "target": null,
+                  "via": "admitEpisode"
+                },
+                {
+                  "branch": "effect === 'episode'",
+                  "line": 290,
+                  "name": "body",
+                  "target": null,
+                  "via": "admitEpisode"
+                },
+                {
+                  "branch": "effect === 'episode'",
+                  "line": 308,
+                  "name": "segmentHits",
+                  "target": null,
+                  "via": "admitEpisode"
+                },
+                {
+                  "line": 358,
+                  "name": "body",
+                  "target": null
+                },
+                {
+                  "line": 376,
                   "name": "segmentHits",
                   "target": null
                 }
@@ -1427,7 +1806,7 @@
             "createTick",
             "settle"
           ],
-          "hash": "180f6a4b014f43427a43e686f86f01ffe14d4a17f0cc9e2b7d1b3b46a194e8c8",
+          "hash": "a87e6e55b418bd9eea8b88091f25f560af00a31cafaf28c7b5922b75afb0387d",
           "importsFiles": [
             "packages/frame/frame.js",
             "packages/frame/hash.js",
@@ -1445,24 +1824,24 @@
                   }
                 },
                 {
-                  "line": 58,
+                  "line": 59,
                   "name": "mixLoad",
                   "target": null
                 },
                 {
-                  "line": 73,
+                  "line": 74,
                   "name": "snapshot",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 77,
+                  "line": 78,
                   "name": "u32",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 63,
+                  "line": 64,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
@@ -1477,12 +1856,12 @@
             {
               "calls": [
                 {
-                  "line": 310,
+                  "line": 410,
                   "name": "idle",
                   "target": null
                 },
                 {
-                  "line": 311,
+                  "line": 411,
                   "name": "advance",
                   "target": null
                 }
@@ -1558,24 +1937,24 @@
                       }
                     },
                     {
-                      "line": 58,
+                      "line": 59,
                       "name": "mixLoad",
                       "target": null
                     },
                     {
-                      "line": 73,
+                      "line": 74,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 77,
+                      "line": 78,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 63,
+                      "line": 64,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -1630,11 +2009,25 @@
           ]
         },
         {
+          "hash": "9a5d9477532bb518eaccbd241d1e661041642c233a890543fe258df20055e7c7",
+          "importsFiles": [
+            "harness/verbs-scene.mjs",
+            "packages/load/admit.js",
+            "packages/load/compile.js",
+            "packages/load/suite.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/verbs.test.js"
+        },
+        {
           "exports": [
             "createWorld",
             "fixtureColliders"
           ],
-          "hash": "6bc2af62a92c0206c46eed8849575c9abcf6a64867ea84b8a01cab87a68c0be0",
+          "hash": "33cd3ed8f8a9f1379235e124efb0cf54dfec4ba102c220f571934af15adfbe01",
           "path": "packages/tick/world.js"
         }
       ],
@@ -1644,10 +2037,10 @@
       "importConfidence": "full",
       "name": "tick",
       "origin": "authored",
-      "outsideReads": 4,
+      "outsideReads": 7,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 7,
+      "testedBy": 8,
       "unresolvedSites": 1
     },
     {
@@ -1684,11 +2077,11 @@
       "externals": 0,
       "files": [
         {
-          "hash": "aad097ee53481cf7251486906ac441a6c1a0b1233db3de94b5c80906b8ae9683",
+          "hash": "adc4c93d0e6c76c412897a0c9cad3ad729a16cdedf4c33036a29265ccd6d1984",
           "path": "worlds/crate-and-door.json"
         },
         {
-          "hash": "440b03c89cdad1925528dbc02ec578ce4e56217a0085ee229690586d0d9f7e17",
+          "hash": "a7ef7c4e51da43a44d1b6cfaf632fb91ae8d0f2ecbfc29449e657716314a61f8",
           "path": "worlds/index.json"
         }
       ],
@@ -1705,7 +2098,7 @@
   ],
   "doors": [
     {
-      "checksCount": 15,
+      "checksCount": 16,
       "commands": [
         {
           "job": "engines",
@@ -1769,7 +2162,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 8
+          "files": 9
         },
         {
           "boundary": "host",
@@ -1794,7 +2187,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 12
+          "files": 13
         }
       ],
       "readers": [],
@@ -1849,6 +2242,13 @@
           "job": "engines",
           "path": "harness/solver.test.js",
           "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "harness/verbs-scene.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
         },
         {
           "job": "engines",
@@ -1937,11 +2337,16 @@
         },
         {
           "job": "engines",
+          "path": "packages/tick/verbs.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "solver/build.mjs",
           "runKind": "executes"
         }
       ],
-      "runsCount": 23,
+      "runsCount": 25,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -2387,13 +2792,37 @@
       "from": "tick",
       "kind": "file",
       "to": "frame"
+    },
+    {
+      "from": "tick",
+      "fromTests": true,
+      "kind": "file",
+      "to": "harness"
+    },
+    {
+      "from": "tick",
+      "fromTests": true,
+      "kind": "file",
+      "to": "load"
     }
   ],
   "generatedFrom": {
-    "commit": "8c3c252e349160b34c0999766a3e08c92f474f62",
-    "tracked": 110
+    "commit": "3aa2ddc4c6c6c214175554d08b58591822a98e34",
+    "tracked": 138
   },
   "landings": [
+    {
+      "readers": [
+        {
+          "by": "packages/tick/verbs.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures",
+      "writers": []
+    },
     {
       "readers": [
         {
@@ -2452,6 +2881,30 @@
         }
       ],
       "target": "fixtures/behavior-solver.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/verbs.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/behavior-verbs.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/verbs.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/climb-draft.json",
       "writers": []
     },
     {
@@ -2771,6 +3224,12 @@
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "packages/tick/verbs.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "predicates/intents/move.json",
@@ -2780,6 +3239,12 @@
       "readers": [
         {
           "by": "packages/load/load.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/verbs.test.js",
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
@@ -2858,6 +3323,6 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 7,
+  "testFiles": 8,
   "unassigned": []
 }

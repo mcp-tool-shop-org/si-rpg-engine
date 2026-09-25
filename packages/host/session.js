@@ -176,7 +176,13 @@ export function createSession(scene, law) {
       const step = STEPS[/** @type {keyof typeof STEPS} */ (record.direction)];
       target = { x: body.x + step, z: body.z };
     } else if (record.target && typeof record.target === 'object') {
-      const point = /** @type {{ x?: unknown, z?: unknown }} */ (record.target);
+      const point = /** @type {{ x?: unknown, z?: unknown, body?: unknown, zone?: unknown }} */ (record.target);
+      if (typeof point.body === 'string') {
+        return tick.submit({ kind: 'intent', verb, actor, target: { body: point.body }, frameHash: frame.hash });
+      }
+      if (typeof point.zone === 'string') {
+        return tick.submit({ kind: 'intent', verb, actor, target: { zone: point.zone }, frameHash: frame.hash });
+      }
       if (typeof point.x === 'number' && typeof point.z === 'number') {
         target = { x: point.x, z: point.z };
       }

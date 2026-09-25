@@ -1,0 +1,8 @@
+{
+  "verb": "use",
+  "effect": "episode",
+  "speed": 1,
+  "maxDistance": 2,
+  "requiresClearPath": true,
+  "maxQuanta": 1
+}

@@ -1,0 +1,10 @@
+{
+  "verb": "pick-up",
+  "effect": "carry",
+  "targetKind": "body",
+  "speed": 1,
+  "maxDistance": 3,
+  "requiresClearPath": true,
+  "maxQuanta": 256,
+  "maxHalfExtent": 0.5
+}

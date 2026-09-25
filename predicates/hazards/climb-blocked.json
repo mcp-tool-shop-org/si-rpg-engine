@@ -1,0 +1,14 @@
+{
+  "id": "climb-blocked-refuses",
+  "bodies": [
+    { "id": "walker", "x": 0.5, "y": 0.3, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 }
+  ],
+  "colliders": [
+    { "id": "floor", "minX": -2, "maxX": 8, "minY": -1, "maxY": 0, "minZ": -2, "maxZ": 2 },
+    { "id": "ledge", "minX": 1.6, "maxX": 4, "minY": 0, "maxY": 0.8, "minZ": -1, "maxZ": 1 },
+    { "id": "post", "minX": 2.1, "maxX": 2.7, "minY": 0.8, "maxY": 1.6, "minZ": -0.4, "maxZ": 0.4 }
+  ],
+  "actor": "walker",
+  "target": { "x": 2.4, "z": 0 },
+  "expect": "refuse"
+}

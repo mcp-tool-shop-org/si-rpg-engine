@@ -69,7 +69,7 @@ export interface Intent {
   kind: 'intent';
   verb: string;
   actor: string;
-  target: { x: number; z: number } | { body: string };
+  target: { x: number; z: number } | { body: string } | { zone: string };
   frameHash: string;
 }
 
@@ -160,8 +160,14 @@ export interface IntentRule {
   maxDistance: number;
   requiresClearPath: boolean;
   maxQuanta: number;
+  /** Absent on a file means drive. move.json and push.json omit it. */
+  effect?: 'drive' | 'climb' | 'carry' | 'release' | 'episode';
   /** Absent means a point target, which is what move is. */
-  targetKind?: 'point' | 'body';
+  targetKind?: 'point' | 'body' | 'zone';
+  /** climb only. The rise above the controller's step height, 0.3. */
+  maxRise?: number;
+  /** carry only. */
+  maxHalfExtent?: number;
 }
 
 /** The host boundary. Frames in. Nothing out but what it submits as intents. */

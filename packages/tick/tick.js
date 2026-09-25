@@ -45,7 +45,8 @@ export function createTick(init) {
    * One scheduled action per actor. The count is the quanta still to run.
    * When it reaches zero the actor's horizontal velocity is cleared, after
    * that quantum has been hashed, which is where the old submit cleared it.
-   * @type {Map<string, number>}
+   * @typedef {{ remaining: number, effect: string, riseQuanta: number, aimX: number, aimZ: number, otherId: string | null, speed: number }} Action
+   * @type {Map<string, Action>}
    */
   const actions = new Map();
   /** Quanta owed by admissions that are not actions: a belief or a body draft takes one. */
@@ -98,6 +99,12 @@ export function createTick(init) {
         const index = world.zoneIndex(b.id);
         hasher.u32(index === null ? 0xffffffff : index);
       }
+      // Carrying is mixed only while some body is carried, so a frame with
+      // nothing carried hashes as it does today.
+      if (world.anyCarried && world.anyCarried()) {
+        hasher.u32(world.linkIndex(world.carryingOf(b.id)));
+        hasher.u32(world.linkIndex(world.carriedByOf(b.id)));
+      }
     }
     mixSnapshot(hasher);
   }
@@ -130,8 +137,66 @@ export function createTick(init) {
    * One quantum: step, hash, commit, emit, then retire what finished.
    * @returns {Frame}
    */
+  /**
+   * @param {string} effect
+   */
+  function drives(effect) {
+    return effect === 'drive' || effect === 'climb' || effect === 'carry' || effect === 'release';
+  }
+
+  /**
+   * Pose for this quantum, before the step. Drive keeps the velocity submit set.
+   * @param {string} id
+   * @param {Action} action
+   */
+  function applyAction(id, action) {
+    const actor = world.body(id);
+    if (!actor || !world.lifted) {
+      return;
+    }
+    world.lifted.delete(id);
+    if (action.effect === 'drive' || action.effect === 'episode') {
+      return;
+    }
+    if (action.effect === 'carry' && action.remaining === 1 && action.otherId && world.carry) {
+      world.carry(id, action.otherId);
+    }
+    if (action.effect === 'release' && action.remaining === 1 && world.release) {
+      world.release(id, action.aimX, action.aimZ);
+      return;
+    }
+    if (action.effect === 'climb' && action.riseQuanta > 0) {
+      world.lifted.add(id);
+      actor.vy = action.speed;
+      actor.vx = 0;
+      actor.vz = 0;
+      return;
+    }
+    if (action.effect === 'climb') {
+      const dx = action.aimX - actor.x;
+      const dz = action.aimZ - actor.z;
+      const ground = Math.sqrt(dx * dx + dz * dz);
+      actor.vy = 0;
+      if (ground === 0) {
+        actor.vx = 0;
+        actor.vz = 0;
+      } else {
+        actor.vx = action.speed * dx / ground;
+        actor.vz = action.speed * dz / ground;
+      }
+    }
+  }
+
   function advance() {
-    world.step(new Set(actions.keys()));
+    /** @type {Set<string>} */
+    const driving = new Set();
+    for (const [id, action] of actions) {
+      if (drives(action.effect)) {
+        applyAction(id, action);
+        driving.add(id);
+      }
+    }
+    world.step(driving);
     tick = tick + 1;
     mixQuantum();
     current = commitFrame(tick, hasher.digest(), world.bodies);
@@ -139,16 +204,25 @@ export function createTick(init) {
     if (pending > 0) {
       pending = pending - 1;
     }
-    for (const [actorId, remaining] of actions) {
-      if (remaining <= 1) {
+    for (const [actorId, action] of actions) {
+      if (action.remaining <= 1) {
         const actor = world.body(actorId);
-        if (actor) {
+        if (actor && action.effect !== 'episode') {
           actor.vx = 0;
           actor.vz = 0;
+          if (action.effect === 'climb') {
+            actor.vy = 0;
+          }
+        }
+        if (world.lifted) {
+          world.lifted.delete(actorId);
         }
         actions.delete(actorId);
       } else {
-        actions.set(actorId, remaining - 1);
+        action.remaining = action.remaining - 1;
+        if (action.effect === 'climb' && action.riseQuanta > 0) {
+          action.riseQuanta = action.riseQuanta - 1;
+        }
       }
     }
     return current;
@@ -183,7 +257,7 @@ export function createTick(init) {
         }
         const busy = actions.get(proposal.actor);
         if (busy !== undefined) {
-          return { admitted: false, reason: proposal.actor + ' is mid-action; ' + busy + ' quanta remain' };
+          return { admitted: false, reason: proposal.actor + ' is mid-action; ' + busy.remaining + ' quanta remain' };
         }
         const check = admitIntent(proposal, world, rules, retired, new Set(actions.keys()));
         if (!check.ok) {
@@ -207,19 +281,45 @@ export function createTick(init) {
           aimX = named.x;
           aimZ = named.z;
         }
-        const dx = aimX - actor.x;
-        const dz = aimZ - actor.z;
-        const ground = Math.sqrt(dx * dx + dz * dz);
-        if (ground === 0) {
-          actor.vx = 0;
-          actor.vz = 0;
-        } else {
-          actor.vx = check.rule.speed * dx / ground;
-          actor.vz = check.rule.speed * dz / ground;
+        const effect = check.rule.effect || 'drive';
+        if (effect === 'episode') {
+          const name = check.zoneId || check.otherId || '';
+          memory.recordEpisode(tick, 'use', 'use ' + proposal.actor + ' ' + name);
+          record(proposal);
+          actions.set(proposal.actor, { remaining: 1, effect, riseQuanta: 0, aimX: actor.x, aimZ: actor.z, otherId: check.otherId || null, speed: 0 });
+          return { admitted: true, quanta: 1, hash: current.hash };
+        }
+        if (effect !== 'climb') {
+          const dx = aimX - actor.x;
+          const dz = aimZ - actor.z;
+          const ground = Math.sqrt(dx * dx + dz * dz);
+          if (ground === 0) {
+            actor.vx = 0;
+            actor.vz = 0;
+          } else {
+            actor.vx = check.rule.speed * dx / ground;
+            actor.vz = check.rule.speed * dz / ground;
+          }
+        }
+        if (effect === 'carry' && check.aimX !== undefined && check.aimZ !== undefined) {
+          aimX = check.aimX;
+          aimZ = check.aimZ;
+        }
+        if (effect === 'release' && check.aimX !== undefined && check.aimZ !== undefined) {
+          aimX = check.aimX;
+          aimZ = check.aimZ;
         }
         memory.recordEpisode(tick, 'intent', proposal.verb + ' ' + proposal.actor);
         record(proposal);
-        actions.set(proposal.actor, check.quanta);
+        actions.set(proposal.actor, {
+          remaining: check.quanta,
+          effect,
+          riseQuanta: check.riseQuanta || 0,
+          aimX: effect === 'climb' || effect === 'release' ? (check.aimX || aimX) : aimX,
+          aimZ: effect === 'climb' || effect === 'release' ? (check.aimZ || aimZ) : aimZ,
+          otherId: check.otherId || null,
+          speed: check.rule.speed,
+        });
         return { admitted: true, quanta: check.quanta, hash: current.hash };
       }
       case 'belief': {
