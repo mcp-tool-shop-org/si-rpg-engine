@@ -11,19 +11,65 @@
  */
 
 /**
- * The verdict at the end of a reviewer's answer: the last candidate that parses as JSON with an
- * items array and a verdict of MERGE or BLOCK, or null. The candidates are every fenced json block
- * and, tried first, the text from the last `{"items"` to the end of the answer.
+ * Every balanced {...} span in the text, as start and end offsets, found in one pass. Braces
+ * inside JSON strings do not count. Quotation marks are read as strings only inside a brace, so
+ * quotation marks in the prose before the JSON cannot hide it.
+ * @param {string} text
+ * @returns {Array<[number, number]>}
+ */
+function objectSpans(text) {
+  /** @type {Array<[number, number]>} */
+  const spans = [];
+  /** @type {number[]} */
+  const open = [];
+  let inString = false;
+  for (let i = 0; i < text.length; i = i + 1) {
+    const c = text[i];
+    if (inString) {
+      if (c === '\\') {
+        i = i + 1;
+      } else if (c === '"') {
+        inString = false;
+      }
+    } else if (c === '"') {
+      inString = open.length > 0;
+    } else if (c === '{') {
+      open.push(i);
+    } else if (c === '}') {
+      const start = open.pop();
+      if (start !== undefined) {
+        spans.push([start, i + 1]);
+      }
+    }
+  }
+  return spans;
+}
+
+/**
+ * The verdict an answer ends with. Of every candidate that parses as JSON with an items array and
+ * a verdict of MERGE or BLOCK, it is the one that ends last in the answer, the outermost when two
+ * end together. The candidates are every fenced json block and every balanced {...} span that
+ * mentions both keys, so the verdict is found whatever order its keys are in and whatever prose
+ * comes before or after it. Null when there is none.
  * @param {string} text
  * @returns {Verdict | null}
  */
 export function parseVerdict(text) {
-  const candidates = [...text.matchAll(/```json\s*([\s\S]*?)```/g)].map((b) => b[1]);
-  const brace = text.lastIndexOf('{"items"');
-  if (brace >= 0) candidates.push(text.slice(brace));
-  for (let i = candidates.length - 1; i >= 0; i = i - 1) {
+  /** @type {Array<{ body: string, end: number, length: number }>} */
+  const candidates = [];
+  for (const m of text.matchAll(/```json\s*([\s\S]*?)```/g)) {
+    candidates.push({ body: m[1], end: (m.index ?? 0) + m[0].length, length: m[0].length });
+  }
+  for (const [start, end] of objectSpans(text)) {
+    const body = text.slice(start, end);
+    if (body.includes('"items"') && body.includes('"verdict"')) {
+      candidates.push({ body, end, length: end - start });
+    }
+  }
+  candidates.sort((a, b) => b.end - a.end || b.length - a.length);
+  for (const c of candidates) {
     try {
-      const j = JSON.parse(candidates[i].trim());
+      const j = JSON.parse(c.body.trim());
       if (j && Array.isArray(j.items) && (j.verdict === 'MERGE' || j.verdict === 'BLOCK')) return j;
     } catch {}
   }

@@ -91,48 +91,97 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 0,
-      "changed": 6,
+      "added": 4,
+      "changed": 5,
       "moved": 0,
-      "parts": 2,
+      "parts": 1,
       "removed": 0
     },
     "items": [
       {
-        "kind": "sequence",
-        "sentence": "In harness/corpus.mjs, run corpus gained a step, ended block, before make bundle.",
+        "kind": "door",
+        "sentence": "CI now also runs tools/panel.test.js and tools/prompt.test.js.",
         "subjects": [
-          "harness/corpus.mjs"
+          ".github/workflows/ci.yml",
+          "tools/panel.test.js",
+          "tools/prompt.test.js"
         ]
       },
       {
-        "kind": "sequence",
-        "sentence": "In harness/corpus.mjs, run corpus lost a step, pair.",
+        "kind": "door",
+        "sentence": "CI now also checks tools/panel.js and tools/prompt.js.",
         "subjects": [
-          "harness/corpus.mjs"
+          ".github/workflows/ci.yml",
+          "tools/panel.js",
+          "tools/prompt.js"
         ]
       },
       {
-        "kind": "sequence",
-        "sentence": "In packages/tick/bundle.js, replay bundle lost a step, pair.",
+        "kind": "landing",
+        "sentence": "tools/panel.js is now read by tools/review.mjs and tsconfig.json.",
         "subjects": [
-          "packages/tick/bundle.js"
+          "tools/panel.js",
+          "tools/review.mjs",
+          "tsconfig.json"
         ]
       },
       {
-        "kind": "sequence",
-        "sentence": "And 1 more change to the order of work.",
+        "kind": "landing",
+        "sentence": "tools/panel.test.js is now read by tsconfig.json.",
+        "subjects": [
+          "tools/panel.test.js",
+          "tsconfig.json"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "tools/prompt.js is now read by tools/review.mjs and tsconfig.json.",
+        "subjects": [
+          "tools/prompt.js",
+          "tools/review.mjs",
+          "tsconfig.json"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "And 1 more new writer or reader of a place.",
+        "subjects": []
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/panel.js is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/panel.js"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/panel.test.js is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/panel.test.js"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/prompt.js is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/prompt.js"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "And 1 more new file that belongs to no part.",
         "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "6 files changed content, across 2 parts.",
+        "sentence": "4 files added and 5 changed content, across 1 part.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "0d0580b47ec0c2cb304161e6b7aec984862e3f0f",
-      "generatedAt": "2026-09-25T14:42:24.738Z"
+      "commit": "10bdeff928be822378d52fc6e4edbd27185802e1",
+      "generatedAt": "2026-09-25T14:49:10.347Z"
     },
     "unchanged": false
   },
@@ -219,9 +268,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "10bdeff928be822378d52fc6e4edbd27185802e1",
+  "commit": "5886d194f57e8ad05df44b0867e4c353834ed250",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (83 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (87 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -248,9 +297,11 @@
         "packages/propose/",
         "packages/tick/",
         "packages/tool/",
+        "tools/panel.js",
+        "tools/prompt.js",
         "tools/verdicts.js"
       ],
-      "checksCount": 24,
+      "checksCount": 26,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -331,9 +382,11 @@
         "solver/lint.mjs",
         "solver/lint.test.js",
         "solver/source.test.js",
+        "tools/panel.test.js",
+        "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 30,
+      "runsCount": 32,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -697,7 +750,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T14:49:10.347Z",
+  "generatedAt": "2026-09-25T15:04:25.464Z",
   "limits": [
     "13 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",
@@ -1305,7 +1358,7 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 24,
+  "testFiles": 26,
   "testedBy": {
     "frame": 12,
     "host": 1,

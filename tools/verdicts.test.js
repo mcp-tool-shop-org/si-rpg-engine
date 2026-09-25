@@ -39,6 +39,23 @@ test('parseVerdict returns null without a verdict of MERGE or BLOCK', () => {
   assert.equal(parseVerdict('```json\n{"verdict":"MERGE"}\n```'), null);
 });
 
+test('parseVerdict finds a verdict whose keys come in another order, with prose after it', () => {
+  const text = 'Summary first.\n{"verdict":"BLOCK","block_reason":"item 1","items":[{"n":1,"result":"FAILS","evidence":"a } and a { in a string"}],"defects":[]}\nThat is all.';
+  const v = parseVerdict(text);
+  assert.equal(v?.verdict, 'BLOCK');
+  assert.equal(v?.items[0].evidence, 'a } and a { in a string');
+});
+
+test('parseVerdict is not thrown by braces or an odd quotation mark in the prose before the verdict', () => {
+  const text = 'The corpus returns { tick, block } for a stop, and the gap is 5" wide.\n```json\n{"items":[],"verdict":"MERGE","defects":[],"block_reason":""}\n```';
+  assert.equal(parseVerdict(text)?.verdict, 'MERGE');
+});
+
+test('parseVerdict takes the later of a draft and a final verdict whatever their key order', () => {
+  const text = '{"items":[],"verdict":"BLOCK"} was my draft. On reflection: {"verdict":"MERGE","items":[{"n":1,"result":"HOLDS","evidence":""}]}';
+  assert.equal(parseVerdict(text)?.verdict, 'MERGE');
+});
+
 test('combine reports no valid verdicts when nothing was counted', () => {
   assert.equal(combine([]).decision, 'NO VALID VERDICTS');
 });

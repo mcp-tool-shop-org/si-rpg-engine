@@ -1,24 +1,30 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit 10bdeff.
+Mapped at 2026-09-25 from commit 5886d19.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-15 parts, mostly JavaScript (83 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+15 parts, mostly JavaScript (87 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (0d0580b)
+## What changed since 2026-09-25 (10bdeff)
 
-- In harness/corpus.mjs, run corpus gained a step, ended block, before make bundle.
-- In harness/corpus.mjs, run corpus lost a step, pair.
-- In packages/tick/bundle.js, replay bundle lost a step, pair.
-- And 1 more change to the order of work.
-- 6 files changed content, across 2 parts.
+- CI now also runs tools/panel.test.js and tools/prompt.test.js.
+- CI now also checks tools/panel.js and tools/prompt.js.
+- tools/panel.js is now read by tools/review.mjs and tsconfig.json.
+- tools/panel.test.js is now read by tsconfig.json.
+- tools/prompt.js is now read by tools/review.mjs and tsconfig.json.
+- And 1 more new writer or reader of a place.
+- tools/panel.js is new and belongs to no part, so atlas check fails on it against the previous map.
+- tools/panel.test.js is new and belongs to no part, so atlas check fails on it against the previous map.
+- tools/prompt.js is new and belongs to no part, so atlas check fails on it against the previous map.
+- And 1 more new file that belongs to no part.
+- 4 files added and 5 changed content, across 1 part.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 27 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 21 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 29 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 23 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **host** (a command people run). Runs packages/host/bin/host.js.
@@ -30,7 +36,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 ## What happens through CI
 
-1. The workflow runs 17 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, 4 files in solver, and 6 files in 2 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 13 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 34 files in 4 more places.
+1. The workflow runs 17 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, 4 files in solver, and 8 files in 4 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 13 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 36 files in 6 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
