@@ -32,8 +32,9 @@
 //   Moonshot, Z.ai), none sees the author's reasoning, and the served-model check is enforced.
 //
 // Text the pull request's author wrote, or its code printed, is fenced in the message as untrusted
-// data (prompt.js), and the dispatch comes from the base branch, so a pull request cannot pose as
-// the review's instructions or rewrite its own contract.
+// data (prompt.js), and the dispatch comes from the base branch, so a pull request cannot rewrite
+// its own contract. The fence lowers the chance of a reviewer being steered by accident; it is not
+// a security boundary (see prompt.js), which is why no verdict merges anything by itself.
 //
 // Reads OPENROUTER_API_KEY from the environment and never prints it. Ollama Cloud models go
 // through the local daemon at 127.0.0.1:11434, which is signed in to Ollama Cloud.
