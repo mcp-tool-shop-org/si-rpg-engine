@@ -261,8 +261,8 @@
         "path": "README.md"
       },
       {
-        "commits": 35,
-        "lines": 1135,
+        "commits": 36,
+        "lines": 1167,
         "path": "atlas/README.md"
       },
       {
@@ -271,18 +271,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 35,
-        "lines": 4270,
+        "commits": 36,
+        "lines": 4414,
         "path": "atlas/page.json"
       },
       {
-        "commits": 35,
-        "lines": 5540,
+        "commits": 36,
+        "lines": 5697,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 35,
-        "lines": 8511,
+        "commits": 36,
+        "lines": 8719,
         "path": "atlas/structure.json"
       },
       {
@@ -421,6 +421,11 @@
         "path": "fixtures/behavior-3d.json"
       },
       {
+        "commits": 1,
+        "lines": 1605,
+        "path": "fixtures/behavior-solver.json"
+      },
+      {
         "commits": 2,
         "lines": 178,
         "path": "fixtures/first-scene-played.json"
@@ -431,8 +436,8 @@
         "path": "fixtures/golden-arith.txt"
       },
       {
-        "commits": 7,
-        "lines": 13,
+        "commits": 8,
+        "lines": 15,
         "path": "fixtures/golden.txt"
       },
       {
@@ -456,8 +461,8 @@
         "path": "fixtures/push-play-log.json"
       },
       {
-        "commits": 1,
-        "lines": 1,
+        "commits": 2,
+        "lines": 3,
         "path": "fixtures/solver.sha256"
       },
       {
@@ -471,13 +476,13 @@
         "path": "harness/check.js"
       },
       {
-        "commits": 6,
-        "lines": 190,
+        "commits": 7,
+        "lines": 223,
         "path": "harness/product-scene.mjs"
       },
       {
-        "commits": 7,
-        "lines": 335,
+        "commits": 8,
+        "lines": 347,
         "path": "harness/product.test.js"
       },
       {
@@ -486,9 +491,19 @@
         "path": "harness/sim.js"
       },
       {
-        "commits": 9,
-        "lines": 258,
+        "commits": 10,
+        "lines": 280,
         "path": "harness/sim.mjs"
+      },
+      {
+        "commits": 1,
+        "lines": 44,
+        "path": "harness/solver-scene.mjs"
+      },
+      {
+        "commits": 1,
+        "lines": 131,
+        "path": "harness/solver.test.js"
       },
       {
         "commits": 7,
@@ -501,8 +516,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 14,
-        "lines": 101,
+        "commits": 15,
+        "lines": 103,
         "path": "package.json"
       },
       {
@@ -526,8 +541,8 @@
         "path": "packages/host/bin/host.js"
       },
       {
-        "commits": 10,
-        "lines": 452,
+        "commits": 11,
+        "lines": 454,
         "path": "packages/host/host.test.js"
       },
       {
@@ -541,8 +556,8 @@
         "path": "packages/host/server.js"
       },
       {
-        "commits": 9,
-        "lines": 498,
+        "commits": 10,
+        "lines": 503,
         "path": "packages/host/session.js"
       },
       {
@@ -631,8 +646,8 @@
         "path": "packages/tick/bin/play.js"
       },
       {
-        "commits": 8,
-        "lines": 104,
+        "commits": 9,
+        "lines": 106,
         "path": "packages/tick/bin/replay.js"
       },
       {
@@ -651,33 +666,33 @@
         "path": "packages/tick/predicates.js"
       },
       {
-        "commits": 8,
-        "lines": 152,
+        "commits": 9,
+        "lines": 155,
         "path": "packages/tick/replay.js"
       },
       {
-        "commits": 4,
-        "lines": 446,
+        "commits": 5,
+        "lines": 516,
         "path": "packages/tick/scene.js"
       },
       {
-        "commits": 4,
-        "lines": 248,
+        "commits": 5,
+        "lines": 261,
         "path": "packages/tick/scene.test.js"
       },
       {
-        "commits": 10,
-        "lines": 682,
+        "commits": 11,
+        "lines": 706,
         "path": "packages/tick/tick.js"
       },
       {
-        "commits": 17,
-        "lines": 1612,
+        "commits": 18,
+        "lines": 1639,
         "path": "packages/tick/tick.test.js"
       },
       {
-        "commits": 11,
-        "lines": 862,
+        "commits": 12,
+        "lines": 929,
         "path": "packages/tick/world.js"
       },
       {
@@ -731,23 +746,23 @@
         "path": "solver/.cargo/config.toml"
       },
       {
-        "commits": 1,
-        "lines": 7,
+        "commits": 2,
+        "lines": 563,
         "path": "solver/Cargo.lock"
       },
       {
-        "commits": 1,
-        "lines": 15,
+        "commits": 2,
+        "lines": 18,
         "path": "solver/Cargo.toml"
       },
       {
-        "commits": 1,
-        "lines": 13,
+        "commits": 2,
+        "lines": 15,
         "path": "solver/FLAGS.md"
       },
       {
-        "commits": 1,
-        "lines": 112,
+        "commits": 2,
+        "lines": 216,
         "path": "solver/build.mjs"
       },
       {
@@ -756,9 +771,14 @@
         "path": "solver/rust-toolchain.toml"
       },
       {
-        "commits": 1,
-        "lines": 297,
+        "commits": 2,
+        "lines": 312,
         "path": "solver/src/lib.rs"
+      },
+      {
+        "commits": 1,
+        "lines": 589,
+        "path": "solver/src/rapier_law.rs"
       },
       {
         "commits": 2,
@@ -771,9 +791,9 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-25T00:54:50.034Z",
+  "generatedAt": "2026-09-25T01:33:58.143Z",
   "generatedFrom": {
-    "commit": "98f2b074b07763e5229e9de273e853fa6426621b"
+    "commit": "6f197414f4161f90fc26ae54570af0d404fd90d3"
   },
   "pairs": [
     {
@@ -885,7 +905,7 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-24T20:20:46-04:00",
+    "headDate": "2026-09-24T20:55:33-04:00",
     "inScopeFiles": 108,
     "pinnedStart": null,
     "priorFloor": "fallen",
@@ -894,7 +914,7 @@
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-29T00:20:46.000Z",
+    "since": "2026-03-29T00:55:33.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
@@ -904,7 +924,9 @@
       ".tsx",
       ".mts",
       ".cts",
-      ".py"
+      ".py",
+      ".rs",
+      ".gd"
     ],
     "sourceFileReach": 20,
     "sourceFileRise": 25,

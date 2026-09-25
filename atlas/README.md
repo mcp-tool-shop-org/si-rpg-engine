@@ -1,27 +1,20 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit 98f2b07.
+Mapped at 2026-09-25 from commit 6f19741.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-14 parts, mostly JavaScript (41 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+14 parts, mostly JavaScript (41 files), Rust (2) and TypeScript (1). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (6b9bae2)
+## What changed since 2026-09-25 (98f2b07)
 
-- CI now also runs harness/solver.test.js.
-- CI now also checks harness/solver-scene.mjs.
-- fixtures/behavior-solver.json is now read by harness/solver.test.js.
-- In packages/tick/tick.js, create tick gained a step, mix load, before snapshot.
-- In packages/tick/tick.js, create tick gained a step, snapshot, before u 32.
-- In packages/tick/tick.js, create tick gained a step, u 32, before commit frame.
-- And 3 more changes to the order of work.
-- 4 files added and 20 changed content, across 6 parts.
+Nothing structural changed since 2026-09-25; 81 files changed content.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 10 paths; on a push to main touching 10 paths; or by hand. Runs harness/product.test.js, harness/solver.test.js, packages/host/host.test.js and 5 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 12 more.
+1. **CI.** On a pull request touching 10 paths; on a push to main touching 10 paths; or by hand. Runs harness/product.test.js, harness/solver.test.js, packages/host/host.test.js and 5 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 38 more.
 2. **host** (a command people run). Runs packages/host/bin/host.js.
 3. **load** (a command people run). Runs packages/load/bin/load.js.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -36,10 +29,11 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
    2. **Create tick** (tick) runs, in order: create hasher (frame), mix load, snapshot, u 32 and commit frame.
    3. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
    4. **Create tick** runs, in order: create hasher (frame), mix load, snapshot, u 32 and commit frame.
+2. It writes to solver/dist/, which is not tracked.
 
 ## Who reads the results
 
-CI writes nothing this map can see.
+CI writes only to solver/dist/, which is not tracked.
 
 ## The other doors
 
@@ -101,17 +95,18 @@ People write .github/, docs/, predicates/hazards/, predicates/intents/, the repo
 
 ## Where to start
 
-.github/workflows/ci.yml → packages/tick/bin/play.js
+packages/host/bin/host.js → packages/tick/scene.js
 
-Read those in order to follow one pull request end to end.
+Read those in order to follow one run of host end to end. This path follows host (a command people run) from its entry, since CI runs only tests and scripts that import no code here.
 
 ## What this map cannot see
 
 - 4 import sites could not be resolved.
-- 2 reads use paths built at run time and are not named here.
+- 1 read uses a path built at run time and is not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
-- 5 writes and 7 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 5 commands are built at run time and not followed, 3 of them in tests.
+- 3 writes and 6 reads go to a path their caller passes, not to this repository.
+- 2 writes and 2 reads go to the directory the command is run in (harness/ and predicates/), not to this repository.
+- 2 commands are built at run time and not followed.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.

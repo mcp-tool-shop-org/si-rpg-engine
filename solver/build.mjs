@@ -16,10 +16,25 @@ const outPath = join(outDir, 'solver.mjs');
 const check = process.argv.includes('--check');
 const cargo = process.env.CARGO || 'cargo';
 
+// Dependencies embed their source paths in panic-location strings, which put
+// the cargo home and the user's name into the binary and made the bytes differ
+// between hosts. Remapping strips both. Windows still writes backslashes into
+// the remainder of each path, so the two hosts never produce identical bytes:
+// the pinned artifact is the Linux build, and only a Linux build may write the
+// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD pin is
+// repeated here.
+const cargoHome = process.env.CARGO_HOME || join(process.env.HOME || process.env.USERPROFILE || '', '.cargo');
+const rustflags = [
+  '-C', 'target-feature=-relaxed-simd',
+  '--remap-path-prefix=' + cargoHome + '=/cargo',
+  '--remap-path-prefix=' + solver + '=/solver',
+  '--remap-path-prefix=' + root + '=/repo',
+].join(' ');
 const built = spawnSync(cargo, ['build', '--release', '--target', 'wasm32-unknown-unknown'], {
   cwd: solver,
   encoding: 'utf8',
   shell: process.platform === 'win32',
+  env: { ...process.env, RUSTFLAGS: rustflags },
 });
 if (built.status !== 0) {
   process.stderr.write(built.stdout || '');
@@ -29,14 +44,20 @@ if (built.status !== 0) {
 
 const wasm = readFileSync(wasmPath);
 const digest = createHash('sha256').update(wasm).digest('hex');
+const linux = process.platform === 'linux';
 if (check) {
   const expected = readFileSync(digestPath, 'utf8').trim();
   if (digest !== expected) {
-    process.stderr.write('solver digest ' + digest + ' does not match ' + expected + '\n');
-    process.exit(1);
+    if (linux) {
+      process.stderr.write('solver digest ' + digest + ' does not match the pinned ' + expected + '\n');
+      process.exit(1);
+    }
+    process.stderr.write('solver digest on this host is ' + digest + '; the pin ' + expected + ' is the Linux build, which CI checks\n');
   }
-} else {
+} else if (linux) {
   writeFileSync(digestPath, digest + '\n');
+} else {
+  process.stderr.write('not writing the digest: the pinned artifact is the Linux build; this host built ' + digest + '\n');
 }
 
 mkdirSync(outDir, { recursive: true });
