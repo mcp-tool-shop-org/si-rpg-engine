@@ -282,7 +282,13 @@ bundled('course 5.9: two walkers driven at each other at 1 unit per second stay 
   assert.equal(r.passed, false);
 });
 
-bundled('course 5.10: two walkers driven at each other at 8 units per second, recorded: the law lets them overlap there, so separation is not asserted', (t) => {
+// At 8 units per second each walker moves 0.125 a quantum toward a pose the
+// other is leaving, so nothing in the law keeps them 0.49 apart, and where
+// they meet turns on the last bits. On main at 48da598 they came within
+// 0.387; with F2's controller copy this run's closest approach is 0.5, and
+// the Rust knowledge base saw it move with every change to the controller
+// it measured (requests/walker-stall.md). So it is recorded, not asserted.
+bundled('course 5.10: two walkers driven at each other at 8 units per second, recorded: each plans against the other\'s last pose, so the law does not guarantee their separation there and it is not asserted', (t) => {
   const r = meetRun(8);
   t.diagnostic('closest ' + r.closest + ', final ' + r.final + ' (west ' + r.west + ', east ' + r.east + '), passed ' + r.passed);
   assert.ok(Number.isFinite(r.closest) && Number.isFinite(r.final));
