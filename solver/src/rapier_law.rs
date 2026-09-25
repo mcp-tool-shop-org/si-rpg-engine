@@ -334,6 +334,13 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
     // keeps a second cache in a crate-private buffer, so it stays off.
     world.integration_parameters.contact_clustering = false;
     world.integration_parameters.warmstart_coefficient = 1.0;
+    // At 0.35.3 every fast dynamic body is swept against fixed colliders
+    // whether or not it is ccd_enabled; 0 here is the only off switch, and a
+    // thin fast box then passes through a thin slab (the native test at the
+    // end of this file). 1 is the default, written out so the behaviour does
+    // not rest on it. Above 1 the pre-solve pass reads the previous quantum's
+    // crate-private ccd_vels, which a restore could not set, so it stays 1.
+    world.integration_parameters.max_ccd_substeps = 1;
 
     let mut collider_handles: Vec<ColliderHandle> = Vec::new();
 
@@ -375,7 +382,16 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         let heights = Array2::new(rows, cols, data);
         let scale = Vector::new((cols as f64 - 1.0) * cell, 1.0, (rows as f64 - 1.0) * cell);
         let body = RigidBodyBuilder::fixed().build();
-        let co = ColliderBuilder::heightfield(heights, scale).restitution(0.0).friction(0.8).build();
+        // FIX_INTERNAL_EDGES corrects contact normals at the edges between
+        // the field's triangles. It does not change the triangles, so
+        // supportAt is unchanged. Without it a box sliding down a 20 degree
+        // field catches on the first cell boundary in every direction and a
+        // sled on a 35 degree field catches moving +x and -z (T4 pin 3,
+        // harness/outcome.test.js).
+        let co = ColliderBuilder::heightfield_with_flags(heights, scale, HeightFieldFlags::FIX_INTERNAL_EDGES)
+            .restitution(0.0)
+            .friction(0.8)
+            .build();
         let (_b, ch) = world.insert(body, co);
         collider_handles.push(ch);
     }
@@ -726,4 +742,96 @@ pub extern "C" fn snapshot_ptr() -> *const u8 {
 #[no_mangle]
 pub extern "C" fn snapshot_len() -> u32 {
     unsafe { SOLVER.snapshot.len() as u32 }
+}
+
+// T4 pin 2, the red evidence. Native only, and at the end of the file: a test
+// module above the product code shifts the line numbers in the binary's panic
+// locations and moves the wasm digest; here the release wasm is unchanged.
+// Run with `cargo test --release` (Rapier's island-manager debug_assert fires
+// when bodies touch at load). The same thin fast box that
+// harness/outcome.test.js keeps on the near side with the product binary
+// passes through the slab once max_ccd_substeps is 0, which only this test
+// sets, after the law has built the world.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Mutex;
+
+    // The law's state is module statics, so the tests take turns.
+    static TURN: Mutex<u32> = Mutex::new(1000);
+
+    const HALF: f64 = 0.05;
+    const SLAB: f64 = 0.02;
+    const SPEED: f64 = 20.0;
+    const PHASES: usize = 7;
+    const QUANTA: usize = 64;
+
+    /// Runs one thin fast box at the slab and returns its final position on
+    /// the axis it was launched along. The slab's near side is negative for
+    /// horizontal and positive for falling.
+    fn run(turn: &mut u32, falling: bool, phase: usize, substeps: Option<usize>) -> f64 {
+        *turn += 1;
+        let offset = (phase as f64 / PHASES as f64) * (SPEED * DT);
+        let (pos, vel) = if falling {
+            ([0.0, 1.0 + offset, 0.0], [0.0, -SPEED, 0.0])
+        } else {
+            ([-1.0 - offset, 0.0, 0.0], [SPEED, 0.0, 0.0])
+        };
+        let slab = if falling {
+            [-2.0, 2.0, -SLAB, SLAB, -2.0, 2.0]
+        } else {
+            [-SLAB, SLAB, -20.0, 20.0, -2.0, 2.0]
+        };
+        unsafe {
+            let b = &mut *core::ptr::addr_of_mut!(BODIES);
+            let record = [
+                pos[0], pos[1], pos[2], vel[0], vel[1], vel[2], 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, HALF, HALF, HALF, 0.0,
+            ];
+            b[..BODY_STRIDE].copy_from_slice(&record);
+            let c = &mut *core::ptr::addr_of_mut!(COLLIDERS);
+            c[..6].copy_from_slice(&slab);
+            c[6..10].copy_from_slice(&[0.0, 0.0, 0.0, 1.0]);
+        }
+        assert_eq!(solver_load(*turn, 1, 1, 0, 0, 0.0, 0), 1);
+        if let Some(n) = substeps {
+            let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };
+            solver.loaded.as_mut().unwrap().world.integration_parameters.max_ccd_substeps = n;
+        }
+        for _ in 0..QUANTA {
+            assert_eq!(solver_step(*turn, 1, 1, 0, 0, 0.0, 0), 1);
+        }
+        let b = body_at(0);
+        if falling { b[1] } else { b[0] }
+    }
+
+    fn near(falling: bool, at: f64) -> bool {
+        if falling { at > 0.0 } else { at < 0.0 }
+    }
+
+    #[test]
+    fn thin_fast_box_stays_on_the_near_side_as_the_law_builds_it() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        for falling in [true, false] {
+            for phase in 0..PHASES {
+                let at = run(&mut turn, falling, phase, None);
+                assert!(near(falling, at), "falling {falling} phase {phase}: ended at {at}, past the slab");
+            }
+        }
+    }
+
+    #[test]
+    fn thin_fast_box_passes_through_with_max_ccd_substeps_0() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let mut far = Vec::new();
+        for falling in [true, false] {
+            for phase in 0..PHASES {
+                let at = run(&mut turn, falling, phase, Some(0));
+                if !near(falling, at) {
+                    far.push((falling, phase, at));
+                }
+            }
+        }
+        println!("max_ccd_substeps 0: {} of {} runs passed through the slab: {:?}", far.len(), 2 * PHASES, far);
+        assert!(!far.is_empty(), "with CCD off no run passed through, so the near-side test could not go red");
+    }
 }
