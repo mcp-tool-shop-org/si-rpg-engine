@@ -1,6 +1,6 @@
 # Dispatch F2 — the walker keeps its stride
 
-2026-09-25. Coordinator: Claude. Builder: a seat named at dispatch time. Reviewer: a different family, on a scratch clone, before merge. Depends on F1, because both change `solver/src/rapier_law.rs` and both move the golden, and this slice rewrites T4 pin 4 once both causes it records are gone. Grounded in the Rust knowledge base's answer `requests/walker-stall.md` (wave 3, si-rpg-engine), measured with a native port proven bit-identical to the engine's own binary at every quantum, and the rapier3d-f64 0.35.3 source quoted by line.
+2026-09-25. Coordinator: Claude. Builder: a seat named at dispatch time. Reviewer: a different family, on a scratch clone, before merge. Depends on F1, because both change `solver/src/rapier_law.rs` and both move the golden, and this slice rewrites T4 pin 4 once both causes it records are gone. Grounded in the Rust knowledge base's answer [`requests/walker-stall.md`](https://github.com/mcp-tool-shop-org/readouts/blob/main/rust-knowledge/waves/wave-03-si-rpg-engine/requests/walker-stall.md) (wave 3, si-rpg-engine), measured with a native port proven bit-identical to the engine's own binary at every quantum, and the rapier3d-f64 0.35.3 source quoted by line.
 
 ## What it is
 

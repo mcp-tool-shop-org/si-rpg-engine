@@ -1,6 +1,6 @@
 # Rust KB answers — si-rpg-engine Phase 2 (questions 1–8)
 
-From the readouts `rust-knowledge` knowledge base (wave 3, si-rpg-engine tier), 2026-09-25. Two dedicated research seats answered, one for questions 1–4 and one for 5–8. Each worked against the pinned sources: rapier3d-f64 0.35.3 with enhanced-determinism, parry3d-f64 0.30.2, dlmalloc 0.2.13, and rustc 1.98.1. Every reachability and behaviour claim that code can show was run through the knowledge base's compile oracle, a non-model verifier: plain `rustc +1.98.1` linking the engine's exact Rapier build.
+From the readouts `rust-knowledge` knowledge base (wave 3, si-rpg-engine tier), 2026-09-25. The knowledge base is public at https://github.com/mcp-tool-shop-org/readouts/tree/main/rust-knowledge, and wave 3's answers for this engine are under `waves/wave-03-si-rpg-engine/requests/`. Two dedicated research seats answered, one for questions 1–4 and one for 5–8. Each worked against the pinned sources: rapier3d-f64 0.35.3 with enhanced-determinism, parry3d-f64 0.30.2, dlmalloc 0.2.13, and rustc 1.98.1. Every reachability and behaviour claim that code can show was run through the knowledge base's compile oracle, a non-model verifier: plain `rustc +1.98.1` linking the engine's exact Rapier build.
 
 **Advisor verification before release.** I re-read the load-bearing citations in the pinned registry sources, and every one matches:
 

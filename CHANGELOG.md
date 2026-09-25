@@ -14,19 +14,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Save and restore.** A world restores by replaying its inputs to a step (`harness/replay-to.mjs`) or by copying the physics module's memory (`imageSolver`, `restoreImage`). Both are proven to continue exactly from several steps chosen at contacts, sleeps, and wakes. An image from another binary, of the wrong length, with a changed byte, or taken during a call is refused.
 - **An ARM64 job in CI.** It runs the pinned x64 binary under node on an ARM64 runner and requires both goldens and an identical trace.
 - **A lint on the compiled physics.** `solver/lint.mjs` runs after every build and refuses relaxed-SIMD instructions, memory or table growth, a growable memory, a start section, passive segments, and bulk-memory initialisation.
+- **Bundles and a replay corpus.** A failing check writes a bundle of its seed, world, accepted inputs, and hashes, with the physics module's memory stored as only the pages in use; `replay <bundle>` reproduces it in one command. A weekly job replays every bundle in `fixtures/corpus/`, every fixture, every log, and the product scene to 100,000 steps, and opens an issue with the first difference on a failure.
+- **Soundness checks.** A source test refuses any cast from a shared reference to a writable one, including the forms the compiler's lint misses; a dropped refusal fails the build; native Rust tests run in CI.
 - **Tests of outcomes.** A character course at the controller's measured limits, a thin fast body against a thin wall, terrain seams, and the terrain surface checked against where a dropped box comes to rest. `write-golden` refuses to write while any of them fails.
 
 ### Changed
 
-- **The product golden is `e6b312eda2741c30`.** The product scene's climber now stands on a floor; before, it fell for the whole run.
+- **The product golden is `b5e62d2cc42d9ad8`.** The product scene's climber now stands on a floor, where before it fell for the whole run, and an action's start or end no longer rebuilds the physics world.
+- **Actions switch bodies in place.** Starting or finishing an action, or picking a body up or putting it down, used to rebuild the whole physics world, which woke every sleeping body and discarded every contact's warm start. Now only that body switches, so untouched sleeping bodies stay asleep and keep their contacts. A body put down joins the character's queries at the next step. `solverRebuilds()` counts the worlds the physics module has built.
 - **Fixed memory.** The solver's memory is fixed at 512 pages, 32 MiB, with an allocator over that span, and `heapHighWater()` reports its peak. The build exports the stack pointer so a memory image is only taken between calls.
 - **Terrain and fast bodies.** Heightfields are built with Rapier's internal-edge fix, and `max_ccd_substeps` is set to 1 explicitly.
-- **The Linux solver digest is `c311d3aa78ff4fd1d0f66c280f3e9fab572e3517a1915ddd367f6d24ad49cc0b`.**
+- **The Linux solver digest is `fd6d51778e798af217ffb2ba263bbf1d51e5b0d561cd0c91041a4d64a72bc776`.**
+- **Stricter inputs to the physics.** Infinities are refused alongside NaN; a body mode outside the four the law knows is refused; quaternions with extreme components normalize correctly or are refused.
+- **The world's signature compares geometry directly.** It used to compare a 64-bit fold that two different worlds could share.
+- **The snapshot digests in the trace and the behaviour file carry 64 bits.** Their two halves were identical before.
+- **Build hygiene.** The solver builds with `--locked` and passes its flags through `CARGO_ENCODED_RUSTFLAGS`; its exports and static references use the Rust 2024 forms under the 2021 edition; `solver/FLAGS.md` records that the toolchain version is part of the law.
 
 ### Fixed
 
 - **Undefined behaviour in the solver.** `solver_clear_warmstart` wrote warm-start impulses through a pointer cast from a shared reference. It is removed, and the engine no longer writes into Rapier's state from any path.
 - **Memory growth.** The 0.1.0 binary declared no memory maximum, and its allocator could grow memory, which a host may allow or refuse. Memory is now fixed.
+- **Sleep state per world.** Asking whether a body is asleep in a world the physics module does not currently hold used to answer for whichever world stepped last; it now refuses with a reason.
 - **The terrain surface.** The actions' support query read a smoothly blended heightfield, while the physics collides with two flat triangles per cell. It now reads the physics' own surface.
 
 ## [0.1.0] - 2026-09-25

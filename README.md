@@ -24,20 +24,21 @@ What it aims to be is the simulation core inside a host: a browser, Godot, or Un
 
 | Capability | Where | Proof |
 |---|---|---|
-| A fixed-timestep tick; every step's state hashed with a two-lane FNV-1a over every f64; NaN refused; signed zero canonicalized | `packages/tick`, `packages/frame` | `fixtures/golden-arith.txt` has read `0d38671370d12d1e` since the first harness |
-| The physics law in Rust on `rapier3d-f64` with `enhanced-determinism`, one WebAssembly binary with its Linux digest pinned | `solver/` | `fixtures/solver.sha256`; CI rebuilds and compares |
+| A fixed-timestep tick; every step's state hashed with a two-lane FNV-1a over every f64; NaN and infinities refused; signed zero canonicalized | `packages/tick`, `packages/frame` | `fixtures/golden-arith.txt` has read `0d38671370d12d1e` since the first harness |
+| The physics law in Rust on `rapier3d-f64` with `enhanced-determinism`, one WebAssembly binary with its Linux digest pinned; one running physics world, rebuilt only when the geometry changes, with a body switched in place when an action starts or ends | `solver/` | `fixtures/solver.sha256`, which CI rebuilds and compares; `harness/switch.test.js` |
 | Bodies with position, velocity, a canonical quaternion, angular velocity, and half-extents; dynamic boxes rotate; a kinematic character with a 0.3 autostep, a 45° climb, and a 0.2 snap; sleep counted in steps | `solver/src/rapier_law.rs`, `packages/tick/world.js` | `fixtures/behavior-3d.json`, `behavior-rotation.json`, `behavior-ramp.json`, `shape-traversal.json` |
 | World files: bodies, oriented static colliders, heightfields, zones as a partition, twelve load refusals, hazards at load, and an index the host trusts; actions stand on the same two-triangle terrain surface the physics collides with | `packages/tick/scene.js`, `packages/tick/admit-world.js`, `worlds/` | `packages/tick/scene.test.js`, `harness/surface.test.js` |
 | Actions admitted at load with the effects `drive`, `climb`, `carry`, `release`, and `episode`, each with hazard scenarios | `predicates/`, `packages/load` | `fixtures/behavior-verbs.json` |
 | Minds: sight with line of sight, typed beliefs citing the episode they came from, supersession by tombstone, stale writes refused, and standing goals with a met flag | `packages/tick/memory.js`, `predicates/beliefs/keys.json` | `fixtures/behavior-minds.json` |
 | A trace of every step in exact bits, and a tool that names the first step, body, and field where two runs part | `harness/trace.mjs`, `harness/first-difference.js` | `harness/trace.test.js`; CI prints the first difference when an engine leaves the golden |
 | Behaviour numbers beside the golden: every body's sleep step and final position, the walker's zone, and the snapshot's length and digest | `fixtures/golden-behaviour.json`, `harness/check.js` | `harness/check.test.js` |
-| Save and restore two ways, by replaying the inputs to a step or by copying the physics module's memory, each proven to continue exactly | `harness/replay-to.mjs`, `solver/build.mjs` | `harness/restore.test.js` |
+| Save and restore two ways, by replaying the inputs to a step or by copying the physics module's memory, each proven to continue exactly | `packages/tick/runs.js`, `solver/build.mjs` | `harness/restore.test.js` |
+| Bundles: a failing test writes its seed, world, accepted inputs, and hashes, which `replay` reproduces in one command; a weekly job replays every bundle, fixture, and log far longer than a pull request can | `packages/tick/bundle.js`, `.github/workflows/corpus.yml` | `harness/bundle.test.js` |
 | One binary on two CPU architectures, with memory fixed at 32 MiB and a lint that refuses host-chosen instructions, memory growth, and state kept outside memory | `solver/build.rs`, `solver/src/arena.rs`, `solver/lint.mjs` | CI's ARM64 job; `solver/lint.test.js`, `harness/caps.test.js` |
 | Tests of what the world did: a character course at the controller's measured limits, a thin fast body against a thin wall, and terrain seams | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuses to write while any of them fails |
 | Replay from a seed and a log, and a debug view of the tick on localhost | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` is a person's play through the host boundary |
 
-174 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
+241 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
 
 ## Install
 
@@ -59,6 +60,7 @@ Every command runs from any directory, answers `--help`, exits 0 on success, 1 w
 ```bash
 npx play proposals.json --seed 7 --log out.json    # run proposals through the tick and print every committed frame
 npx replay out.json                                 # rerun a log; fails on the first hash that differs
+npx replay fixtures/corpus/product-rebuild-261.bundle.json   # rerun a bundle to its save tick, compare every hash, and restore its memory image
 npx load world worlds/crate-and-door.json           # validate a world, run its hazards, and write its load hash to the index
 npx load admit fixtures/climb-draft.json            # compile an action draft, run the hazards for its effect, and add it to the catalog
 npx load retire climb                               # take an action out of the catalog

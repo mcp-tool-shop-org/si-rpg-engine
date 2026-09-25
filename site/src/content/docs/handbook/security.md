@@ -16,7 +16,7 @@ The engine runs locally. It is a set of Node commands over plain ES modules and 
 
 ## Untrusted content
 
-World files, verb drafts, and play logs are untrusted. Each is validated at load and refused with a reason when it fails; a refused file changes nothing. Content that passes is still bounded: the solver holds at most 64 bodies and 64 static colliders, a NaN aborts the step, and a signed zero is canonicalized before the hash.
+World files, verb drafts, and play logs are untrusted. Each is validated at load and refused with a reason when it fails; a refused file changes nothing. Content that passes is still bounded: the solver holds at most 64 bodies and 64 static colliders, a NaN or an infinity aborts the step, a body mode outside the four the law knows is refused, and a signed zero is canonicalized before the hash.
 
 ## The binary
 

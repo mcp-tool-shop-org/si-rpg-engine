@@ -84,6 +84,15 @@ A world restores two ways, and neither writes into the physics engine's internal
 - **By replay.** `replayTo(spec, tick)` in `harness/replay-to.mjs` rebuilds a world from its seed and replays its accepted inputs up to a step, ready to continue.
 - **By image.** The generated solver module's `imageSolver()` copies the WebAssembly module's whole linear memory, 32 MiB, and `restoreImage(image)` puts it back. An image carries the binary's SHA-256 and a digest of its own bytes; a restore refuses an image from another binary, one of the wrong length, one with a changed byte, or one taken while a call was still running. `world.save()` and `world.restore(saved)` pair the image with the world's records.
 
+## Replay a bundle
+
+```bash
+npx replay fixtures/corpus/product-rebuild-261.bundle.json
+# bundle ok
+```
+
+A bundle is one file holding a run's seed, its world, the inputs it accepted, the hashes up to a save tick, and optionally the physics module's memory at that tick, stored as only the pages in use. Every failing restore, outcome, course, trace, or golden check that has a world and a log writes one, and CI keeps it as an artifact of the failed run. `replay` reproduces it in one command. The bundles in `fixtures/corpus/` are replayed every week by a scheduled job, alongside every behaviour fixture, every log, and the product scene run to 100,000 steps with memory restores at ten points; a failure opens an issue with the first difference.
+
 ## Rewrite the golden
 
 ```bash

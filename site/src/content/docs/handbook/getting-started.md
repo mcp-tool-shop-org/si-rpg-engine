@@ -40,7 +40,7 @@ The Linux build is the pinned artifact. On Linux, `--check` fails when the diges
 ## What green looks like
 
 ```
-harness/sim.mjs matches e6b312eda2741c30
+harness/sim.mjs matches b5e62d2cc42d9ad8
 harness/arith.mjs matches 0d38671370d12d1e
 behaviour matches: 6 sleep quanta, 7 final positions, walker in east, snapshot ...
 ```
