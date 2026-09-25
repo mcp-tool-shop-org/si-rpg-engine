@@ -1,0 +1,112 @@
+# The corpus, T5 pins 4 and 5 (docs/dispatch-t5-replay-corpus.md).
+#
+# Why a schedule: replaying every bundle in fixtures/corpus/, every behaviour
+# fixture and log, and the product scene for 100,000 quanta with ten image
+# restores does not fit the pull-request job's budget; and the runner image
+# drifts week to week under the pinned toolchain, which no push can detect.
+# The job replays and reports. It never pushes, never opens a pull request,
+# and never edits a golden. On failure it opens one issue titled with the
+# first failing bundle and its first-difference block, with the bundles
+# attached as this run's `bundles` artifact. Every run also uploads
+# `fresh-corpus`, the corpus's own bundles written by this build: they carry
+# the binary's digest, so a slice that moves the binary, or fixes a bundled
+# defect, commits those in place of the old ones.
+#
+# Standards compliance (0 missing, 1 partial, 2 present, 3 exemplary):
+# - PIN_PER_STEP 2: node 22, Rust 1.98.1, the solver's Linux digest (build --check refuses any other before a bundle replays), the actions by major tag; ubuntu-latest cannot be pinned by digest, so the job prints ImageOS and ImageVersion, the drift it exists to catch. Remediation: pin the actions by commit SHA, owner coordinator, target T6.
+# - ANDON_AUTHORITY 3: any failing bundle, fixture, capture, or restore point fails the job and opens an issue; build --check halts on a moved digest first; harness/bundle.test.js proves a planted failure goes red and its bundle reproduces it.
+# - NAMED_COMPENSATORS 2: its one irreversible action, opening an issue, has the undo and owner in the table below; it never pushes, so nothing else needs undoing.
+# - DECOMPOSE_BY_SECRETS 2: the bundle format and its replay are harness/bundle.mjs, what the corpus replays is harness/corpus.mjs, the schedule and the issue are this file; the engine is not touched.
+# - UNCERTAINTY_GATED_HUMANS 2: a green run asks no one; a red run is the uncertainty a person decides (fix the engine, or rewrite a bundle and say why), so it opens an issue for the coordinator.
+# - EXTERNAL_VERIFIER 2: the verdict is the hash chain and harness/first-difference.js, never a model; the slice that wrote this is reviewed by another model family before merge.
+#
+# Compensators:
+# | action                        | undo                                                         | state after the undo                                   | owner       |
+# |-------------------------------|--------------------------------------------------------------|--------------------------------------------------------|-------------|
+# | gh issue create (on failure)  | gh issue close <number> --reason "not planned" --comment why | the issue closed; the run and its artifacts kept 14 days | coordinator |
+#
+# Weekly, Monday 06:17 UTC, and by hand. It is not push-triggered: the
+# repository's two push-triggered workflows stay ci.yml and pages.yml.
+name: Corpus
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: corpus-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  corpus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dev dependencies
+        run: npm ci
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.98.1"
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: solver
+      - name: Rebuild the solver and check its digest
+        run: node solver/build.mjs --check
+      - name: Replay the corpus
+        run: |
+          set -euo pipefail
+          echo "runner image $ImageOS $ImageVersion"
+          mkdir -p "$RUNNER_TEMP/bundles"
+          SI_RPG_BUNDLES="$RUNNER_TEMP/bundles" node harness/corpus.mjs --summary "$RUNNER_TEMP/issue.md" --title "$RUNNER_TEMP/issue-title.txt"
+      - name: Write the corpus's own bundles from this build
+        if: ${{ !cancelled() }}
+        run: node harness/corpus.mjs --write "$RUNNER_TEMP/fresh-corpus"
+      - name: Upload the fresh corpus
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fresh-corpus
+          path: ${{ runner.temp }}/fresh-corpus/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload the failing bundles
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundles
+          path: ${{ runner.temp }}/bundles/
+          if-no-files-found: ignore
+          retention-days: 14
+      # The one irreversible action; its compensator is in the table above.
+      - name: Open one issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          body="$RUNNER_TEMP/issue-body.md"
+          if [ -s "$RUNNER_TEMP/issue-title.txt" ]; then
+            title=$(head -n 1 "$RUNNER_TEMP/issue-title.txt")
+            cat "$RUNNER_TEMP/issue.md" > "$body"
+          else
+            title="corpus: the job failed before the corpus finished (${GITHUB_REF_NAME})"
+            echo "The corpus job failed before it wrote a summary: see the run's log." > "$body"
+          fi
+          {
+            echo
+            echo "Run: $RUN_URL on \`${GITHUB_REF_NAME}\` at \`${GITHUB_SHA}\`, runner image $ImageOS $ImageVersion."
+            echo "The failing bundles are the run's \`bundles\` artifact; each replays in one command: \`replay <name>.bundle.json\`."
+          } >> "$body"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$body"
