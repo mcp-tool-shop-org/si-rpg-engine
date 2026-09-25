@@ -73,6 +73,11 @@ export function createMemory() {
       if (typeof w.withdrawnBy !== 'string' || !episode(w.withdrawnBy)) {
         return { ok: false, reason: 'supersession must cite the withdrawing episode' };
       }
+      const older = episode(old.source);
+      const newer = episode(w.source);
+      if (older && newer && newer.tick < older.tick) {
+        return { ok: false, reason: 'stale: ' + w.source + ' is older than ' + old.source };
+      }
     }
     const b = {
       id: 'b' + (beliefs.length + 1),
@@ -90,5 +95,68 @@ export function createMemory() {
     return { ok: true, belief: b };
   }
 
-  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite };
+  /** @type {Map<string, Belief[]>} */
+  const byMind = new Map();
+
+  /**
+   * @param {string} mind
+   */
+  function mindBeliefs(mind) {
+    const found = byMind.get(mind);
+    if (found) {
+      return found;
+    }
+    /** @type {Belief[]} */
+    const list = [];
+    byMind.set(mind, list);
+    return list;
+  }
+
+  /**
+   * A mind-scoped write. The key table is checked by the caller.
+   * @param {string} mind
+   * @param {BeliefWrite} w
+   * @returns {{ ok: true, belief: Belief } | { ok: false, reason: string }}
+   */
+  function admitMindBelief(mind, w) {
+    const list = mindBeliefs(mind);
+    const source = episode(w.source);
+    if (!source) {
+      return { ok: false, reason: 'source must cite an admitted episode; ' + String(w.source) + ' is not in the log' };
+    }
+    /** @type {Belief | undefined} */
+    let old;
+    if (w.supersedes !== undefined) {
+      old = list.find((item) => item.id === w.supersedes);
+      if (!old) {
+        return { ok: false, reason: 'supersedes names no belief: ' + w.supersedes };
+      }
+      if (old.supersededBy) {
+        return { ok: false, reason: 'belief ' + old.id + ' is already superseded by ' + old.supersededBy };
+      }
+      if (typeof w.withdrawnBy !== 'string' || !episode(w.withdrawnBy)) {
+        return { ok: false, reason: 'supersession must cite the withdrawing episode' };
+      }
+      const older = episode(old.source);
+      if (older && source.tick < older.tick) {
+        return { ok: false, reason: 'stale: ' + w.source + ' is older than ' + old.source };
+      }
+    }
+    const b = {
+      id: 'b' + (list.length + 1),
+      subject: /** @type {Belief['subject']} */ (/** @type {unknown} */ (w.subject)),
+      key: w.key,
+      value: /** @type {Belief['value']} */ (/** @type {unknown} */ (w.value)),
+      confidence: w.confidence,
+      source: w.source,
+    };
+    list.push(b);
+    if (old) {
+      old.supersededBy = b.id;
+      old.withdrawnBy = w.withdrawnBy;
+    }
+    return { ok: true, belief: b };
+  }
+
+  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite, mindBeliefs, admitMindBelief };
 }

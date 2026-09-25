@@ -154,7 +154,23 @@
             ctx.fill();
           }
         }
-        status.textContent = 'tick ' + newest.tick + '  ' + newest.hash + '  zone ' + (newest.zone || 'none') + '  ' + verbMode;
+        const axes = projectionAxes(along);
+        if (newest.minds) {
+          for (const mind of newest.minds) {
+            const centre = worldToCanvas(view, mind[axes.horizontal], mind[axes.vertical]);
+            const edge = worldToCanvas(view, mind[axes.horizontal] + mind.sight, mind[axes.vertical]);
+            ctx.beginPath();
+            ctx.arc(centre.x, centre.y, Math.abs(edge.x - centre.x), 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(224, 161, 90, 0.7)';
+            ctx.stroke();
+          }
+        }
+        const mindLine = newest.minds ? newest.minds.map((mind) => {
+          const beliefs = mind.beliefs.map((item) => item.key + ' ' + item.subject + ' ' + item.value).join(', ');
+          const goals = mind.goals.map((goal) => goal.kind + (goal.met ? ' met' : '')).join(', ');
+          return mind.body + ' [' + beliefs + '] [' + goals + ']';
+        }).join(' | ') : '';
+        status.textContent = 'tick ' + newest.tick + '  ' + newest.hash + '  zone ' + (newest.zone || 'none') + '  ' + verbMode + (mindLine ? '  ' + mindLine : '');
         if (newest.door !== null && newest.door !== undefined && door.textContent === '') {
           door.textContent = 'door reached at tick ' + newest.door;
         }

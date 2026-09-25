@@ -1,6 +1,7 @@
 // A world is a file. The tick answers zones. The host alone reads the goal.
 
 import { readFileSync } from 'node:fs';
+import { beliefRefusal } from './beliefs.js';
 import { createWorld } from './world.js';
 
 /**
@@ -16,11 +17,15 @@ import { createWorld } from './world.js';
  *   zones: Zone[],
  *   goal?: { actor: string, zone: string },
  *   heightfield?: { rows: number, cols: number, cell: number, heights: number[] },
+ *   minds?: MindRecord[],
  * }} Scene
+ * @typedef {{ kind: 'reach', zone: string } | { kind: 'use', target: string }} MindGoalRecord
+ * @typedef {{ subject: { body?: string, zone?: string }, key: string, value: string | number | boolean, confidence: number, source: string }} MindBeliefRecord
+ * @typedef {{ body: string, sight: number, goals: MindGoalRecord[], beliefs: MindBeliefRecord[] }} MindRecord
  */
 
 const SCENE_KEYS = ['name', 'seed', 'bodies', 'colliders', 'zones'];
-const SCENE_ALLOWED = ['name', 'seed', 'bodies', 'colliders', 'zones', 'goal', 'heightfield'];
+const SCENE_ALLOWED = ['name', 'seed', 'bodies', 'colliders', 'zones', 'goal', 'heightfield', 'minds'];
 const HEIGHTFIELD_KEYS = ['rows', 'cols', 'cell', 'heights'];
 const BODY_KEYS = ['id', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz', 'hx', 'hy', 'hz'];
 const BODY_OPTIONAL = ['qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz'];
@@ -28,6 +33,10 @@ const COLLIDER_KEYS = ['id', 'minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ', 'qx
 const COLLIDER_OPTIONAL = ['qx', 'qy', 'qz', 'qw'];
 const GOAL_KEYS = ['actor', 'zone'];
 const ZONE_KEYS = ['id', 'minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'];
+const MIND_KEYS = ['body', 'sight', 'goals', 'beliefs'];
+const BELIEF_KEYS = ['subject', 'key', 'value', 'confidence', 'source'];
+const REACH_KEYS = ['kind', 'zone'];
+const USE_KEYS = ['kind', 'target'];
 
 /**
  * @param {Record<string, unknown>} obj
@@ -246,6 +255,15 @@ export function validateScene(value) {
     }
     heightfield = checked.heightfield;
   }
+  /** @type {MindRecord[] | undefined} */
+  let minds;
+  if (Object.hasOwn(raw, 'minds')) {
+    const checked = validateMinds(raw.minds, bodies, zones);
+    if (!checked.ok) {
+      return checked;
+    }
+    minds = checked.minds;
+  }
   return {
     ok: true,
     scene: {
@@ -256,7 +274,173 @@ export function validateScene(value) {
       zones,
       ...(goal ? { goal } : {}),
       ...(heightfield ? { heightfield } : {}),
+      ...(minds ? { minds } : {}),
     },
+  };
+}
+
+/**
+ * @param {unknown} value
+ * @param {Body[]} bodies
+ * @param {Zone[]} zones
+ * @returns {{ ok: true, minds: MindRecord[] } | { ok: false, reason: string }}
+ */
+function validateMinds(value, bodies, zones) {
+  if (!Array.isArray(value)) {
+    return { ok: false, reason: 'minds must be a list' };
+  }
+  /** @type {MindRecord[]} */
+  const minds = [];
+  const seen = new Set();
+  const lookup = {
+    /**
+     * @param {string} id
+     */
+    body(id) {
+      for (let i = 0; i < bodies.length; i = i + 1) {
+        if (bodies[i].id === id) {
+          return bodies[i];
+        }
+      }
+      return null;
+    },
+    zones,
+  };
+  for (let i = 0; i < value.length; i = i + 1) {
+    const item = value[i];
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      return { ok: false, reason: 'a mind is an object' };
+    }
+    const raw = /** @type {Record<string, unknown>} */ (item);
+    const extra = unknown(raw, MIND_KEYS);
+    if (extra) {
+      return { ok: false, reason: 'unknown field: ' + extra };
+    }
+    for (const key of MIND_KEYS) {
+      if (!Object.hasOwn(raw, key)) {
+        return { ok: false, reason: 'mind missing ' + key };
+      }
+    }
+    if (typeof raw.body !== 'string' || raw.body.length === 0) {
+      return { ok: false, reason: 'mind names no body: ' + String(raw.body) };
+    }
+    if (!bodies.some((body) => body.id === raw.body)) {
+      return { ok: false, reason: 'mind names no body: ' + raw.body };
+    }
+    if (seen.has(raw.body)) {
+      return { ok: false, reason: 'a body has two minds: ' + raw.body };
+    }
+    seen.add(raw.body);
+    if (typeof raw.sight !== 'number' || !Number.isFinite(raw.sight) || !(raw.sight > 0)) {
+      return { ok: false, reason: 'sight must be a finite number above 0' };
+    }
+    if (!Array.isArray(raw.goals)) {
+      return { ok: false, reason: 'goals must be a list' };
+    }
+    if (!Array.isArray(raw.beliefs)) {
+      return { ok: false, reason: 'beliefs must be a list' };
+    }
+    /** @type {MindGoalRecord[]} */
+    const goals = [];
+    for (let g = 0; g < raw.goals.length; g = g + 1) {
+      const goal = validateGoal(raw.goals[g], bodies, zones);
+      if (typeof goal === 'string') {
+        return { ok: false, reason: goal };
+      }
+      goals.push(goal);
+    }
+    /** @type {MindBeliefRecord[]} */
+    const beliefs = [];
+    for (let b = 0; b < raw.beliefs.length; b = b + 1) {
+      const belief = validateBelief(raw.beliefs[b], /** @type {ReturnType<typeof createWorld>} */ (lookup));
+      if (typeof belief === 'string') {
+        return { ok: false, reason: belief };
+      }
+      beliefs.push(belief);
+    }
+    minds.push({ body: raw.body, sight: raw.sight, goals, beliefs });
+  }
+  return { ok: true, minds };
+}
+
+/**
+ * @param {unknown} value
+ * @param {Body[]} bodies
+ * @param {Zone[]} zones
+ * @returns {MindGoalRecord | string}
+ */
+function validateGoal(value, bodies, zones) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return 'a goal is an object';
+  }
+  const raw = /** @type {Record<string, unknown>} */ (value);
+  if (raw.kind !== 'reach' && raw.kind !== 'use') {
+    return 'unknown goal kind: ' + String(raw.kind);
+  }
+  const extra = unknown(raw, raw.kind === 'reach' ? REACH_KEYS : USE_KEYS);
+  if (extra) {
+    return 'unknown field: ' + extra;
+  }
+  if (raw.kind === 'reach') {
+    if (typeof raw.zone !== 'string' || !zones.some((zone) => zone.id === raw.zone)) {
+      return 'reach goal names no zone: ' + String(raw.zone);
+    }
+    return { kind: 'reach', zone: raw.zone };
+  }
+  const namesBody = bodies.some((body) => body.id === raw.target);
+  const namesZone = zones.some((zone) => zone.id === raw.target);
+  if (typeof raw.target !== 'string' || (!namesBody && !namesZone)) {
+    return 'use goal names nothing: ' + String(raw.target);
+  }
+  return { kind: 'use', target: raw.target };
+}
+
+/**
+ * @param {unknown} value
+ * @param {ReturnType<typeof createWorld>} world
+ * @returns {MindBeliefRecord | string}
+ */
+function validateBelief(value, world) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return 'a belief is an object';
+  }
+  const raw = /** @type {Record<string, unknown>} */ (value);
+  const extra = unknown(raw, BELIEF_KEYS);
+  if (extra) {
+    return 'unknown field: ' + extra;
+  }
+  for (const key of BELIEF_KEYS) {
+    if (!Object.hasOwn(raw, key)) {
+      return 'belief missing ' + key;
+    }
+  }
+  if (typeof raw.confidence !== 'number' || !(raw.confidence >= 0 && raw.confidence <= 1)) {
+    return 'confidence must be a number in [0, 1]';
+  }
+  if (raw.source !== 'e1') {
+    return 'authored belief source must be the load episode';
+  }
+  if (!raw.subject || typeof raw.subject !== 'object' || Array.isArray(raw.subject)) {
+    return 'belief subject must name a body or a zone';
+  }
+  const subject = /** @type {Record<string, unknown>} */ (raw.subject);
+  const subjectExtra = unknown(subject, ['body', 'zone']);
+  if (subjectExtra) {
+    return 'unknown field: ' + subjectExtra;
+  }
+  if (typeof raw.key !== 'string') {
+    return 'unknown belief key: ' + String(raw.key);
+  }
+  const refusal = beliefRefusal(world, { subject, key: raw.key, value: raw.value });
+  if (refusal) {
+    return refusal;
+  }
+  return {
+    subject: /** @type {MindBeliefRecord['subject']} */ (subject),
+    key: raw.key,
+    value: /** @type {MindBeliefRecord['value']} */ (raw.value),
+    confidence: raw.confidence,
+    source: 'e1',
   };
 }
 

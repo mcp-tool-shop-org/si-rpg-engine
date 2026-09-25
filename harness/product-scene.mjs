@@ -105,5 +105,12 @@ export function createProductWorld() {
       { id: 'west', minX: 4, maxX: 40, minY: -1, maxY: 4, minZ: -2, maxZ: 6 },
       { id: 'east', minX: 40, maxX: 80, minY: -1, maxY: 4, minZ: -2, maxZ: 6 },
     ],
+    name: 'product',
+    minds: [{
+      body: 'lower',
+      sight: 80,
+      goals: [{ kind: 'reach', zone: 'east' }],
+      beliefs: [],
+    }],
   }, 'product');
 }

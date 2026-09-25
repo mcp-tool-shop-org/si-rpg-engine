@@ -11,6 +11,8 @@
 
 import { createHasher } from '../frame/hash.js';
 import { commitFrame } from '../frame/frame.js';
+import { beliefRefusal, subjectText } from './beliefs.js';
+import { installMinds, mixMinds, observeMinds } from './minds.js';
 import { admitIntent } from './predicates.js';
 
 /**
@@ -54,10 +56,12 @@ export function createTick(init) {
 
   // No verb consumes randomness in slice 2. The seed is part of the hash so a
   // replay with the wrong seed fails on the first frame.
+  installMinds(world, memory);
   hasher.u32(seed);
   if (world.mixLoad) {
     world.mixLoad(hasher, new Set());
   }
+  mixMinds(hasher, world, memory);
   mixSnapshot(hasher);
 
   /** @type {Frame} */
@@ -106,6 +110,7 @@ export function createTick(init) {
         hasher.u32(world.linkIndex(world.carriedByOf(b.id)));
       }
     }
+    mixMinds(hasher, world, memory);
     mixSnapshot(hasher);
   }
 
@@ -198,6 +203,7 @@ export function createTick(init) {
     }
     world.step(driving);
     tick = tick + 1;
+    observeMinds(world, memory, tick);
     mixQuantum();
     current = commitFrame(tick, hasher.digest(), world.bodies);
     emit();
@@ -323,14 +329,46 @@ export function createTick(init) {
         return { admitted: true, quanta: check.quanta, hash: current.hash };
       }
       case 'belief': {
+        const mindName = proposal.mind;
+        if (typeof mindName === 'string') {
+          const minds = world.minds || [];
+          if (!minds.some((mind) => mind.body === mindName)) {
+            return { admitted: false, reason: 'no mind named ' + mindName };
+          }
+          if (typeof proposal.confidence !== 'number' || !(proposal.confidence >= 0 && proposal.confidence <= 1)) {
+            return { admitted: false, reason: 'confidence must be a number in [0, 1]' };
+          }
+          const refusal = beliefRefusal(world, proposal);
+          if (refusal) {
+            return { admitted: false, reason: refusal };
+          }
+          const named = memory.admitMindBelief(mindName, proposal);
+          if (!named.ok) {
+            return { admitted: false, reason: named.reason };
+          }
+          hasher.text(named.belief.id);
+          hasher.text(subjectText(named.belief.subject));
+          hasher.text(named.belief.key);
+          hasher.text(String(named.belief.value));
+          hasher.float(named.belief.confidence);
+          hasher.text(named.belief.source);
+          if (proposal.supersedes !== undefined) {
+            hasher.text(proposal.supersedes);
+            hasher.text(String(proposal.withdrawnBy));
+          }
+          memory.recordEpisode(tick, 'belief', named.belief.id);
+          record(proposal);
+          pending = pending + 1;
+          return { admitted: true, quanta: 1, hash: current.hash };
+        }
         const check = memory.admitBeliefWrite(proposal);
         if (!check.ok) {
           return { admitted: false, reason: check.reason };
         }
         hasher.text(check.belief.id);
-        hasher.text(check.belief.subject);
+        hasher.text(/** @type {string} */ (check.belief.subject));
         hasher.text(check.belief.key);
-        hasher.text(check.belief.value);
+        hasher.text(/** @type {string} */ (check.belief.value));
         hasher.float(check.belief.confidence);
         hasher.text(check.belief.source);
         if (proposal.supersedes !== undefined) {

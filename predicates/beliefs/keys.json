@@ -1,0 +1,7 @@
+{
+  "at": { "subject": "body", "value": "zone" },
+  "seen": { "subject": "body", "value": "tick" },
+  "holds": { "subject": "body", "value": "body" },
+  "contains": { "subject": "zone", "value": "body" },
+  "visited": { "subject": "zone", "value": "tick" }
+}
