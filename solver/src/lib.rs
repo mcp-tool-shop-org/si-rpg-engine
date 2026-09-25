@@ -1,17 +1,20 @@
 // The E1 box step, in the same order the JavaScript kernel runs it.
 // f64 only. No other operation than add, sub, mul, div, and sqrt.
+// The product step lives in rapier_law and does not replace this function.
+
+mod rapier_law;
 
 const DT: f64 = 1.0 / 64.0;
 const G: f64 = -8.0;
 const MAX_SPEED: f64 = 2.0;
 const UNDRIVEN_DRAG: f64 = 0.0;
-const MAX_BODIES: usize = 64;
-const MAX_COLLIDERS: usize = 64;
-const BODY_STRIDE: usize = 10;
-const COLLIDER_STRIDE: usize = 6;
+pub(crate) const MAX_BODIES: usize = 64;
+pub(crate) const MAX_COLLIDERS: usize = 64;
+pub(crate) const BODY_STRIDE: usize = 10;
+pub(crate) const COLLIDER_STRIDE: usize = 6;
 
-static mut BODIES: [f64; MAX_BODIES * BODY_STRIDE] = [0.0; MAX_BODIES * BODY_STRIDE];
-static mut COLLIDERS: [f64; MAX_COLLIDERS * COLLIDER_STRIDE] = [0.0; MAX_COLLIDERS * COLLIDER_STRIDE];
+pub(crate) static mut BODIES: [f64; MAX_BODIES * BODY_STRIDE] = [0.0; MAX_BODIES * BODY_STRIDE];
+pub(crate) static mut COLLIDERS: [f64; MAX_COLLIDERS * COLLIDER_STRIDE] = [0.0; MAX_COLLIDERS * COLLIDER_STRIDE];
 
 #[no_mangle]
 pub extern "C" fn bodies_ptr() -> *mut f64 {

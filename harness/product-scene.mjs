@@ -1,6 +1,6 @@
-// The 3D scene the product harness steps. The first quantum fires every
-// static face, a corner on each axis, the speed clamp, and a driven body
-// meeting an undriven one on each axis.
+// The product harness steps the Rapier scene: a kinematic walker, a static
+// heightfield, and two dynamic boxes. The box scene below is the E1 reference
+// the migration gate still matches, law by law.
 
 import { createWorld } from '../packages/tick/world.js';
 
@@ -17,13 +17,15 @@ const box = (id, x, y, z, vx, vy, vz) => ({
   id, x, y, z, vx, vy, vz, hx: 0.25, hy: 0.25, hz: 0.25,
 });
 
-export const productDriven = [
+export const boxDriven = [
   'face-x-min', 'face-x-max', 'face-y-min', 'face-y-max', 'face-z-min', 'face-z-max',
   'corner-x', 'corner-y', 'corner-z', 'fast',
   'push-x', 'push-y', 'push-z',
 ];
 
-export function createProductWorld() {
+export const productDriven = ['walker'];
+
+export function createBoxProductWorld() {
   return createWorld({
     bodies: [
       box('face-x-min', -0.1, 1, 1, -0.4, 0, 0),
@@ -51,5 +53,24 @@ export function createProductWorld() {
       { id: 'post-y', minX: 40, maxX: 41, minY: 8, maxY: 9, minZ: 8, maxZ: 9 },
       { id: 'post-z', minX: 50, maxX: 51, minY: 8, maxY: 9, minZ: 8, maxZ: 9 },
     ],
-  });
+  }, 'box');
+}
+
+export function createProductWorld() {
+  return createWorld({
+    bodies: [
+      { id: 'walker', x: 10, y: 0.26, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'lower', x: 6, y: 0.3, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'upper', x: 6, y: 0.85, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+    ],
+    colliders: [
+      { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 },
+    ],
+    heightfield: {
+      rows: 2,
+      cols: 3,
+      cell: 1,
+      heights: [0, 0.25, 0.5, 0, 0.25, 0.5],
+    },
+  }, 'product');
 }

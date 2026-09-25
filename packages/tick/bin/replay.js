@@ -36,7 +36,7 @@ function isWorld(value) {
 }
 // A play log carries `world`; a host log carries the `scene` it served.
 const world = isWorld(saved.world) ? saved.world : isWorld(saved.scene) ? { bodies: saved.scene.bodies, colliders: saved.scene.colliders } : fixtureWorld();
-const result = replay({ seed: saved.seed, world, rules: catalog.rules, retired: catalog.retired, log: saved.log });
+const result = replay({ seed: saved.seed, world, rules: catalog.rules, retired: catalog.retired, log: saved.log, law: saved.law });
 if (!result.ok) {
   process.stderr.write('replay failed at entry ' + result.at + ': ' + result.reason + '\n');
   process.exit(1);

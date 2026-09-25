@@ -1,0 +1,589 @@
+// The product step. One Rapier world lives in this module across quanta so the
+// warm-start cache survives. The box step in lib.rs is a separate export.
+//
+// Pins: rapier3d-f64, enhanced-determinism, f64, no SIMD feature, dt = 1/64,
+// sleep threshold = 32 quanta, rotations locked, contact clustering off so the
+// hashed warm-start cache is the manifold points.
+
+use rapier3d_f64::control::{
+    CharacterAutostep, CharacterCollision, CharacterLength, KinematicCharacterController,
+};
+use rapier3d_f64::geometry::{BroadPhasePairEvent, ContactData, ContactManifold, ContactPair};
+use rapier3d_f64::prelude::*;
+
+use crate::{BODIES, BODY_STRIDE, COLLIDERS, COLLIDER_STRIDE, MAX_BODIES, MAX_COLLIDERS};
+
+const DT: f64 = 1.0 / 64.0;
+const G: f64 = -8.0;
+const SLEEP_QUANTA: f64 = 32.0;
+const MAX_HEIGHTS: usize = 256;
+const STEP_HEIGHT: f64 = 0.3;
+const STEP_MIN_WIDTH: f64 = 0.2;
+const CLIMB_ANGLE: f64 = core::f64::consts::FRAC_PI_4;
+const SLIDE_ANGLE: f64 = 50.0 * core::f64::consts::PI / 180.0;
+const SNAP: f64 = 0.2;
+const SKIN: f64 = 0.01;
+
+pub(crate) static mut HEIGHTS: [f64; MAX_HEIGHTS] = [0.0; MAX_HEIGHTS];
+
+struct Signature {
+    world_id: u32,
+    n_bodies: u32,
+    n_colliders: u32,
+    rows: u32,
+    cols: u32,
+    cell: u64,
+    driven: u64,
+    geom: u64,
+}
+
+struct Loaded {
+    world: PhysicsWorld,
+    n_bodies: usize,
+    kinematic: Vec<bool>,
+    handles: Vec<RigidBodyHandle>,
+    halves: Vec<Vector>,
+    signature: Signature,
+    controller: KinematicCharacterController,
+}
+
+struct Solver {
+    loaded: Option<Loaded>,
+    snapshot: Vec<u8>,
+}
+
+static mut SOLVER: Solver = Solver { loaded: None, snapshot: Vec::new() };
+
+fn canon(x: f64) -> f64 {
+    if x == 0.0 { 0.0 } else { x }
+}
+
+fn bad(x: f64) -> bool {
+    x.is_nan()
+}
+
+#[no_mangle]
+pub extern "C" fn heights_ptr() -> *mut f64 {
+    unsafe { HEIGHTS.as_mut_ptr() }
+}
+
+#[no_mangle]
+pub extern "C" fn canon_zero(x: f64) -> f64 {
+    if x.is_nan() { x } else { canon(x) }
+}
+
+fn body_at(i: usize) -> [f64; BODY_STRIDE] {
+    let mut out = [0.0; BODY_STRIDE];
+    unsafe {
+        let base = i * BODY_STRIDE;
+        for k in 0..BODY_STRIDE {
+            out[k] = BODIES[base + k];
+        }
+    }
+    out
+}
+
+fn collider_at(j: usize) -> [f64; COLLIDER_STRIDE] {
+    let mut out = [0.0; COLLIDER_STRIDE];
+    unsafe {
+        let base = j * COLLIDER_STRIDE;
+        for k in 0..COLLIDER_STRIDE {
+            out[k] = COLLIDERS[base + k];
+        }
+    }
+    out
+}
+
+fn write_body(i: usize, x: f64, y: f64, z: f64, vx: f64, vy: f64, vz: f64) {
+    unsafe {
+        let base = i * BODY_STRIDE;
+        BODIES[base] = canon(x);
+        BODIES[base + 1] = canon(y);
+        BODIES[base + 2] = canon(z);
+        BODIES[base + 3] = canon(vx);
+        BODIES[base + 4] = canon(vy);
+        BODIES[base + 5] = canon(vz);
+    }
+}
+
+fn mix_u64(h: u64, x: u64) -> u64 {
+    h.wrapping_mul(0x100000001b3).wrapping_add(x)
+}
+
+fn mix_f64(h: u64, x: f64) -> u64 {
+    mix_u64(h, x.to_bits())
+}
+
+fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> Option<Signature> {
+    if n_bodies as usize > MAX_BODIES || n_colliders as usize > MAX_COLLIDERS {
+        return None;
+    }
+    if rows > 0 && (rows < 2 || cols < 2) {
+        return None;
+    }
+    let n_heights = (rows as usize).saturating_mul(cols as usize);
+    if rows > 0 && (n_heights == 0 || n_heights > MAX_HEIGHTS) {
+        return None;
+    }
+    if bad(cell) || (rows > 0 && !(cell > 0.0)) {
+        return None;
+    }
+    let mut driven = 0u64;
+    for i in 0..n_bodies as usize {
+        let b = body_at(i);
+        for k in 0..6 {
+            if bad(b[k]) {
+                return None;
+            }
+        }
+        if b[9] != 0.0 {
+            driven |= 1u64 << i;
+        }
+    }
+    // Half-extents and static geometry identify the world. Pose and velocity do not,
+    // so a later quantum keeps the same Rapier state.
+    let mut geom = 0xcbf29ce484222325u64;
+    for i in 0..n_bodies as usize {
+        let b = body_at(i);
+        if bad(b[6]) || bad(b[7]) || bad(b[8]) || !(b[6] > 0.0) || !(b[7] > 0.0) || !(b[8] > 0.0) {
+            return None;
+        }
+        geom = mix_f64(geom, b[6]);
+        geom = mix_f64(geom, b[7]);
+        geom = mix_f64(geom, b[8]);
+        for k in 0..6 {
+            if bad(b[k]) {
+                return None;
+            }
+        }
+    }
+    for j in 0..n_colliders as usize {
+        let c = collider_at(j);
+        for k in 0..6 {
+            if bad(c[k]) {
+                return None;
+            }
+            geom = mix_f64(geom, c[k]);
+        }
+    }
+    if rows > 0 {
+        unsafe {
+            for i in 0..n_heights {
+                let h = HEIGHTS[i];
+                if bad(h) {
+                    return None;
+                }
+                geom = mix_f64(geom, h);
+            }
+        }
+        geom = mix_f64(geom, cell);
+        geom = mix_u64(geom, rows as u64);
+        geom = mix_u64(geom, cols as u64);
+    }
+    Some(Signature { world_id, n_bodies, n_colliders, rows, cols, cell: cell.to_bits(), driven, geom })
+}
+
+fn same_sig(a: &Signature, b: &Signature) -> bool {
+    a.world_id == b.world_id
+        && a.n_bodies == b.n_bodies
+        && a.n_colliders == b.n_colliders
+        && a.rows == b.rows
+        && a.cols == b.cols
+        && a.cell == b.cell
+        && a.driven == b.driven
+        && a.geom == b.geom
+}
+
+fn controller() -> KinematicCharacterController {
+    KinematicCharacterController {
+        up: Vector::new(0.0, 1.0, 0.0),
+        offset: CharacterLength::Absolute(SKIN),
+        slide: true,
+        autostep: Some(CharacterAutostep {
+            max_height: CharacterLength::Absolute(STEP_HEIGHT),
+            min_width: CharacterLength::Absolute(STEP_MIN_WIDTH),
+            include_dynamic_bodies: false,
+        }),
+        max_slope_climb_angle: CLIMB_ANGLE,
+        min_slope_slide_angle: SLIDE_ANGLE,
+        snap_to_ground: Some(CharacterLength::Absolute(SNAP)),
+        normal_nudge_factor: 1.0e-4,
+    }
+}
+
+fn warm_broadphase(world: &mut PhysicsWorld, colliders: &[ColliderHandle]) {
+    let mut events: Vec<BroadPhasePairEvent> = Vec::new();
+    let PhysicsWorld { integration_parameters, broad_phase, bodies, colliders: collider_set, .. } = world;
+    broad_phase.update(integration_parameters, collider_set, bodies, colliders, &[], &mut events);
+}
+
+fn build_world(sig: &Signature) -> Option<Loaded> {
+    let n_bodies = sig.n_bodies as usize;
+    let n_colliders = sig.n_colliders as usize;
+    let mut world = PhysicsWorld::new();
+    world.gravity = Vector::new(0.0, G, 0.0);
+    world.integration_parameters.dt = DT;
+    // The warm-start the snapshot hashes is the manifold point cache. Clustering
+    // keeps a second cache in a crate-private buffer, so it stays off.
+    world.integration_parameters.contact_clustering = false;
+    world.integration_parameters.warmstart_coefficient = 1.0;
+
+    let mut collider_handles: Vec<ColliderHandle> = Vec::new();
+
+    for j in 0..n_colliders {
+        let c = collider_at(j);
+        let cx = (c[0] + c[1]) * 0.5;
+        let cy = (c[2] + c[3]) * 0.5;
+        let cz = (c[4] + c[5]) * 0.5;
+        let hx = (c[1] - c[0]) * 0.5;
+        let hy = (c[3] - c[2]) * 0.5;
+        let hz = (c[5] - c[4]) * 0.5;
+        if !(hx > 0.0) || !(hy > 0.0) || !(hz > 0.0) {
+            return None;
+        }
+        let body = RigidBodyBuilder::fixed().translation(Vector::new(cx, cy, cz)).build();
+        let co = ColliderBuilder::cuboid(hx, hy, hz).restitution(0.0).friction(0.8).build();
+        let (_b, ch) = world.insert(body, co);
+        collider_handles.push(ch);
+    }
+
+    if sig.rows > 0 {
+        let rows = sig.rows as usize;
+        let cols = sig.cols as usize;
+        let cell = f64::from_bits(sig.cell);
+        // The world record is row-major (row advances z, column advances x).
+        // Parry stores the grid column-major: data[row + col * nrows].
+        let mut data = vec![0.0; rows * cols];
+        unsafe {
+            for row in 0..rows {
+                for col in 0..cols {
+                    data[row + col * rows] = HEIGHTS[row * cols + col];
+                }
+            }
+        }
+        let heights = Array2::new(rows, cols, data);
+        let scale = Vector::new((cols as f64 - 1.0) * cell, 1.0, (rows as f64 - 1.0) * cell);
+        let body = RigidBodyBuilder::fixed().build();
+        let co = ColliderBuilder::heightfield(heights, scale).restitution(0.0).friction(0.8).build();
+        let (_b, ch) = world.insert(body, co);
+        collider_handles.push(ch);
+    }
+
+    let mut handles = Vec::with_capacity(n_bodies);
+    let mut kinematic = Vec::with_capacity(n_bodies);
+    let mut halves = Vec::with_capacity(n_bodies);
+    for i in 0..n_bodies {
+        let b = body_at(i);
+        let pos = Vector::new(b[0], b[1], b[2]);
+        let vel = Vector::new(b[3], b[4], b[5]);
+        let half = Vector::new(b[6], b[7], b[8]);
+        let driven = (sig.driven & (1u64 << i)) != 0;
+        let body = if driven {
+            RigidBodyBuilder::kinematic_position_based()
+                .translation(pos)
+                .lock_rotations()
+                .additional_mass(1.0)
+                .can_sleep(false)
+                .ccd_enabled(false)
+                .build()
+        } else {
+            let mut body = RigidBodyBuilder::dynamic()
+                .translation(pos)
+                .linvel(vel)
+                .lock_rotations()
+                .can_sleep(true)
+                .ccd_enabled(false)
+                .build();
+            body.activation_mut().time_until_sleep = SLEEP_QUANTA * DT;
+            body
+        };
+        let co = ColliderBuilder::cuboid(half.x, half.y, half.z)
+            .restitution(0.0)
+            .friction(0.8)
+            .build();
+        let (handle, ch) = world.insert(body, co);
+        collider_handles.push(ch);
+        handles.push(handle);
+        kinematic.push(driven);
+        halves.push(half);
+    }
+
+    warm_broadphase(&mut world, &collider_handles);
+
+    Some(Loaded {
+        world,
+        n_bodies,
+        kinematic,
+        handles,
+        halves,
+        signature: Signature {
+            world_id: sig.world_id,
+            n_bodies: sig.n_bodies,
+            n_colliders: sig.n_colliders,
+            rows: sig.rows,
+            cols: sig.cols,
+            cell: sig.cell,
+            driven: sig.driven,
+            geom: sig.geom,
+        },
+        controller: controller(),
+    })
+}
+
+struct Plan {
+    index: usize,
+    handle: RigidBodyHandle,
+    translation: Vector,
+    vy: f64,
+    vx: f64,
+    vz: f64,
+    collisions: Vec<CharacterCollision>,
+}
+
+fn integrate(loaded: &mut Loaded) -> bool {
+    let n = loaded.n_bodies;
+    let mut plans: Vec<Plan> = Vec::new();
+    let controller = loaded.controller;
+    for i in 0..n {
+        if !loaded.kinematic[i] {
+            continue;
+        }
+        let b = body_at(i);
+        let mut vy = b[4] + G * DT;
+        if bad(vy) || bad(b[3]) || bad(b[5]) {
+            return false;
+        }
+        let desired = Vector::new(b[3], vy, b[5]) * DT;
+        let handle = loaded.handles[i];
+        let half = loaded.halves[i];
+        let shape = Cuboid::new(half);
+        let mut collisions = Vec::new();
+        let pos = *loaded.world.bodies[handle].position();
+        let filter = QueryFilter::new().exclude_rigid_body(handle);
+        let movement = {
+            let world = &loaded.world;
+            let query = world.broad_phase.as_query_pipeline(
+                world.narrow_phase.query_dispatcher(),
+                &world.bodies,
+                &world.colliders,
+                filter,
+            );
+            controller.move_shape(DT, &query, &shape, &pos, desired, |hit| collisions.push(hit))
+        };
+        if movement.grounded {
+            vy = 0.0;
+        }
+        let translation = pos.translation + movement.translation;
+        if bad(translation.x) || bad(translation.y) || bad(translation.z) || bad(vy) {
+            return false;
+        }
+        plans.push(Plan { index: i, handle, translation, vy, vx: b[3], vz: b[5], collisions });
+    }
+
+    for plan in &plans {
+        loaded.world.bodies[plan.handle].set_next_kinematic_translation(plan.translation);
+    }
+
+    for plan in &plans {
+        let half = loaded.halves[plan.index];
+        let shape = Cuboid::new(half);
+        let filter = QueryFilter::new().exclude_rigid_body(plan.handle);
+        let world = &mut loaded.world;
+        let PhysicsWorld { broad_phase, narrow_phase, bodies, colliders, .. } = world;
+        let mut query = broad_phase.as_query_pipeline_mut(
+            narrow_phase.query_dispatcher(),
+            bodies,
+            colliders,
+            filter,
+        );
+        controller.solve_character_collision_impulses(DT, &mut query, &shape, 1.0, &plan.collisions);
+    }
+
+    loaded.world.step();
+
+    for i in 0..n {
+        let handle = loaded.handles[i];
+        let body = &loaded.world.bodies[handle];
+        let p = body.translation();
+        if loaded.kinematic[i] {
+            let plan = plans.iter().find(|plan| plan.index == i).unwrap();
+            if bad(p.x) || bad(p.y) || bad(p.z) {
+                return false;
+            }
+            write_body(i, p.x, p.y, p.z, plan.vx, plan.vy, plan.vz);
+        } else {
+            let v = body.linvel();
+            if bad(p.x) || bad(p.y) || bad(p.z) || bad(v.x) || bad(v.y) || bad(v.z) {
+                return false;
+            }
+            write_body(i, p.x, p.y, p.z, v.x, v.y, v.z);
+        }
+    }
+    true
+}
+
+fn push_f64(out: &mut Vec<u8>, x: f64) {
+    out.extend_from_slice(&canon(x).to_le_bytes());
+}
+
+fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) {
+    out.clear();
+    for i in 0..loaded.n_bodies {
+        let handle = loaded.handles[i];
+        let body = &loaded.world.bodies[handle];
+        let p = body.translation();
+        if loaded.kinematic[i] {
+            let b = body_at(i);
+            push_f64(out, p.x);
+            push_f64(out, p.y);
+            push_f64(out, p.z);
+            push_f64(out, b[3]);
+            push_f64(out, b[4]);
+            push_f64(out, b[5]);
+            push_f64(out, 0.0);
+            push_f64(out, 0.0);
+        } else {
+            let v = body.linvel();
+            let act = body.activation();
+            let quanta = act.time_since_can_sleep / DT;
+            push_f64(out, p.x);
+            push_f64(out, p.y);
+            push_f64(out, p.z);
+            push_f64(out, v.x);
+            push_f64(out, v.y);
+            push_f64(out, v.z);
+            push_f64(out, quanta);
+            push_f64(out, if act.sleeping { 1.0 } else { 0.0 });
+        }
+    }
+
+    let mut pairs: Vec<&ContactPair> = loaded.world.narrow_phase.contact_pairs().collect();
+    pairs.sort_by(|a, b| {
+        let ka = (a.collider1.into_raw_parts(), a.collider2.into_raw_parts());
+        let kb = (b.collider1.into_raw_parts(), b.collider2.into_raw_parts());
+        ka.cmp(&kb)
+    });
+    push_f64(out, pairs.len() as f64);
+    for pair in pairs {
+        let (i1, g1) = pair.collider1.into_raw_parts();
+        let (i2, g2) = pair.collider2.into_raw_parts();
+        push_f64(out, i1 as f64);
+        push_f64(out, g1 as f64);
+        push_f64(out, i2 as f64);
+        push_f64(out, g2 as f64);
+        let manifolds = pair.solver_manifolds();
+        let mut n_points = 0usize;
+        for manifold in manifolds {
+            n_points += manifold.points.len();
+        }
+        push_f64(out, n_points as f64);
+        for manifold in manifolds {
+            for point in &manifold.points {
+                push_contact(out, &point.data);
+            }
+        }
+    }
+}
+
+fn push_contact(out: &mut Vec<u8>, data: &ContactData) {
+    push_f64(out, data.warmstart_impulse);
+    push_f64(out, data.warmstart_tangent_impulse.x);
+    push_f64(out, data.warmstart_tangent_impulse.y);
+    push_f64(out, data.warmstart_twist_impulse);
+    push_f64(out, data.warmstart_tangent_world.x);
+    push_f64(out, data.warmstart_tangent_world.y);
+    push_f64(out, data.warmstart_tangent_world.z);
+}
+
+fn zero_manifolds(manifolds: &mut [ContactManifold]) -> u32 {
+    let mut n = 0u32;
+    for manifold in manifolds {
+        for point in &mut manifold.points {
+            point.data.warmstart_impulse = 0.0;
+            point.data.warmstart_tangent_impulse.x = 0.0;
+            point.data.warmstart_tangent_impulse.y = 0.0;
+            point.data.warmstart_twist_impulse = 0.0;
+            point.data.warmstart_tangent_world = Vector::ZERO;
+            n += 1;
+        }
+    }
+    n
+}
+
+fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> bool {
+    let Some(sig) = signature(world_id, n_bodies, n_colliders, rows, cols, cell) else {
+        return false;
+    };
+    let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };
+    let reload = match &solver.loaded {
+        Some(loaded) => !same_sig(&loaded.signature, &sig),
+        None => true,
+    };
+    if reload {
+        let Some(loaded) = build_world(&sig) else {
+            return false;
+        };
+        solver.loaded = Some(loaded);
+        if let Some(loaded) = solver.loaded.as_ref() {
+            rebuild_snapshot(loaded, &mut solver.snapshot);
+        }
+    }
+    true
+}
+
+#[no_mangle]
+pub extern "C" fn solver_load(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> u32 {
+    if ensure(world_id, n_bodies, n_colliders, rows, cols, cell) { 1 } else { 0 }
+}
+
+#[no_mangle]
+pub extern "C" fn solver_step(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> u32 {
+    if !ensure(world_id, n_bodies, n_colliders, rows, cols, cell) {
+        return 0;
+    }
+    let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };
+    let Some(loaded) = solver.loaded.as_mut() else {
+        return 0;
+    };
+    if !integrate(loaded) {
+        return 0;
+    }
+    rebuild_snapshot(loaded, &mut solver.snapshot);
+    1
+}
+
+#[no_mangle]
+pub extern "C" fn snapshot_ptr() -> *const u8 {
+    unsafe { SOLVER.snapshot.as_ptr() }
+}
+
+#[no_mangle]
+pub extern "C" fn snapshot_len() -> u32 {
+    unsafe { SOLVER.snapshot.len() as u32 }
+}
+
+#[no_mangle]
+pub extern "C" fn solver_clear_warmstart() -> u32 {
+    let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };
+    let Some(loaded) = solver.loaded.as_mut() else {
+        return 0;
+    };
+    // The narrow phase publishes pairs by shared reference. The world is ours
+    // alone on this thread, so the clear writes the manifold points the next
+    // step reads. Cargo.lock pins rapier3d-f64 0.35.3, where those points are
+    // the warm-start cache once contact clustering is off.
+    let mut ptrs: Vec<*mut ContactPair> = Vec::new();
+    for pair in loaded.world.narrow_phase.contact_pairs() {
+        ptrs.push(core::ptr::from_ref(pair) as *mut ContactPair);
+    }
+    let mut n = 0u32;
+    for ptr in ptrs {
+        unsafe {
+            let pair = &mut *ptr;
+            n += zero_manifolds(&mut pair.manifolds);
+            n += zero_manifolds(&mut pair.solver_clusters);
+        }
+    }
+    rebuild_snapshot(loaded, &mut solver.snapshot);
+    n
+}

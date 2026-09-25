@@ -54,8 +54,31 @@ export function createTick(init) {
   // No verb consumes randomness in slice 2. The seed is part of the hash so a
   // replay with the wrong seed fails on the first frame.
   hasher.u32(seed);
+  if (world.mixLoad) {
+    world.mixLoad(hasher, new Set());
+  }
+  mixSnapshot(hasher);
+
   /** @type {Frame} */
   let current = commitFrame(0, hasher.digest(), world.bodies);
+
+  /**
+   * The product snapshot. A reference or box world has none, so its hash does not move.
+   * @param {import('../frame/types.js').Hasher} target
+   */
+  function mixSnapshot(target) {
+    if (!world.snapshot) {
+      return;
+    }
+    const snap = world.snapshot();
+    if (!snap) {
+      return;
+    }
+    target.u32(snap.length);
+    for (let i = 0; i < snap.length; i = i + 1) {
+      target.u32(snap[i]);
+    }
+  }
 
   /** Mixes the serializable state after one quantum. NaN halts the tick. */
   function mixQuantum() {
@@ -67,6 +90,7 @@ export function createTick(init) {
         throw new Error('NaN in body ' + b.id + ' at tick ' + tick);
       }
     }
+    mixSnapshot(hasher);
   }
 
   /**

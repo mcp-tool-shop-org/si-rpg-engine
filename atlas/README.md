@@ -1,28 +1,27 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit 6b9bae2.
+Mapped at 2026-09-25 from commit 98f2b07.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-14 parts, mostly JavaScript (39 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+14 parts, mostly JavaScript (41 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-24 (3ba2a84)
+## What changed since 2026-09-25 (6b9bae2)
 
-- CI's pull request trigger now also names `solver/**`.
-- CI's push trigger now also names `solver/**`.
-- CI now also runs solver/build.mjs.
-- fixtures/solver.sha256 is now written by solver/build.mjs.
-- solver/dist is now written by solver/build.mjs.
-- fixtures/solver.sha256 is now read by solver/build.mjs.
-- And 1 more new writer or reader of a place.
-- solver is a new part, drawn from `solver/**`.
-- 14 files added and 75 changed content, across 14 parts.
+- CI now also runs harness/solver.test.js.
+- CI now also checks harness/solver-scene.mjs.
+- fixtures/behavior-solver.json is now read by harness/solver.test.js.
+- In packages/tick/tick.js, create tick gained a step, mix load, before snapshot.
+- In packages/tick/tick.js, create tick gained a step, snapshot, before u 32.
+- In packages/tick/tick.js, create tick gained a step, u 32, before commit frame.
+- And 3 more changes to the order of work.
+- 4 files added and 20 changed content, across 6 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 10 paths; on a push to main touching 10 paths; or by hand. Runs harness/product.test.js, packages/host/host.test.js, packages/load/load.test.js and 4 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 11 more.
+1. **CI.** On a pull request touching 10 paths; on a push to main touching 10 paths; or by hand. Runs harness/product.test.js, harness/solver.test.js, packages/host/host.test.js and 5 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 12 more.
 2. **host** (a command people run). Runs packages/host/bin/host.js.
 3. **load** (a command people run). Runs packages/load/bin/load.js.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -32,10 +31,11 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 ## What happens through CI
 
-1. The workflow runs harness/product.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, solver/build.mjs in solver, and packages/tick/scene.test.js and packages/tick/tick.test.js in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 5 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 20 files in 2 more parts.
+1. The workflow runs harness/product.test.js and harness/solver.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, solver/build.mjs in solver, and packages/tick/scene.test.js and packages/tick/tick.test.js in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 6 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 20 files in 2 more parts.
    1. Inside packages/propose/propose.test.js, fresh does, in order: load intent rules (tick), fixture world, create world, create memory and create tick.
-   2. **Create tick** (tick) runs, in order: create hasher (frame) and commit frame.
+   2. **Create tick** (tick) runs, in order: create hasher (frame), mix load, snapshot, u 32 and commit frame.
    3. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
+   4. **Create tick** runs, in order: create hasher (frame), mix load, snapshot, u 32 and commit frame.
 
 ## Who reads the results
 
@@ -107,7 +107,7 @@ Read those in order to follow one pull request end to end.
 
 ## What this map cannot see
 
-- 3 import sites could not be resolved.
+- 4 import sites could not be resolved.
 - 2 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 5 writes and 7 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.

@@ -52,7 +52,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "frame",
-      "qualifyingSourceCommits": 2,
+      "qualifyingSourceCommits": 3,
       "rebaseline": null
     },
     {
@@ -68,7 +68,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "harness",
-      "qualifyingSourceCommits": 3,
+      "qualifyingSourceCommits": 5,
       "rebaseline": null
     },
     {
@@ -95,12 +95,12 @@
         "importsAndCoChanges": [],
         "importsOnly": []
       },
-      "cohesion": null,
+      "cohesion": 1,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "host",
-      "qualifyingSourceCommits": 4,
+      "qualifyingSourceCommits": 6,
       "rebaseline": null
     },
     {
@@ -132,7 +132,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "load",
-      "qualifyingSourceCommits": 3,
+      "qualifyingSourceCommits": 4,
       "rebaseline": null
     },
     {
@@ -196,7 +196,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "solver",
-      "qualifyingSourceCommits": 0,
+      "qualifyingSourceCommits": 1,
       "rebaseline": null
     },
     {
@@ -217,7 +217,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "tick",
-      "qualifyingSourceCommits": 9,
+      "qualifyingSourceCommits": 11,
       "rebaseline": null
     },
     {
@@ -241,13 +241,13 @@
     "definition": "commits is how many commits in the window touch the file, including merges and commits dropped from coupling. lines is added plus deleted in those commits.",
     "files": [
       {
-        "commits": 6,
-        "lines": 187,
+        "commits": 7,
+        "lines": 200,
         "path": ".github/workflows/ci.yml"
       },
       {
-        "commits": 1,
-        "lines": 2,
+        "commits": 2,
+        "lines": 4,
         "path": ".gitignore"
       },
       {
@@ -261,28 +261,28 @@
         "path": "README.md"
       },
       {
-        "commits": 34,
-        "lines": 1093,
+        "commits": 35,
+        "lines": 1135,
         "path": "atlas/README.md"
       },
       {
-        "commits": 11,
-        "lines": 69,
+        "commits": 12,
+        "lines": 72,
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 34,
-        "lines": 4126,
+        "commits": 35,
+        "lines": 4270,
         "path": "atlas/page.json"
       },
       {
-        "commits": 34,
-        "lines": 5269,
+        "commits": 35,
+        "lines": 5540,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 34,
-        "lines": 8204,
+        "commits": 35,
+        "lines": 8511,
         "path": "atlas/structure.json"
       },
       {
@@ -296,8 +296,8 @@
         "path": "docs/PHASE-1.md"
       },
       {
-        "commits": 8,
-        "lines": 216,
+        "commits": 9,
+        "lines": 218,
         "path": "docs/atlas-design.md"
       },
       {
@@ -456,6 +456,11 @@
         "path": "fixtures/push-play-log.json"
       },
       {
+        "commits": 1,
+        "lines": 1,
+        "path": "fixtures/solver.sha256"
+      },
+      {
         "commits": 2,
         "lines": 132,
         "path": "harness/arith.mjs"
@@ -471,8 +476,8 @@
         "path": "harness/product-scene.mjs"
       },
       {
-        "commits": 6,
-        "lines": 306,
+        "commits": 7,
+        "lines": 335,
         "path": "harness/product.test.js"
       },
       {
@@ -481,8 +486,8 @@
         "path": "harness/sim.js"
       },
       {
-        "commits": 8,
-        "lines": 256,
+        "commits": 9,
+        "lines": 258,
         "path": "harness/sim.mjs"
       },
       {
@@ -496,8 +501,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 13,
-        "lines": 99,
+        "commits": 14,
+        "lines": 101,
         "path": "package.json"
       },
       {
@@ -536,8 +541,8 @@
         "path": "packages/host/server.js"
       },
       {
-        "commits": 8,
-        "lines": 496,
+        "commits": 9,
+        "lines": 498,
         "path": "packages/host/session.js"
       },
       {
@@ -671,8 +676,8 @@
         "path": "packages/tick/tick.test.js"
       },
       {
-        "commits": 10,
-        "lines": 848,
+        "commits": 11,
+        "lines": 862,
         "path": "packages/tick/world.js"
       },
       {
@@ -721,6 +726,41 @@
         "path": "scenes/crate-and-door.json"
       },
       {
+        "commits": 1,
+        "lines": 6,
+        "path": "solver/.cargo/config.toml"
+      },
+      {
+        "commits": 1,
+        "lines": 7,
+        "path": "solver/Cargo.lock"
+      },
+      {
+        "commits": 1,
+        "lines": 15,
+        "path": "solver/Cargo.toml"
+      },
+      {
+        "commits": 1,
+        "lines": 13,
+        "path": "solver/FLAGS.md"
+      },
+      {
+        "commits": 1,
+        "lines": 112,
+        "path": "solver/build.mjs"
+      },
+      {
+        "commits": 1,
+        "lines": 4,
+        "path": "solver/rust-toolchain.toml"
+      },
+      {
+        "commits": 1,
+        "lines": 297,
+        "path": "solver/src/lib.rs"
+      },
+      {
         "commits": 2,
         "lines": 28,
         "path": "tsconfig.json"
@@ -731,59 +771,66 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-25T00:20:26.183Z",
+  "generatedAt": "2026-09-25T00:54:50.034Z",
   "generatedFrom": {
-    "commit": "6b9bae2cc26e389025ba87d32de16ffeb5f22034"
+    "commit": "98f2b074b07763e5229e9de273e853fa6426621b"
   },
   "pairs": [
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 16,
-      "shared": 16,
+      "either": 18,
+      "shared": 18,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 16,
-      "shared": 16,
+      "either": 18,
+      "shared": 18,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 16,
-      "shared": 16,
+      "either": 18,
+      "shared": 18,
       "strength": 1
     },
     {
       "a": "atlas/boundaries.yaml",
       "b": "package.json",
-      "either": 6,
-      "shared": 5,
-      "strength": 0.833333
+      "either": 7,
+      "shared": 6,
+      "strength": 0.857143
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 16,
-      "shared": 16,
+      "either": 18,
+      "shared": 18,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 16,
-      "shared": 16,
+      "either": 18,
+      "shared": 18,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 16,
-      "shared": 16,
+      "either": 18,
+      "shared": 18,
       "strength": 1
+    },
+    {
+      "a": "packages/host/host.test.js",
+      "b": "packages/host/session.js",
+      "either": 6,
+      "shared": 4,
+      "strength": 0.666667
     },
     {
       "a": "packages/propose/bin/propose.js",
@@ -829,7 +876,7 @@
     }
   ],
   "parameters": {
-    "appliedChangesetLimit": 26,
+    "appliedChangesetLimit": 27,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -838,16 +885,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-24T17:09:30-07:00",
-    "inScopeFiles": 104,
+    "headDate": "2026-09-24T20:20:46-04:00",
+    "inScopeFiles": 108,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 32,
+    "qualifyingCommits": 34,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-29T00:09:30.000Z",
+    "since": "2026-03-29T00:20:46.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",

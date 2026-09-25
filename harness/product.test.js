@@ -1,20 +1,20 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createWorld } from '../packages/tick/world.js';
-import { createProductWorld, productDriven } from './product-scene.mjs';
+import { createBoxProductWorld, boxDriven } from './product-scene.mjs';
 
 test('the binary matches the reference box step on the product scene', () => {
-  const seeded = createProductWorld();
+  const seeded = createBoxProductWorld();
   const init = {
     bodies: seeded.bodies.map((body) => ({ ...body })),
     colliders: seeded.colliders.map((box) => ({ ...box })),
   };
-  const binary = createWorld(init, 'product');
+  const binary = createWorld(init, 'box');
   const reference = createWorld({
     bodies: init.bodies.map((body) => ({ ...body })),
     colliders: init.colliders.map((box) => ({ ...box })),
   }, 'reference');
-  const driven = new Set(productDriven);
+  const driven = new Set(boxDriven);
   for (let i = 0; i < 10000; i = i + 1) {
     binary.step(driven);
     reference.step(driven);
@@ -32,9 +32,9 @@ test('the binary matches the reference box step on the product scene', () => {
 });
 
 test('the product scene fires every branch of the solver on the first quantum', () => {
-  const world = createProductWorld();
+  const world = createBoxProductWorld();
   const before = world.bodies.map((body) => ({ ...body }));
-  world.step(new Set(productDriven));
+  world.step(new Set(boxDriven));
   /** @param {string} id */
   const now = (id) => {
     const body = world.bodies.find((item) => item.id === id);

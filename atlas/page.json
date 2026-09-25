@@ -67,80 +67,72 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 14,
-      "changed": 75,
+      "added": 4,
+      "changed": 20,
       "moved": 0,
-      "parts": 14,
+      "parts": 6,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "CI's pull request trigger now also names `solver/**`.",
-        "subjects": [
-          ".github/workflows/ci.yml"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI's push trigger now also names `solver/**`.",
-        "subjects": [
-          ".github/workflows/ci.yml"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also runs solver/build.mjs.",
+        "sentence": "CI now also runs harness/solver.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "solver/build.mjs"
+          "harness/solver.test.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "fixtures/solver.sha256 is now written by solver/build.mjs.",
+        "kind": "door",
+        "sentence": "CI now also checks harness/solver-scene.mjs.",
         "subjects": [
-          "fixtures/solver.sha256",
-          "solver/build.mjs"
+          ".github/workflows/ci.yml",
+          "harness/solver-scene.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "solver/dist is now written by solver/build.mjs.",
+        "sentence": "fixtures/behavior-solver.json is now read by harness/solver.test.js.",
         "subjects": [
-          "solver/dist",
-          "solver/build.mjs"
+          "fixtures/behavior-solver.json",
+          "harness/solver.test.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "fixtures/solver.sha256 is now read by solver/build.mjs.",
+        "kind": "sequence",
+        "sentence": "In packages/tick/tick.js, create tick gained a step, mix load, before snapshot.",
         "subjects": [
-          "fixtures/solver.sha256",
-          "solver/build.mjs"
+          "packages/tick/tick.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "And 1 more new writer or reader of a place.",
+        "kind": "sequence",
+        "sentence": "In packages/tick/tick.js, create tick gained a step, snapshot, before u 32.",
+        "subjects": [
+          "packages/tick/tick.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/tick.js, create tick gained a step, u 32, before commit frame.",
+        "subjects": [
+          "packages/tick/tick.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "And 3 more changes to the order of work.",
         "subjects": []
       },
       {
-        "kind": "part",
-        "sentence": "solver is a new part, drawn from `solver/**`.",
-        "subjects": [
-          "solver"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "14 files added and 75 changed content, across 14 parts.",
+        "sentence": "4 files added and 20 changed content, across 6 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "3ba2a840e6dbb425fb4fef484af5383435c39736",
-      "generatedAt": "2026-09-24T23:31:28.654Z"
+      "commit": "6b9bae2cc26e389025ba87d32de16ffeb5f22034",
+      "generatedAt": "2026-09-25T00:20:26.183Z"
     },
     "unchanged": false
   },
@@ -226,9 +218,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 0 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "6b9bae2cc26e389025ba87d32de16ffeb5f22034",
+  "commit": "98f2b074b07763e5229e9de273e853fa6426621b",
   "defaultBranch": "main",
-  "derived": "14 parts, mostly JavaScript (39 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "14 parts, mostly JavaScript (41 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -238,6 +230,7 @@
         "harness/sim.mjs",
         "harness/check.js",
         "harness/product-scene.mjs",
+        "harness/solver-scene.mjs",
         "harness/write-golden.js",
         "packages/frame/frame.js",
         "packages/frame/hash.js",
@@ -247,7 +240,7 @@
         "packages/propose/",
         "packages/tick/"
       ],
-      "checksCount": 14,
+      "checksCount": 15,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -267,7 +260,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 6
+          "files": 8
         },
         {
           "boundary": "host",
@@ -297,6 +290,7 @@
       ],
       "runs": [
         "harness/product.test.js",
+        "harness/solver.test.js",
         "packages/host/host.test.js",
         "packages/load/load.test.js",
         "packages/propose/propose.test.js",
@@ -304,7 +298,7 @@
         "packages/tick/tick.test.js",
         "solver/build.mjs"
       ],
-      "runsCount": 7,
+      "runsCount": 8,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -577,9 +571,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T00:20:26.183Z",
+  "generatedAt": "2026-09-25T00:54:50.034Z",
   "limits": [
-    "3 import sites could not be resolved.",
+    "4 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "5 writes and 7 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
@@ -623,6 +617,24 @@
               "part": "frame",
               "partLabel": "frame",
               "phrase": "create hasher"
+            },
+            {
+              "name": "mixLoad",
+              "part": null,
+              "partLabel": null,
+              "phrase": "mix load"
+            },
+            {
+              "name": "snapshot",
+              "part": null,
+              "partLabel": null,
+              "phrase": "snapshot"
+            },
+            {
+              "name": "u32",
+              "part": null,
+              "partLabel": null,
+              "phrase": "u 32"
             },
             {
               "name": "commitFrame",
@@ -672,7 +684,47 @@
     {
       "entry": "fresh",
       "file": "packages/tick/tick.test.js",
-      "inner": [],
+      "inner": [
+        {
+          "file": "packages/tick/tick.js",
+          "name": "createTick",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create tick",
+          "steps": [
+            {
+              "name": "createHasher",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "create hasher"
+            },
+            {
+              "name": "mixLoad",
+              "part": null,
+              "partLabel": null,
+              "phrase": "mix load"
+            },
+            {
+              "name": "snapshot",
+              "part": null,
+              "partLabel": null,
+              "phrase": "snapshot"
+            },
+            {
+              "name": "u32",
+              "part": null,
+              "partLabel": null,
+              "phrase": "u 32"
+            },
+            {
+              "name": "commitFrame",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "commit frame"
+            }
+          ]
+        }
+      ],
       "part": "tick",
       "partLabel": "tick",
       "phrase": "fresh",
@@ -717,14 +769,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 6,
+  "testFiles": 7,
   "testedBy": {
-    "frame": 4,
+    "frame": 5,
     "host": 1,
     "load": 1,
     "propose": 1,
     "solver": 0,
-    "tick": 6
+    "tick": 7
   },
   "unnamedWrites": 0,
   "unread": [],

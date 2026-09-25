@@ -18,13 +18,14 @@ const STEPS = { left: -1, right: 1 };
 
 /**
  * @param {import('../tick/scene.js').Scene} [scene]
+ * @param {'product' | 'box' | 'reference'} [law]
  */
-export function createSession(scene) {
+export function createSession(scene, law) {
   instantiate();
   const catalog = loadIntentRules();
   const tick = createTick({
     seed: scene ? scene.seed : FIXTURE_SEED,
-    world: createWorld(scene ? { bodies: scene.bodies, colliders: scene.colliders } : fixtureWorld()),
+    world: createWorld(scene ? { bodies: scene.bodies, colliders: scene.colliders, heightfield: scene.heightfield } : fixtureWorld(), law),
     rules: catalog.rules,
     retired: catalog.retired,
     memory: createMemory(),

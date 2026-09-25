@@ -107,6 +107,110 @@ export function stepBodies(bodies, colliders, driven) {
   }
   return ok === 1;
 }
+
+function writeInputs(exp, bodies, colliders, heightfield, driven) {
+  const memory = exp.memory;
+  const view = new Float64Array(memory.buffer);
+  const bodyBase = exp.bodies_ptr() / 8;
+  const colliderBase = exp.colliders_ptr() / 8;
+  for (let i = 0; i < bodies.length; i = i + 1) {
+    const body = bodies[i];
+    const at = bodyBase + i * 10;
+    view[at] = body.x;
+    view[at + 1] = body.y;
+    view[at + 2] = body.z;
+    view[at + 3] = body.vx;
+    view[at + 4] = body.vy;
+    view[at + 5] = body.vz;
+    view[at + 6] = body.hx;
+    view[at + 7] = body.hy;
+    view[at + 8] = body.hz;
+    view[at + 9] = driven && driven.has(body.id) ? 1 : 0;
+  }
+  for (let j = 0; j < colliders.length; j = j + 1) {
+    const box = colliders[j];
+    const at = colliderBase + j * 6;
+    view[at] = box.minX;
+    view[at + 1] = box.maxX;
+    view[at + 2] = box.minY;
+    view[at + 3] = box.maxY;
+    view[at + 4] = box.minZ;
+    view[at + 5] = box.maxZ;
+  }
+  const rows = heightfield ? heightfield.rows : 0;
+  const cols = heightfield ? heightfield.cols : 0;
+  if (heightfield) {
+    const hBase = exp.heights_ptr() / 8;
+    for (let i = 0; i < heightfield.heights.length; i = i + 1) {
+      view[hBase + i] = heightfield.heights[i];
+    }
+  }
+  return { rows, cols, cell: heightfield ? heightfield.cell : 0 };
+}
+
+function readBodies(exp, bodies) {
+  const view = new Float64Array(exp.memory.buffer);
+  const bodyBase = exp.bodies_ptr() / 8;
+  for (let i = 0; i < bodies.length; i = i + 1) {
+    const body = bodies[i];
+    const at = bodyBase + i * 10;
+    body.x = view[at];
+    body.y = view[at + 1];
+    body.z = view[at + 2];
+    body.vx = view[at + 3];
+    body.vy = view[at + 4];
+    body.vz = view[at + 5];
+  }
+}
+
+/**
+ * Load the Rapier world without stepping it. False when a value is NaN.
+ * @param {number} worldId
+ * @param {Array<{ x: number, y: number, z: number, vx: number, vy: number, vz: number, hx: number, hy: number, hz: number, id: string }>} bodies
+ * @param {Array<{ minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number }>} colliders
+ * @param {{ rows: number, cols: number, cell: number, heights: number[] } | null} heightfield
+ * @param {ReadonlySet<string>} driven
+ */
+export function loadSolver(worldId, bodies, colliders, heightfield, driven) {
+  const exp = instantiate().exports;
+  const shape = writeInputs(exp, bodies, colliders, heightfield, driven);
+  const ok = exp.solver_load(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell);
+  return ok === 1;
+}
+
+/**
+ * One quantum of the product solver. Writes pose and velocity back onto each body.
+ * @param {number} worldId
+ * @param {Array<{ x: number, y: number, z: number, vx: number, vy: number, vz: number, hx: number, hy: number, hz: number, id: string }>} bodies
+ * @param {Array<{ minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number }>} colliders
+ * @param {{ rows: number, cols: number, cell: number, heights: number[] } | null} heightfield
+ * @param {ReadonlySet<string>} driven
+ */
+export function stepSolver(worldId, bodies, colliders, heightfield, driven) {
+  const exp = instantiate().exports;
+  const shape = writeInputs(exp, bodies, colliders, heightfield, driven);
+  const ok = exp.solver_step(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell);
+  readBodies(exp, bodies);
+  return ok === 1;
+}
+
+/** Canonical solver snapshot. Empty until a product world has been loaded. */
+export function snapshotBytes() {
+  const exp = instantiate().exports;
+  const ptr = exp.snapshot_ptr();
+  const len = exp.snapshot_len();
+  return new Uint8Array(exp.memory.buffer, ptr, len).slice();
+}
+
+/** Zeros the warm-start cache. Returns how many contact points were cleared. */
+export function clearWarmstart() {
+  return instantiate().exports.solver_clear_warmstart();
+}
+
+/** +0 for both signed zeros. NaN stays NaN. */
+export function canonZero(x) {
+  return instantiate().exports.canon_zero(x);
+}
 `);
 writeFileSync(outPath, lines.join('\n'));
 process.stdout.write(digest + '\n');

@@ -14,10 +14,13 @@ import { createWorld } from './world.js';
  *   bodies: Body[],
  *   colliders: StaticCollider[],
  *   goal: { actor: string, zone: Zone },
+ *   heightfield?: { rows: number, cols: number, cell: number, heights: number[] },
  * }} Scene
  */
 
 const SCENE_KEYS = ['name', 'seed', 'bodies', 'colliders', 'goal'];
+const SCENE_ALLOWED = ['name', 'seed', 'bodies', 'colliders', 'goal', 'heightfield'];
+const HEIGHTFIELD_KEYS = ['rows', 'cols', 'cell', 'heights'];
 const BODY_KEYS = ['id', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'hx', 'hy', 'hz'];
 const COLLIDER_KEYS = ['id', 'minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'];
 const GOAL_KEYS = ['actor', 'zone'];
@@ -45,7 +48,7 @@ export function validateScene(value) {
     return { ok: false, reason: 'a scene is an object' };
   }
   const raw = /** @type {Record<string, unknown>} */ (value);
-  const extra = unknown(raw, SCENE_KEYS);
+  const extra = unknown(raw, SCENE_ALLOWED);
   if (extra) {
     return { ok: false, reason: 'unknown field: ' + extra };
   }
@@ -162,6 +165,15 @@ export function validateScene(value) {
       return { ok: false, reason: 'body ' + bodies[i].id + ' overlaps ' + hit };
     }
   }
+  /** @type {Scene['heightfield']} */
+  let heightfield;
+  if (Object.hasOwn(raw, 'heightfield')) {
+    const checked = validateHeightfield(raw.heightfield);
+    if (!checked.ok) {
+      return checked;
+    }
+    heightfield = checked.heightfield;
+  }
   return {
     ok: true,
     scene: {
@@ -170,6 +182,62 @@ export function validateScene(value) {
       bodies,
       colliders,
       goal: { actor: goal.actor, zone: typedZone },
+      ...(heightfield ? { heightfield } : {}),
+    },
+  };
+}
+
+/**
+ * Rows, columns, cell size, and one finite height per cell. Content beyond that shape is E3.
+ * @param {unknown} value
+ * @returns {{ ok: true, heightfield: { rows: number, cols: number, cell: number, heights: number[] } } | { ok: false, reason: string }}
+ */
+export function validateHeightfield(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { ok: false, reason: 'heightfield must be an object' };
+  }
+  const raw = /** @type {Record<string, unknown>} */ (value);
+  const extra = unknown(raw, HEIGHTFIELD_KEYS);
+  if (extra) {
+    return { ok: false, reason: 'unknown field: ' + extra };
+  }
+  for (const key of HEIGHTFIELD_KEYS) {
+    if (!Object.hasOwn(raw, key)) {
+      return { ok: false, reason: 'heightfield missing ' + key };
+    }
+  }
+  const rows = raw.rows;
+  const cols = raw.cols;
+  const cell = raw.cell;
+  const heights = raw.heights;
+  if (!Number.isInteger(rows) || /** @type {number} */ (rows) < 2) {
+    return { ok: false, reason: 'heightfield rows must be an integer of at least 2' };
+  }
+  if (!Number.isInteger(cols) || /** @type {number} */ (cols) < 2) {
+    return { ok: false, reason: 'heightfield cols must be an integer of at least 2' };
+  }
+  if (typeof cell !== 'number' || !Number.isFinite(cell) || !(cell > 0)) {
+    return { ok: false, reason: 'heightfield cell must be a finite number above 0' };
+  }
+  if (!Array.isArray(heights) || heights.length !== /** @type {number} */ (rows) * /** @type {number} */ (cols)) {
+    return { ok: false, reason: 'heightfield heights must have rows * cols values' };
+  }
+  /** @type {number[]} */
+  const copy = [];
+  for (let i = 0; i < heights.length; i = i + 1) {
+    const sample = heights[i];
+    if (typeof sample !== 'number' || !Number.isFinite(sample)) {
+      return { ok: false, reason: 'heightfield heights must be finite' };
+    }
+    copy.push(sample);
+  }
+  return {
+    ok: true,
+    heightfield: {
+      rows: /** @type {number} */ (rows),
+      cols: /** @type {number} */ (cols),
+      cell,
+      heights: copy,
     },
   };
 }

@@ -22,6 +22,7 @@ import { createMemory } from './memory.js';
  *   retired?: Set<string>;
  *   log: ReadonlyArray<LogEntry>;
  *   onFrame?: (frame: Frame) => void;
+ *   law?: 'product' | 'box' | 'reference';
  * }} init
  * @returns {{ ok: true; hashes: string[]; final: string; quanta: number } | { ok: false; at: number; reason: string }}
  */
@@ -34,7 +35,7 @@ export function replay(init) {
   }
   const tick = createTick({
     seed: init.seed,
-    world: createWorld(init.world),
+    world: createWorld(init.world, init.law || 'product'),
     rules: init.rules,
     retired: init.retired,
     memory: createMemory(),
