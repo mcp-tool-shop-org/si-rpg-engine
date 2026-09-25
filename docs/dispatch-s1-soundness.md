@@ -1,6 +1,6 @@
 # Dispatch S1 — soundness of the law
 
-Amended 2026-09-25 after the knowledge base reviewed it: pins 4, 5, and 7 corrected, pins 10 to 13 added.
+Amended 2026-09-25 after the knowledge base reviewed it: pins 4, 5, and 7 corrected, pins 10 to 14 added.
 
 2026-09-25. Coordinator: Claude. Builder: a seat named at dispatch time. Reviewer: a different family, on a scratch clone, before merge. Depends on T2 as rebuilt on the route the Q1 answer decides, and on T3, because all three touch `solver/src/rapier_law.rs`. Every item below comes from the Director's Rust knowledge-base session, cited by its lane; each is either compiler-measured with rustc 1.98.1 against rapier3d-f64 0.35.3 or stated as analysis.
 
@@ -23,13 +23,14 @@ The law is a few hundred lines of Rust over `static mut` buffers, exported to We
 11. **`canon_quat` refuses what it cannot normalize.** An infinite component returns a quaternion with a NaN inside, and any component from about 1.34e154 up, where the square overflows, returns `(0, 0, 0, 0)`, which is not unit. It refuses non-finite components and scales by the largest magnitude before normalizing; the knowledge base's property-test cases become tests.
 12. **The load pass's comment is true.** In `warm_broadphase`, bodies rejoin the active set because `bodies.iter_mut()` marks them modified, not because `wake_up` re-admits them; the comment says so, since any restore path that reuses the load pass depends on it.
 13. **The harness digests carry 64 bits.** The hasher feeds a `u32` to both lanes, so a digest built only from `u32` input, the snapshot digest in the trace and in `fixtures/golden-behaviour.json`, has identical halves and carries 32 bits. Those digests split each byte stream across the lanes the way doubles are split, so the halves differ; the product golden and every frame hash are unchanged, and the digests in the behaviour file move once with that reason. Found by the T3 builder.
-14. **The digest moves once, if it moves.** Panic locations carry line numbers, so edits to `rapier_law.rs` change the binary. The Linux digest is re-pinned once, from CI, with the reason. No golden moves unless pin 4 changes a fixture's load hash, which would mean a fixture carried a `-0.0`; the commit says so if it happens.
+14. **The toolchain is part of the law.** `enhanced-determinism` routes the math in simba and glam through the crates.io `libm`, but parry and glamx call some transcendentals as methods, and on wasm32 those resolve to the toolchain's own copy of libm: a build of `solver/` links the toolchain's `sin`, `cos`, `acos`, and `log2` beside crates.io `libm`, and `log2` is reachable from `solver_step` through parry's tree optimizer. The toolchain's `hypot` already differs from `libm` 0.2.16 on a 100,000-input sweep. So a toolchain bump can move results with `Cargo.lock` untouched. `solver/FLAGS.md` says this outright, beside the sentence that any toolchain bump reruns the T4 course before a golden may move. It also records two rules the law keeps: no explicit `mul_add` (it computes a fused result, deterministic in software on wasm but a different number), and no iteration over a `hashbrown` map where the order reaches the hash (its default hasher is randomly seeded). Measured by the knowledge base's float-determinism lane.
+15. **The digest moves once, if it moves.** Panic locations carry line numbers, so edits to `rapier_law.rs` change the binary. The Linux digest is re-pinned once, from CI, with the reason. No golden moves unless pin 4 changes a fixture's load hash, which would mean a fixture carried a `-0.0`; the commit says so if it happens.
 
 ## Acceptance
 
 - The source test in pin 1 exists and fails on a planted cast.
 - Each of pins 2, 4, 9, 10, and 11 has a test that goes red on the bad input, and a dropped refusal fails the build.
-- Pins 3, 6, 7, 8, 12, and 13 are visible in the diff, and the build passes with `--locked`.
+- Pins 3, 6, 7, 8, 12, 13, and 14 are visible in the diff, and the build passes with `--locked`.
 - Typecheck clean, tests at or above the count on `main`, three engines print the goldens from the Linux binary, digest pinned, Atlas check green.
 
 ## Not in S1
