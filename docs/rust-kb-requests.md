@@ -2,7 +2,7 @@
 
 The Director runs a second session that builds a Rust knowledge base for this engine and acts as researcher and archivist. This file is how the coordinator asks it questions. Each request names the slice that needs the answer, states the question so it can be answered with a citation to the crate's source or docs at the pinned version, and says where the answer should land. Answers go in `docs/rust-kb-answers.md` under the same number, with the source path or URL and the version checked. The pins: `rapier3d-f64` 0.35.3 with `enhanced-determinism`, Rust 1.98.1, target `wasm32-unknown-unknown`, relaxed SIMD off.
 
-## Open
+## Asked
 
 1. **T2 restore — warm-start impulses.** After `solver_restore` rebuilds bodies from a snapshot and runs one `CollisionPipeline::step`, can the warm-start impulses in each `ContactManifold`'s `points[i].data` be written through a public path (`NarrowPhase::contact_pairs_mut` or equivalent) so the next `PhysicsWorld::step` warm-starts exactly as the uninterrupted run did? The engine already zeroes them through `zero_manifolds` in `solver/src/rapier_law.rs`, so mutation exists; the question is whether every field the solver reads at warm-start (`warmstart_impulse`, `warmstart_tangent_impulse`, `warmstart_twist_impulse`, `warmstart_tangent_world`, and anything else) is reachable and whether the solver keeps any other per-contact state outside the manifold points.
 2. **T2 restore — sleep state.** What is the complete activation state of a `RigidBody` at 0.35.3 (`RigidBodyActivation`: `time_since_can_sleep`, `sleeping`, thresholds, anything else), and which public methods set each without side effects on the island manager? Does `IslandManager` hold state that survives a step and is not derivable from the bodies' activation (for example island membership or an active-set order that affects solver iteration order and therefore results)?
@@ -15,4 +15,4 @@ The Director runs a second session that builds a Rust knowledge base for this en
 
 ## Answered
 
-None yet.
+All eight, on 2026-09-25, in `docs/rust-kb-answers.md`, checked by the knowledge base against the pinned sources. Answers 1 to 3 revised T2; 5 and 6 amended T3; 7 and 8 amended T4.

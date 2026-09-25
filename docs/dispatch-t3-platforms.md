@@ -18,6 +18,16 @@ Every golden so far was printed on one CPU architecture. Box2D's determinism bro
 8. **Nothing in the law changes.** The digest moves only if pin 2 fixes the memory; the goldens do not move. The seat stays frozen.
 9. **The map** is regenerated on Linux with the published `@dogfood-lab/atlas@1.17.0` if the check drifts.
 
+## Amended after the knowledge base's answers 5 and 6 (2026-09-25)
+
+The builder's PR #44 found the old binary had no memory maximum and one `memory.grow` from the standard allocator, and fixed the memory with a dlmalloc arena. The knowledge base audited that and agrees the instruction is gone; answer 5 confirms the linker arguments alone leave the allocator's `memory.grow` in place. It disagrees on headroom, and the branch is rebased onto T2's revised law, so these pins are added:
+
+10. **512 pages.** Under the persistent law the dense 64-body scene peaks at 147 pages; the fixed memory is 512 pages, 32 MiB, and `solver/FLAGS.md` states that a world denser than the memory holds traps identically on every host rather than diverging.
+11. **A contact-dense test at the caps.** 64 bodies in contact and 64 static colliders, run for a stated number of quanta, must not trap, and the peak page count is printed once.
+12. **The linker refuses growth.** `--no-growable-memory` is passed from `solver/build.rs` as `cargo::rustc-link-arg-cdylib=`, which survives the build's environment rustflags (measured), beside the arena.
+13. **The lint's gaps close.** Unlisted `0xFD` sub-opcodes are refused, not treated as having no immediates; `table.grow` is refused; `select t*` and reference block types decode multi-byte value types. Three more lint tests: the bytes `41 fd 80 02` (an `i32.const` whose immediate happens to contain `0xfd`) are accepted, and the padded encodings `fd 80 82 80 80 00` and `40 80 00` are refused.
+14. **The relaxed sites are named.** The two relaxed-SIMD sites in the dependency graph, matrixmultiply 0.3.11 and wide 1.7.1, are gated on `target_feature = "relaxed-simd"`; `solver/FLAGS.md` names them as what the flag keeps out and the lint guarantees.
+
 ## Acceptance
 
 - The ARM job prints both goldens and `identical` for the trace against the x64 artifact, linked in the pull request.
