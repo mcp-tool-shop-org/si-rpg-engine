@@ -41,7 +41,7 @@ A restore is refused, with a test for each, when the image came from another bin
 | Step of 0.33 | | stopped short of the riser |
 | Slope of 44° | within 960 steps | reaches the top |
 | Slope of 46° | within 960 steps | gains less than 0.05 |
-| Drop of 0.19 | the snap threshold is 0.2105 | snapped to the lower floor |
+| Drop of 0.19 | between 0.200 and 0.2105 the outcome depends on the exact geometry, so the course tests either side | snapped to the lower floor |
 | Drop of 0.22 | | falls |
 | Starting inside the floor | | stands up on it |
 | Two characters walking at each other | at 1 unit per second | stay apart |
@@ -63,4 +63,5 @@ Twelve load refusals for world files, a hazard suite for each action effect, and
 ## Not yet proven
 
 - Whether the solver's warm-start data steers the next step is not proven. The tests show it is inside the fingerprint and inside the memory image; a proof that it changes the next step needs a test-only native build.
-- A world moved a million units from the origin does not run identically to the original. The test records exactly which bodies differ and fails if that set changes, in either direction. Two causes are known and being worked: the character loses most of a step's movement roughly once every 28 steps on flat ground, and the physics world is rebuilt when a character starts or finishes an action, which wakes sleeping bodies elsewhere in the world.
+- A world moved a million units from the origin does not run identically to the original. The test records exactly which bodies differ and fails if that set changes, in either direction. Both causes are known and have fixes dispatched. The physics world is rebuilt when a character starts or finishes an action, which wakes sleeping bodies anywhere in the world; the fix switches only the affected body in place. And the character loses most of a step's movement on about one step in 30 on flat ground, because Rapier's character controller discards the step's travel when the floor's collision normal rounds one unit in the last place short of vertical; the fix is an engine-owned copy of the controller's movement routine with that case handled.
+- On a few steps the character's first downward-diagonal check misses the floor and it sinks about 0.002 into its contact skin while keeping its movement. It is recorded and not yet investigated.
