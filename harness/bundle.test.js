@@ -231,6 +231,38 @@ test('a run that throws is a difference at the tick it threw on, exit 1, not a c
   assert.equal(runThrew(77, new Error('entry 1')), 'first difference at tick 77: the run threw: entry 1\n');
 });
 
+test('every failure writes one: when the corpus\'s untraced and traced product runs part, it writes a bundle of the run to the tick they part', () => {
+  const into = join(dir, 'corpus-split');
+  const was = process.env.SI_RPG_BUNDLES;
+  process.env.SI_RPG_BUNDLES = into;
+  /** @type {ReturnType<typeof runCorpus>} */
+  let results;
+  try {
+    // Planted: the traced run's walker is nudged after the frame at 150.
+    results = runCorpus({ quanta: 400, points: 2, only: 'product scene', plantSplit: 150, say: () => {} });
+  } finally {
+    if (was === undefined) {
+      delete process.env.SI_RPG_BUNDLES;
+    } else {
+      process.env.SI_RPG_BUNDLES = was;
+    }
+  }
+  assert.deepEqual(results.map((r) => r.name + ' ' + r.status), ['product scene 400 different']);
+  const [split] = results;
+  assert.match(split.block || '', /^first difference at tick 151\nhash\n {2}untraced [0-9a-f]{16}\n {2}traced {3}[0-9a-f]{16}\n$/);
+  assert.ok(split.bundle, 'the split wrote a bundle');
+  assert.deepEqual(readdirSync(into), ['product-scene-400.bundle.json']);
+  const bundle = readBundle(split.bundle || '');
+  assert.equal(bundle.run, 'product');
+  assert.equal(bundle.quanta, 400);
+  assert.equal(bundle.tick, 151);
+  assert.equal(bundle.hashes.length, 152);
+  assert.ok(bundle.image, 'imaged at the split');
+  assert.deepEqual(bundle.failure, { test: 'corpus', block: split.block });
+  // The bundle is the untraced run to the split, which replays as it ran.
+  assert.equal(replayBundle(bundle).status, 'ok');
+});
+
 test('every failure writes one: planted failures in a real test run write bundles, and replay reproduces the restore failure with the same first-difference block', () => {
   const planted = join(dir, 'planted.test.js');
   const url = (/** @type {string} */ file) => JSON.stringify(pathToFileURL(resolve('harness', file)).href);

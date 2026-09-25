@@ -33,12 +33,13 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFi
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { PAGE, bundleFrom, bundleText, denseImage, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
+import { pair } from '../packages/tick/difference.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
 import { validateScene } from '../packages/tick/scene.js';
 import { binaryDigest } from '../solver/dist/solver.mjs';
 import { bundleDir, makeBundle, traceDifference } from './bundle.mjs';
 import { asleep, contacts } from './events.mjs';
-import { replayTo } from './replay-to.mjs';
+import { replayTo, withRecords } from './replay-to.mjs';
 import { play } from './solver-scene.mjs';
 import { playVerbs } from './verbs-scene.mjs';
 
@@ -182,92 +183,276 @@ export const CAPTURES = ['behavior-1c.json', 'legacy-play-log.json', 'push-play-
 // The product scene, long.
 
 /**
+ * @typedef {import('./replay-to.mjs').Run} Run
+ * @typedef {{ tick: number, message: string }} Thrown
+ * @typedef {{ hashes: string[], lines: string[] | null, end: number, thrown: Thrown | null, ms: number }} Chain
+ */
+
+/** @param {unknown} error */
+function messageOf(error) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * The block for a step of the corpus that failed at `tick`, in the replay
+ * command's form for a run that threw (packages/tick/bundle.js runThrew).
+ * @param {number} tick
+ * @param {string} what
+ * @param {unknown} error
+ */
+function failedAt(tick, what, error) {
+  return 'first difference at tick ' + tick + ': ' + what + ': ' + messageOf(error) + '\n';
+}
+
+/**
+ * A bundle for a corpus failure, and its path (T5 pin 3): the run saved at
+ * `tick` with the recorded hashes and an image there, or, when a capture
+ * cannot reach that tick (the run throws first), the recorded hashes alone.
+ * It does not throw; null when not even that could be written.
+ * @param {string} name
+ * @param {ReplaySpec} spec
+ * @param {number} tick
+ * @param {string[]} hashes from the load to `tick`
+ * @param {string} block
+ * @param {import('../packages/tick/bundle.js').DenseImage} [image] the image that failed, when there is one
+ * @returns {string | null}
+ */
+function failureBundle(name, spec, tick, hashes, block, image) {
+  const failure = { test: 'corpus', block };
+  try {
+    return writeBundle(makeBundle(spec, { name, tick, hashes, image: image || true, failure }), bundleDir());
+  } catch (first) {
+    try {
+      const note = 'the run could not be captured to its save tick (' + messageOf(first) + '); the recorded hashes alone';
+      return writeBundle(bundleFrom(withRecords(spec), { name, hashes, failure, note }), bundleDir());
+    } catch {
+      return null;
+    }
+  }
+}
+
+/**
+ * The quantum each kind of event first and last happens in a run: new
+ * contacts, bodies falling asleep and waking, the lifted set, the carry, zone
+ * changes, and goals met. The restore points are chosen from these.
+ */
+function eventWatch() {
+  /** @type {Map<string, { first: number, last: number }>} */
+  const events = new Map();
+  /** @param {Run} run */
+  const state = (run) => {
+    const w = run.world;
+    return {
+      touching: contacts(w),
+      sleepers: asleep(w),
+      lifted: w.lifted.size,
+      carried: w.anyCarried(),
+      zones: w.bodies.map((b) => w.zoneIndex(b.id)).join(','),
+      met: (w.minds || []).map((m) => m.goals.map((g) => (g.metTick === undefined ? 0 : 1)).join('')).join(','),
+    };
+  };
+  /** @type {ReturnType<typeof state> | null} */
+  let was = null;
+  return {
+    events,
+    /** @param {Run} run */
+    see(run) {
+      const now = state(run);
+      if (was) {
+        const before = was;
+        /** @param {string} kind */
+        const saw = (kind) => {
+          const known = events.get(kind);
+          if (known) {
+            known.last = run.tick;
+          } else {
+            events.set(kind, { first: run.tick, last: run.tick });
+          }
+        };
+        if (now.touching > before.touching) {
+          saw('contact');
+        }
+        if (now.sleepers.some((id) => !before.sleepers.includes(id))) {
+          saw('sleep');
+        }
+        if (before.sleepers.some((id) => !now.sleepers.includes(id))) {
+          saw('wake');
+        }
+        if (now.lifted !== before.lifted) {
+          saw('lift');
+        }
+        if (now.carried !== before.carried) {
+          saw('carry');
+        }
+        if (now.zones !== before.zones) {
+          saw('zone');
+        }
+        if (now.met !== before.met) {
+          saw('goal');
+        }
+      }
+      was = now;
+    },
+  };
+}
+
+/**
+ * One run of the spec from its load to `quanta`: its hash at every quantum,
+ * its trace lines when asked, and where it stopped. A throw is caught with
+ * the tick it was producing, so a law that throws partway is a corpus
+ * failure with a bundle, not a crash of the job. `plant` nudges the walker
+ * after the frame at that tick; the tests use it to plant a run that parts
+ * from another.
+ * @param {ReplaySpec} spec
+ * @param {number} quanta
+ * @param {{ lines?: boolean, watch?: ReturnType<typeof eventWatch>, plant?: number }} how
+ * @returns {Chain}
+ */
+function chain(spec, quanta, how) {
+  const t0 = performance.now();
+  /** @type {string[]} */
+  const hashes = [];
+  /** @type {string[] | null} */
+  const lines = how.lines ? [] : null;
+  /** @type {Run} */
+  let run;
+  /** @param {Run} r */
+  const keep = (r) => {
+    hashes.push(r.hash);
+    if (lines) {
+      lines.push(r.line());
+    }
+    if (how.watch) {
+      how.watch.see(r);
+    }
+  };
+  try {
+    run = replayTo(spec, 0);
+    keep(run);
+  } catch (error) {
+    return { hashes, lines, end: -1, thrown: { tick: 0, message: messageOf(error) }, ms: performance.now() - t0 };
+  }
+  while (run.tick < quanta) {
+    const before = run.tick;
+    if (how.plant === before) {
+      const walker = run.world.body('walker');
+      if (walker) {
+        walker.vx = walker.vx + 1e-3;
+      }
+    }
+    try {
+      if (!run.advance()) {
+        break;
+      }
+      keep(run);
+    } catch (error) {
+      return { hashes, lines, end: before, thrown: { tick: before + 1, message: messageOf(error) }, ms: performance.now() - t0 };
+    }
+  }
+  return { hashes, lines, end: run.tick, thrown: null, ms: performance.now() - t0 };
+}
+
+/**
+ * Where two runs of one spec part, or where both stop short of `quanta`, as
+ * a tick and a block; null when both ran to `quanta` with the same hashes.
+ * @param {Chain} untraced
+ * @param {Chain} traced
+ * @param {number} quanta
+ * @returns {{ tick: number, block: string } | null}
+ */
+function parting(untraced, traced, quanta) {
+  const count = Math.max(untraced.hashes.length, traced.hashes.length);
+  for (let t = 0; t < count; t = t + 1) {
+    const a = untraced.hashes[t];
+    const b = traced.hashes[t];
+    if (a === b) {
+      continue;
+    }
+    if (a !== undefined && b !== undefined) {
+      return { tick: t, block: 'first difference at tick ' + t + '\nhash\n' + pair('untraced', 'traced', a, b) };
+    }
+    const [label, stopped] = a === undefined ? ['untraced', untraced] : ['traced', traced];
+    if (stopped.thrown && stopped.thrown.tick === t) {
+      return { tick: t, block: 'first difference at tick ' + t + ': the ' + label + ' run threw: ' + stopped.thrown.message + '\n' };
+    }
+    return { tick: t, block: 'first difference at tick ' + t + '\nlength\n' + pair('untraced', 'traced', a === undefined ? 'ends after ' + t + ' lines' : 'continues', b === undefined ? 'ends after ' + t + ' lines' : 'continues') };
+  }
+  if (untraced.thrown) {
+    return { tick: untraced.thrown.tick, block: failedAt(untraced.thrown.tick, 'the run threw', untraced.thrown.message) };
+  }
+  if (untraced.end !== quanta) {
+    return { tick: untraced.end, block: 'first difference at tick ' + (untraced.end + 1) + '\nlength\n' + pair('expected', 'both runs', 'continue to ' + quanta, 'end after ' + (untraced.end + 1) + ' lines') };
+  }
+  return null;
+}
+
+/**
+ * The hashes a failure bundle records to `tick`: the run's own, with NAN, the
+ * trace's mark for a step that threw, where the run has none.
+ * @param {string[]} hashes
+ * @param {number} tick
+ */
+function hashesTo(hashes, tick) {
+  const out = hashes.slice(0, tick + 1);
+  while (out.length < tick + 1) {
+    out.push('NAN');
+  }
+  return out;
+}
+
+/**
  * @param {number} quanta
  * @param {number} count
  * @param {(line: string) => void} say
+ * @param {number} [plantSplit] the tests plant a traced run that parts from the untraced one after this tick
  */
-function productLong(quanta, count, say) {
+function productLong(quanta, count, say, plantSplit) {
   const spec = /** @type {ReplaySpec} */ ({ scene: 'product', quanta });
   /** @type {Result[]} */
   const results = [];
-  const p0 = performance.now();
-  const plain = replayTo(spec, quanta);
-  const plainMs = performance.now() - p0;
-  say('product scene: ' + quanta + ' quanta replayed in ' + plainMs.toFixed(0) + ' ms, ' + ((plainMs / quanta) * 1000).toFixed(1) + ' us per quantum, hashing only');
-
-  // The traced run, and its events: the quantum each first and last happens.
-  const t0 = performance.now();
-  const run = replayTo(spec, 0);
-  const lines = [run.line()];
-  /** @type {Map<string, { first: number, last: number }>} */
-  const events = new Map();
-  /** @param {string} kind */
-  const saw = (kind) => {
-    const known = events.get(kind);
-    if (known) {
-      known.last = run.tick;
-    } else {
-      events.set(kind, { first: run.tick, last: run.tick });
+  /**
+   * A failure of the long run, with its bundle.
+   * @param {string} name
+   * @param {number} tick
+   * @param {string[]} hashes
+   * @param {string} block
+   * @param {string} detail
+   * @param {number} ms
+   * @param {import('../packages/tick/bundle.js').DenseImage} [image]
+   */
+  const fail = (name, tick, hashes, block, detail, ms, image) => {
+    const path = failureBundle(name, spec, tick, hashes, block, image);
+    /** @type {Result} */
+    const result = { name, kind: 'product', status: 'different', ms, detail: detail + (path ? '' : '; no bundle could be written'), block };
+    if (path) {
+      result.bundle = path;
     }
-  };
-  let touching = contacts(run.world);
-  let sleepers = asleep(run.world);
-  let lifted = run.world.lifted.size;
-  let carried = run.world.anyCarried();
-  let zones = run.world.bodies.map((b) => run.world.zoneIndex(b.id)).join(',');
-  let met = (run.world.minds || []).map((m) => m.goals.map((g) => (g.metTick === undefined ? 0 : 1)).join('')).join(',');
-  while (run.advance()) {
-    lines.push(run.line());
-    const w = run.world;
-    const nowTouching = contacts(w);
-    const nowAsleep = asleep(w);
-    if (nowTouching > touching) {
-      saw('contact');
-    }
-    if (nowAsleep.some((id) => !sleepers.includes(id))) {
-      saw('sleep');
-    }
-    if (sleepers.some((id) => !nowAsleep.includes(id))) {
-      saw('wake');
-    }
-    if (w.lifted.size !== lifted) {
-      saw('lift');
-    }
-    if (w.anyCarried() !== carried) {
-      saw('carry');
-    }
-    const nowZones = w.bodies.map((b) => w.zoneIndex(b.id)).join(',');
-    if (nowZones !== zones) {
-      saw('zone');
-    }
-    const nowMet = (w.minds || []).map((m) => m.goals.map((g) => (g.metTick === undefined ? 0 : 1)).join('')).join(',');
-    if (nowMet !== met) {
-      saw('goal');
-    }
-    touching = nowTouching;
-    sleepers = nowAsleep;
-    lifted = w.lifted.size;
-    carried = w.anyCarried();
-    zones = nowZones;
-    met = nowMet;
-  }
-  const tracedMs = performance.now() - t0;
-  const end = run.tick;
-  const last = lines[lines.length - 1].split(' ')[1];
-  say('product scene: traced ' + end + ' quanta in ' + tracedMs.toFixed(0) + ' ms, ' + ((tracedMs / end) * 1000).toFixed(1) + ' us per quantum with the trace and its events');
-  if (end !== quanta || last !== plain.hash) {
-    const block = 'first difference at tick ' + Math.min(end, quanta) + '\nhash\n  untraced ' + plain.hash + ' at ' + plain.tick + '\n  traced   ' + last + ' at ' + end + '\n';
-    results.push({ name: 'product scene ' + quanta, kind: 'product', status: 'different', ms: plainMs + tracedMs, detail: 'two runs disagree', block });
+    results.push(result);
+    say('FAIL  ' + name + ': ' + result.detail + '\n' + block + (path ? 'bundle: ' + path : ''));
     return results;
+  };
+
+  // Twice from the load: hashing only, and traced with its events.
+  const untraced = chain(spec, quanta, {});
+  say('product scene: ' + untraced.end + ' quanta replayed in ' + untraced.ms.toFixed(0) + ' ms, ' + ((untraced.ms / Math.max(1, untraced.end)) * 1000).toFixed(1) + ' us per quantum, hashing only');
+  const watch = eventWatch();
+  const traced = chain(spec, quanta, { lines: true, watch, plant: plantSplit });
+  const lines = /** @type {string[]} */ (traced.lines);
+  say('product scene: traced ' + traced.end + ' quanta in ' + traced.ms.toFixed(0) + ' ms, ' + ((traced.ms / Math.max(1, traced.end)) * 1000).toFixed(1) + ' us per quantum with the trace and its events');
+  const split = parting(untraced, traced, quanta);
+  if (split) {
+    return fail('product scene ' + quanta, split.tick, hashesTo(untraced.hashes, split.tick), split.block, 'the untraced and traced runs part, or stop short of ' + quanta, untraced.ms + traced.ms);
   }
-  results.push({ name: 'product scene ' + quanta + ', twice', kind: 'product', status: 'ok', ms: plainMs + tracedMs, detail: 'untraced and traced agree at ' + last });
+  const end = traced.end;
+  const last = traced.hashes[end];
+  results.push({ name: 'product scene ' + quanta + ', twice', kind: 'product', status: 'ok', ms: untraced.ms + traced.ms, detail: 'untraced and traced agree at ' + last });
 
   // Ten points, each just before an event, first the verb boundaries.
   const order = [['lift', 'first'], ['lift', 'last'], ['carry', 'first'], ['contact', 'first'], ['sleep', 'first'], ['wake', 'first'], ['zone', 'first'], ['goal', 'first'], ['contact', 'last'], ['sleep', 'last'], ['wake', 'last'], ['zone', 'last'], ['carry', 'last'], ['goal', 'last']];
   /** @type {Array<{ tick: number, why: string }>} */
   const points = [];
   for (const [kind, which] of order) {
-    const e = events.get(kind);
+    const e = watch.events.get(kind);
     if (!e || points.length >= count) {
       continue;
     }
@@ -284,71 +469,120 @@ function productLong(quanta, count, say) {
   }
   points.sort((a, b) => a.tick - b.tick);
   say('product scene: restore points ' + points.map((p) => p.tick + ' (' + p.why + ')').join(', '));
+  if (points.length === 0) {
+    return results;
+  }
 
-  // Images at the points from a third run, stored sparse.
-  const imaging = replayTo(spec, 0);
+  // Images at the points from a third run, stored sparse; the third run is
+  // held to the traced hashes at every quantum up to the last point.
+  const i0 = performance.now();
+  const lastPoint = points[points.length - 1].tick;
   /** @type {Map<number, import('../packages/tick/bundle.js').SparseImage>} */
   const images = new Map();
+  /** @type {Run} */
+  let imaging;
+  try {
+    imaging = replayTo(spec, 0);
+  } catch (error) {
+    return fail('product scene imaging run', 0, traced.hashes.slice(0, 1), failedAt(0, 'the run threw', error), 'the third run threw at its load', performance.now() - i0);
+  }
   for (;;) {
-    if (points.some((p) => p.tick === imaging.tick)) {
-      if (imaging.hash !== lines[imaging.tick].split(' ')[1]) {
-        results.push({ name: 'product scene imaging run', kind: 'product', status: 'different', ms: 0, detail: 'the third run differs', block: 'first difference at tick ' + imaging.tick + '\nhash\n  traced  ' + lines[imaging.tick].split(' ')[1] + '\n  imaging ' + imaging.hash + '\n' });
-        return results;
-      }
-      const saved = imaging.world.save();
-      if (!saved.image) {
-        throw new Error('the product scene has no image');
-      }
-      images.set(imaging.tick, sparseImage(saved.image.bytes, saved.worldId));
+    const t = imaging.tick;
+    const want = traced.hashes[t];
+    if (imaging.hash !== want) {
+      return fail('product scene imaging run', t, traced.hashes.slice(0, t + 1), 'first difference at tick ' + t + '\nhash\n' + pair('traced', 'imaging', want, imaging.hash), 'the third run differs from the traced run', performance.now() - i0);
     }
-    if (imaging.tick >= end || !imaging.advance()) {
+    if (points.some((p) => p.tick === t)) {
+      try {
+        const saved = imaging.world.save();
+        if (!saved.image) {
+          throw new Error('the product scene has no image');
+        }
+        images.set(t, sparseImage(saved.image.bytes, saved.worldId));
+      } catch (error) {
+        return fail('product scene imaging run', t, traced.hashes.slice(0, t + 1), failedAt(t, 'the image was refused', error), 'the third run could not be imaged', performance.now() - i0);
+      }
+    }
+    if (t >= lastPoint) {
       break;
+    }
+    try {
+      if (!imaging.advance()) {
+        return fail('product scene imaging run', t, traced.hashes.slice(0, t + 1), 'first difference at tick ' + (t + 1) + '\nlength\n' + pair('traced', 'imaging', 'continues', 'ends after ' + (t + 1) + ' lines'), 'the third run ends early', performance.now() - i0);
+      }
+    } catch (error) {
+      return fail('product scene imaging run', t + 1, hashesTo(traced.hashes, t + 1), failedAt(t + 1, 'the run threw', error), 'the third run threw', performance.now() - i0);
     }
   }
 
   const binary = binaryDigest();
   for (const point of points) {
-    const sparse = images.get(point.tick);
-    if (!sparse) {
-      throw new Error('no image at ' + point.tick);
-    }
     const name = 'product scene ' + quanta + ' image at ' + point.tick;
-    const r0 = performance.now();
-    const again = replayTo(spec, point.tick);
-    const replayMs = performance.now() - r0;
-    const d0 = performance.now();
-    const bytes = denseImage(sparse);
-    const decodeMs = performance.now() - d0;
-    const here = again.world.save();
-    const s0 = performance.now();
-    again.world.restore({ ...here, worldId: sparse.worldId, image: { binary, digest: sparse.digest, bytes } });
-    const restoreMs = performance.now() - s0;
-    const u0 = performance.now();
-    let differs = again.line() !== lines[point.tick];
+    const sparse = /** @type {import('../packages/tick/bundle.js').SparseImage} */ (images.get(point.tick));
+    const pointHashes = traced.hashes.slice(0, point.tick + 1);
+    const ms = { replay: 0, decode: 0, restore: 0, rerun: 0 };
+    /** @type {Uint8Array | null} */
+    let bytes = null;
     /** @type {string[]} */
-    const rest = [again.line()];
-    while (again.advance()) {
-      const line = again.line();
-      rest.push(line);
-      if (!differs && line !== lines[again.tick]) {
-        differs = true;
+    const rest = [];
+    let differs = false;
+    // What a throw is, and at which tick, as the restore goes on.
+    let what = 'the run threw';
+    let at = 0;
+    /** @type {Run | null} */
+    let again = null;
+    try {
+      const r0 = performance.now();
+      again = replayTo(spec, 0);
+      while (again.tick < point.tick) {
+        at = again.tick + 1;
+        if (!again.advance()) {
+          throw new Error('the run ends at ' + again.tick + ', before ' + point.tick);
+        }
       }
+      ms.replay = performance.now() - r0;
+      what = 'the image was refused';
+      at = point.tick;
+      const d0 = performance.now();
+      bytes = denseImage(sparse);
+      ms.decode = performance.now() - d0;
+      const here = again.world.save();
+      const s0 = performance.now();
+      again.world.restore({ ...here, worldId: sparse.worldId, image: { binary, digest: sparse.digest, bytes } });
+      ms.restore = performance.now() - s0;
+      what = 'the run threw';
+      const u0 = performance.now();
+      differs = again.line() !== lines[point.tick];
+      rest.push(again.line());
+      for (;;) {
+        at = again.tick + 1;
+        if (!again.advance()) {
+          break;
+        }
+        const line = again.line();
+        rest.push(line);
+        if (!differs && line !== lines[again.tick]) {
+          differs = true;
+        }
+      }
+      ms.rerun = performance.now() - u0;
+    } catch (error) {
+      const image = bytes ? { bytes, worldId: sparse.worldId } : undefined;
+      fail(name, point.tick, pointHashes, failedAt(at, what, error), point.why + '; the restore did not finish', ms.replay + ms.decode + ms.restore + ms.rerun, image);
+      continue;
     }
-    const rerunMs = performance.now() - u0;
+    const rerunTo = again ? again.tick : 0;
     const pages = sparsePages(sparse);
     const size = Buffer.byteLength(sparse.data) + Buffer.byteLength(sparse.pages);
-    const detail = point.why + '; image ' + pages + ' pages, ' + (pages * PAGE) + ' bytes, ' + size + ' as base64; replay ' + replayMs.toFixed(0) + ' ms, decode ' + decodeMs.toFixed(1) + ' ms, restore ' + restoreMs.toFixed(1) + ' ms, rerun to ' + again.tick + ' ' + rerunMs.toFixed(0) + ' ms';
-    if (!differs && again.tick === end) {
-      results.push({ name, kind: 'product', status: 'ok', ms: replayMs + decodeMs + restoreMs + rerunMs, detail });
+    const detail = point.why + '; image ' + pages + ' pages, ' + (pages * PAGE) + ' bytes, ' + size + ' as base64; replay ' + ms.replay.toFixed(0) + ' ms, decode ' + ms.decode.toFixed(1) + ' ms, restore ' + ms.restore.toFixed(1) + ' ms, rerun to ' + rerunTo + ' ' + ms.rerun.toFixed(0) + ' ms';
+    const total = ms.replay + ms.decode + ms.restore + ms.rerun;
+    if (!differs && rerunTo === end) {
+      results.push({ name, kind: 'product', status: 'ok', ms: total, detail });
       say('ok    ' + name + ': ' + detail);
       continue;
     }
     const restored = lines.slice(0, point.tick).concat(rest);
-    const block = traceDifference(lines, restored);
-    const bundle = makeBundle(spec, { name, tick: point.tick, image: { bytes, worldId: sparse.worldId }, hashes: lines.slice(0, point.tick + 1).map((line) => line.split(' ')[1]), failure: { test: 'corpus', block } });
-    const path = writeBundle(bundle, bundleDir());
-    results.push({ name, kind: 'product', status: 'different', ms: replayMs + decodeMs + restoreMs + rerunMs, detail, block, bundle: path });
-    say('FAIL  ' + name + ': ' + detail + '\n' + block + 'bundle: ' + path);
+    fail(name, point.tick, pointHashes, traceDifference(lines, restored), detail, total, bytes ? { bytes, worldId: sparse.worldId } : undefined);
   }
   return results;
 }
@@ -357,7 +591,7 @@ function productLong(quanta, count, say) {
 // The job.
 
 /**
- * @param {{ quanta: number, points: number, only: string | null, say: (line: string) => void }} options
+ * @param {{ quanta: number, points: number, only: string | null, say: (line: string) => void, plantSplit?: number }} options plantSplit: the tests plant a traced product run that parts from the untraced one after this tick
  * @returns {Result[]}
  */
 export function runCorpus(options) {
@@ -498,7 +732,7 @@ export function runCorpus(options) {
   // 3. The product scene, long.
   if (options.quanta > 0 && wanted('product scene')) {
     const t0 = performance.now();
-    for (const result of productLong(options.quanta, options.points, say)) {
+    for (const result of productLong(options.quanta, options.points, say, options.plantSplit)) {
       results.push(result);
     }
     say('product scene: ' + (performance.now() - t0).toFixed(0) + ' ms in all');
