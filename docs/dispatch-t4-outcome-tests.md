@@ -26,6 +26,18 @@ A hash says two runs agree. It does not say a box stayed above a floor. Rapier k
 10. **The binary changes at most once**, for pin 2 if the run requires it. Digest pinned from the Linux build. The arithmetic golden does not move.
 11. **The map** is regenerated on Linux with the published `@dogfood-lab/atlas@1.17.0` if the check drifts.
 
+## Amended after the knowledge base's answers 7 and 8 (2026-09-25)
+
+Answer 7: rapier3d-f64 0.35.3 already sweeps every fast dynamic body against fixed colliders with `ccd_enabled(false)`, and the thin-slab box stayed on the near side in 14 of 14 engine runs; it tunnels only at `max_ccd_substeps = 0`. So pin 2's test asserts the near side with no law change, `build_world` sets `max_ccd_substeps = 1` explicitly so the behaviour does not rest on a default, and the red evidence is a native test-only build with `max_ccd_substeps = 0`, where 5 of 7 tunnel, never the product binary. Above 1, a restore would need crate-private state, so the value stays 1.
+
+Answer 8: autostep's limit is `max_height` plus the controller's offset, and feet rest one offset above every surface, so pin 5's numbers change. Every threshold moves with speed, so each case states its speed, and the product walker's is 0.4 units per second. Feet are `y - hy - SKIN`.
+
+- Step: 0.29 is climbed and 0.33 stops the walker; the measured limit is 0.3101. Never test between.
+- Drop: 0.19 is snapped and 0.22 is a fall at 0.4 units per second; the threshold is 0.2105 at that speed and 0.2058 at 2 units per second.
+- Slope: 44 and 46 degrees, with the speed and a bounded quantum count stated. Never exactly 45, where the walker creeps.
+- Starting inside the floor: the walker rises by the controller's 1e-4 nudge and needs about 1,300 quanta; the test runs long enough and says so.
+- Native tests of loading run with `--release`, because Rapier's island-manager `debug_assert` fires when bodies touch at load.
+
 ## Acceptance
 
 - Every test in pins 2 through 5 exists, is named for its outcome, states its number and tolerance, and passes.

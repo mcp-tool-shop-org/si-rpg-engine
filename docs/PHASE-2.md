@@ -24,6 +24,8 @@ Each slice is one pull request from a written dispatch, built by one seat, revie
 | **T6. The reachability sweep** | T2, T4 | Using restore, a sweep explores from every settled cell of a world and compares the zones a body can reach with the zones the file authored; a load-time hazard for small worlds, a scheduled job for large ones. | A world with an authored zone no body can reach is refused with the zone named. | 19, 20 |
 | **T7. The seat as a test instrument** | T4, T5 | The frozen proposer seat thaws only as a source of test intents aimed at changed code, run through the checker, with the verdict from the hash and the outcome tests, never from the model. | A model-proposed intent that finds an outcome-test failure is recorded as a bundle like any other. | 21, 22, 25 |
 
+**Revised 2026-09-25 after `docs/rust-kb-answers.md`.** T2 restores by replay and by a copy of the module's linear memory, not by writing into Rapier, because rapier3d-f64 0.35.3 has no sound write path and even a sound write does not reproduce the next step. The first T2 build, PR #43, is closed unmerged. Soundness work the answers found is S1 (`docs/dispatch-s1-soundness.md`); the heightfield surface is S2.
+
 Collision from meshes is the slice after this phase; it needs T2's restore and T4's outcome pattern to be provable. The survey of the studio's glb files and of the facet and armature repositories is in the coordinator's memory and becomes that dispatch.
 
 ## The trace format
