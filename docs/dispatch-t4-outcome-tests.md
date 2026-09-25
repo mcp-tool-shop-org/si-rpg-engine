@@ -21,9 +21,10 @@ A hash says two runs agree. It does not say a box stayed above a floor. Rapier k
    Both members of each pair are asserted, so the limit is shown to be real, not merely permissive.
 6. **The course gates the golden.** `write-golden` runs `harness/course.test.js` and the outcome tests first and refuses to write when any fails, printing the failing test's name. `solver/FLAGS.md` gains one sentence: any bump of the toolchain or of `rapier3d-f64` reruns the course before a golden may move.
 7. **CI order.** The course and outcome tests run in `npm test`, which CI runs before the golden compare, so a broken outcome is reported by name before a hash mismatch.
-8. **The debug view is untouched.** The seat stays frozen. No fixture changes shape beyond the frame and behaviour moves pin 2 forces, each stated in the commit.
-9. **The binary changes once**, for pin 2. Digest pinned from the Linux build. The arithmetic golden does not move.
-10. **The map** is regenerated on Linux with the published `@dogfood-lab/atlas@1.17.0` if the check drifts.
+8. **The climber lands.** T1's behaviour numbers showed the product scene's `climber` at x 2, z 5 with no floor beneath it, falling for the whole run and never sleeping (final y about -50874). That is a scene defect the hash hid. Since this slice moves the golden for pin 2, it also gives the climber a floor, so it lands and sleeps, and records the new sleep quantum in the behaviour file; the commit names both reasons. Added 2026-09-25 after T1.
+9. **The debug view is untouched.** The seat stays frozen. No fixture changes shape beyond the frame and behaviour moves pin 2 forces, each stated in the commit.
+10. **The binary changes once**, for pin 2. Digest pinned from the Linux build. The arithmetic golden does not move.
+11. **The map** is regenerated on Linux with the published `@dogfood-lab/atlas@1.17.0` if the check drifts.
 
 ## Acceptance
 
