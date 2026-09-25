@@ -29,7 +29,7 @@ test('a moved sleep quantum fails the check with its body named', () => {
   moved.sleep.tip = moved.sleep.tip + 1;
   const run = check(moved);
   assert.equal(run.status, 1);
-  assert.match(run.stderr, /^body tip sleep quantum: expected 91, got 90$/m);
+  assert.match(run.stderr, new RegExp('^body tip sleep quantum: expected ' + moved.sleep.tip + ', got ' + saved.sleep.tip + '$', 'm'));
 });
 
 test('a final position moved in its last bit fails with its body named', () => {

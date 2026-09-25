@@ -1,9 +1,22 @@
-// The product step. One Rapier world lives in this module across quanta so the
-// warm-start cache survives. The box step in lib.rs is a separate export.
+// The product step. The box step in lib.rs is a separate export.
 //
 // Pins: rapier3d-f64, enhanced-determinism, f64, no SIMD feature, dt = 1/64,
 // sleep threshold = 32 quanta, rotations locked, contact clustering off so the
 // hashed warm-start cache is the manifold points.
+//
+// Every quantum steps a Rapier world built fresh from the snapshot's state:
+// the colliders, then each body's pose, velocity, and sleep state, one
+// collision pass, and the warm-start impulses of the previous quantum carried
+// onto the new contact points by their feature ids. A running Rapier world
+// keeps state no public call can read or write: contact points frozen by
+// recycling and by parry's try_update, heightfield workspaces, persistent
+// islands and pending splits, solver colours, the BVH's shape, and each
+// body's sleep_prev_pose. solver_restore (T2) found it: a world rebuilt from
+// the snapshot did not rerun as the running one did. Rebuilding every
+// quantum makes the snapshot the whole state, so a restore is the same act
+// as a step's own preparation. Sleep is the law's own for the same reason:
+// Rapier's timer reads sleep_prev_pose, so its thresholds are off and the
+// law counts quiet quanta and puts whole islands to sleep itself.
 
 use rapier3d_f64::control::{
     CharacterAutostep, CharacterCollision, CharacterLength, KinematicCharacterController,
@@ -48,6 +61,20 @@ struct Signature {
     shape: u32,
 }
 
+/// One solver body as the snapshot records it and as a quantum's world is
+/// built from it. Every float is canonical: signed zero is +0, the
+/// quaternion is unit with w non-negative.
+#[derive(Clone, Copy)]
+struct BodyState {
+    p: Vector,
+    v: Vector,
+    q: (f64, f64, f64, f64),
+    w: Vector,
+    /// Quanta the body has been quiet. The snapshot's sleep timer.
+    since: f64,
+    sleeping: bool,
+}
+
 struct Loaded {
     world: PhysicsWorld,
     n_bodies: usize,
@@ -56,6 +83,8 @@ struct Loaded {
     halves: Vec<Vector>,
     signature: Signature,
     controller: KinematicCharacterController,
+    /// The state the world was built from, by record index. None for a carried body.
+    states: Vec<Option<BodyState>>,
 }
 
 struct Solver {
@@ -64,6 +93,27 @@ struct Solver {
 }
 
 static mut SOLVER: Solver = Solver { loaded: None, snapshot: Vec::new() };
+
+/// Floats per solver body in the snapshot: pose and velocity, orientation and
+/// angular velocity, the sleep timer and the sleep flag.
+const SNAP_BODY: usize = 15;
+/// Floats per contact point: the warm-start impulses.
+const SNAP_POINT: usize = 7;
+/// Bytes solver_restore can take. 32768 floats: 64 bodies and some two
+/// thousand contact points.
+const RESTORE_CAP: usize = 1 << 18;
+static mut RESTORE: [u8; RESTORE_CAP] = [0; RESTORE_CAP];
+
+// Why the last solver_restore returned 0. 0 after a restore that took.
+const REFUSE_INPUT: u32 = 1;
+const REFUSE_LENGTH: u32 = 2;
+const REFUSE_NAN: u32 = 3;
+const REFUSE_QUAT: u32 = 4;
+const REFUSE_STATE: u32 = 5;
+const REFUSE_RECORD: u32 = 6;
+const REFUSE_PAIRS: u32 = 7;
+const REFUSE_BYTES: u32 = 8;
+static mut REFUSAL: u32 = 0;
 
 fn canon(x: f64) -> f64 {
     if x == 0.0 { 0.0 } else { x }
@@ -154,11 +204,6 @@ fn canon_quat(x: f64, y: f64, z: f64, w: f64) -> Option<(f64, f64, f64, f64)> {
         w = canon(-w);
     }
     Some((x, y, z, w))
-}
-
-fn quat_from_body(b: &[f64]) -> Option<Rotation> {
-    let (x, y, z, w) = canon_quat(b[QX], b[QY], b[QZ], b[QW])?;
-    Some(Rotation::from_xyzw(x, y, z, w))
 }
 
 fn mix_u64(h: u64, x: u64) -> u64 {
@@ -302,7 +347,7 @@ fn controller() -> KinematicCharacterController {
 // events left pairs unregistered with the narrow phase: a box dropped above
 // the centre of a rotated slab passed through it. The pipeline takes the
 // modified colliders once, so the first step does not update them twice.
-fn warm_broadphase(world: &mut PhysicsWorld) {
+fn warm_broadphase(world: &mut PhysicsWorld, sleepers: &[RigidBodyHandle]) {
     let prediction = world.integration_parameters.prediction_distance();
     let mut pipeline = CollisionPipeline::new();
     pipeline.step(
@@ -316,15 +361,48 @@ fn warm_broadphase(world: &mut PhysicsWorld) {
         &(),
     );
     // The pass clears the bodies' change flags, which the physics pipeline
-    // reads to admit a new body to its active set. Waking them restores that.
-    for (_, body) in world.bodies.iter_mut() {
-        if !body.is_fixed() {
+    // reads to admit a new body to its active set. Touching each body through
+    // iter_mut sets them again. Every touching pair is new to this world, so
+    // the pass woke every body it built asleep; those go back to sleep, and
+    // the step's first island pass wakes an island that mixes the two.
+    for (handle, body) in world.bodies.iter_mut() {
+        if body.is_fixed() {
+            continue;
+        }
+        if sleepers.contains(&handle) {
+            body.sleep();
+        } else {
             body.wake_up(true);
         }
     }
 }
 
-fn build_world(sig: &Signature) -> Option<Loaded> {
+/// The state a record describes: the load, and every change of signature.
+fn record_state(i: usize, kinematic: bool) -> Option<BodyState> {
+    let b = body_at(i);
+    let p = Vector::new(canon(b[0]), canon(b[1]), canon(b[2]));
+    let v = Vector::new(canon(b[3]), canon(b[4]), canon(b[5]));
+    if kinematic {
+        return Some(BodyState { p, v, q: (0.0, 0.0, 0.0, 1.0), w: Vector::ZERO, since: 0.0, sleeping: false });
+    }
+    let q = canon_quat(b[QX], b[QY], b[QZ], b[QW])?;
+    let w = Vector::new(canon(b[WX]), canon(b[WY]), canon(b[WZ]));
+    Some(BodyState { p, v, q, w, since: 0.0, sleeping: false })
+}
+
+fn record_states(sig: &Signature) -> Option<Vec<Option<BodyState>>> {
+    let mut states = Vec::with_capacity(sig.n_bodies as usize);
+    for i in 0..sig.n_bodies as usize {
+        if (sig.carried & (1u64 << i)) != 0 {
+            states.push(None);
+        } else {
+            states.push(Some(record_state(i, (sig.driven & (1u64 << i)) != 0)?));
+        }
+    }
+    Some(states)
+}
+
+fn build_world(sig: &Signature, states: Vec<Option<BodyState>>) -> Option<Loaded> {
     let n_bodies = sig.n_bodies as usize;
     let n_colliders = sig.n_colliders as usize;
     let mut world = PhysicsWorld::new();
@@ -380,29 +458,33 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         collider_handles.push(ch);
     }
 
+    if states.len() != n_bodies {
+        return None;
+    }
     let mut handles = Vec::with_capacity(n_bodies);
     let mut kinematic = Vec::with_capacity(n_bodies);
     let mut halves = Vec::with_capacity(n_bodies);
+    let mut sleepers: Vec<RigidBodyHandle> = Vec::new();
     for i in 0..n_bodies {
         let b = body_at(i);
-        let pos = Vector::new(b[0], b[1], b[2]);
-        let vel = Vector::new(b[3], b[4], b[5]);
         let half = Vector::new(b[HX], b[HY], b[HZ]);
         let driven = (sig.driven & (1u64 << i)) != 0;
         let carried_body = (sig.carried & (1u64 << i)) != 0;
-        let Some(rotation) = quat_from_body(&b) else {
-            return None;
-        };
-        let ang = Vector::new(b[WX], b[WY], b[WZ]);
         if carried_body {
+            if states[i].is_some() {
+                return None;
+            }
             handles.push(None);
             kinematic.push(false);
             halves.push(half);
             continue;
         }
+        let Some(state) = states[i] else {
+            return None;
+        };
         let body = if driven {
             let mut body = RigidBodyBuilder::kinematic_position_based()
-                .translation(pos)
+                .translation(state.p)
                 .lock_rotations()
                 .additional_mass(1.0)
                 .can_sleep(false)
@@ -411,15 +493,21 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
             body.set_rotation(Rotation::from_xyzw(0.0, 0.0, 0.0, 1.0), false);
             body
         } else {
+            let (qx, qy, qz, qw) = state.q;
             let mut body = RigidBodyBuilder::dynamic()
-                .translation(pos)
-                .linvel(vel)
-                .angvel(ang)
+                .translation(state.p)
+                .linvel(state.v)
+                .angvel(state.w)
                 .can_sleep(true)
+                .sleeping(state.sleeping)
                 .ccd_enabled(false)
                 .build();
-            body.set_rotation(rotation, false);
-            body.activation_mut().time_until_sleep = SLEEP_QUANTA * DT;
+            body.set_rotation(Rotation::from_xyzw(qx, qy, qz, qw), false);
+            // Rapier's own timer never runs out: the law keeps the timer.
+            let activation = body.activation_mut();
+            activation.time_until_sleep = SLEEP_QUANTA * DT;
+            activation.normalized_linear_threshold = -1.0;
+            activation.angular_threshold = -1.0;
             body
         };
         let co = if driven && sig.shape == 1 {
@@ -434,12 +522,15 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         .build();
         let (handle, ch) = world.insert(body, co);
         collider_handles.push(ch);
+        if !driven && state.sleeping {
+            sleepers.push(handle);
+        }
         handles.push(Some(handle));
         kinematic.push(driven);
         halves.push(half);
     }
 
-    warm_broadphase(&mut world);
+    warm_broadphase(&mut world, &sleepers);
 
     Some(Loaded {
         world,
@@ -460,6 +551,7 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
             shape: sig.shape,
         },
         controller: controller(),
+        states,
     })
 }
 
@@ -473,7 +565,9 @@ struct Plan {
     collisions: Vec<CharacterCollision>,
 }
 
-fn integrate(loaded: &mut Loaded) -> bool {
+/// One quantum on a prepared world. Writes the records and returns the state
+/// the next quantum's world is built from. None on NaN.
+fn integrate(loaded: &mut Loaded) -> Option<Vec<Option<BodyState>>> {
     let n = loaded.n_bodies;
     let mut plans: Vec<Plan> = Vec::new();
     let controller = loaded.controller;
@@ -490,19 +584,19 @@ fn integrate(loaded: &mut Loaded) -> bool {
         if b[DRIVEN] == 2.0 {
             let vy = b[4];
             if bad(vy) || bad(b[3]) || bad(b[5]) {
-                return false;
+                return None;
             }
             let pos = *loaded.world.bodies[handle].position();
             let translation = pos.translation + Vector::new(b[3], vy, b[5]) * DT;
             if bad(translation.x) || bad(translation.y) || bad(translation.z) {
-                return false;
+                return None;
             }
             plans.push(Plan { index: i, handle, translation, vy, vx: b[3], vz: b[5], collisions: Vec::new() });
             continue;
         }
         let mut vy = b[4] + G * DT;
         if bad(vy) || bad(b[3]) || bad(b[5]) {
-            return false;
+            return None;
         }
         let desired = Vector::new(b[3], vy, b[5]) * DT;
         let half = loaded.halves[i];
@@ -525,7 +619,7 @@ fn integrate(loaded: &mut Loaded) -> bool {
         }
         let translation = pos.translation + movement.translation;
         if bad(translation.x) || bad(translation.y) || bad(translation.z) || bad(vy) {
-            return false;
+            return None;
         }
         plans.push(Plan { index: i, handle, translation, vy, vx: b[3], vz: b[5], collisions });
     }
@@ -551,94 +645,169 @@ fn integrate(loaded: &mut Loaded) -> bool {
 
     loaded.world.step();
 
+    let Some(next) = settle(loaded, &plans) else {
+        return None;
+    };
+    for i in 0..n {
+        let Some(s) = next[i] else {
+            continue;
+        };
+        let (qx, qy, qz, qw) = s.q;
+        if !write_body(i, s.p.x, s.p.y, s.p.z, s.v.x, s.v.y, s.v.z, qx, qy, qz, qw, s.w.x, s.w.y, s.w.z) {
+            return None;
+        }
+    }
+    Some(next)
+}
+
+fn canon_vec(v: Vector) -> Option<Vector> {
+    if bad(v.x) || bad(v.y) || bad(v.z) {
+        return None;
+    }
+    Some(Vector::new(canon(v.x), canon(v.y), canon(v.z)))
+}
+
+/// Translation plus rotation chord, as Rapier measures a body's drift.
+fn pose_drift(start: &BodyState, p: Vector, q: (f64, f64, f64, f64), extent: f64) -> f64 {
+    let trans = (p - start.p).length();
+    let a = Rotation::from_xyzw(q.0, q.1, q.2, q.3);
+    let b = Rotation::from_xyzw(start.q.0, start.q.1, start.q.2, start.q.3);
+    let delta = a * b.inverse();
+    trans + 2.0 * Vector::new(delta.x, delta.y, delta.z).length() * extent
+}
+
+fn find(parent: &mut [usize], mut i: usize) -> usize {
+    while parent[i] != i {
+        parent[i] = parent[parent[i]];
+        i = parent[i];
+    }
+    i
+}
+
+/// The state each body ends the quantum in, and the law's sleep. A dynamic
+/// body is quiet in a quantum when its angular speed is under a quarter turn
+/// per second and half its drift over the quantum is under 0.05 × dt, the
+/// test Rapier makes. Bodies joined by a touching contact form an island;
+/// an island with no kinematic member sleeps when every member has been
+/// quiet 32 quanta, and its bodies stop.
+fn settle(loaded: &Loaded, plans: &[Plan]) -> Option<Vec<Option<BodyState>>> {
+    let n = loaded.n_bodies;
+    let mut next: Vec<Option<BodyState>> = vec![None; n];
     for i in 0..n {
         let Some(handle) = loaded.handles[i] else {
             continue;
         };
         let body = &loaded.world.bodies[handle];
-        let p = body.translation();
+        let p = canon_vec(body.translation())?;
         if loaded.kinematic[i] {
-            let plan = plans.iter().find(|plan| plan.index == i).unwrap();
-            if !write_body(i, p.x, p.y, p.z, plan.vx, plan.vy, plan.vz, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0) {
-                return false;
-            }
-        } else {
-            let v = body.linvel();
-            let w = body.angvel();
-            let rot = body.rotation();
-            let Some((qx, qy, qz, qw)) = canon_quat(rot.x, rot.y, rot.z, rot.w) else {
-                return false;
-            };
-            if !write_body(i, p.x, p.y, p.z, v.x, v.y, v.z, qx, qy, qz, qw, w.x, w.y, w.z) {
-                return false;
-            }
+            let plan = plans.iter().find(|plan| plan.index == i)?;
+            let v = canon_vec(Vector::new(plan.vx, plan.vy, plan.vz))?;
+            next[i] = Some(BodyState { p, v, q: (0.0, 0.0, 0.0, 1.0), w: Vector::ZERO, since: 0.0, sleeping: false });
+            continue;
+        }
+        let start = loaded.states[i]?;
+        if body.is_sleeping() {
+            // Not woken this quantum: it did not move.
+            next[i] = Some(BodyState { v: Vector::ZERO, w: Vector::ZERO, sleeping: true, ..start });
+            continue;
+        }
+        let rot = body.rotation();
+        let q = canon_quat(rot.x, rot.y, rot.z, rot.w)?;
+        let v = canon_vec(body.linvel())?;
+        let w = canon_vec(body.angvel())?;
+        let extent = loaded.halves[i].length();
+        let quiet = w.dot(w) < core::f64::consts::FRAC_PI_2 * core::f64::consts::FRAC_PI_2
+            && pose_drift(&start, p, q, extent) * 0.5 < 0.05 * DT;
+        let since = if start.sleeping || !quiet { 0.0 } else { start.since + 1.0 };
+        next[i] = Some(BodyState { p, v, q, w, since, sleeping: false });
+    }
+
+    let mut parent: Vec<usize> = (0..n).collect();
+    let index_of = |collider: ColliderHandle| -> Option<usize> {
+        let owner = loaded.world.colliders.get(collider)?.parent()?;
+        loaded.handles.iter().position(|h| *h == Some(owner))
+    };
+    for pair in loaded.world.narrow_phase.contact_pairs() {
+        if !pair.has_any_active_contact() {
+            continue;
+        }
+        let (Some(a), Some(b)) = (index_of(pair.collider1), index_of(pair.collider2)) else {
+            continue;
+        };
+        let ra = find(&mut parent, a);
+        let rb = find(&mut parent, b);
+        if ra != rb {
+            let (lo, hi) = if ra < rb { (ra, rb) } else { (rb, ra) };
+            parent[hi] = lo;
         }
     }
-    true
+    let mut blocked = vec![false; n];
+    let mut awake = vec![false; n];
+    for i in 0..n {
+        let Some(s) = next[i] else {
+            continue;
+        };
+        let root = find(&mut parent, i);
+        if loaded.kinematic[i] || (!s.sleeping && s.since < SLEEP_QUANTA) {
+            blocked[root] = true;
+        }
+        if !loaded.kinematic[i] && !s.sleeping {
+            awake[root] = true;
+        }
+    }
+    for i in 0..n {
+        let root = find(&mut parent, i);
+        if blocked[root] || !awake[root] || loaded.kinematic[i] {
+            continue;
+        }
+        if let Some(s) = next[i].as_mut() {
+            s.sleeping = true;
+            s.v = Vector::ZERO;
+            s.w = Vector::ZERO;
+        }
+    }
+    Some(next)
 }
 
 fn push_f64(out: &mut Vec<u8>, x: f64) {
     out.extend_from_slice(&canon(x).to_le_bytes());
 }
 
-fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) -> bool {
-    out.clear();
-    for i in 0..loaded.n_bodies {
-        let Some(handle) = loaded.handles[i] else {
-            continue;
-        };
-        let body = &loaded.world.bodies[handle];
-        let p = body.translation();
-        let (qx, qy, qz, qw, wx, wy, wz) = if loaded.kinematic[i] {
-            (0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)
-        } else {
-            let rot = body.rotation();
-            let Some((qx, qy, qz, qw)) = canon_quat(rot.x, rot.y, rot.z, rot.w) else {
-                return false;
-            };
-            let w = body.angvel();
-            (qx, qy, qz, qw, w.x, w.y, w.z)
-        };
-        if loaded.kinematic[i] {
-            let b = body_at(i);
-            push_f64(out, p.x);
-            push_f64(out, p.y);
-            push_f64(out, p.z);
-            push_f64(out, b[3]);
-            push_f64(out, b[4]);
-            push_f64(out, b[5]);
-        } else {
-            let v = body.linvel();
-            push_f64(out, p.x);
-            push_f64(out, p.y);
-            push_f64(out, p.z);
-            push_f64(out, v.x);
-            push_f64(out, v.y);
-            push_f64(out, v.z);
-        }
-        push_f64(out, qx);
-        push_f64(out, qy);
-        push_f64(out, qz);
-        push_f64(out, qw);
-        push_f64(out, wx);
-        push_f64(out, wy);
-        push_f64(out, wz);
-        if loaded.kinematic[i] {
-            push_f64(out, 0.0);
-            push_f64(out, 0.0);
-        } else {
-            let act = body.activation();
-            push_f64(out, act.time_since_can_sleep / DT);
-            push_f64(out, if act.sleeping { 1.0 } else { 0.0 });
-        }
-    }
-
-    let mut pairs: Vec<&ContactPair> = loaded.world.narrow_phase.contact_pairs().collect();
+/// The contact pairs in snapshot order: by the two collider handles.
+fn sorted_pairs(world: &PhysicsWorld) -> Vec<&ContactPair> {
+    let mut pairs: Vec<&ContactPair> = world.narrow_phase.contact_pairs().collect();
     pairs.sort_by(|a, b| {
         let ka = (a.collider1.into_raw_parts(), a.collider2.into_raw_parts());
         let kb = (b.collider1.into_raw_parts(), b.collider2.into_raw_parts());
         ka.cmp(&kb)
     });
+    pairs
+}
+
+fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) -> bool {
+    out.clear();
+    for i in 0..loaded.n_bodies {
+        let Some(s) = loaded.states[i] else {
+            continue;
+        };
+        push_f64(out, s.p.x);
+        push_f64(out, s.p.y);
+        push_f64(out, s.p.z);
+        push_f64(out, s.v.x);
+        push_f64(out, s.v.y);
+        push_f64(out, s.v.z);
+        push_f64(out, s.q.0);
+        push_f64(out, s.q.1);
+        push_f64(out, s.q.2);
+        push_f64(out, s.q.3);
+        push_f64(out, s.w.x);
+        push_f64(out, s.w.y);
+        push_f64(out, s.w.z);
+        push_f64(out, s.since);
+        push_f64(out, if s.sleeping { 1.0 } else { 0.0 });
+    }
+
+    let pairs = sorted_pairs(&loaded.world);
     push_f64(out, pairs.len() as f64);
     for pair in pairs {
         let (i1, g1) = pair.collider1.into_raw_parts();
@@ -672,6 +841,66 @@ fn push_contact(out: &mut Vec<u8>, data: &ContactData) {
     push_f64(out, data.warmstart_tangent_world.z);
 }
 
+/// Writes the seven warm-start floats of one contact point, canonical.
+fn write_contact(data: &mut ContactData, w: &[f64]) {
+    data.warmstart_impulse = canon(w[0]);
+    data.warmstart_tangent_impulse.x = canon(w[1]);
+    data.warmstart_tangent_impulse.y = canon(w[2]);
+    data.warmstart_twist_impulse = canon(w[3]);
+    data.warmstart_tangent_world = Vector::new(canon(w[4]), canon(w[5]), canon(w[6]));
+}
+
+fn contact_floats(data: &ContactData) -> [f64; SNAP_POINT] {
+    [
+        data.warmstart_impulse,
+        data.warmstart_tangent_impulse.x,
+        data.warmstart_tangent_impulse.y,
+        data.warmstart_twist_impulse,
+        data.warmstart_tangent_world.x,
+        data.warmstart_tangent_world.y,
+        data.warmstart_tangent_world.z,
+    ]
+}
+
+/// The narrow phase publishes pairs by shared reference. The world is ours
+/// alone on this thread, so a write through these pointers is the manifold
+/// points the next step reads. Cargo.lock pins rapier3d-f64 0.35.3, where
+/// those points are the warm-start cache once contact clustering is off.
+fn pairs_mut(world: &PhysicsWorld) -> Vec<*mut ContactPair> {
+    let mut ptrs: Vec<*mut ContactPair> = Vec::new();
+    for pair in sorted_pairs(world) {
+        ptrs.push(core::ptr::from_ref(pair) as *mut ContactPair);
+    }
+    ptrs
+}
+
+/// Carries the warm-start impulses of the quantum just solved onto the
+/// contact points of the next quantum's world, as parry's own match does:
+/// the same pair, the same subshapes, the same two feature ids.
+fn carry_warmstart(old: &PhysicsWorld, next: &PhysicsWorld) {
+    let old_pairs = sorted_pairs(old);
+    for ptr in pairs_mut(next) {
+        let pair = unsafe { &mut *ptr };
+        let Some(before) = old_pairs.iter().find(|p| p.collider1 == pair.collider1 && p.collider2 == pair.collider2) else {
+            continue;
+        };
+        for manifold in pair.manifolds.iter_mut() {
+            let Some(was) = before
+                .solver_manifolds()
+                .iter()
+                .find(|m| m.subshape1 == manifold.subshape1 && m.subshape2 == manifold.subshape2)
+            else {
+                continue;
+            };
+            for point in manifold.points.iter_mut() {
+                if let Some(old_point) = was.points.iter().find(|o| o.fid1 == point.fid1 && o.fid2 == point.fid2) {
+                    write_contact(&mut point.data, &contact_floats(&old_point.data));
+                }
+            }
+        }
+    }
+}
+
 fn zero_manifolds(manifolds: &mut [ContactManifold]) -> u32 {
     let mut n = 0u32;
     for manifold in manifolds {
@@ -697,7 +926,10 @@ fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, 
         None => true,
     };
     if reload {
-        let Some(loaded) = build_world(&sig) else {
+        let Some(states) = record_states(&sig) else {
+            return false;
+        };
+        let Some(loaded) = build_world(&sig, states) else {
             return false;
         };
         solver.loaded = Some(loaded);
@@ -724,9 +956,18 @@ pub extern "C" fn solver_step(world_id: u32, n_bodies: u32, n_colliders: u32, ro
     let Some(loaded) = solver.loaded.as_mut() else {
         return 0;
     };
-    if !integrate(loaded) {
+    let Some(states) = integrate(loaded) else {
         return 0;
-    }
+    };
+    // The next quantum's world, built from the state this one ended in.
+    let Some(next) = build_world(&loaded.signature, states) else {
+        return 0;
+    };
+    carry_warmstart(&loaded.world, &next.world);
+    solver.loaded = Some(next);
+    let Some(loaded) = solver.loaded.as_ref() else {
+        return 0;
+    };
     if !rebuild_snapshot(loaded, &mut solver.snapshot) {
         return 0;
     }
@@ -749,16 +990,8 @@ pub extern "C" fn solver_clear_warmstart() -> u32 {
     let Some(loaded) = solver.loaded.as_mut() else {
         return 0;
     };
-    // The narrow phase publishes pairs by shared reference. The world is ours
-    // alone on this thread, so the clear writes the manifold points the next
-    // step reads. Cargo.lock pins rapier3d-f64 0.35.3, where those points are
-    // the warm-start cache once contact clustering is off.
-    let mut ptrs: Vec<*mut ContactPair> = Vec::new();
-    for pair in loaded.world.narrow_phase.contact_pairs() {
-        ptrs.push(core::ptr::from_ref(pair) as *mut ContactPair);
-    }
     let mut n = 0u32;
-    for ptr in ptrs {
+    for ptr in pairs_mut(&loaded.world) {
         unsafe {
             let pair = &mut *ptr;
             n += zero_manifolds(&mut pair.manifolds);
@@ -769,4 +1002,210 @@ pub extern "C" fn solver_clear_warmstart() -> u32 {
         return 0;
     }
     n
+}
+
+/// Where the binding copies a snapshot before solver_restore.
+#[no_mangle]
+pub extern "C" fn restore_ptr() -> *mut u8 {
+    unsafe { core::ptr::addr_of_mut!(RESTORE) as *mut u8 }
+}
+
+/// The most bytes solver_restore takes.
+#[no_mangle]
+pub extern "C" fn restore_cap() -> u32 {
+    RESTORE_CAP as u32
+}
+
+/// Why the last solver_restore returned 0, or 0 when it took.
+#[no_mangle]
+pub extern "C" fn solver_restore_refusal() -> u32 {
+    unsafe { REFUSAL }
+}
+
+/// Rebuilds the world for the signature in the input buffers from `len`
+/// bytes of a snapshot at restore_ptr(): each body's pose, velocity, and
+/// sleep state, the collision pass load runs, then the warm-start impulses of
+/// every manifold point in the snapshot's pair order. Returns 1 and leaves
+/// snapshot_ptr() holding the same bytes. Returns 0 and changes nothing on a
+/// length that is not the layout for the signature, a NaN, a quaternion not
+/// unit within 1e-9, a sleep field that is not a count and a flag, a body
+/// whose pose or velocity is not its record's, or pairs and points after the
+/// pass that are not the snapshot's.
+#[no_mangle]
+pub extern "C" fn solver_restore(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, len: u32) -> u32 {
+    let code = restore(world_id, n_bodies, n_colliders, rows, cols, cell, shape, len as usize);
+    unsafe {
+        REFUSAL = code;
+    }
+    if code == 0 { 1 } else { 0 }
+}
+
+fn integral(x: f64) -> Option<u64> {
+    if x >= 0.0 && x <= 4294967295.0 && x == (x as u64) as f64 {
+        Some(x as u64)
+    } else {
+        None
+    }
+}
+
+fn same_bits(a: f64, b: f64) -> bool {
+    a.to_bits() == b.to_bits()
+}
+
+fn restore(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, len: usize) -> u32 {
+    let Some(sig) = signature(world_id, n_bodies, n_colliders, rows, cols, cell, shape) else {
+        return REFUSE_INPUT;
+    };
+    if len > RESTORE_CAP || len % 8 != 0 {
+        return REFUSE_LENGTH;
+    }
+    let bytes: &[u8] = unsafe { core::slice::from_raw_parts(core::ptr::addr_of!(RESTORE) as *const u8, len) };
+    let mut f: Vec<f64> = Vec::with_capacity(len / 8);
+    for chunk in bytes.chunks_exact(8) {
+        let mut word = [0u8; 8];
+        word.copy_from_slice(chunk);
+        f.push(f64::from_le_bytes(word));
+    }
+    if f.iter().any(|x| x.is_nan()) {
+        return REFUSE_NAN;
+    }
+
+    // Bodies: fifteen floats for each one the solver holds, in record order.
+    let n = sig.n_bodies as usize;
+    let mut states: Vec<Option<BodyState>> = Vec::with_capacity(n);
+    let mut at = 0usize;
+    for i in 0..n {
+        if (sig.carried & (1u64 << i)) != 0 {
+            states.push(None);
+            continue;
+        }
+        if at + SNAP_BODY > f.len() {
+            return REFUSE_LENGTH;
+        }
+        let s = &f[at..at + SNAP_BODY];
+        at += SNAP_BODY;
+        let norm = (s[6] * s[6] + s[7] * s[7] + s[8] * s[8] + s[9] * s[9]).sqrt();
+        if !((norm - 1.0).abs() <= 1e-9) {
+            return REFUSE_QUAT;
+        }
+        let Some(since) = integral(s[13]) else {
+            return REFUSE_STATE;
+        };
+        if s[14] != 0.0 && s[14] != 1.0 {
+            return REFUSE_STATE;
+        }
+        let kinematic = (sig.driven & (1u64 << i)) != 0;
+        let state = BodyState {
+            p: Vector::new(s[0], s[1], s[2]),
+            v: Vector::new(s[3], s[4], s[5]),
+            q: (s[6], s[7], s[8], s[9]),
+            w: Vector::new(s[10], s[11], s[12]),
+            since: since as f64,
+            sleeping: s[14] == 1.0,
+        };
+        // The record and the snapshot describe one body. A kinematic body's
+        // velocity is its next action's, which the tick may change between
+        // quanta, so only its position is held to the record.
+        let Some(record) = record_state(i, kinematic) else {
+            return REFUSE_INPUT;
+        };
+        let held = if kinematic {
+            vec![(record.p.x, state.p.x), (record.p.y, state.p.y), (record.p.z, state.p.z)]
+        } else {
+            vec![
+                (record.p.x, state.p.x),
+                (record.p.y, state.p.y),
+                (record.p.z, state.p.z),
+                (record.v.x, state.v.x),
+                (record.v.y, state.v.y),
+                (record.v.z, state.v.z),
+                (record.q.0, state.q.0),
+                (record.q.1, state.q.1),
+                (record.q.2, state.q.2),
+                (record.q.3, state.q.3),
+                (record.w.x, state.w.x),
+                (record.w.y, state.w.y),
+                (record.w.z, state.w.z),
+            ]
+        };
+        if held.iter().any(|(a, b)| !same_bits(*a, canon(*b))) {
+            return REFUSE_RECORD;
+        }
+        states.push(Some(state));
+    }
+
+    // Pairs: a count, then per pair two handles, a point count, and seven
+    // floats per point.
+    if at >= f.len() {
+        return REFUSE_LENGTH;
+    }
+    let Some(n_pairs) = integral(f[at]) else {
+        return REFUSE_LENGTH;
+    };
+    at += 1;
+    let mut pairs: Vec<([u64; 4], usize, usize)> = Vec::new();
+    for _ in 0..n_pairs {
+        if at + 5 > f.len() {
+            return REFUSE_LENGTH;
+        }
+        let mut handle = [0u64; 4];
+        for k in 0..4 {
+            let Some(h) = integral(f[at + k]) else {
+                return REFUSE_LENGTH;
+            };
+            handle[k] = h;
+        }
+        let Some(points) = integral(f[at + 4]) else {
+            return REFUSE_LENGTH;
+        };
+        at += 5;
+        let points = points as usize;
+        if points > (f.len() - at) / SNAP_POINT {
+            return REFUSE_LENGTH;
+        }
+        pairs.push((handle, points, at));
+        at += points * SNAP_POINT;
+    }
+    if at != f.len() {
+        return REFUSE_LENGTH;
+    }
+
+    let Some(loaded) = build_world(&sig, states) else {
+        return REFUSE_INPUT;
+    };
+    let ptrs = pairs_mut(&loaded.world);
+    if ptrs.len() != pairs.len() {
+        return REFUSE_PAIRS;
+    }
+    for (ptr, (handle, points, _)) in ptrs.iter().zip(pairs.iter()) {
+        let pair = unsafe { &**ptr };
+        let (i1, g1) = pair.collider1.into_raw_parts();
+        let (i2, g2) = pair.collider2.into_raw_parts();
+        if [i1 as u64, g1 as u64, i2 as u64, g2 as u64] != *handle {
+            return REFUSE_PAIRS;
+        }
+        let count: usize = pair.solver_manifolds().iter().map(|m| m.points.len()).sum();
+        if count != *points {
+            return REFUSE_PAIRS;
+        }
+    }
+    for (ptr, (_, _, start)) in ptrs.iter().zip(pairs.iter()) {
+        let pair = unsafe { &mut **ptr };
+        let mut k = *start;
+        for manifold in pair.manifolds.iter_mut() {
+            for point in manifold.points.iter_mut() {
+                write_contact(&mut point.data, &f[k..k + SNAP_POINT]);
+                k += SNAP_POINT;
+            }
+        }
+    }
+
+    let mut rebuilt = Vec::with_capacity(len);
+    if !rebuild_snapshot(&loaded, &mut rebuilt) || rebuilt.as_slice() != bytes {
+        return REFUSE_BYTES;
+    }
+    let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };
+    solver.loaded = Some(loaded);
+    solver.snapshot = rebuilt;
+    0
 }
