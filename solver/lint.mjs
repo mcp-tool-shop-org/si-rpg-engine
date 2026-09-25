@@ -1,13 +1,22 @@
 #!/usr/bin/env node
-// Refuses a solver binary that carries what the build is supposed to exclude:
-// a relaxed-SIMD instruction (the 0xfd prefix, opcodes 0x100 through 0x113,
-// whose results WebAssembly 3.0 lets a host choose), a memory.grow (0x40),
-// or a memory whose maximum is absent or differs from its initial size.
+// Refuses a solver binary that carries what the build is supposed to exclude.
+//
+// Host-chosen results: a relaxed-SIMD instruction (the 0xfd prefix, opcodes
+// 0x100 through 0x113, whose results WebAssembly 3.0 lets a host choose); a
+// memory.grow (0x40) or table.grow (0xfc 15), whose success the spec leaves to
+// the host; a memory whose maximum is absent or differs from its initial size.
+//
+// State outside linear memory: T2 restores a solver from an image of linear
+// memory and the stack pointer, which is the whole state only while the module
+// initialises memory with active segments and nothing else. So the lint also
+// refuses a start section, a passive data segment, a passive or declared
+// element segment, and memory.init, data.drop, table.init, and elem.drop.
 //
 // The code section is decoded instruction by instruction, not scanned for
-// bytes: 0x40 is also the empty block type, and an opcode's bytes can appear
-// inside any LEB128 immediate. An opcode this decoder does not know is itself
-// a refusal, so a binary it cannot read never passes.
+// bytes: 0x40 is also the empty block type, an opcode's bytes can appear
+// inside any LEB128 immediate, and every LEB128 may be padded. An opcode this
+// decoder does not know, including an unlisted 0xfd sub-opcode, is itself a
+// refusal, so a binary it cannot read never passes.
 //
 //   node solver/lint.mjs [file.wasm]
 //
@@ -22,9 +31,21 @@ export const RELAXED_SIMD_FIRST = 0x100;
 export const RELAXED_SIMD_LAST = 0x113;
 export const MEMORY_GROW = 0x40;
 
+// 0xfd sub-opcodes below 0x100 that WebAssembly 3.0 leaves unassigned.
+const SIMD_UNASSIGNED = new Set([0x9a, 0xa2, 0xa5, 0xa6, 0xaf, 0xb0, 0xb2, 0xb3, 0xb4, 0xbb, 0xc2, 0xc5, 0xc6, 0xcf, 0xd0, 0xd2, 0xd3, 0xd4, 0xe2, 0xee]);
+
+// 0xfc sub-opcodes that move state in or out of linear memory's reach, or grow a table.
+const MISC_REFUSED = new Map([
+  [8, 'memory.init'],
+  [9, 'data.drop'],
+  [12, 'table.init'],
+  [13, 'elem.drop'],
+  [15, 'table.grow'],
+]);
+
 /**
  * @typedef {{ initial: number, maximum: number | null, imported: boolean }} Memory
- * @typedef {{ ok: boolean, reasons: string[], memories: Memory[], functions: number, instructions: number, simd: number }} Lint
+ * @typedef {{ ok: boolean, reasons: string[], memories: Memory[], functions: number, instructions: number, simd: number, data: number, elements: number }} Lint
  */
 
 class Refusal extends Error {}
@@ -52,7 +73,7 @@ function reader(bytes) {
       at = at + 1;
       return b;
     },
-    /** Unsigned LEB128, up to 32 bits. */
+    /** Unsigned LEB128, up to 32 bits, padding allowed to five bytes. */
     u32() {
       let result = 0;
       let shift = 0;
@@ -94,7 +115,11 @@ function reader(bytes) {
 }
 
 /**
- * @param {ReturnType<typeof reader>} r
+ * @typedef {ReturnType<typeof reader>} Reader
+ */
+
+/**
+ * @param {Reader} r
  * @param {boolean} imported
  * @returns {Memory}
  */
@@ -109,7 +134,7 @@ function limits(r, imported) {
 }
 
 /**
- * @param {ReturnType<typeof reader>} r
+ * @param {Reader} r
  */
 function memarg(r) {
   const align = r.u32();
@@ -120,11 +145,41 @@ function memarg(r) {
 }
 
 /**
- * @param {ReturnType<typeof reader>} r
+ * A heap type: an abstract type as one negative byte, or a type index, both s33.
+ * @param {Reader} r
+ */
+function heaptype(r) {
+  r.signed(33);
+}
+
+/**
+ * A value type: one byte, or `ref null ht` (0x63) and `ref ht` (0x64) with a heap type.
+ * @param {Reader} r
+ */
+function valtype(r) {
+  const at = r.at;
+  const b = r.byte();
+  if (b === 0x63 || b === 0x64) {
+    heaptype(r);
+  } else if ((b & 0xc0) !== 0x40 || b === 0x40) {
+    throw new Refusal('byte 0x' + b.toString(16) + ' at byte ' + at + ' is not a value type');
+  }
+}
+
+/**
+ * Empty (0x40), a value type of one or more bytes, or a type index (s33).
+ * @param {Reader} r
  */
 function blocktype(r) {
   const b = r.byte();
-  if (b === 0x40 || (b >= 0x6f && b <= 0x7f)) {
+  if (b === 0x40) {
+    return;
+  }
+  if (b === 0x63 || b === 0x64) {
+    heaptype(r);
+    return;
+  }
+  if ((b & 0xc0) === 0x40) {
     return;
   }
   r.at = r.at - 1;
@@ -132,8 +187,40 @@ function blocktype(r) {
 }
 
 /**
+ * A constant expression, as a data or element segment's offset or item.
+ * @param {Reader} r
+ * @param {string} where
+ */
+function constExpr(r, where) {
+  for (;;) {
+    const at = r.at;
+    const op = r.byte();
+    if (op === 0x0b) {
+      return;
+    }
+    if (op === 0x41) {
+      r.signed(32);
+    } else if (op === 0x42) {
+      r.signed(64);
+    } else if (op === 0x43) {
+      r.skip(4);
+    } else if (op === 0x44) {
+      r.skip(8);
+    } else if (op === 0x23 || op === 0xd2) {
+      r.u32();
+    } else if (op === 0xd0) {
+      heaptype(r);
+    } else if (op === 0x6a || op === 0x6b || op === 0x6c || op === 0x7c || op === 0x7d || op === 0x7e) {
+      continue;
+    } else {
+      throw new Refusal('opcode 0x' + op.toString(16) + ' at byte ' + at + ' in ' + where + ' is not a constant this lint decodes');
+    }
+  }
+}
+
+/**
  * Decodes one function body's instructions to its final end.
- * @param {ReturnType<typeof reader>} r
+ * @param {Reader} r
  * @param {number} stop the byte after the body
  * @param {number} index the function's index among the code section's bodies
  * @param {Lint} lint
@@ -142,7 +229,7 @@ function body(r, stop, index, lint) {
   const groups = r.u32();
   for (let g = 0; g < groups; g = g + 1) {
     r.u32();
-    r.byte();
+    valtype(r);
   }
   while (r.at < stop) {
     const at = r.at;
@@ -165,7 +252,9 @@ function body(r, stop, index, lint) {
       r.u32();
     } else if (op === 0x1c) {
       const n = r.u32();
-      r.skip(n);
+      for (let i = 0; i < n; i = i + 1) {
+        valtype(r);
+      }
     } else if (op >= 0x20 && op <= 0x26) {
       r.u32();
     } else if (op >= 0x28 && op <= 0x3e) {
@@ -186,9 +275,9 @@ function body(r, stop, index, lint) {
     } else if (op >= 0x45 && op <= 0xc4) {
       continue;
     } else if (op === 0xd0) {
-      r.byte();
+      heaptype(r);
     } else if (op === 0xfc) {
-      misc(r, at, index);
+      misc(r, at, index, lint);
     } else if (op === 0xfd) {
       simd(r, at, index, lint);
     } else {
@@ -202,11 +291,12 @@ function body(r, stop, index, lint) {
 
 /**
  * The 0xfc prefix: saturating truncation, bulk memory, and tables.
- * @param {ReturnType<typeof reader>} r
+ * @param {Reader} r
  * @param {number} at
  * @param {number} index
+ * @param {Lint} lint
  */
-function misc(r, at, index) {
+function misc(r, at, index, lint) {
   const sub = r.u32();
   if (sub <= 7) {
     return;
@@ -219,11 +309,16 @@ function misc(r, at, index) {
   } else {
     throw new Refusal('opcode 0xfc ' + sub + ' at byte ' + at + ' in function body ' + index + ' is not one this lint decodes');
   }
+  const refused = MISC_REFUSED.get(sub);
+  if (refused) {
+    lint.reasons.push(refused + ' at byte ' + at + ' in function body ' + index);
+  }
 }
 
 /**
- * The 0xfd prefix: SIMD, with relaxed SIMD at 0x100 through 0x113.
- * @param {ReturnType<typeof reader>} r
+ * The 0xfd prefix: SIMD, with relaxed SIMD at 0x100 through 0x113. Every
+ * assigned sub-opcode below 0x100 is listed by its immediates; the rest refuse.
+ * @param {Reader} r
  * @param {number} at
  * @param {number} index
  * @param {Lint} lint
@@ -235,6 +330,9 @@ function simd(r, at, index, lint) {
     lint.reasons.push('relaxed-SIMD opcode 0xfd 0x' + sub.toString(16) + ' at byte ' + at + ' in function body ' + index);
     return;
   }
+  if (sub > 0xff || SIMD_UNASSIGNED.has(sub)) {
+    throw new Refusal('opcode 0xfd 0x' + sub.toString(16) + ' at byte ' + at + ' in function body ' + index + ' is not one this lint decodes');
+  }
   if (sub <= 0x0b || sub === 0x5c || sub === 0x5d) {
     memarg(r);
   } else if (sub === 0x0c || sub === 0x0d) {
@@ -244,8 +342,74 @@ function simd(r, at, index, lint) {
   } else if (sub >= 0x54 && sub <= 0x5b) {
     memarg(r);
     r.byte();
-  } else if (sub > 0xff) {
-    throw new Refusal('opcode 0xfd 0x' + sub.toString(16) + ' at byte ' + at + ' in function body ' + index + ' is not one this lint decodes');
+  }
+}
+
+/**
+ * The element section. A passive or declared segment is refused.
+ * @param {Reader} r
+ * @param {Lint} lint
+ */
+function elements(r, lint) {
+  const n = r.u32();
+  for (let i = 0; i < n; i = i + 1) {
+    const where = 'element segment ' + i;
+    const flags = r.u32();
+    if (flags > 7) {
+      throw new Refusal(where + ' has flags ' + flags + ', which this lint does not decode');
+    }
+    if (flags & 1) {
+      lint.reasons.push(where + ' is ' + (flags & 2 ? 'declared' : 'passive') + ': only active segments may initialise the binary');
+    } else {
+      lint.elements = lint.elements + 1;
+    }
+    if (flags === 2 || flags === 6) {
+      r.u32();
+    }
+    if ((flags & 1) === 0) {
+      constExpr(r, where);
+    }
+    const exprs = (flags & 4) !== 0;
+    if (flags !== 0 && flags !== 4) {
+      if (exprs) {
+        valtype(r);
+      } else {
+        r.byte();
+      }
+    }
+    const count = r.u32();
+    for (let j = 0; j < count; j = j + 1) {
+      if (exprs) {
+        constExpr(r, where);
+      } else {
+        r.u32();
+      }
+    }
+  }
+}
+
+/**
+ * The data section. A passive segment is refused.
+ * @param {Reader} r
+ * @param {Lint} lint
+ */
+function data(r, lint) {
+  const n = r.u32();
+  for (let i = 0; i < n; i = i + 1) {
+    const where = 'data segment ' + i;
+    const flags = r.u32();
+    if (flags === 1) {
+      lint.reasons.push(where + ' is passive: only active segments may initialise the binary');
+    } else if (flags === 0 || flags === 2) {
+      if (flags === 2) {
+        r.u32();
+      }
+      constExpr(r, where);
+      lint.data = lint.data + 1;
+    } else {
+      throw new Refusal(where + ' has flags ' + flags + ', which this lint does not decode');
+    }
+    r.skip(r.u32());
   }
 }
 
@@ -255,7 +419,7 @@ function simd(r, at, index, lint) {
  */
 export function lintWasm(bytes) {
   /** @type {Lint} */
-  const lint = { ok: false, reasons: [], memories: [], functions: 0, instructions: 0, simd: 0 };
+  const lint = { ok: false, reasons: [], memories: [], functions: 0, instructions: 0, simd: 0, data: 0, elements: 0 };
   try {
     const r = reader(bytes);
     const magic = [0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00];
@@ -283,7 +447,7 @@ export function lintWasm(bytes) {
             r.byte();
             r.u32();
           } else if (kind === 0x01) {
-            r.byte();
+            valtype(r);
             const flags = r.byte();
             r.u32();
             if (flags & 0x01) {
@@ -292,7 +456,7 @@ export function lintWasm(bytes) {
           } else if (kind === 0x02) {
             lint.memories.push(limits(r, true));
           } else if (kind === 0x03) {
-            r.byte();
+            valtype(r);
             r.byte();
           } else {
             throw new Refusal('import kind 0x' + kind.toString(16) + ' is not one this lint decodes');
@@ -303,6 +467,10 @@ export function lintWasm(bytes) {
         for (let i = 0; i < n; i = i + 1) {
           lint.memories.push(limits(r, false));
         }
+      } else if (id === 8) {
+        lint.reasons.push('a start section runs function ' + r.u32() + ' at instantiation, outside any image');
+      } else if (id === 9) {
+        elements(r, lint);
       } else if (id === 10) {
         const n = r.u32();
         lint.functions = n;
@@ -310,6 +478,8 @@ export function lintWasm(bytes) {
           const len = r.u32();
           body(r, r.at + len, i, lint);
         }
+      } else if (id === 11) {
+        data(r, lint);
       }
       r.at = stop;
     }
@@ -341,7 +511,8 @@ export function lintWasm(bytes) {
  */
 export function facts(lint) {
   const memories = lint.memories.map((m) => m.initial + '/' + m.maximum + ' pages').join(', ');
-  return 'lint clean: memory ' + memories + ', ' + lint.functions + ' function bodies, ' + lint.instructions + ' instructions, ' + lint.simd + ' SIMD, no relaxed SIMD, no memory.grow';
+  return 'lint clean: memory ' + memories + ', ' + lint.functions + ' function bodies, ' + lint.instructions + ' instructions, ' + lint.simd + ' SIMD, '
+    + lint.data + ' active data and ' + lint.elements + ' active element segments, no relaxed SIMD, no memory.grow, no table.grow, no start, nothing passive';
 }
 
 const self = fileURLToPath(import.meta.url);

@@ -38,18 +38,31 @@ function uleb(n) {
 }
 
 /**
- * One function of type () -> (), one memory, the given instructions.
+ * One function of type () -> (), one memory, the given instructions, and any
+ * of a table (4), a start (8), elements (9), a data count (12), and data (11),
+ * each placed in the order the binary format requires.
  * @param {number[]} limits the memory's limits: [0x00, min] or [0x01, min, max]
  * @param {number[]} code the body's instructions, ending with 0x0b
+ * @param {Partial<Record<4 | 8 | 9 | 11 | 12, number[]>>} [extra] section contents by id
  */
-function module(limits, code) {
+function module(limits, code, extra = {}) {
   const body = [0x00, ...code];
+  /** @param {4 | 8 | 9 | 11 | 12} id */
+  const opt = (id) => {
+    const content = extra[id];
+    return content ? section(id, content) : [];
+  };
   return new Uint8Array([
     0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
     ...section(1, [0x01, 0x60, 0x00, 0x00]),
     ...section(3, [0x01, 0x00]),
+    ...opt(4),
     ...section(5, [0x01, ...limits]),
+    ...opt(8),
+    ...opt(9),
+    ...opt(12),
     ...section(10, [0x01, ...uleb(body.length), ...body]),
+    ...opt(11),
   ]);
 }
 
@@ -142,10 +155,93 @@ test('the command exits 1 with the reason, and 0 on the clean module', () => {
   assert.match(passed.stdout, /^lint clean: memory 1\/1 pages/);
 });
 
-test('the pinned binary passes: fixed memory, no memory.grow, no relaxed SIMD', () => {
+test('the pinned binary passes: 512 fixed pages, no growth, no relaxed SIMD, nothing passive', () => {
   const lint = lintWasm(pinned);
   assert.deepEqual(lint.reasons, []);
-  assert.equal(lint.memories.length, 1);
-  assert.equal(lint.memories[0].initial, lint.memories[0].maximum);
+  assert.deepEqual(lint.memories, [{ initial: 512, maximum: 512, imported: false }]);
   assert.ok(lint.functions > 0 && lint.instructions > 0);
+  assert.ok(lint.data > 0);
+});
+
+/**
+ * The reasons with their byte offsets blanked.
+ * @param {Uint8Array} bytes
+ */
+function reasons(bytes) {
+  return lintWasm(bytes).reasons.map((reason) => reason.replace(/byte \d+/, 'byte N'));
+}
+
+// The knowledge base's three: an immediate that contains 0xfd, and the padded
+// LEB128 encodings of a relaxed swizzle and of memory.grow.
+const holds0xfd = module(FIXED, [0x41, 0xfd, 0x80, 0x02, 0x1a, 0x0b]);
+const paddedSwizzle = module(FIXED, [...V128_CONST, ...V128_CONST, 0xfd, 0x80, 0x82, 0x80, 0x80, 0x00, 0x1a, 0x0b]);
+const paddedGrow = module(FIXED, [0x41, 0x01, 0x40, 0x80, 0x00, 0x1a, 0x0b]);
+
+test('i32.const 32893 (41 fd 80 02) passes: 0xfd inside an immediate is not an instruction', () => {
+  assert.equal(WebAssembly.validate(holds0xfd), true);
+  assert.deepEqual(reasons(holds0xfd), []);
+});
+
+test('the padded relaxed swizzle (fd 80 82 80 80 00) is refused as relaxed SIMD', () => {
+  assert.equal(WebAssembly.validate(paddedSwizzle), true);
+  assert.deepEqual(reasons(paddedSwizzle), ['relaxed-SIMD opcode 0xfd 0x100 at byte N in function body 0']);
+});
+
+test('the padded memory.grow (40 80 00) is refused', () => {
+  assert.equal(WebAssembly.validate(paddedGrow), true);
+  assert.deepEqual(reasons(paddedGrow), ['memory.grow at byte N in function body 0']);
+});
+
+test('an unassigned 0xfd sub-opcode below 0x100 is refused, not read as immediate-free', () => {
+  assert.deepEqual(reasons(module(FIXED, [...V128_CONST, 0xfd, 0x9a, 0x01, 0x1a, 0x0b])), [
+    'opcode 0xfd 0x9a at byte N in function body 0 is not one this lint decodes',
+  ]);
+});
+
+test('select t* and block types decode multi-byte reference types', () => {
+  // block (result (ref null func)) ref.null func end drop; then
+  // ref.null func, ref.null func, i32.const 1, select (ref null func), drop.
+  const typed = module(FIXED, [
+    0x02, 0x63, 0x70, 0xd0, 0x70, 0x0b, 0x1a,
+    0xd0, 0x70, 0xd0, 0x70, 0x41, 0x01, 0x1c, 0x01, 0x63, 0x70, 0x1a,
+    0x0b,
+  ]);
+  assert.equal(WebAssembly.validate(typed), true);
+  const lint = lintWasm(typed);
+  assert.deepEqual(lint.reasons, []);
+  assert.equal(lint.instructions, 10);
+});
+
+// One planted module per thing that would grow a table or put state outside
+// the image of linear memory. Each is valid WebAssembly and refused alone.
+const TABLE = [0x01, 0x70, 0x00, 0x01];
+const ACTIVE_DATA = [0x01, 0x00, 0x41, 0x00, 0x0b, 0x01, 0xaa];
+const ACTIVE_ELEM = [0x01, 0x00, 0x41, 0x00, 0x0b, 0x01, 0x00];
+const ZERO3 = [0x41, 0x00, 0x41, 0x00, 0x41, 0x00];
+const planted = [
+  { what: 'table.grow', bytes: module(FIXED, [0xd0, 0x70, 0x41, 0x01, 0xfc, 0x0f, 0x00, 0x1a, 0x0b], { 4: TABLE }), reason: 'table.grow at byte N in function body 0' },
+  { what: 'a start section', bytes: module(FIXED, QUIET, { 8: [0x00] }), reason: 'a start section runs function 0 at instantiation, outside any image' },
+  { what: 'a passive data segment', bytes: module(FIXED, QUIET, { 12: [0x01], 11: [0x01, 0x01, 0x01, 0xaa] }), reason: 'data segment 0 is passive: only active segments may initialise the binary' },
+  { what: 'a passive element segment', bytes: module(FIXED, QUIET, { 4: TABLE, 9: [0x01, 0x01, 0x00, 0x01, 0x00] }), reason: 'element segment 0 is passive: only active segments may initialise the binary' },
+  { what: 'a declared element segment', bytes: module(FIXED, QUIET, { 9: [0x01, 0x03, 0x00, 0x01, 0x00] }), reason: 'element segment 0 is declared: only active segments may initialise the binary' },
+  { what: 'memory.init', bytes: module(FIXED, [...ZERO3, 0xfc, 0x08, 0x00, 0x00, 0x0b], { 12: [0x01], 11: ACTIVE_DATA }), reason: 'memory.init at byte N in function body 0' },
+  { what: 'data.drop', bytes: module(FIXED, [0xfc, 0x09, 0x00, 0x0b], { 12: [0x01], 11: ACTIVE_DATA }), reason: 'data.drop at byte N in function body 0' },
+  { what: 'table.init', bytes: module(FIXED, [...ZERO3, 0xfc, 0x0c, 0x00, 0x00, 0x0b], { 4: TABLE, 9: ACTIVE_ELEM }), reason: 'table.init at byte N in function body 0' },
+  { what: 'elem.drop', bytes: module(FIXED, [0xfc, 0x0d, 0x00, 0x0b], { 4: TABLE, 9: ACTIVE_ELEM }), reason: 'elem.drop at byte N in function body 0' },
+];
+
+for (const item of planted) {
+  test('the lint refuses ' + item.what, () => {
+    assert.equal(WebAssembly.validate(item.bytes), true, item.what + ' is valid WebAssembly');
+    assert.deepEqual(reasons(item.bytes), [item.reason]);
+  });
+}
+
+test('active data and element segments alone pass: the image already holds what they wrote', () => {
+  const active = module(FIXED, QUIET, { 4: TABLE, 9: ACTIVE_ELEM, 11: ACTIVE_DATA });
+  assert.equal(WebAssembly.validate(active), true);
+  const lint = lintWasm(active);
+  assert.deepEqual(lint.reasons, []);
+  assert.equal(lint.data, 1);
+  assert.equal(lint.elements, 1);
 });
