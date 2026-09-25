@@ -42,7 +42,8 @@ test('supportAt answers an axis-aligned box, a rotated slab, a heightfield cell,
   });
   assert.equal(world.supportAt(0, 1.5, 2), 0);
   assert.equal(world.supportAt(0, -0.5, 2), 0.25);
-  assert.ok(Math.abs(world.supportAt(3, 1, 2) - 0.6) < 1e-12);
+  const rest = world.supportAt(3, 1, 2);
+  assert.ok(rest !== null && Math.abs(rest - 0.6) < 1e-12);
   assert.equal(world.supportAt(5, 1, 2), null);
   const ramp = world.supportAt(9, 0, 3);
   assert.equal(typeof ramp, 'number');
@@ -160,7 +161,8 @@ test('the verb fixture replays frame for frame', () => {
     assert.deepEqual(played.frames, spec.frames, spec.name);
     assert.deepEqual(played.episodes, spec.episodes, spec.name);
   }
-  const carry = playVerbs(saved.cases.find((item) => item.name === 'carry'), catalog.rules);
+  const carryCase = saved.cases.find((/** @type {{ name: string }} */ item) => item.name === 'carry');
+  const carry = playVerbs(carryCase, catalog.rules);
   const crate = carry.bodies.find((body) => body.id === 'crate');
   const walker = carry.bodies.find((body) => body.id === 'walker');
   assert.ok(crate && walker);
