@@ -50,6 +50,10 @@ for (let i = 0; ok && i < STEPS; i = i + 1) {
       ok = false;
       break;
     }
+    if (world.zones && world.zones.length > 0) {
+      const index = world.zoneIndex(body.id);
+      h.u32(index === null ? 0xffffffff : index);
+    }
   }
   const snap = world.snapshot();
   if (snap) {

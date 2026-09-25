@@ -9,6 +9,7 @@ import { play } from './solver-scene.mjs';
 const saved = JSON.parse(readFileSync('fixtures/behavior-solver.json', 'utf8'));
 const rotation = JSON.parse(readFileSync('fixtures/behavior-rotation.json', 'utf8'));
 const shapes = JSON.parse(readFileSync('fixtures/shape-traversal.json', 'utf8'));
+const ramp = JSON.parse(readFileSync('fixtures/behavior-ramp.json', 'utf8'));
 
 test('the E2 solver fixture first differs at tick 0', () => {
   for (const spec of saved.cases) {
@@ -46,6 +47,20 @@ test('the rotation fixture replays frame for frame', () => {
   assert.ok(stack[0].qw > 0.999 && stack[1].qw > 0.999, 'the stack has not tipped');
   assert.ok(Math.abs(stack[0].wx) + Math.abs(stack[0].wy) + Math.abs(stack[0].wz) < 1e-8);
   assert.ok(Math.abs(stack[1].wx) + Math.abs(stack[1].wy) + Math.abs(stack[1].wz) < 1e-8);
+});
+
+test('a body slides down a rotated ramp', () => {
+  const spec = ramp.cases[0];
+  const played = play(spec);
+  assert.deepEqual(played.frames, spec.frames);
+  const body = played.bodies[0];
+  const start = spec.world.bodies[0];
+  assert.ok(body.x < start.x - 1, 'the box moves down the ramp');
+  assert.ok(body.y > 0.119 && body.y < 0.121, 'the box rests on the floor');
+  assert.equal(body.vx, 0);
+  assert.equal(body.vy, 0);
+  assert.ok(body.qw < 0.01, 'the box rotates while it slides');
+  assert.throws(() => createWorld(spec.world, 'reference'), /a rotated collider is refused/);
 });
 
 test('the traversal frames keep the box', () => {

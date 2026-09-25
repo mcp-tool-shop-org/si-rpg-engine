@@ -22,7 +22,7 @@ export const UNDRIVEN_DRAG = 0;
 let nextProductId = 1;
 
 /**
- * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; heightfield?: Heightfield | null; shape?: 'box' | 'capsule' }} init
+ * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; shape?: 'box' | 'capsule' }} init
  * @param {'product' | 'box' | 'reference'} [law] product is the Rapier step; box is the E1 binary; reference is the JavaScript kernel
  */
 export function createWorld(init, law) {
@@ -41,10 +41,20 @@ export function createWorld(init, law) {
     hx: b.hx, hy: b.hy, hz: b.hz,
   }));
   const shapeId = init.shape === 'capsule' ? 1 : 0;
-  /** @type {StaticCollider[]} */
+  /** @type {Array<StaticCollider & { qx: number, qy: number, qz: number, qw: number }>} */
   const colliders = init.colliders.map((c) => ({
     id: c.id, minX: c.minX, maxX: c.maxX, minY: c.minY, maxY: c.maxY, minZ: c.minZ, maxZ: c.maxZ,
+    qx: typeof c.qx === 'number' ? c.qx : 0,
+    qy: typeof c.qy === 'number' ? c.qy : 0,
+    qz: typeof c.qz === 'number' ? c.qz : 0,
+    qw: typeof c.qw === 'number' ? c.qw : 1,
   }));
+  const zones = Array.isArray(init.zones) ? init.zones.map((z) => ({
+    id: z.id, minX: z.minX, maxX: z.maxX, minY: z.minY, maxY: z.maxY, minZ: z.minZ, maxZ: z.maxZ,
+  })) : [];
+  if ((chosen === 'reference' || chosen === 'box') && colliders.some((c) => c.qx !== 0 || c.qy !== 0 || c.qz !== 0 || c.qw !== 1)) {
+    throw new Error('a rotated collider is refused: the reference kernel does not grow');
+  }
   /** @type {Heightfield | null} */
   const heightfield = init.heightfield ? {
     rows: init.heightfield.rows,
@@ -271,6 +281,22 @@ export function createWorld(init, law) {
   }
 
   /**
+   * Inverse of a unit quaternion, applied to a vector.
+   * @param {number} qx @param {number} qy @param {number} qz @param {number} qw
+   * @param {number} x @param {number} y @param {number} z
+   */
+  function localOf(qx, qy, qz, qw, x, y, z) {
+    const tx = 2 * ((0 - qy) * z - (0 - qz) * y);
+    const ty = 2 * ((0 - qz) * x - (0 - qx) * z);
+    const tz = 2 * ((0 - qx) * y - (0 - qy) * x);
+    return {
+      x: x + qw * tx + ((0 - qy) * tz - (0 - qz) * ty),
+      y: y + qw * ty + ((0 - qz) * tx - (0 - qx) * tz),
+      z: z + qw * tz + ((0 - qx) * ty - (0 - qy) * tx),
+    };
+  }
+
+  /**
    * The collider query the intent predicate uses for reachability.
    * A pad expands every box by the actor's half-extents, which is the
    * swept test for an axis-aligned body. The stored colliders do not change.
@@ -285,16 +311,40 @@ export function createWorld(init, law) {
     const hz = pad ? pad.hz : 0;
     for (let j = 0; j < colliders.length; j = j + 1) {
       const stored = colliders[j];
-      const box = hx === 0 && hy === 0 && hz === 0 ? stored : {
+      const rotated = stored.qx !== 0 || stored.qy !== 0 || stored.qz !== 0 || stored.qw !== 1;
+      if (!rotated) {
+        const box = hx === 0 && hy === 0 && hz === 0 ? stored : {
+          id: stored.id,
+          minX: stored.minX - hx,
+          maxX: stored.maxX + hx,
+          minY: stored.minY - hy,
+          maxY: stored.maxY + hy,
+          minZ: stored.minZ - hz,
+          maxZ: stored.maxZ + hz,
+        };
+        if (segmentHitsBox(x0, y0, z0, x1, y1, z1, box)) {
+          return stored.id;
+        }
+        continue;
+      }
+      const cx = (stored.minX + stored.maxX) / 2;
+      const cy = (stored.minY + stored.maxY) / 2;
+      const cz = (stored.minZ + stored.maxZ) / 2;
+      const halfX = (stored.maxX - stored.minX) / 2;
+      const halfY = (stored.maxY - stored.minY) / 2;
+      const halfZ = (stored.maxZ - stored.minZ) / 2;
+      const a = localOf(stored.qx, stored.qy, stored.qz, stored.qw, x0 - cx, y0 - cy, z0 - cz);
+      const b = localOf(stored.qx, stored.qy, stored.qz, stored.qw, x1 - cx, y1 - cy, z1 - cz);
+      const box = {
         id: stored.id,
-        minX: stored.minX - hx,
-        maxX: stored.maxX + hx,
-        minY: stored.minY - hy,
-        maxY: stored.maxY + hy,
-        minZ: stored.minZ - hz,
-        maxZ: stored.maxZ + hz,
+        minX: 0 - halfX - hx,
+        maxX: halfX + hx,
+        minY: 0 - halfY - hy,
+        maxY: halfY + hy,
+        minZ: 0 - halfZ - hz,
+        maxZ: halfZ + hz,
       };
-      if (segmentHitsBox(x0, y0, z0, x1, y1, z1, box)) {
+      if (segmentHitsBox(a.x, a.y, a.z, b.x, b.y, b.z, box)) {
         return stored.id;
       }
     }
@@ -315,7 +365,14 @@ export function createWorld(init, law) {
     const maxZ = box.z + box.hz;
     for (let j = 0; j < colliders.length; j = j + 1) {
       const c = colliders[j];
-      if (!(maxX <= c.minX || minX >= c.maxX || maxY <= c.minY || minY >= c.maxY || maxZ <= c.minZ || minZ >= c.maxZ)) {
+      const rotated = c.qx !== 0 || c.qy !== 0 || c.qz !== 0 || c.qw !== 1;
+      if (!rotated) {
+        if (!(maxX <= c.minX || minX >= c.maxX || maxY <= c.minY || minY >= c.maxY || maxZ <= c.minZ || minZ >= c.maxZ)) {
+          return c.id;
+        }
+        continue;
+      }
+      if (orientedOverlap(box, c)) {
         return c.id;
       }
     }
@@ -334,6 +391,16 @@ export function createWorld(init, law) {
    * @param {ReadonlySet<string>} [driven]
    */
   function mixLoad(hasher, driven) {
+    if (zones.length > 0) {
+      hasher.u32(zones.length);
+      for (let i = 0; i < zones.length; i = i + 1) {
+        const zone = zones[i];
+        hasher.text(zone.id);
+        if (!hasher.float(zone.minX) || !hasher.float(zone.maxX) || !hasher.float(zone.minY) || !hasher.float(zone.maxY) || !hasher.float(zone.minZ) || !hasher.float(zone.maxZ)) {
+          throw new Error('NaN');
+        }
+      }
+    }
     if (heightfield) {
       hasher.u32(heightfield.rows);
       hasher.u32(heightfield.cols);
@@ -361,7 +428,107 @@ export function createWorld(init, law) {
     return snapshotBytes();
   }
 
-  return { bodies, colliders, heightfield, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, law: chosen };
+  /**
+   * The zone whose half-open box contains the body's centre, or null.
+   * @param {string} id
+   * @returns {string | null}
+   */
+  function zoneOf(id) {
+    if (zones.length === 0) {
+      return null;
+    }
+    const found = body(id);
+    if (!found) {
+      return null;
+    }
+    for (let i = 0; i < zones.length; i = i + 1) {
+      const zone = zones[i];
+      if (found.x >= zone.minX && found.x < zone.maxX && found.y >= zone.minY && found.y < zone.maxY && found.z >= zone.minZ && found.z < zone.maxZ) {
+        return zone.id;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @param {string} id
+   * @returns {number | null} file order, or null when the centre is in no zone
+   */
+  function zoneIndex(id) {
+    const name = zoneOf(id);
+    if (name === null) {
+      return null;
+    }
+    for (let i = 0; i < zones.length; i = i + 1) {
+      if (zones[i].id === name) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  return { bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, zoneOf, zoneIndex, law: chosen };
+}
+
+/**
+ * True when an axis-aligned body overlaps a rotated collider. Touching a face is not an overlap.
+ * @param {{ x: number, y: number, z: number, hx: number, hy: number, hz: number }} box
+ * @param {{ minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number, qx: number, qy: number, qz: number, qw: number }} collider
+ */
+function orientedOverlap(box, collider) {
+  const cx = (collider.minX + collider.maxX) / 2;
+  const cy = (collider.minY + collider.maxY) / 2;
+  const cz = (collider.minZ + collider.maxZ) / 2;
+  const b = [(collider.maxX - collider.minX) / 2, (collider.maxY - collider.minY) / 2, (collider.maxZ - collider.minZ) / 2];
+  const a = [box.hx, box.hy, box.hz];
+  const qx = collider.qx;
+  const qy = collider.qy;
+  const qz = collider.qz;
+  const qw = collider.qw;
+  const xx = qx * qx;
+  const yy = qy * qy;
+  const zz = qz * qz;
+  const xy = qx * qy;
+  const xz = qx * qz;
+  const yz = qy * qz;
+  const wx = qw * qx;
+  const wy = qw * qy;
+  const wz = qw * qz;
+  const r = [
+    [1 - 2 * (yy + zz), 2 * (xy - wz), 2 * (xz + wy)],
+    [2 * (xy + wz), 1 - 2 * (xx + zz), 2 * (yz - wx)],
+    [2 * (xz - wy), 2 * (yz + wx), 1 - 2 * (xx + yy)],
+  ];
+  const t = [box.x - cx, box.y - cy, box.z - cz];
+  const abs = r.map((row) => row.map((value) => Math.abs(value)));
+  for (let i = 0; i < 3; i = i + 1) {
+    const rb = b[0] * abs[i][0] + b[1] * abs[i][1] + b[2] * abs[i][2];
+    if (Math.abs(t[i]) >= a[i] + rb) {
+      return false;
+    }
+  }
+  for (let i = 0; i < 3; i = i + 1) {
+    const ra = a[0] * abs[0][i] + a[1] * abs[1][i] + a[2] * abs[2][i];
+    const along = t[0] * r[0][i] + t[1] * r[1][i] + t[2] * r[2][i];
+    if (Math.abs(along) >= ra + b[i]) {
+      return false;
+    }
+  }
+  for (let i = 0; i < 3; i = i + 1) {
+    for (let j = 0; j < 3; j = j + 1) {
+      const i1 = (i + 1) % 3;
+      const i2 = (i + 2) % 3;
+      const j1 = (j + 1) % 3;
+      const j2 = (j + 2) % 3;
+      const ra = a[i1] * abs[i2][j] + a[i2] * abs[i1][j];
+      const rb = b[j1] * abs[i][j2] + b[j2] * abs[i][j1];
+      const along = t[i1] * r[i2][j] - t[i2] * r[i1][j];
+      if (Math.abs(along) >= ra + rb) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 /** The fixture room: a floor and two walls, extruded through z. */

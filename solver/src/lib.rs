@@ -18,7 +18,7 @@ pub(crate) const HX: usize = 13;
 pub(crate) const HY: usize = 14;
 pub(crate) const HZ: usize = 15;
 pub(crate) const DRIVEN: usize = 16;
-pub(crate) const COLLIDER_STRIDE: usize = 6;
+pub(crate) const COLLIDER_STRIDE: usize = 10;
 
 pub(crate) static mut BODIES: [f64; MAX_BODIES * BODY_STRIDE] = [0.0; MAX_BODIES * BODY_STRIDE];
 pub(crate) static mut COLLIDERS: [f64; MAX_COLLIDERS * COLLIDER_STRIDE] = [0.0; MAX_COLLIDERS * COLLIDER_STRIDE];

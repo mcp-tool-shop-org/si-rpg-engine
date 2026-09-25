@@ -114,13 +114,17 @@ export function stepBodies(bodies, colliders, driven) {
   }
   for (let j = 0; j < colliders.length; j = j + 1) {
     const box = colliders[j];
-    const at = colliderBase + j * 6;
+    const at = colliderBase + j * 10;
     view[at] = box.minX;
     view[at + 1] = box.maxX;
     view[at + 2] = box.minY;
     view[at + 3] = box.maxY;
     view[at + 4] = box.minZ;
     view[at + 5] = box.maxZ;
+    view[at + 6] = box.qx || 0;
+    view[at + 7] = box.qy || 0;
+    view[at + 8] = box.qz || 0;
+    view[at + 9] = box.qw === undefined ? 1 : box.qw;
   }
   const ok = instance.exports.step(bodies.length, colliders.length);
   for (let i = 0; i < bodies.length; i = i + 1) {
@@ -164,13 +168,17 @@ function writeInputs(exp, bodies, colliders, heightfield, driven) {
   }
   for (let j = 0; j < colliders.length; j = j + 1) {
     const box = colliders[j];
-    const at = colliderBase + j * 6;
+    const at = colliderBase + j * 10;
     view[at] = box.minX;
     view[at + 1] = box.maxX;
     view[at + 2] = box.minY;
     view[at + 3] = box.maxY;
     view[at + 4] = box.minZ;
     view[at + 5] = box.maxZ;
+    view[at + 6] = box.qx || 0;
+    view[at + 7] = box.qy || 0;
+    view[at + 8] = box.qz || 0;
+    view[at + 9] = box.qw === undefined ? 1 : box.qw;
   }
   const rows = heightfield ? heightfield.rows : 0;
   const cols = heightfield ? heightfield.cols : 0;
