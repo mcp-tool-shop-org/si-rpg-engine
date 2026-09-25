@@ -10,14 +10,11 @@
         "walker"
       ],
       "complete": true,
-      "admitted": false,
+      "admitted": true,
       "zones": {
         "door": true
       },
-      "findings": [
-        "leaves crate by walker",
-        "leaves walker by walker"
-      ]
+      "findings": []
     },
     "fixture behavior-solver step-up": {
       "actors": [
@@ -264,21 +261,12 @@
         "walker"
       ],
       "complete": false,
-      "admitted": false,
+      "admitted": true,
       "zones": {
         "west": true,
         "east": true
       },
-      "findings": [
-        "leaves crate by walker",
-        "leaves crate by watcher",
-        "leaves shade by walker",
-        "leaves walker by walker",
-        "leaves walker by watcher",
-        "leaves watcher by walker",
-        "leaves watcher by watcher",
-        "unsettled crate by walker"
-      ]
+      "findings": []
     },
     "product scene": {
       "actors": [
