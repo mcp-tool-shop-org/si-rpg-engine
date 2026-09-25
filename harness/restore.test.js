@@ -1,0 +1,465 @@
+// Restore, rerun, compare. Every case of every behaviour fixture and the
+// product scene is run once and traced as harness/trace.mjs traces the product
+// scene. Restore points are chosen from that run: just after the first new
+// contact, the first body to fall asleep, and the first to wake, where the case
+// has them, and a third and two thirds of the way; the product scene adds its
+// last new contact and nine tenths. A single point can pass while another
+// fails, so every case is restored at each of its points. The chosen ticks are
+// printed per case. At each point the run is restored two ways and the rest is
+// rerun, and harness/first-difference.js must print `identical` against the
+// uninterrupted trace:
+//
+//   replay: harness/replay-to.mjs builds a fresh world and replays the inputs
+//   to the point;
+//   image: a world.save() taken at the point in a second uninterrupted run is
+//   restored into a replayed run whose solver has been evicted and whose
+//   records have been scrambled, twice, so a restore is shown to be repeatable.
+//
+// Neither writes into Rapier. The tick itself (memory, minds, actions, log)
+// is T5's bundle; replay rebuilds it here.
+
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { createHasher } from '../packages/frame/hash.js';
+import { loadIntentRules } from '../packages/tick/predicates.js';
+import { createWorld } from '../packages/tick/world.js';
+import { bytes as binary, imageDigest, imageSolver, instantiate, restoreImage, snapshotBytes, stackPointer } from '../solver/dist/solver.mjs';
+import { replayTo } from './replay-to.mjs';
+import { endLine } from './trace-line.mjs';
+import { playVerbs } from './verbs-scene.mjs';
+
+/**
+ * @typedef {import('./replay-to.mjs').ReplaySpec} ReplaySpec
+ * @typedef {import('./replay-to.mjs').Run} Run
+ * @typedef {ReturnType<ReturnType<typeof createWorld>['save']>} WorldSave
+ * @typedef {{ name: string, spec: ReplaySpec }} Case
+ */
+
+const dir = mkdtempSync(join(tmpdir(), 'si-rpg-restore-'));
+const rules = loadIntentRules().rules;
+
+/**
+ * @param {string[]} a
+ * @param {string[]} b
+ */
+function diff(a, b) {
+  const left = join(dir, 'whole.trace');
+  const right = join(dir, 'restored.trace');
+  writeFileSync(left, a.join('\n') + '\n');
+  writeFileSync(right, b.join('\n') + '\n');
+  const run = spawnSync(process.execPath, ['harness/first-difference.js', left, right], { encoding: 'utf8' });
+  assert.notEqual(run.status, 2, run.stderr);
+  return run.stdout;
+}
+
+/** Loads and steps another world, so the solver no longer holds the one being restored. */
+function evict() {
+  const scratch = createWorld({
+    bodies: [{ id: 'scratch', x: 0, y: 1, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 }],
+    colliders: [{ id: 'floor', minX: -2, maxX: 2, minY: -1, maxY: 0, minZ: -2, maxZ: 2 }],
+  }, 'product');
+  scratch.mixLoad(createHasher(), new Set());
+  scratch.step(new Set());
+}
+
+/** @param {Run} run */
+function scramble(run) {
+  for (const body of run.world.bodies) {
+    body.x = body.x + 1;
+    body.vy = body.vy - 1;
+  }
+}
+
+/**
+ * Pairs with at least one contact point, read from the snapshot's layout.
+ * @param {Run} run
+ */
+function contacts(run) {
+  const snap = run.world.snapshot();
+  if (!snap || snap.length === 0) {
+    return 0;
+  }
+  const view = new DataView(snap.buffer, snap.byteOffset, snap.byteLength);
+  const solverBodies = run.world.bodies.filter((body) => !run.world.carriedByOf(body.id)).length;
+  let w = solverBodies * 15;
+  const pairs = view.getFloat64(w * 8, true);
+  w = w + 1;
+  let touching = 0;
+  for (let p = 0; p < pairs; p = p + 1) {
+    const points = view.getFloat64((w + 4) * 8, true);
+    touching = touching + (points > 0 ? 1 : 0);
+    w = w + 5 + points * 7;
+  }
+  return touching;
+}
+
+/**
+ * @param {Run} run
+ * @returns {string[]}
+ */
+function asleep(run) {
+  return run.world.bodies.filter((body) => run.world.sleeping(body.id)).map((body) => body.id);
+}
+
+/**
+ * The uninterrupted run: its trace lines (without the end line) and the ticks
+ * of its first new contact, first sleep, first wake, and last new contact.
+ * @param {ReplaySpec} spec
+ */
+function wholeRun(spec) {
+  const run = replayTo(spec, 0);
+  const lines = [run.line()];
+  let touching = contacts(run);
+  let sleepers = asleep(run);
+  /** @type {{ contact: number | null, lastContact: number | null, sleep: number | null, wake: number | null }} */
+  const events = { contact: null, lastContact: null, sleep: null, wake: null };
+  while (run.advance()) {
+    lines.push(run.line());
+    const nowTouching = contacts(run);
+    const nowAsleep = asleep(run);
+    if (nowTouching > touching) {
+      events.contact = events.contact === null ? run.tick : events.contact;
+      events.lastContact = run.tick;
+    }
+    if (events.sleep === null && nowAsleep.some((id) => !sleepers.includes(id))) {
+      events.sleep = run.tick;
+    }
+    if (events.wake === null && sleepers.some((id) => !nowAsleep.includes(id))) {
+      events.wake = run.tick;
+    }
+    touching = nowTouching;
+    sleepers = nowAsleep;
+  }
+  return { lines, events };
+}
+
+/**
+ * @param {ReturnType<typeof wholeRun>} whole
+ * @param {boolean} product
+ */
+function choosePoints(whole, product) {
+  const end = whole.lines.length - 1;
+  const e = whole.events;
+  const wanted = [e.contact, e.sleep, e.wake, Math.floor(end / 3), Math.floor((2 * end) / 3)];
+  if (product) {
+    wanted.push(e.lastContact, Math.floor((9 * end) / 10));
+  }
+  /** @type {number[]} */
+  const points = [];
+  for (const tick of wanted) {
+    if (tick !== null && tick < end && !points.includes(tick)) {
+      points.push(tick);
+    }
+  }
+  if (points.length === 0) {
+    points.push(0);
+  }
+  return points.sort((a, b) => a - b);
+}
+
+/**
+ * The rest of a run from its current frame, spliced after the whole run's
+ * lines before that frame.
+ * @param {string[]} whole
+ * @param {Run} run
+ */
+function rerun(whole, run) {
+  const lines = whole.slice(0, run.tick);
+  lines.push(run.line());
+  while (run.advance()) {
+    lines.push(run.line());
+  }
+  lines.push(endLine(lines.length));
+  return lines;
+}
+
+/**
+ * A second uninterrupted run, saved at each point. Its trace must match the first.
+ * @param {ReplaySpec} spec
+ * @param {number[]} points
+ * @param {string[]} lines
+ */
+function savesAt(spec, points, lines) {
+  const run = replayTo(spec, 0);
+  /** @type {Map<number, WorldSave>} */
+  const saves = new Map();
+  const again = [run.line()];
+  for (;;) {
+    if (points.includes(run.tick)) {
+      saves.set(run.tick, run.world.save());
+    }
+    if (!run.advance()) {
+      break;
+    }
+    again.push(run.line());
+  }
+  assert.deepEqual(again, lines, 'a second uninterrupted run traces the same');
+  return saves;
+}
+
+/** @type {Case[]} */
+const cases = [];
+for (const file of ['behavior-solver', 'behavior-rotation', 'behavior-ramp', 'shape-traversal']) {
+  for (const spec of JSON.parse(readFileSync('fixtures/' + file + '.json', 'utf8')).cases) {
+    cases.push({ name: file + ' ' + spec.name, spec });
+  }
+}
+for (const spec of JSON.parse(readFileSync('fixtures/behavior-verbs.json', 'utf8')).cases) {
+  const played = playVerbs(spec, rules);
+  if (!played.ok || !played.log) {
+    throw new Error(spec.name + ' did not play');
+  }
+  // The script's admitted log; replaying it reproduces the fixture's frames.
+  cases.push({ name: 'behavior-verbs ' + spec.name, spec: { seed: spec.seed, world: spec.world, log: played.log } });
+}
+const minds = JSON.parse(readFileSync('fixtures/behavior-minds.json', 'utf8'));
+cases.push({ name: 'behavior-minds', spec: { seed: minds.seed, world: minds.world, log: minds.log } });
+const threeD = JSON.parse(readFileSync('fixtures/behavior-3d.json', 'utf8'));
+cases.push({ name: 'behavior-3d (reference law)', spec: { seed: threeD.seed, world: threeD.world, log: threeD.log, law: 'reference', retired: true } });
+cases.push({ name: 'the product scene', spec: { scene: 'product' } });
+
+for (const item of cases) {
+  const product = 'scene' in item.spec;
+  test(item.name + ': replay and image restores rerun identically at every chosen point', (t) => {
+    const whole = wholeRun(item.spec);
+    const points = choosePoints(whole, product);
+    t.diagnostic(item.name + ': ' + (whole.lines.length - 1) + ' quanta, restored at ' + points.join(', ') + ' (events ' + JSON.stringify(whole.events) + ')');
+    const expected = whole.lines.concat([endLine(whole.lines.length)]);
+    for (const point of points) {
+      evict();
+      const replayed = replayTo(item.spec, point);
+      assert.equal(diff(expected, rerun(whole.lines, replayed)), 'identical\n', 'replay to ' + point);
+    }
+    const saves = savesAt(item.spec, points, whole.lines);
+    for (const point of points) {
+      const saved = saves.get(point);
+      if (!saved) {
+        throw new Error('no save at ' + point);
+      }
+      for (let again = 0; again < 2; again = again + 1) {
+        const run = replayTo(item.spec, point);
+        evict();
+        scramble(run);
+        run.world.restore(saved);
+        assert.equal(diff(expected, rerun(whole.lines, run)), 'identical\n', 'image at ' + point + ', restore ' + (again + 1));
+      }
+    }
+  });
+}
+
+test('behavior-1c is a 2D capture the loader refuses, so it has no run to restore', () => {
+  const capture = JSON.parse(readFileSync('fixtures/behavior-1c.json', 'utf8'));
+  assert.equal(typeof capture.world.bodies[0].z, 'undefined');
+});
+
+test('the costs on record: replay per quantum, image size, copy out and in', (t) => {
+  const quanta = 3333;
+  const started = performance.now();
+  const run = replayTo({ scene: 'product' }, quanta);
+  const replayMs = performance.now() - started;
+  const out0 = performance.now();
+  const image = imageSolver();
+  const outMs = performance.now() - out0;
+  if (!image) {
+    throw new Error('no image');
+  }
+  const copy0 = performance.now();
+  const copied = new Uint8Array(image.bytes.length);
+  copied.set(image.bytes);
+  const copyMs = performance.now() - copy0;
+  const in0 = performance.now();
+  assert.equal(restoreImage(image), true);
+  const inMs = performance.now() - in0;
+  t.diagnostic('replay: ' + ((replayMs / quanta) * 1000).toFixed(1) + ' us per quantum over ' + quanta + ' quanta of the product scene (' + replayMs.toFixed(0) + ' ms)');
+  t.diagnostic('image: ' + image.bytes.length + ' bytes; out ' + outMs.toFixed(2) + ' ms with its digest; in ' + inMs.toFixed(2) + ' ms with its checks; a bare copy ' + copyMs.toFixed(2) + ' ms');
+  assert.ok(run.tick === quanta);
+});
+
+/**
+ * The binary's globals, imports, and tables, from the section headers.
+ * @param {Uint8Array} data
+ */
+function sections(data) {
+  let at = 8;
+  function u() {
+    let result = 0;
+    let shift = 0;
+    for (;;) {
+      const b = data[at];
+      at = at + 1;
+      result = result + (b & 0x7f) * 2 ** shift;
+      shift = shift + 7;
+      if ((b & 0x80) === 0) {
+        return result;
+      }
+    }
+  }
+  const out = { imports: 0, globals: /** @type {Array<{ type: number, mutable: boolean }>} */ ([]), tables: /** @type {Array<{ min: number, max: number | null }>} */ ([]) };
+  while (at < data.length) {
+    const id = data[at];
+    at = at + 1;
+    const size = u();
+    const end = at + size;
+    if (id === 2) {
+      out.imports = u();
+    } else if (id === 4) {
+      const n = u();
+      for (let i = 0; i < n; i = i + 1) {
+        at = at + 1;
+        const flags = u();
+        const min = u();
+        out.tables.push({ min, max: flags & 1 ? u() : null });
+      }
+    } else if (id === 6) {
+      const n = u();
+      for (let i = 0; i < n; i = i + 1) {
+        const type = data[at];
+        const mutable = data[at + 1] === 1;
+        out.globals.push({ type, mutable });
+        at = at + 2;
+        // i32.const or i64.const and its operand, then end.
+        at = at + 1;
+        u();
+        at = at + 1;
+      }
+    }
+    at = end;
+  }
+  return out;
+}
+
+test('linear memory and the stack pointer are the whole mutable state of the binary', (t) => {
+  const found = sections(binary);
+  t.diagnostic('imports ' + found.imports + '; globals ' + JSON.stringify(found.globals) + '; tables ' + JSON.stringify(found.tables));
+  assert.equal(found.imports, 0, 'nothing imported');
+  assert.deepEqual(found.globals, [{ type: 0x7f, mutable: true }], 'one global: the i32 stack pointer');
+  const exported = WebAssembly.Module.exports(new WebAssembly.Module(binary)).filter((e) => e.kind === 'global').map((e) => e.name);
+  assert.deepEqual(exported, ['__stack_pointer']);
+  for (const table of found.tables) {
+    assert.equal(table.max, table.min, 'a table that cannot grow');
+  }
+  const sp = stackPointer();
+  assert.equal(sp.value, sp.base);
+  assert.equal(sp.base, 1048576);
+});
+
+/** A small case saved mid-run: the rotation stack, in contact, before it sleeps. */
+function stackCase() {
+  const spec = JSON.parse(readFileSync('fixtures/behavior-rotation.json', 'utf8')).cases.find((/** @type {{ name: string }} */ c) => c.name === 'stack');
+  const whole = wholeRun(spec);
+  const point = 20;
+  const run = replayTo(spec, point);
+  const saved = run.world.save();
+  if (!saved.image) {
+    throw new Error('no image');
+  }
+  return { spec, whole, point, run, saved, image: saved.image };
+}
+
+/**
+ * A refused restore throws with its reason and changes nothing: the same
+ * instance, the same snapshot, the same records.
+ * @param {Run} run
+ * @param {WorldSave} save
+ * @param {RegExp} reason
+ */
+function refused(run, save, reason) {
+  const instance = instantiate();
+  const snap = snapshotBytes();
+  const records = JSON.stringify(run.world.bodies);
+  assert.throws(() => run.world.restore(save), reason);
+  assert.equal(instantiate(), instance, 'the same instance');
+  assert.deepEqual(snapshotBytes(), snap, 'the same snapshot');
+  assert.equal(JSON.stringify(run.world.bodies), records, 'the same records');
+}
+
+test('an image from a binary with another digest is refused', () => {
+  const { run, saved, image } = stackCase();
+  const other = image.binary.slice(0, 63) + (image.binary[63] === '0' ? '1' : '0');
+  refused(run, { ...saved, image: { ...image, binary: other } }, /restore refused: the image is from another binary/);
+});
+
+test('an image of the wrong length is refused', () => {
+  const { run, saved, image } = stackCase();
+  const short = image.bytes.slice(0, image.bytes.length - 8);
+  refused(run, { ...saved, image: { ...image, bytes: short, digest: imageDigest(short) } }, /restore refused: the length is not a whole number of pages/);
+  const long = new Uint8Array(image.bytes.length + 8);
+  long.set(image.bytes);
+  refused(run, { ...saved, image: { ...image, bytes: long, digest: imageDigest(long) } }, /restore refused: the length is not a whole number of pages/);
+  const tiny = new Uint8Array(65536);
+  refused(run, { ...saved, image: { ...image, bytes: tiny, digest: imageDigest(tiny) } }, /restore refused: the length is less than a fresh instance memory/);
+});
+
+test('an image with one byte changed is refused by its digest', () => {
+  const { whole, run, saved, image } = stackCase();
+  for (const at of [0, 1048575, Math.floor(image.bytes.length / 2), image.bytes.length - 1]) {
+    const changed = image.bytes.slice();
+    changed[at] = changed[at] ^ 1;
+    refused(run, { ...saved, image: { ...image, bytes: changed } }, /restore refused: the bytes do not match the image digest/);
+  }
+  // The original still restores, and the run goes on as it did.
+  evict();
+  run.world.restore(saved);
+  assert.equal(diff(whole.lines.concat([endLine(whole.lines.length)]), rerun(whole.lines, run)), 'identical\n');
+});
+
+test('an instance whose stack pointer is not at its base is not imaged, and a restore replaces it', () => {
+  const { spec, whole, point, run, saved } = stackCase();
+  const exp = /** @type {{ __stack_pointer: WebAssembly.Global }} */ (/** @type {unknown} */ (instantiate().exports));
+  const base = exp.__stack_pointer.value;
+  // What a trap leaves behind: the epilogue that restores the pointer never ran.
+  exp.__stack_pointer.value = base - 64;
+  assert.throws(() => run.world.save(), /save refused: the stack pointer is not at its base/);
+  // The dead instance is replaced by a fresh one holding the last image.
+  run.world.restore(saved);
+  assert.equal(stackPointer().value, base);
+  const expected = whole.lines.concat([endLine(whole.lines.length)]);
+  assert.equal(diff(expected, rerun(whole.lines, run)), 'identical\n');
+  assert.equal(run.tick, whole.lines.length - 1);
+  assert.ok(point > 0 && spec);
+});
+
+test('without the image, an evicted solver does not rerun the same: the image is what carries it', () => {
+  const { whole, point, run } = stackCase();
+  evict();
+  const found = diff(whole.lines.concat([endLine(whole.lines.length)]), rerun(whole.lines, run)).split('\n');
+  // The frame at the point already reads the other world's snapshot, and the
+  // next quantum rebuilds this world from its records alone.
+  assert.equal(found[0], 'first difference at tick ' + point, found.join('\n'));
+  assert.equal(found[1], 'snapshot');
+});
+
+test('a restore whose rerun was planted to differ by one velocity is caught by the diff', () => {
+  const spec = JSON.parse(readFileSync('fixtures/behavior-rotation.json', 'utf8')).cases.find((/** @type {{ name: string }} */ c) => c.name === 'tumble');
+  const whole = wholeRun(spec);
+  const expected = whole.lines.concat([endLine(whole.lines.length)]);
+  const point = Math.floor(spec.steps / 3);
+  const saved = replayTo(spec, point).world.save();
+  // Unplanted, the restore reruns identically.
+  const clean = replayTo(spec, point);
+  evict();
+  clean.world.restore(saved);
+  assert.equal(diff(expected, rerun(whole.lines, clean)), 'identical\n');
+  // The walker's velocity, one step after the restore.
+  const planted = replayTo(spec, point);
+  evict();
+  planted.world.restore(saved);
+  const walker = planted.world.body('walker');
+  if (!walker) {
+    throw new Error('walker');
+  }
+  walker.vx = walker.vx + 0.001;
+  const lines = rerun(whole.lines, planted);
+  const found = diff(expected, lines).split('\n');
+  assert.equal(found[0], 'first difference at tick ' + point);
+  assert.equal(found[1], 'body walker field vx');
+  // With that line taken from the whole run, the next quantum has moved a body.
+  lines[point] = whole.lines[point];
+  const later = diff(expected, lines).split('\n');
+  assert.equal(later[0], 'first difference at tick ' + (point + 1));
+  assert.match(later[1], /^body (walker|crate) field /);
+});
