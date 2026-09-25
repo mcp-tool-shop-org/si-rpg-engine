@@ -1,9 +1,9 @@
 {
   "name": "si-rpg-engine",
-  "version": "0.4.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Deterministic 3D RPG tick. Slice 3 admits verb drafts at load.",
+  "description": "A deterministic, hashed, replayable 3D simulation engine: a fixed-timestep tick with a Rust-to-WebAssembly physics law, content validated at load, and a checker that admits what a model proposes.",
   "license": "MIT",
   "engines": {
     "node": ">=20"
@@ -21,10 +21,21 @@
     "check": "node harness/check.js",
     "typecheck": "tsc -p tsconfig.json",
     "pretest": "node solver/build.mjs --check",
-    "test": "node --test packages/tick/tick.test.js packages/tick/scene.test.js packages/tick/verbs.test.js packages/tick/minds.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js harness/product.test.js harness/solver.test.js"
+    "test": "node --test packages/tick/tick.test.js packages/tick/scene.test.js packages/tick/verbs.test.js packages/tick/minds.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js harness/product.test.js harness/solver.test.js",
+    "verify": "npm run typecheck && npm test && npm run check",
+    "audit:deps": "npm audit --audit-level=high"
   },
   "devDependencies": {
     "@types/node": "22.19.0",
     "typescript": "5.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcp-tool-shop-org/si-rpg-engine.git"
+  },
+  "homepage": "https://mcp-tool-shop-org.github.io/si-rpg-engine/",
+  "bugs": {
+    "url": "https://github.com/mcp-tool-shop-org/si-rpg-engine/issues"
+  },
+  "author": "mcp-tool-shop"
 }

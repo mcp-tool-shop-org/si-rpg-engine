@@ -72,8 +72,8 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 8,
-      "changed": 42,
+      "added": 0,
+      "changed": 28,
       "moved": 0,
       "parts": 10,
       "removed": 0
@@ -81,86 +81,27 @@
     "items": [
       {
         "kind": "door",
-        "sentence": "CI now also runs packages/tick/minds.test.js.",
+        "sentence": "CI's pull request trigger now also names `worlds/**`.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/tick/minds.test.js"
+          ".github/workflows/ci.yml"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI now also checks harness/minds-scene.mjs.",
+        "sentence": "CI's push trigger now also names `worlds/**`.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/minds-scene.mjs"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "fixtures/behavior-minds.json is now read by packages/tick/minds.test.js.",
-        "subjects": [
-          "fixtures/behavior-minds.json",
-          "packages/tick/minds.test.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "predicates/beliefs/keys.json is now read by packages/tick/beliefs.js.",
-        "subjects": [
-          "predicates/beliefs/keys.json",
-          "packages/tick/beliefs.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "worlds/crate-and-door.json is now also read by packages/tick/minds.test.js.",
-        "subjects": [
-          "worlds/crate-and-door.json",
-          "packages/tick/minds.test.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/tick.js, create tick gained a step, install minds, before mix load.",
-        "subjects": [
-          "packages/tick/tick.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/tick.js, create tick gained a step, mix minds, before snapshot.",
-        "subjects": [
-          "packages/tick/tick.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/scene.js, validate scene gained a step, belief refusal, after create world.",
-        "subjects": [
-          "packages/tick/scene.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "And 2 more changes to the order of work.",
-        "subjects": []
-      },
-      {
-        "kind": "part",
-        "sentence": "beliefs is a new part, drawn from `predicates/beliefs/**`.",
-        "subjects": [
-          "beliefs"
+          ".github/workflows/ci.yml"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "8 files added and 42 changed content, across 10 parts.",
+        "sentence": "28 files changed content, across 10 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "3aa2ddc4c6c6c214175554d08b58591822a98e34",
-      "generatedAt": "2026-09-25T07:36:10.289Z"
+      "commit": "7122b6c1b795ef66b1b1585da8b08f8d35ec7429",
+      "generatedAt": "2026-09-25T08:23:41.857Z"
     },
     "unchanged": false
   },
@@ -183,7 +124,7 @@
     {
       "a": "packages/frame/types.d.ts",
       "b": "packages/tick/tick.js",
-      "either": 7,
+      "either": 8,
       "partLabels": [
         "frame",
         "tick"
@@ -193,7 +134,7 @@
         "tick"
       ],
       "relation": "b-imports-a",
-      "shared": 6
+      "shared": 7
     },
     {
       "a": "packages/propose/bin/propose.js",
@@ -247,7 +188,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 1 source file reaches 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "7122b6c1b795ef66b1b1585da8b08f8d35ec7429",
+  "commit": "ae139284e663ec0255770028c5a5515d112daa62",
   "defaultBranch": "main",
   "derived": "15 parts, mostly JavaScript (49 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -335,8 +276,8 @@
       "sends": [],
       "stages": [],
       "triggers": [
-        "on a pull request touching 10 paths",
-        "on a push to main touching 10 paths",
+        "on a pull request touching 11 paths",
+        "on a push to main touching 11 paths",
         "or by hand"
       ]
     },
@@ -614,9 +555,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T08:23:41.857Z",
+  "generatedAt": "2026-09-25T08:50:58.396Z",
   "limits": [
-    "5 import sites could not be resolved.",
+    "11 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "6 writes and 14 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",

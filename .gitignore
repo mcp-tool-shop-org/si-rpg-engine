@@ -2,3 +2,8 @@ node_modules/
 .jsvu/
 solver/target/
 solver/dist/
+site/.astro/
+site/.astro/
+site/dist/
+site/node_modules/
+.polyglot-cache.json

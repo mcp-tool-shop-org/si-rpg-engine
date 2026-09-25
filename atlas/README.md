@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit 7122b6c.
+Mapped at 2026-09-25 from commit ae13928.
 
 ## What this is
 
@@ -8,23 +8,15 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 15 parts, mostly JavaScript (49 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (3aa2ddc)
+## What changed since 2026-09-25 (7122b6c)
 
-- CI now also runs packages/tick/minds.test.js.
-- CI now also checks harness/minds-scene.mjs.
-- fixtures/behavior-minds.json is now read by packages/tick/minds.test.js.
-- predicates/beliefs/keys.json is now read by packages/tick/beliefs.js.
-- worlds/crate-and-door.json is now also read by packages/tick/minds.test.js.
-- In packages/tick/tick.js, create tick gained a step, install minds, before mix load.
-- In packages/tick/tick.js, create tick gained a step, mix minds, before snapshot.
-- In packages/tick/scene.js, validate scene gained a step, belief refusal, after create world.
-- And 2 more changes to the order of work.
-- beliefs is a new part, drawn from `predicates/beliefs/**`.
-- 8 files added and 42 changed content, across 10 parts.
+- CI's pull request trigger now also names `worlds/**`.
+- CI's push trigger now also names `worlds/**`.
+- 28 files changed content, across 10 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 10 paths; on a push to main touching 10 paths; or by hand. Runs harness/product.test.js, harness/solver.test.js, packages/host/host.test.js and 7 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 14 more.
+1. **CI.** On a pull request touching 11 paths; on a push to main touching 11 paths; or by hand. Runs harness/product.test.js, harness/solver.test.js, packages/host/host.test.js and 7 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 14 more.
 2. **host** (a command people run). Runs packages/host/bin/host.js.
 3. **load** (a command people run). Runs packages/load/bin/load.js.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -70,7 +62,7 @@ CI writes nothing this map can see.
 ## What tends to change together
 
 - **packages/propose/bin/propose.js** and **packages/propose/propose.test.js** changed together in 5 of 5 commits, inside the propose part.
-- **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 6 of 7 commits, and the tick part imports the frame part.
+- **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 7 of 8 commits, and the tick part imports the frame part.
 - **packages/propose/bin/propose.js** and **packages/propose/prompt.js** changed together in 5 of 6 commits, inside the propose part.
 - **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 5 of 6 commits, inside the propose part.
 - **packages/propose/prompt.js** and **packages/propose/propose.test.js** changed together in 5 of 6 commits, inside the propose part.
@@ -112,7 +104,7 @@ Read those in order to follow one pull request end to end.
 
 ## What this map cannot see
 
-- 5 import sites could not be resolved.
+- 11 import sites could not be resolved.
 - 2 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 6 writes and 14 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
