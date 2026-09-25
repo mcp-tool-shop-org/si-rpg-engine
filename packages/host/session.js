@@ -1,6 +1,7 @@
 // The adapter beside the pump. It stamps the newest committed hash.
 // A hash supplied by the page is ignored. The page may be showing an older frame.
 
+import { instantiate } from '../../solver/dist/solver.mjs';
 import { createTick } from '../tick/tick.js';
 import { createWorld, DT, fixtureColliders } from '../tick/world.js';
 import { createMemory } from '../tick/memory.js';
@@ -19,6 +20,7 @@ const STEPS = { left: -1, right: 1 };
  * @param {import('../tick/scene.js').Scene} [scene]
  */
 export function createSession(scene) {
+  instantiate();
   const catalog = loadIntentRules();
   const tick = createTick({
     seed: scene ? scene.seed : FIXTURE_SEED,

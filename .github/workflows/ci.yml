@@ -18,6 +18,7 @@ on:
       - package.json
       - package-lock.json
       - tsconfig.json
+      - solver/**
       - .github/workflows/ci.yml
   pull_request:
     paths:
@@ -29,6 +30,7 @@ on:
       - package.json
       - package-lock.json
       - tsconfig.json
+      - solver/**
       - .github/workflows/ci.yml
   workflow_dispatch:
 
@@ -39,7 +41,7 @@ concurrency:
 jobs:
   engines:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,6 +50,15 @@ jobs:
           cache: npm
       - name: Install dev dependencies
         run: npm ci
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.98.1"
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: solver
+      - name: Rebuild the solver and check its digest
+        run: node solver/build.mjs --check
       - name: Check the kernel contract
         run: npm run typecheck
       - name: Run the kernel fixture

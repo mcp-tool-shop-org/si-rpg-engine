@@ -67,30 +67,80 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 0,
-      "changed": 64,
+      "added": 14,
+      "changed": 75,
       "moved": 0,
-      "parts": 12,
+      "parts": 14,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "write-golden now also runs harness/sim.mjs.",
+        "sentence": "CI's pull request trigger now also names `solver/**`.",
         "subjects": [
-          "package.json",
-          "harness/sim.mjs"
+          ".github/workflows/ci.yml"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI's push trigger now also names `solver/**`.",
+        "subjects": [
+          ".github/workflows/ci.yml"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also runs solver/build.mjs.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "solver/build.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/solver.sha256 is now written by solver/build.mjs.",
+        "subjects": [
+          "fixtures/solver.sha256",
+          "solver/build.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "solver/dist is now written by solver/build.mjs.",
+        "subjects": [
+          "solver/dist",
+          "solver/build.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/solver.sha256 is now read by solver/build.mjs.",
+        "subjects": [
+          "fixtures/solver.sha256",
+          "solver/build.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "And 1 more new writer or reader of a place.",
+        "subjects": []
+      },
+      {
+        "kind": "part",
+        "sentence": "solver is a new part, drawn from `solver/**`.",
+        "subjects": [
+          "solver"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "64 files changed content, across 12 parts.",
+        "sentence": "14 files added and 75 changed content, across 14 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "d8f197708fa264d61334294eaff95927f958813c",
-      "generatedAt": "2026-09-24T23:27:47.530Z"
+      "commit": "3ba2a840e6dbb425fb4fef484af5383435c39736",
+      "generatedAt": "2026-09-24T23:31:28.654Z"
     },
     "unchanged": false
   },
@@ -172,13 +222,13 @@
     }
   ],
   "changesTogetherNote": [
-    "Confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions.",
-    "Window: 180 days; a pair counts from 3 shared commits, since the window holds fewer than 30 qualifying commits."
+    "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
+    "Window: 180 days; a pair counts from 3 shared commits, since 0 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "3ba2a840e6dbb425fb4fef484af5383435c39736",
+  "commit": "6b9bae2cc26e389025ba87d32de16ffeb5f22034",
   "defaultBranch": "main",
-  "derived": "13 parts, mostly JavaScript (38 files). Work enters through 7 doors; the busiest is CI, which reaches 7 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "14 parts, mostly JavaScript (39 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -198,7 +248,6 @@
         "packages/tick/"
       ],
       "checksCount": 14,
-      "checksMore": 37,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -236,6 +285,11 @@
           "files": 9
         },
         {
+          "boundary": "solver",
+          "depth": 0,
+          "files": 1
+        },
+        {
           "boundary": "tick",
           "depth": 0,
           "files": 11
@@ -247,22 +301,21 @@
         "packages/load/load.test.js",
         "packages/propose/propose.test.js",
         "packages/tick/scene.test.js",
-        "packages/tick/tick.test.js"
+        "packages/tick/tick.test.js",
+        "solver/build.mjs"
       ],
-      "runsCount": 6,
-      "runsMore": 3,
+      "runsCount": 7,
       "sends": [],
       "stages": [],
       "triggers": [
-        "on a pull request touching 9 paths",
-        "on a push to main touching 9 paths",
+        "on a pull request touching 10 paths",
+        "on a push to main touching 10 paths",
         "or by hand"
       ]
     },
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#host",
       "kind": "command",
@@ -290,7 +343,6 @@
         "packages/host/bin/host.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -298,7 +350,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#load",
       "kind": "command",
@@ -326,7 +377,6 @@
         "packages/load/bin/load.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -334,7 +384,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#propose",
       "kind": "command",
@@ -362,7 +411,6 @@
         "packages/propose/bin/propose.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -370,7 +418,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#write-golden",
       "kind": "command",
@@ -401,7 +448,6 @@
         "harness/write-golden.js"
       ],
       "runsCount": 2,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -409,7 +455,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#play",
       "kind": "command",
@@ -432,7 +477,6 @@
         "packages/tick/bin/play.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -440,7 +484,6 @@
     {
       "checks": [],
       "checksCount": 0,
-      "checksMore": 0,
       "file": "package.json",
       "id": "package.json#replay",
       "kind": "command",
@@ -463,7 +506,6 @@
         "packages/tick/bin/replay.js"
       ],
       "runsCount": 1,
-      "runsMore": 0,
       "sends": [],
       "stages": [],
       "triggers": []
@@ -526,14 +568,23 @@
       "writers": [
         "harness/write-golden.js"
       ]
+    },
+    {
+      "block": true,
+      "place": "fixtures/solver.sha256",
+      "writers": [
+        "solver/build.mjs when run without --check"
+      ]
     }
   ],
-  "generatedAt": "2026-09-24T23:31:28.654Z",
+  "generatedAt": "2026-09-25T00:20:26.183Z",
   "limits": [
-    "1 read uses a path built at run time and is not named here.",
-    "5 writes and 8 reads go to the directory the command is run in, the home directory, a temporary directory or a path its caller passes, not to this repository.",
-    "1 command is built at run time and not followed.",
-    "Statistics confidence is low: fewer than 30 qualifying commits in the window, and fewer than 25 source files reach 10 revisions."
+    "3 import sites could not be resolved.",
+    "2 reads use paths built at run time and are not named here.",
+    "1 write goes to places this repository does not track, so it is not listed as generated.",
+    "5 writes and 7 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "5 commands are built at run time and not followed, 3 of them in tests.",
+    "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
   "partLabels": {
@@ -548,10 +599,11 @@
     "propose": "propose",
     "root": "the repository root",
     "scenes": "scenes",
+    "solver": "solver",
     "tick": "tick",
     "workflows": "workflows"
   },
-  "parts": 13,
+  "parts": 14,
   "readers": [],
   "repo": "mcp-tool-shop-org/si-rpg-engine",
   "sequences": [
@@ -658,12 +710,11 @@
       ]
     }
   ],
-  "startDoor": "package.json#host",
+  "startDoor": ".github/workflows/ci.yml",
   "startHere": [
-    "packages/host/bin/host.js",
-    "packages/tick/scene.js"
+    ".github/workflows/ci.yml",
+    "packages/tick/bin/play.js"
   ],
-  "startReason": "This path follows host (a command people run) from its entry, since CI runs only tests.",
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
   "testFiles": 6,
@@ -672,13 +723,20 @@
     "host": 1,
     "load": 1,
     "propose": 1,
+    "solver": 0,
     "tick": 6
   },
   "unnamedWrites": 0,
   "unread": [],
   "unreadFiles": 0,
   "unreadNote": [],
-  "untested": [],
+  "untested": [
+    {
+      "part": "solver",
+      "partLabel": "solver",
+      "testedBy": 0
+    }
+  ],
   "untestedNote": [],
-  "written": 1
+  "written": 2
 }

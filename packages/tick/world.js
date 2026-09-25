@@ -1,5 +1,7 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
-// Arithmetic is add, subtract, multiply, divide, and square root.
+// The product step is the WASM binary. The JavaScript below it is the reference.
+
+import { stepBodies } from '../../solver/dist/solver.mjs';
 
 export const DT = 1 / 64;
 export const G = -8;
@@ -16,7 +18,11 @@ export const UNDRIVEN_DRAG = 0;
 /**
  * @param {{ bodies: Body[]; colliders: StaticCollider[] }} init
  */
-export function createWorld(init) {
+/**
+ * @param {{ bodies: Body[]; colliders: StaticCollider[] }} init
+ * @param {'product' | 'reference'} [law] product calls the binary; reference is the JavaScript kernel
+ */
+export function createWorld(init, law) {
   /** @type {Body[]} */
   const bodies = init.bodies.map((b) => ({
     id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz, hx: b.hx, hy: b.hy, hz: b.hz,
@@ -43,6 +49,10 @@ export function createWorld(init) {
    */
   function step(driven) {
     const driving = driven || new Set();
+    if (law !== 'reference') {
+      stepBodies(bodies, colliders, driving);
+      return;
+    }
     for (let i = 0; i < bodies.length; i = i + 1) {
       const b = bodies[i];
       if (!driving.has(b.id)) {

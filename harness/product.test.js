@@ -1,6 +1,35 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { createWorld } from '../packages/tick/world.js';
 import { createProductWorld, productDriven } from './product-scene.mjs';
+
+test('the binary matches the reference box step on the product scene', () => {
+  const seeded = createProductWorld();
+  const init = {
+    bodies: seeded.bodies.map((body) => ({ ...body })),
+    colliders: seeded.colliders.map((box) => ({ ...box })),
+  };
+  const binary = createWorld(init, 'product');
+  const reference = createWorld({
+    bodies: init.bodies.map((body) => ({ ...body })),
+    colliders: init.colliders.map((box) => ({ ...box })),
+  }, 'reference');
+  const driven = new Set(productDriven);
+  for (let i = 0; i < 10000; i = i + 1) {
+    binary.step(driven);
+    reference.step(driven);
+  }
+  for (let i = 0; i < binary.bodies.length; i = i + 1) {
+    const left = binary.bodies[i];
+    const right = reference.bodies[i];
+    assert.equal(Object.is(left.x, right.x), true, left.id + ' x');
+    assert.equal(Object.is(left.y, right.y), true, left.id + ' y');
+    assert.equal(Object.is(left.z, right.z), true, left.id + ' z');
+    assert.equal(Object.is(left.vx, right.vx), true, left.id + ' vx');
+    assert.equal(Object.is(left.vy, right.vy), true, left.id + ' vy');
+    assert.equal(Object.is(left.vz, right.vz), true, left.id + ' vz');
+  }
+});
 
 test('the product scene fires every branch of the solver on the first quantum', () => {
   const world = createProductWorld();
