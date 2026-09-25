@@ -1,28 +1,22 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit e6094ab.
+Mapped at 2026-09-25 from commit 20c4c51.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-15 parts, mostly JavaScript (80 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+15 parts, mostly JavaScript (81 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (31bb94d)
+## What changed since 2026-09-25 (e6094ab)
 
-- CI now also runs harness/bundle.mjs and harness/bundle.test.js.
-- CI now also checks harness/corpus.mjs and harness/events.mjs.
-- Corpus (.github/workflows/corpus.yml) is a new door. It starts on a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. It runs harness/corpus.mjs and solver/build.mjs.
-- fixtures/ is now also read by harness/corpus.mjs.
-- fixtures/behavior-3d.json is now also read by harness/bundle.test.js.
-- fixtures/behavior-minds.json is now also read by harness/bundle.test.js.
-- And 7 more new writers and readers of places.
-- harness/check.js now starts at bundle product; it started at match.
-- In harness/course.test.js, step run gained a step, record run, before create world.
-- In harness/outcome.test.js, translated run gained a step, record run, before create world.
-- And 9 more changes to the order of work.
-- site/src/content/docs/handbook/testing.md is new and belongs to no part, so atlas check fails on it against the previous map.
-- 16 files added and 49 changed content, across 7 parts.
+- tools/review.mjs is now read by tools/review.mjs.
+- In harness/corpus.mjs, run corpus gained a step, line, before pair.
+- In harness/corpus.mjs, run corpus gained a step, pair, before pair.
+- In harness/corpus.mjs, run corpus gained a step, pair, before pair.
+- And 17 more changes to the order of work.
+- tools/review.mjs is new and belongs to no part, so atlas check fails on it against the previous map.
+- 1 file added and 9 changed content, across 4 parts.
 
 ## What comes in
 
@@ -149,7 +143,7 @@ Read those in order to follow one pull request end to end.
 - 2 writes and 2 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 12 writes and 23 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 15 commands are built at run time and not followed, 12 of them in tests.
+- 16 commands are built at run time and not followed, 13 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.

@@ -267,7 +267,7 @@
           "path": "fixtures/corpus/product-rebuild-261.bundle.json"
         },
         {
-          "hash": "8f618ce3e88fbedd5987e15e740131a771aa5a0a9c764056541606d5154f6b29",
+          "hash": "228ca1466dbaa7f44e1e066874e879583cb09ab9714b2f4ed5d77905e3e31a3d",
           "path": "fixtures/corpus/walker-stall-flat-ground.bundle.json"
         },
         {
@@ -373,8 +373,8 @@
     },
     {
       "dynamicReads": 1,
-      "dynamicSpawns": 9,
-      "dynamicSpawnsInTests": 7,
+      "dynamicSpawns": 10,
+      "dynamicSpawnsInTests": 8,
       "dynamicWrites": 2,
       "entryPoints": [
         "harness/write-golden.js"
@@ -478,14 +478,14 @@
                 {
                   "inner": [
                     {
-                      "line": 203,
+                      "line": 206,
                       "name": "replayTo",
                       "target": {
                         "file": "packages/tick/runs.js"
                       }
                     },
                     {
-                      "line": 103,
+                      "line": 106,
                       "name": "subarray",
                       "target": null,
                       "via": "sparseImage"
@@ -578,7 +578,7 @@
         {
           "entry": "replayCommand",
           "entryRule": 1,
-          "hash": "8bd32790f49480342f85752397ac62f14e7be742b0040e43527ad6ef0d6bbb04",
+          "hash": "34404854ec2ca58ae0275f5cc63360ec25fae2213f9d31320136a52cd73d4963",
           "importsFiles": [
             "harness/bundle.mjs",
             "harness/corpus.mjs",
@@ -692,7 +692,7 @@
             "runCorpus",
             "writeCorpus"
           ],
-          "hash": "794e9ab2591538675631aafdecf512c79b7942b3c619f842d2f19d33cbd32860",
+          "hash": "4d4b6182c9345b8b0bb26376410ca1e4ea80a5b549bbe58b07c76ae4bd9d4c00",
           "importsFiles": [
             "harness/bundle.mjs",
             "harness/events.mjs",
@@ -700,6 +700,7 @@
             "harness/solver-scene.mjs",
             "harness/verbs-scene.mjs",
             "packages/tick/bundle.js",
+            "packages/tick/difference.js",
             "packages/tick/predicates.js",
             "packages/tick/scene.js"
           ],
@@ -708,7 +709,7 @@
             {
               "calls": [
                 {
-                  "line": 98,
+                  "line": 99,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -723,14 +724,14 @@
             {
               "calls": [
                 {
-                  "line": 121,
+                  "line": 122,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 123,
+                  "line": 124,
                   "name": "bundleText",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -745,14 +746,14 @@
             {
               "calls": [
                 {
-                  "line": 162,
+                  "line": 163,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "line": 165,
+                  "line": 166,
                   "name": "playVerbs",
                   "target": {
                     "file": "harness/verbs-scene.mjs"
@@ -767,101 +768,273 @@
             {
               "calls": [
                 {
-                  "line": 194,
-                  "name": "replayTo",
-                  "target": {
-                    "file": "harness/replay-to.mjs"
-                  }
-                },
-                {
-                  "line": 213,
-                  "name": "contacts",
-                  "target": {
-                    "file": "harness/events.mjs"
-                  }
-                },
-                {
-                  "line": 214,
-                  "name": "asleep",
-                  "target": {
-                    "file": "harness/events.mjs"
-                  }
-                },
-                {
-                  "line": 222,
-                  "name": "contacts",
-                  "target": {
-                    "file": "harness/events.mjs"
-                  }
-                },
-                {
                   "line": 223,
-                  "name": "asleep",
-                  "target": {
-                    "file": "harness/events.mjs"
-                  }
-                },
-                {
-                  "line": 289,
-                  "name": "replayTo",
-                  "target": {
-                    "file": "harness/replay-to.mjs"
-                  }
-                },
-                {
-                  "line": 302,
-                  "name": "sparseImage",
-                  "target": {
-                    "file": "packages/tick/bundle.js"
-                  }
-                },
-                {
-                  "line": 317,
-                  "name": "replayTo",
-                  "target": {
-                    "file": "harness/replay-to.mjs"
-                  }
-                },
-                {
-                  "line": 320,
-                  "name": "denseImage",
-                  "target": {
-                    "file": "packages/tick/bundle.js"
-                  }
-                },
-                {
-                  "line": 338,
-                  "name": "sparsePages",
-                  "target": {
-                    "file": "packages/tick/bundle.js"
-                  }
-                },
-                {
-                  "line": 347,
-                  "name": "traceDifference",
-                  "target": {
-                    "file": "harness/bundle.mjs"
-                  }
-                },
-                {
-                  "line": 348,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 349,
+                  "line": 223,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 349,
+                  "line": 223,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
+                  }
+                },
+                {
+                  "line": 227,
+                  "name": "withRecords",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                },
+                {
+                  "line": 227,
+                  "name": "bundleFrom",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  }
+                },
+                {
+                  "line": 227,
+                  "name": "bundleDir",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  }
+                },
+                {
+                  "line": 227,
+                  "name": "writeBundle",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "failureBundle"
+            },
+            {
+              "calls": [
+                {
+                  "line": 330,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                },
+                {
+                  "line": 323,
+                  "name": "line",
+                  "target": null,
+                  "via": "keep"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "chain"
+            },
+            {
+              "calls": [
+                {
+                  "branch": "a !== undefined && b !== undefined",
+                  "line": 372,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  }
+                },
+                {
+                  "line": 378,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  }
+                },
+                {
+                  "branch": "untraced.end !== quanta",
+                  "line": 384,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "parting"
+            },
+            {
+              "calls": [
+                {
+                  "line": 330,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  },
+                  "via": "chain"
+                },
+                {
+                  "line": 323,
+                  "name": "line",
+                  "target": null,
+                  "via": "keep"
+                },
+                {
+                  "branch": "a !== undefined && b !== undefined",
+                  "line": 372,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  },
+                  "via": "parting"
+                },
+                {
+                  "line": 378,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  },
+                  "via": "parting"
+                },
+                {
+                  "branch": "untraced.end !== quanta",
+                  "line": 384,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  },
+                  "via": "parting"
+                },
+                {
+                  "branch": "split",
+                  "line": 223,
+                  "name": "makeBundle",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
+                  "line": 223,
+                  "name": "bundleDir",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
+                  "line": 223,
+                  "name": "writeBundle",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
+                  "line": 227,
+                  "name": "withRecords",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
+                  "line": 227,
+                  "name": "bundleFrom",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
+                  "line": 227,
+                  "name": "bundleDir",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
+                  "line": 227,
+                  "name": "writeBundle",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "line": 485,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                },
+                {
+                  "branch": "imaging.hash !== want",
+                  "line": 493,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  }
+                },
+                {
+                  "line": 501,
+                  "name": "sparseImage",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  }
+                },
+                {
+                  "branch": "!imaging.advance()",
+                  "line": 511,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  }
+                },
+                {
+                  "line": 536,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                },
+                {
+                  "line": 547,
+                  "name": "denseImage",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  }
+                },
+                {
+                  "line": 575,
+                  "name": "sparsePages",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  }
+                },
+                {
+                  "line": 585,
+                  "name": "traceDifference",
+                  "target": {
+                    "file": "harness/bundle.mjs"
                   }
                 }
               ],
@@ -873,7 +1046,7 @@
             {
               "calls": [
                 {
-                  "line": 389,
+                  "line": 623,
                   "name": "readBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -882,7 +1055,7 @@
                 {
                   "inner": [
                     {
-                      "line": 391,
+                      "line": 494,
                       "name": "replayTo",
                       "target": {
                         "file": "packages/tick/runs.js"
@@ -890,7 +1063,7 @@
                     },
                     {
                       "branch": "run.hash !== bundle.hashes[t]",
-                      "line": 396,
+                      "line": 501,
                       "name": "pair",
                       "target": {
                         "file": "packages/tick/difference.js"
@@ -898,22 +1071,30 @@
                     },
                     {
                       "branch": "!run.advance()",
-                      "line": 402,
+                      "line": 508,
                       "name": "pair",
                       "target": {
                         "file": "packages/tick/difference.js"
                       }
                     },
                     {
-                      "line": 454,
+                      "line": 589,
                       "name": "replayTo",
                       "target": {
                         "file": "packages/tick/runs.js"
                       }
                     },
                     {
+                      "branch": "!again.advance()",
+                      "line": 597,
+                      "name": "pair",
+                      "target": {
+                        "file": "packages/tick/difference.js"
+                      }
+                    },
+                    {
                       "branch": "restored.length !== whole.length || restored.some((line, i)…",
-                      "line": 348,
+                      "line": 425,
                       "name": "endLine",
                       "target": {
                         "file": "packages/tick/trace-line.js"
@@ -922,7 +1103,7 @@
                     },
                     {
                       "branch": "restored.length !== whole.length || restored.some((line, i)…",
-                      "line": 348,
+                      "line": 425,
                       "name": "compareLines",
                       "target": {
                         "file": "packages/tick/difference.js"
@@ -930,21 +1111,21 @@
                       "via": "traceDifference"
                     }
                   ],
-                  "line": 390,
+                  "line": 624,
                   "name": "replayBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 414,
+                  "line": 648,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 162,
+                  "line": 163,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
@@ -996,7 +1177,7 @@
                       }
                     }
                   ],
-                  "line": 165,
+                  "line": 166,
                   "name": "playVerbs",
                   "target": {
                     "file": "harness/verbs-scene.mjs"
@@ -1004,7 +1185,7 @@
                   "via": "fixtureRuns"
                 },
                 {
-                  "line": 428,
+                  "line": 662,
                   "name": "bundleFrom",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1013,7 +1194,7 @@
                 {
                   "inner": [
                     {
-                      "line": 391,
+                      "line": 494,
                       "name": "replayTo",
                       "target": {
                         "file": "packages/tick/runs.js"
@@ -1021,7 +1202,7 @@
                     },
                     {
                       "branch": "run.hash !== bundle.hashes[t]",
-                      "line": 396,
+                      "line": 501,
                       "name": "pair",
                       "target": {
                         "file": "packages/tick/difference.js"
@@ -1029,22 +1210,30 @@
                     },
                     {
                       "branch": "!run.advance()",
-                      "line": 402,
+                      "line": 508,
                       "name": "pair",
                       "target": {
                         "file": "packages/tick/difference.js"
                       }
                     },
                     {
-                      "line": 454,
+                      "line": 589,
                       "name": "replayTo",
                       "target": {
                         "file": "packages/tick/runs.js"
                       }
                     },
                     {
+                      "branch": "!again.advance()",
+                      "line": 597,
+                      "name": "pair",
+                      "target": {
+                        "file": "packages/tick/difference.js"
+                      }
+                    },
+                    {
                       "branch": "restored.length !== whole.length || restored.some((line, i)…",
-                      "line": 348,
+                      "line": 425,
                       "name": "endLine",
                       "target": {
                         "file": "packages/tick/trace-line.js"
@@ -1053,7 +1242,7 @@
                     },
                     {
                       "branch": "restored.length !== whole.length || restored.some((line, i)…",
-                      "line": 348,
+                      "line": 425,
                       "name": "compareLines",
                       "target": {
                         "file": "packages/tick/difference.js"
@@ -1061,21 +1250,21 @@
                       "via": "traceDifference"
                     }
                   ],
-                  "line": 432,
+                  "line": 666,
                   "name": "replayBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 443,
+                  "line": 677,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 443,
+                  "line": 677,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1119,7 +1308,7 @@
                       }
                     }
                   ],
-                  "line": 457,
+                  "line": 691,
                   "name": "play",
                   "target": {
                     "file": "harness/solver-scene.mjs"
@@ -1142,21 +1331,21 @@
                       }
                     }
                   ],
-                  "line": 466,
+                  "line": 700,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 466,
+                  "line": 700,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 466,
+                  "line": 700,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1180,7 +1369,7 @@
                       "via": "validateBelief"
                     }
                   ],
-                  "line": 483,
+                  "line": 717,
                   "name": "validateScene",
                   "target": {
                     "file": "packages/tick/scene.js"
@@ -1205,84 +1394,90 @@
                       }
                     }
                   ],
-                  "line": 194,
+                  "line": 330,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   },
-                  "via": "productLong"
+                  "via": "chain"
                 },
                 {
+                  "line": 323,
+                  "name": "line",
+                  "target": null,
+                  "via": "keep"
+                },
+                {
+                  "branch": "a !== undefined && b !== undefined",
+                  "line": 372,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  },
+                  "via": "parting"
+                },
+                {
+                  "line": 378,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  },
+                  "via": "parting"
+                },
+                {
+                  "branch": "untraced.end !== quanta",
+                  "line": 384,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  },
+                  "via": "parting"
+                },
+                {
+                  "branch": "split",
                   "inner": [
                     {
-                      "line": 16,
-                      "name": "snapshot",
-                      "target": null
+                      "line": 51,
+                      "name": "withRecords",
+                      "target": {
+                        "file": "harness/replay-to.mjs"
+                      }
                     },
                     {
-                      "line": 21,
-                      "name": "carriedByOf",
-                      "target": null
-                    }
-                  ],
-                  "line": 213,
-                  "name": "contacts",
-                  "target": {
-                    "file": "harness/events.mjs"
-                  },
-                  "via": "productLong"
-                },
-                {
-                  "inner": [
-                    {
-                      "line": 39,
-                      "name": "sleeping",
-                      "target": null
-                    }
-                  ],
-                  "line": 214,
-                  "name": "asleep",
-                  "target": {
-                    "file": "harness/events.mjs"
-                  },
-                  "via": "productLong"
-                },
-                {
-                  "inner": [
-                    {
-                      "line": 16,
-                      "name": "snapshot",
-                      "target": null
-                    },
-                    {
-                      "line": 21,
-                      "name": "carriedByOf",
-                      "target": null
-                    }
-                  ],
-                  "line": 222,
-                  "name": "contacts",
-                  "target": {
-                    "file": "harness/events.mjs"
-                  },
-                  "via": "productLong"
-                },
-                {
-                  "inner": [
-                    {
-                      "line": 39,
-                      "name": "sleeping",
-                      "target": null
+                      "line": 51,
+                      "name": "captureBundle",
+                      "target": {
+                        "file": "packages/tick/bundle.js"
+                      }
                     }
                   ],
                   "line": 223,
-                  "name": "asleep",
+                  "name": "makeBundle",
                   "target": {
-                    "file": "harness/events.mjs"
+                    "file": "harness/bundle.mjs"
                   },
-                  "via": "productLong"
+                  "via": "failureBundle"
                 },
                 {
+                  "branch": "split",
+                  "line": 223,
+                  "name": "bundleDir",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
+                  "line": 223,
+                  "name": "writeBundle",
+                  "target": {
+                    "file": "packages/tick/bundle.js"
+                  },
+                  "via": "failureBundle"
+                },
+                {
+                  "branch": "split",
                   "inner": [
                     {
                       "branch": "'scene' in spec",
@@ -1290,80 +1485,24 @@
                       "name": "productInit",
                       "target": {
                         "file": "harness/product-scene.mjs"
-                      },
-                      "via": "withRecords"
-                    },
-                    {
-                      "line": 54,
-                      "name": "replayTo",
-                      "target": {
-                        "file": "packages/tick/runs.js"
                       }
                     }
                   ],
-                  "line": 289,
-                  "name": "replayTo",
+                  "line": 227,
+                  "name": "withRecords",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   },
-                  "via": "productLong"
+                  "via": "failureBundle"
                 },
                 {
-                  "inner": [
-                    {
-                      "line": 103,
-                      "name": "subarray",
-                      "target": null
-                    }
-                  ],
-                  "line": 302,
-                  "name": "sparseImage",
+                  "branch": "split",
+                  "line": 227,
+                  "name": "bundleFrom",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   },
-                  "via": "productLong"
-                },
-                {
-                  "inner": [
-                    {
-                      "branch": "'scene' in spec",
-                      "line": 42,
-                      "name": "productInit",
-                      "target": {
-                        "file": "harness/product-scene.mjs"
-                      },
-                      "via": "withRecords"
-                    },
-                    {
-                      "line": 54,
-                      "name": "replayTo",
-                      "target": {
-                        "file": "packages/tick/runs.js"
-                      }
-                    }
-                  ],
-                  "line": 317,
-                  "name": "replayTo",
-                  "target": {
-                    "file": "harness/replay-to.mjs"
-                  },
-                  "via": "productLong"
-                },
-                {
-                  "line": 320,
-                  "name": "denseImage",
-                  "target": {
-                    "file": "packages/tick/bundle.js"
-                  },
-                  "via": "productLong"
-                },
-                {
-                  "line": 338,
-                  "name": "sparsePages",
-                  "target": {
-                    "file": "packages/tick/bundle.js"
-                  },
-                  "via": "productLong"
+                  "via": "failureBundle"
                 }
               ],
               "exported": true,
@@ -1377,7 +1516,7 @@
         {
           "entry": "stepRun",
           "entryRule": 1,
-          "hash": "e4d165547b86c2d9b38d3e776360332ac34e854b5351dc11e22bbf43680da12e",
+          "hash": "1e27b749c53fbd7c5802e2914aa58022ba0de8fc8973612d5d59d6f594b4654d",
           "importsFiles": [
             "harness/bundle.mjs",
             "packages/tick/world.js"
@@ -1593,7 +1732,7 @@
             "asleep",
             "contacts"
           ],
-          "hash": "33c6c9f466e124677d788c6a5d16802f09462b9effc1a166eb65cb77aa913d72",
+          "hash": "88d09333959798c3d61161dbe09f4b403224674cba698d9b8a903cb8a9b9b47f",
           "path": "harness/events.mjs",
           "sequences": [
             {
@@ -1663,7 +1802,7 @@
         {
           "entry": "translatedRun",
           "entryRule": 1,
-          "hash": "58b80860becdef05820ff14a9e3f7703243ed6e276f8bb6efc0606c5e14fc153",
+          "hash": "35b432b4d754997b43694cb1a671667d6e17749a9a7cf592f68f26443ceffc66",
           "importsFiles": [
             "harness/behaviour.mjs",
             "harness/bundle.mjs",
@@ -4149,7 +4288,7 @@
         {
           "entry": "isWorld",
           "entryRule": 1,
-          "hash": "e1d3c19f910d4a5c688b8ee44a30b042264e1c73ea901ae84b30a4ed71735f5c",
+          "hash": "f019623e9ece16a7c1389d7791e829d5a5ff9b3a9a4175af033f93f8cc9d015c",
           "importsFiles": [
             "packages/tick/bundle.js",
             "packages/tick/fixture.js",
@@ -4165,6 +4304,7 @@
           "entryRule": 4,
           "exports": [
             "bundleFrom",
+            "bundleProblem",
             "bundleText",
             "captureBundle",
             "denseImage",
@@ -4173,13 +4313,14 @@
             "nonZeroPages",
             "readBundle",
             "replayBundle",
+            "runThrew",
             "sparseImage",
             "sparsePages",
             "specOf",
             "traceDifference",
             "writeBundle"
           ],
-          "hash": "c66ab1880446a15d73286b788c2380a106b2b139f407cfbc364092c91a1921e8",
+          "hash": "483189a617992c5f6f4e6c75ff8e57830ed2ab29f58b0168996ccd1f7b6488ad",
           "importsFiles": [
             "packages/tick/difference.js",
             "packages/tick/runs.js",
@@ -4191,7 +4332,7 @@
             {
               "calls": [
                 {
-                  "line": 103,
+                  "line": 106,
                   "name": "subarray",
                   "target": null
                 }
@@ -4204,14 +4345,14 @@
             {
               "calls": [
                 {
-                  "line": 203,
+                  "line": 206,
                   "name": "replayTo",
                   "target": {
                     "file": "packages/tick/runs.js"
                   }
                 },
                 {
-                  "line": 103,
+                  "line": 106,
                   "name": "subarray",
                   "target": null,
                   "via": "sparseImage"
@@ -4225,14 +4366,14 @@
             {
               "calls": [
                 {
-                  "line": 348,
+                  "line": 425,
                   "name": "endLine",
                   "target": {
                     "file": "packages/tick/trace-line.js"
                   }
                 },
                 {
-                  "line": 348,
+                  "line": 425,
                   "name": "compareLines",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -4247,7 +4388,7 @@
             {
               "calls": [
                 {
-                  "line": 391,
+                  "line": 494,
                   "name": "replayTo",
                   "target": {
                     "file": "packages/tick/runs.js"
@@ -4255,7 +4396,7 @@
                 },
                 {
                   "branch": "run.hash !== bundle.hashes[t]",
-                  "line": 396,
+                  "line": 501,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -4263,22 +4404,30 @@
                 },
                 {
                   "branch": "!run.advance()",
-                  "line": 402,
+                  "line": 508,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
                   }
                 },
                 {
-                  "line": 454,
+                  "line": 589,
                   "name": "replayTo",
                   "target": {
                     "file": "packages/tick/runs.js"
                   }
                 },
                 {
+                  "branch": "!again.advance()",
+                  "line": 597,
+                  "name": "pair",
+                  "target": {
+                    "file": "packages/tick/difference.js"
+                  }
+                },
+                {
                   "branch": "restored.length !== whole.length || restored.some((line, i)…",
-                  "line": 348,
+                  "line": 425,
                   "name": "endLine",
                   "target": {
                     "file": "packages/tick/trace-line.js"
@@ -4287,7 +4436,7 @@
                 },
                 {
                   "branch": "restored.length !== whole.length || restored.some((line, i)…",
-                  "line": 348,
+                  "line": 425,
                   "name": "compareLines",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -5375,7 +5524,7 @@
           "path": ".github/workflows/ci.yml"
         },
         {
-          "hash": "fb9149f55a6e266f4565123a86feabea76ae5b4a6e4f94fc050907321d9df860",
+          "hash": "f4e98e1df68619de337dba9f5b912a860156e80778f17a24d20efd31a1a47c22",
           "path": ".github/workflows/corpus.yml"
         },
         {
@@ -5995,7 +6144,7 @@
         {
           "job": "corpus",
           "step": "Replay the corpus",
-          "text": "set -euo pipefail\necho \"runner image $ImageOS $ImageVersion\"\nmkdir -p \"$RUNNER_TEMP/bundles\"\nSI_RPG_BUNDLES=\"$RUNNER_TEMP/bundles\" node harness/corpus.mjs --summary \"$RUNNER_TEMP/issue.md\" --title \"$RUNNER_TEMP/issue-title.txt\"\n"
+          "text": "set -euo pipefail\necho \"runner image $ImageOS $ImageVersion\"\nmkdir -p \"$RUNNER_TEMP/bundles\"\nSI_RPG_BUNDLES=\"$RUNNER_TEMP/bundles\" node harness/corpus.mjs --summary \"$RUNNER_TEMP/issue.md\" --title \"$RUNNER_TEMP/issue-title.txt\" 2>&1 | tee \"$RUNNER_TEMP/corpus.log\"\n"
         },
         {
           "job": "corpus",
@@ -6005,7 +6154,7 @@
         {
           "job": "corpus",
           "step": "Open one issue",
-          "text": "set -euo pipefail\nbody=\"$RUNNER_TEMP/issue-body.md\"\nif [ -s \"$RUNNER_TEMP/issue-title.txt\" ]; then\n  title=$(head -n 1 \"$RUNNER_TEMP/issue-title.txt\")\n  cat \"$RUNNER_TEMP/issue.md\" > \"$body\"\nelse\n  title=\"corpus: the job failed before the corpus finished (${GITHUB_REF_NAME})\"\n  echo \"The corpus job failed before it wrote a summary: see the run's log.\" > \"$body\"\nfi\n{\n  echo\n  echo \"Run: $RUN_URL on \\`${GITHUB_REF_NAME}\\` at \\`${GITHUB_SHA}\\`, runner image $ImageOS $ImageVersion.\"\n  echo \"The failing bundles are the run's \\`bundles\\` artifact; each replays in one command: \\`replay <name>.bundle.json\\`.\"\n} >> \"$body\"\ngh issue create --repo \"$GITHUB_REPOSITORY\" --title \"$title\" --body-file \"$body\"\n"
+          "text": "set -euo pipefail\nbody=\"$RUNNER_TEMP/issue-body.md\"\nif [ -s \"$RUNNER_TEMP/issue-title.txt\" ]; then\n  title=$(head -n 1 \"$RUNNER_TEMP/issue-title.txt\")\n  cat \"$RUNNER_TEMP/issue.md\" > \"$body\"\nelse\n  # No summary: the corpus did not finish. It failed before its end,\n  # or ran past the replay step's 25 minutes.\n  title=\"corpus: did not finish, failed or over its 25-minute budget (${GITHUB_REF_NAME})\"\n  {\n    echo \"The corpus did not finish: it failed before writing its summary, or ran past the replay step's 25-minute budget. The last lines it printed:\"\n    echo\n    echo '```'\n    tail -n 40 \"$RUNNER_TEMP/corpus.log\" 2>/dev/null || echo \"(no log: it stopped before the replay step)\"\n    echo '```'\n  } > \"$body\"\nfi\n{\n  echo\n  echo \"Run: $RUN_URL on \\`${GITHUB_REF_NAME}\\` at \\`${GITHUB_SHA}\\`, runner image $ImageOS $ImageVersion.\"\n  echo \"The failing bundles are the run's \\`bundles\\` artifact; each replays in one command: \\`replay <name>.bundle.json\\`.\"\n} >> \"$body\"\ngh issue create --repo \"$GITHUB_REPOSITORY\" --title \"$title\" --body-file \"$body\"\n"
         }
       ],
       "elsewhere": [],
@@ -6637,8 +6786,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "e6094ab7d3ec3b0335188973958ed56b83998669",
-    "tracked": 229
+    "commit": "20c4c51aa6fee0967a989a81fad2bfa96bf56b51",
+    "tracked": 230
   },
   "landings": [
     {
@@ -7661,6 +7810,17 @@
     {
       "readers": [
         {
+          "by": "tools/review.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "tools/review.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": ".github/workflows/ci.yml"
         }
       ],
@@ -7854,6 +8014,10 @@
     {
       "hash": "61fc24492db9aef7ec38eb91cfeebaef96155014bb5f22648fd8ed2327c6cae2",
       "path": "site/tsconfig.json"
+    },
+    {
+      "hash": "6e678b4ce98c0bd9f21f0cc32df20ed77f558fd6fd0c4d66e40488351d112055",
+      "path": "tools/review.mjs"
     }
   ]
 }
