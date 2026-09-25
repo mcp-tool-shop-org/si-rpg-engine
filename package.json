@@ -21,7 +21,7 @@
     "check": "node harness/check.js",
     "typecheck": "tsc -p tsconfig.json",
     "pretest": "node solver/build.mjs --check",
-    "test": "node --test packages/tick/tick.test.js packages/tick/scene.test.js packages/tick/verbs.test.js packages/tick/minds.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js harness/product.test.js harness/solver.test.js harness/trace.test.js harness/restore.test.js harness/check.test.js harness/surface.test.js harness/source.test.js harness/caps.test.js packages/tick/order.test.js solver/lint.test.js solver/source.test.js harness/course.test.js harness/outcome.test.js harness/golden-gate.test.js",
+    "test": "node --test packages/tick/tick.test.js packages/tick/scene.test.js packages/tick/verbs.test.js packages/tick/minds.test.js packages/load/load.test.js packages/propose/propose.test.js packages/host/host.test.js harness/product.test.js harness/solver.test.js harness/trace.test.js harness/restore.test.js harness/check.test.js harness/surface.test.js harness/source.test.js harness/caps.test.js packages/tick/order.test.js solver/lint.test.js solver/source.test.js harness/soundness.test.js harness/course.test.js harness/outcome.test.js harness/golden-gate.test.js",
     "verify": "npm run typecheck && npm test && npm run check",
     "audit:deps": "npm audit --audit-level=high"
   },
