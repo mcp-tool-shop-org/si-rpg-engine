@@ -65,6 +65,11 @@ jobs:
         run: node solver/build.mjs --check
       - name: Check the kernel contract
         run: npm run typecheck
+      # The course and the outcome tests say what happened, by name. They run
+      # before any golden compare, so a broken outcome is reported as itself
+      # and not as a hash mismatch. npm test runs them again with the rest.
+      - name: Run the character course and the outcome tests
+        run: node --test harness/course.test.js harness/outcome.test.js
       # The engines compare before the node suite, so a golden mismatch is
       # named by the compare step even when a node test also reads the golden.
       - name: Install pinned engines
