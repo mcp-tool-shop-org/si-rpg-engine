@@ -372,6 +372,10 @@ test('a role whose own sources are trusted produces hearsay once it reads a mind
   t.advance();
   const heard = t.frame();
   assert.ok(t.submit(/** @type {Proposal} */ ({ kind: 'belief', mind: 'watcher', subject: { body: 'walker' }, key: 'at', value: 'west', confidence: 0.5, source: 'e1' }), provenance(run.entry('hearer'), heard, { instance: 'watcher' })).admitted);
+  const same = t.submit(/** @type {Proposal} */ ({ kind: 'belief', mind: 'watcher', subject: { zone: 'west' }, key: 'contains', value: 'watcher', confidence: 0.9, source: 'e1' }), provenance(reads, heard, { instance: 'watcher' }));
+  assert.ok(same.admitted, JSON.stringify(same));
+  const listed = run.memory.mindBeliefs('watcher');
+  assert.equal(listed[listed.length - 1].label, 'hearsay', 'a prompt built from the frame the hearsay was admitted in could read it, so it counts');
   settle(t);
   const after = t.frame();
   /**
