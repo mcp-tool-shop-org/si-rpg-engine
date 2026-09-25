@@ -1,32 +1,22 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit e6094ab.
+Mapped at 2026-09-25 from commit 1b17c4e.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-15 parts, mostly JavaScript (80 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+15 parts, mostly JavaScript (87 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (31bb94d)
+## What changed since 2026-09-25 (5886d19)
 
-- CI now also runs harness/bundle.mjs and harness/bundle.test.js.
-- CI now also checks harness/corpus.mjs and harness/events.mjs.
-- Corpus (.github/workflows/corpus.yml) is a new door. It starts on a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. It runs harness/corpus.mjs and solver/build.mjs.
-- fixtures/ is now also read by harness/corpus.mjs.
-- fixtures/behavior-3d.json is now also read by harness/bundle.test.js.
-- fixtures/behavior-minds.json is now also read by harness/bundle.test.js.
-- And 7 more new writers and readers of places.
-- harness/check.js now starts at bundle product; it started at match.
-- In harness/course.test.js, step run gained a step, record run, before create world.
-- In harness/outcome.test.js, translated run gained a step, record run, before create world.
-- And 9 more changes to the order of work.
-- site/src/content/docs/handbook/testing.md is new and belongs to no part, so atlas check fails on it against the previous map.
-- 16 files added and 49 changed content, across 7 parts.
+- CI now also checks tools/review.mjs.
+- tools/review.mjs is now also read by tsconfig.json.
+- 5 files changed content, across 1 part.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 11 paths; on a push to main touching 11 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 26 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 20 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 29 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 24 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **host** (a command people run). Runs packages/host/bin/host.js.
@@ -38,7 +28,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 ## What happens through CI
 
-1. The workflow runs 17 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, 4 files in solver, and 5 files in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 13 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 33 files in 3 more places.
+1. The workflow runs 17 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, 4 files in solver, and 8 files in 4 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 13 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 37 files in 7 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
@@ -149,7 +139,7 @@ Read those in order to follow one pull request end to end.
 - 2 writes and 2 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 12 writes and 23 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 15 commands are built at run time and not followed, 12 of them in tests.
+- 16 commands are built at run time and not followed, 13 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.
