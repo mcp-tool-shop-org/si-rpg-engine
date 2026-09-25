@@ -17,7 +17,7 @@ export const config: SiteConfig = {
     secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
       { label: 'Check it', code: 'npm ci && npm run verify' },
-      { label: 'Replay a run', code: 'npx play proposals.json --log out.json\nnpx replay out.json' },
+      { label: 'Replay a run', code: 'npx play proposals.json --log out.json && npx replay out.json' },
       { label: 'Load a world', code: 'npx load world worlds/crate-and-door.json' },
     ],
   },
