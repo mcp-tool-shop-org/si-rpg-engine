@@ -24,7 +24,7 @@ Each slice is one pull request, built by the builder seat, reviewed by a differe
 
 ## The world is three-dimensional
 
-This engine's law is fully 3D and stays that way. "2.5D" describes how the studio's games are presented; it is never a description of this law, its bodies, its colliders, or its verbs, and it does not appear in a slice contract. E2 locks rotation for one slice so the frame contract and the fixtures keep their shape while the solver lands; orientation and angular velocity for dynamic bodies, and the box-or-capsule question for the character, are the first work after E2 and carry their own fixture. Any research prompt or brief for this engine describes a 3D world. The E2 research prompts did not, and that framing is recorded as a drift in the studio memory so it is not repeated.
+This engine's law is fully 3D and stays that way. No presentation style, product line, or market frame names this law, its bodies, its colliders, or its verbs, and none appears in a slice contract, a brief, or a research prompt for this engine. E2 locks rotation for one slice so the frame contract and the fixtures keep their shape while the solver lands; orientation and angular velocity for dynamic bodies, and the box-or-capsule question for the character, are the first work after E2 and carry their own fixture.
 
 ## What stays, renamed
 

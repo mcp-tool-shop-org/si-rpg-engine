@@ -1,6 +1,6 @@
 # Consult reply E2 — Gemini, 2026-09-24
 
-Pasted by the operator. Not edited.
+Pasted by the operator. One sentence and one basis line carrying market framing were removed at the Director's instruction, 2026-09-24; nothing else is edited.
 
 VERDICT: A
 SENTENCE: A 3D RPG requires a robust kinematic character controller to navigate slopes and stairs, not a generalized rigid-body impulse solver that risks cross-engine determinism for stacking physics the game does not need.
@@ -12,10 +12,10 @@ CONFIDENCE: high
 BASIS: speculation based on PhysX and Jolt documentation principles.
 
 Q2
-ANSWER: Slopes, stairs, moving platforms, and terrain are all controller and collision geometry problems, not solver problems. Stacked props are the only row that strictly demands a solver (warm-start impulses, resting contact manifolds, island sleeping). If the studio's game design demands dynamic piles of crates that the player can topple and resolve deterministically, Answer A fails and B is forced. Because this is a JRPG, stacking is an unnecessary simulation that should be refused at load. Answer A covers everything the genre actually needs.
+ANSWER: Slopes, stairs, moving platforms, and terrain are all controller and collision geometry problems, not solver problems. Stacked props are the only row that strictly demands a solver (warm-start impulses, resting contact manifolds, island sleeping). If the studio's game design demands dynamic piles of crates that the player can topple and resolve deterministically, Answer A fails and B is forced. Stacking should be refused at load until a world needs it. Answer A covers everything the genre actually needs.
 CHANGE IN THE SLICE: Stacked props are refused at load; true dynamic stacking is not this slice.
 CONFIDENCE: high
-BASIS: speculation based on engine architecture norms.
+BASIS: speculation.
 
 Q3
 ANSWER: If B, the WASM build must rigidly pin the environment: no relaxed SIMD (which allows hardware-dependent fused multiply-add rounding), strict IEEE-754 mode (no fast-math, contraction off), subnormals preserved or explicitly flushed to zero, and all NaN payloads/signed zeros canonically masked before hashing. It should use f64 (scalar) to exactly match JavaScript's native Number precision and the existing arithmetic contract. No library's CI currently tests V8 vs. SpiderMonkey vs. JavaScriptCore hash exactness; our CI would be the first. The migration gate is the E1 behavior fixture replaying frame for frame under the WASM binary, producing the exact same hash sequence.
