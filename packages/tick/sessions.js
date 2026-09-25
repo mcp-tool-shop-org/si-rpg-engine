@@ -14,10 +14,11 @@
 //     bundle carries the records it ran.
 //
 // Each session also saves and restores its whole state without replay, as
-// the tick does (T6 pin 1): the hasher's lanes, the quantum, the world's save,
-// and for the product scene the minds and their memory. The act is a function
-// of the quantum, so it needs no state of its own. harness/restore.test.js
-// restores every fixture case and the product scene this way.
+// the tick does (T6 pin 1): the hasher's lanes, the quantum, the world's save
+// with its sparse in-process image (pin 2), and for the product scene the
+// minds and their memory. The act is a function of the quantum, so it needs
+// no state of its own. harness/restore.test.js restores every fixture case
+// and the product scene this way.
 //
 // Runs under node and the three shells: no console, process, or fs here.
 
@@ -38,7 +39,7 @@ export const productDriven = ['walker'];
  * @typedef {ReturnType<typeof createMemory>} Memory
  * @typedef {Parameters<typeof createWorld>[0]} WorldInit
  * @typedef {{ seed: number, steps: number, driven: string[], world: { bodies: unknown[], colliders: unknown[], heightfield?: unknown } }} PlaySpec
- * @typedef {ReturnType<World['save']>} WorldSave
+ * @typedef {ReturnType<World['saveSparse']>} WorldSave
  * @typedef {{ tick: number, hash: string, lanes: [number, number], world: WorldSave }} PlaySave
  * @typedef {{ tick: number, hash: string | null, ok: boolean, lanes: [number, number], world: WorldSave, minds: import('./minds.js').MindsSave, memory: import('./memory.js').MemorySave }} ProductSave
  */
@@ -149,7 +150,7 @@ export function playSession(spec) {
      * @returns {PlaySave}
      */
     save() {
-      return { tick, hash, lanes: hasher.lanes(), world: world.save() };
+      return { tick, hash, lanes: hasher.lanes(), world: world.saveSparse() };
     },
     /**
      * Puts back a save; the world refuses first, and then nothing has changed.
@@ -266,7 +267,7 @@ export function productSession(options) {
      * @returns {ProductSave}
      */
     save() {
-      return { tick, hash, ok, lanes: h.lanes(), world: world.save(), minds: saveMinds(world), memory: memory.save() };
+      return { tick, hash, ok, lanes: h.lanes(), world: world.saveSparse(), minds: saveMinds(world), memory: memory.save() };
     },
     /**
      * Puts back a save; the world refuses first, and then nothing has changed.

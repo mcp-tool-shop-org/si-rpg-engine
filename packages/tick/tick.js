@@ -33,7 +33,7 @@ import { admitIntent } from './predicates.js';
  * @typedef {import('../frame/types.js').LogEntry} LogEntry
  * @typedef {import('../frame/types.js').IntentRule} IntentRule
  * @typedef {{ remaining: number, effect: string, riseQuanta: number, aimX: number, aimZ: number, otherId: string | null, speed: number }} ScheduledAction
- * @typedef {ReturnType<ReturnType<typeof import('./world.js').createWorld>['save']>} WorldSave
+ * @typedef {ReturnType<ReturnType<typeof import('./world.js').createWorld>['saveSparse']>} WorldSave
  * @typedef {{
  *   seed: number, tick: number, lanes: [number, number], frame: Frame,
  *   actions: Array<[string, ScheduledAction]>, pending: number,
@@ -470,7 +470,9 @@ function buildTick(init) {
    * length: a sweep restores states that other branches reached, so a
    * restored tick's log must be the path to its own state. A save taken with
    * an action in flight carries the action. The attached hosts are not state:
-   * they stay attached across a restore.
+   * they stay attached across a restore. The solver's image is the sparse
+   * in-process form (T6 pin 2): a save lives in this process, and a restore
+   * from it costs about a millisecond.
    * @returns {TickSave}
    */
   function save() {
@@ -484,7 +486,7 @@ function buildTick(init) {
       minds: saveMinds(world),
       memory: memory.save(),
       log: inputLog.slice(),
-      world: world.save(),
+      world: world.saveSparse(),
     };
   }
 

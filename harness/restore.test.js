@@ -35,6 +35,10 @@
 // with the solver evicted, and the rest is rerun, twice in a row. A save that
 // leaves out one field is planted for the hasher's lanes, an action in
 // flight, a mind's memory, and the minds' sight, and each is caught by the diff.
+// Those saves hold the solver's image in the sparse in-process form (pin 2),
+// so the same tests prove its restore traces identically; the digest it is
+// checked by is held to the byte loop it replaced, and the sparse restore
+// refuses what the dense one refuses.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -45,7 +49,7 @@ import { join } from 'node:path';
 import { createHasher } from '../packages/frame/hash.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
 import { createWorld } from '../packages/tick/world.js';
-import { bytes as binary, imageDigest, imageSolver, instantiate, restoreImage, snapshotBytes, stackPointer } from '../solver/dist/solver.mjs';
+import { bytes as binary, imageDigest, imageRefusal, imageSolver, imageSparse, instantiate, restoreImage, restoreSparse, snapshotBytes, sparseDigest, stackPointer } from '../solver/dist/solver.mjs';
 import { expectIdentical } from './bundle.mjs';
 import { asleep as asleepIn, contacts as contactPairs, solverClasses, switched } from './events.mjs';
 import { replayTo } from './replay-to.mjs';
@@ -56,6 +60,7 @@ import { playVerbs } from './verbs-scene.mjs';
  * @typedef {import('./replay-to.mjs').ReplaySpec} ReplaySpec
  * @typedef {import('./replay-to.mjs').Run} Run
  * @typedef {ReturnType<ReturnType<typeof createWorld>['save']>} WorldSave
+ * @typedef {ReturnType<ReturnType<typeof createWorld>['saveSparse']>} SparseWorldSave
  * @typedef {{ name: string, spec: ReplaySpec }} Case
  */
 
@@ -603,7 +608,7 @@ function stackCase() {
  * A refused restore throws with its reason and changes nothing: the same
  * instance, the same snapshot, the same records.
  * @param {Run} run
- * @param {WorldSave} save
+ * @param {WorldSave | SparseWorldSave} save
  * @param {RegExp} reason
  */
 function refused(run, save, reason) {
@@ -615,6 +620,136 @@ function refused(run, save, reason) {
   assert.deepEqual(snapshotBytes(), snap, 'the same snapshot');
   assert.equal(JSON.stringify(run.world.bodies), records, 'the same records');
 }
+
+/**
+ * The image digest as it was written before T6: one byte at a time, byte i
+ * to lane (i & 4) >> 2. The glue's word-at-a-time digest must equal it.
+ * @param {Uint8Array} data
+ */
+function byteDigest(data) {
+  let h0 = 0x811c9dc5;
+  let h1 = 0x811c9dc5;
+  const n = data.length;
+  for (let i = 0; i < 4; i = i + 1) {
+    const b = (n >>> (i * 8)) & 255;
+    h0 = Math.imul(h0 ^ b, 0x01000193) >>> 0;
+    h1 = Math.imul(h1 ^ b, 0x01000193) >>> 0;
+  }
+  for (let i = 0; i < n; i = i + 1) {
+    if ((i & 4) === 0) {
+      h0 = Math.imul(h0 ^ data[i], 0x01000193) >>> 0;
+    } else {
+      h1 = Math.imul(h1 ^ data[i], 0x01000193) >>> 0;
+    }
+  }
+  return h0.toString(16).padStart(8, '0') + h1.toString(16).padStart(8, '0');
+}
+
+test('the image digest, read a word at a time with a page of zeros as one multiplication, equals the byte loop at every length and alignment, and on a real image', () => {
+  let seed = 7;
+  const next = () => {
+    seed = (Math.imul(seed, 1103515245) + 12345) >>> 0;
+    return seed >>> 24;
+  };
+  for (const n of [0, 1, 7, 8, 9, 4095, 65535, 65536, 65537, 2 * 65536 + 12, 3 * 65536]) {
+    const buffer = new Uint8Array(n + 3);
+    for (let i = 0; i < buffer.length; i = i + 1) {
+      // Mostly zero, so whole zero pages occur beside pages with data.
+      buffer[i] = i % 97 === 0 || (i >= 65536 && i < 70000) ? next() : 0;
+    }
+    for (const offset of [0, 1, 2, 3]) {
+      const data = buffer.subarray(offset, offset + n);
+      assert.equal(imageDigest(data), byteDigest(data), n + ' bytes at offset ' + offset);
+    }
+    assert.equal(imageDigest(new Uint8Array(n)), byteDigest(new Uint8Array(n)), n + ' zero bytes');
+  }
+  const { image } = stackCase();
+  assert.equal(imageDigest(image.bytes), byteDigest(image.bytes));
+  assert.equal(image.digest, byteDigest(image.bytes));
+});
+
+test('a sparse image keeps only the pages in use, its digest is the whole memory\'s, and it restores in the process to the same memory', (t) => {
+  const { run } = stackCase();
+  const dense = imageSolver();
+  const sparse = imageSparse();
+  if (!dense || !sparse) {
+    throw new Error('no image');
+  }
+  const count = dense.bytes.length / 65536;
+  let marked = 0;
+  for (let p = 0; p < count; p = p + 1) {
+    /** @type {boolean} */
+    const kept = (sparse.pages[p >> 3] & (1 << (p & 7))) !== 0;
+    const used = dense.bytes.subarray(p * 65536, (p + 1) * 65536).some((byte) => byte !== 0);
+    assert.equal(kept, used, 'page ' + p);
+    marked = marked + (kept ? 1 : 0);
+  }
+  t.diagnostic(marked + ' of ' + count + ' pages in use; sparse ' + sparse.data.length + ' bytes against ' + dense.bytes.length);
+  assert.equal(sparse.data.length, marked * 65536);
+  assert.equal(sparse.digest, dense.digest);
+  assert.equal(sparseDigest(sparse.pages, sparse.data, count), dense.digest);
+  const before = instantiate();
+  assert.equal(restoreSparse(sparse), true, imageRefusal());
+  assert.notEqual(instantiate(), before, 'a fresh instance');
+  const again = imageSolver();
+  assert.ok(again);
+  assert.equal(again.digest, dense.digest, 'the restored memory is the imaged one, byte for byte');
+  assert.deepEqual(again.bytes, dense.bytes);
+  assert.ok(run.tick > 0);
+});
+
+test('a sparse image from another binary, with one byte changed, or not a whole number of the pages it marks is refused, and changes nothing', () => {
+  const { run } = stackCase();
+  const saved = run.world.saveSparse();
+  const image = saved.image;
+  if (!image) {
+    throw new Error('no image');
+  }
+  const other = image.binary.slice(0, 63) + (image.binary[63] === '0' ? '1' : '0');
+  refused(run, { ...saved, image: { ...image, binary: other } }, /restore refused: the image is from another binary/);
+  for (const at of [0, 65535, Math.floor(image.data.length / 2), image.data.length - 1]) {
+    const changed = image.data.slice();
+    changed[at] = changed[at] ^ 1;
+    refused(run, { ...saved, image: { ...image, data: changed } }, /restore refused: the bytes do not match the image digest/);
+  }
+  refused(run, { ...saved, image: { ...image, data: image.data.subarray(0, image.data.length - 8) } }, /restore refused: the length is not a whole number of pages: the bitmap marks \d+ and the data holds \d+ bytes/);
+  const extra = image.pages.slice();
+  const free = Array.from({ length: extra.length * 8 }, (_, p) => p).find((p) => !(extra[p >> 3] & (1 << (p & 7))));
+  extra[/** @type {number} */ (free) >> 3] = extra[/** @type {number} */ (free) >> 3] | (1 << (/** @type {number} */ (free) & 7));
+  refused(run, { ...saved, image: { ...image, pages: extra } }, /restore refused: the length is not a whole number of pages/);
+  refused(run, { ...saved, image: { ...image, pages: image.pages.subarray(0, image.pages.length - 1) } }, /restore refused: the page bitmap is \d+ bytes, not the \d+ that cover the 512 pages of the memory/);
+  // The true image still restores.
+  evict();
+  run.world.restore(saved);
+});
+
+test('the costs on record, pin 2: a dense restore digests the whole 32 MiB, a sparse one only the pages in use', (t) => {
+  replayTo({ scene: 'product' }, 3333);
+  const dense = imageSolver();
+  const sparse = imageSparse();
+  if (!dense || !sparse) {
+    throw new Error('no image');
+  }
+  /** @param {() => unknown} fn */
+  const time = (fn) => {
+    fn();
+    const t0 = performance.now();
+    for (let i = 0; i < 20; i = i + 1) {
+      fn();
+    }
+    return (performance.now() - t0) / 20;
+  };
+  const byte = time(() => byteDigest(dense.bytes));
+  const word = time(() => imageDigest(dense.bytes));
+  const out = time(() => imageSparse());
+  const inDense = time(() => restoreImage(dense));
+  const inSparse = time(() => restoreSparse(sparse));
+  t.diagnostic('the product scene at 3333: ' + sparse.data.length / 65536 + ' pages in use of 512');
+  t.diagnostic('digest of 32 MiB: ' + byte.toFixed(1) + ' ms by the byte loop written in this file, ' + word.toFixed(1) + ' ms by the glue, a word at a time with zero pages multiplied');
+  t.diagnostic('restore: ' + inDense.toFixed(2) + ' ms dense, ' + inSparse.toFixed(2) + ' ms sparse; a sparse image taken in ' + out.toFixed(2) + ' ms');
+  assert.ok(inSparse < inDense, 'the sparse restore is the cheaper');
+  assert.equal(restoreSparse(sparse), true);
+});
 
 test('an image from a binary with another digest is refused', () => {
   const { run, saved, image } = stackCase();
