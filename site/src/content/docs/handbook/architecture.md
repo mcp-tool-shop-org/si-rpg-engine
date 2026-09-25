@@ -2,7 +2,7 @@
 title: Architecture
 description: The tick, the hash, the solver, replay, and the boundary with the host.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 ## The tick
@@ -19,13 +19,13 @@ The load hash covers the seed, the content, and the snapshot after load. A belie
 
 ## The solver
 
-The physics law is `solver/`, a Rust crate on `rapier3d-f64` with `enhanced-determinism`, compiled to `wasm32-unknown-unknown` with relaxed SIMD off and source paths remapped so the build does not embed host paths. It is delivered as an ES module holding the bytes with a synchronous instantiate, so V8, SpiderMonkey, JavaScriptCore, and node all run the same bytes unbuilt.
+The physics law is `solver/`, a Rust crate on `rapier3d-f64` with `enhanced-determinism`, compiled to `wasm32-unknown-unknown` with relaxed SIMD off and source paths remapped so the build does not embed host paths. It is delivered as an ES module holding the bytes with a synchronous instantiate, so V8, SpiderMonkey, JavaScriptCore, and node all run the same bytes unbuilt. The module's memory is fixed at 512 pages, 32 MiB, and cannot grow; the allocator works inside that fixed span, so a world denser than it holds stops the same way on every host. The build exports the stack pointer so a memory image is only ever taken between calls.
 
-At load the crate builds a Rapier world from the record: static colliders as fixed bodies, a heightfield when there is one, dynamic bodies that rotate, and the character as a kinematic body with rotation locked. Load runs one pass of Rapier's collision pipeline so the broad phase holds every collider and every pair is registered before the first step; every non-fixed body is then woken so the physics pipeline admits it. Each step drives the character with Rapier's character controller (a 0.3 autostep, a 45° climb limit, a 50° slide angle, a 0.2 snap), steps the world, and writes every body's pose and velocity back with a canonical quaternion.
+At load the crate builds a Rapier world from the record: static colliders as fixed bodies, a heightfield when there is one, dynamic bodies that rotate, and the character as a kinematic body with rotation locked. Load runs one pass of Rapier's collision pipeline so the broad phase holds every collider and every pair is registered before the first step; every non-fixed body is then woken so the physics pipeline admits it. Each step drives the character with Rapier's character controller (a 0.3 autostep, a 45° climb limit, a 50° slide angle, a 0.2 snap), steps the world, and writes every body's pose and velocity back with a canonical quaternion. Heightfields are built with Rapier's internal-edge fix, so a body sliding across a cell seam does not catch. Fast dynamic bodies are swept against fixed colliders with one substep, so a small box at speed does not pass through a thin wall.
 
-Sleep is counted in quanta, never seconds. The snapshot is the canonical serialization of every body's state, sleep counters, and the contact manifolds with their warm-start impulses, sorted by pair, so a change in solver-internal state moves the hash. The world is rebuilt when its signature changes: body and collider counts, the heightfield shape, the driven and carried masks, the geometry, and the character shape.
+Sleep is counted in quanta, never seconds. The snapshot is the canonical serialization of every body's state, sleep counters, and the contact manifolds with their warm-start impulses, sorted by pair, so a change in solver-internal state moves the hash. The snapshot is not the whole of Rapier's state: Rapier also keeps contact geometry, solver ordering, and island state that no public call can read or write. So the engine never writes into Rapier's state; a world is restored by replaying its inputs or by copying the module's memory, which holds all of it. The Rapier world persists from step to step and is rebuilt from the records when its signature changes: body and collider counts, the heightfield shape, the driven and carried sets, which change when a character starts or finishes an action, the geometry, and the character shape.
 
-The Linux build is the pinned artifact. `fixtures/solver.sha256` holds its digest; CI rebuilds on Linux and compares. Another host reports its own digest and does not write the pin.
+The Linux build is the pinned artifact. `fixtures/solver.sha256` holds its digest; CI rebuilds on Linux and compares. Another host reports its own digest and does not write the pin. CI also runs the pinned x64 binary on an ARM64 runner and requires the same fingerprints and an identical trace, and `solver/lint.mjs` refuses any binary that could let the host choose a result, grow its memory, or keep state outside it.
 
 ## Replay
 
@@ -53,9 +53,9 @@ The host receives frozen committed frames and returns intents stamped with the n
 | `packages/host` | the session, the server, the debug view, the `host` command |
 | `packages/propose` | the frozen proposer instrument |
 | `packages/tool` | the command guard every bin shares |
-| `solver/` | the Rust crate and its build script |
+| `solver/` | the Rust crate, its build scripts, the allocator, and the binary lint |
 | `predicates/` | admitted verbs, hazard scenarios, belief keys |
 | `worlds/` | world files and the index |
 | `fixtures/` | goldens, captures, drafts |
-| `harness/` | the two golden harnesses, the check, and the solver tests |
+| `harness/` | the two golden harnesses, the trace and first-difference tools, restore by replay, the behaviour check, and the solver, outcome, and course tests |
 | `docs/` | the design of record, the plan, every slice dispatch, and the study-swarm research with signed receipts |

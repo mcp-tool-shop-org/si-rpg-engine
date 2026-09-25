@@ -31,7 +31,7 @@ A world is a JSON file under `worlds/`. Unknown fields are refused at every leve
 
 **Static collider.** `id` and bounds `minX maxX minY maxY minZ maxZ`. Optional: a unit quaternion that rotates the box about the centre of its bounds. The bounds stay the local shape, so an axis-aligned collider without a quaternion is unchanged in meaning by that option.
 
-**Heightfield.** `rows`, `cols`, `cell`, and `heights`, one finite height per cell in row-major order, `rows * cols` long.
+**Heightfield.** `rows`, `cols`, `cell`, and `heights`, one finite height per cell in row-major order, `rows * cols` long. Rows advance along z and columns along x. The surface is two flat triangles per cell, cut along the diagonal from the cell's (x0, z1) corner to its (x1, z0) corner, which is the surface the physics collides with and the one the actions stand on. Cell seams are smoothed so a body sliding across one does not catch.
 
 **Zone.** `id` and bounds. Zones are a partition: a body is in the zone whose box contains its centre, with `min <= c < max` on each axis, so a point on a shared face has one owner. Zones may not overlap.
 
