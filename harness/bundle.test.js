@@ -329,7 +329,7 @@ test('every failure writes one: planted failures in a real test run write bundle
   assert.equal(again.stdout, 'bundle ok\n', again.stderr);
 });
 
-test('the corpus: the walker stall and the product scene rebuilds replay green on this binary, with their stored images where it recorded them and fresh ones where it did not, and the job counts which', (t) => {
+test('the corpus: the walker stall and the product scene\'s verb-boundary switches replay green on this binary, with their stored images where it recorded them and fresh ones where it did not, and the job counts which', (t) => {
   const files = readdirSync('fixtures/corpus').filter((f) => f.endsWith('.bundle.json')).sort();
   assert.deepEqual(files, ['product-rebuild-261.bundle.json', 'walker-stall-flat-ground.bundle.json']);
   const here = binaryDigest();
@@ -348,7 +348,7 @@ test('the corpus: the walker stall and the product scene rebuilds replay green o
     }
   }
   assert.match(readBundle('fixtures/corpus/walker-stall-flat-ground.bundle.json').note, /on 23 of its 640 quanta .* first at 98/);
-  assert.match(readBundle('fixtures/corpus/product-rebuild-261.bundle.json').note, /201 .*261 .*401 .*verb-boundary rebuilds a later slice will remove/);
+  assert.match(readBundle('fixtures/corpus/product-rebuild-261.bundle.json').note, /switches bodies in place.*201 .*261 .*401 .*cross all three switches/);
   // What the job prints: how many stored images it used and how many it skipped.
   const results = runCorpus({ quanta: 0, points: 10, only: 'walker-stall', say: () => {} });
   assert.deepEqual(results.map((r) => r.name + ' ' + r.status), ['walker-stall-flat-ground ok']);
