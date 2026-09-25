@@ -1,0 +1,37 @@
+si-rpg-engine solver
+Copyright (c) 2026 mcp-tool-shop
+
+The solver, like the rest of the repository, is licensed under the MIT
+License (LICENSE at the repository root), except for the one file below.
+
+solver/src/kcc.rs is a modified copy of part of Rapier, licensed under the
+Apache License, Version 2.0. The licence text is solver/LICENSE-APACHE-2.0.
+
+  Source:    rapier3d-f64 0.35.3, src/control/character_controller.rs
+             (https://github.com/dimforge/rapier, tag v0.35.3)
+  Copyright: Sébastien Crozet and Dimforge. Rapier's LICENSE carries the
+             notice "Copyright 2020 Sébastien Crozet"; Dimforge publishes
+             Rapier.
+
+What was copied: KinematicCharacterController::move_shape and the private
+functions it calls (check_and_fix_penetrations, snap_to_ground,
+predict_ground, detect_grounded_status_and_apply_friction,
+is_grounded_at_contact_manifold, handle_slopes, split_into_components,
+compute_hit_info, decompose_hit, compute_dims, handle_stairs, subtract_hit),
+the private structs HitInfo and HitDecomposition, and the body of the private
+method CharacterLength::eval.
+
+What si-rpg-engine changed, 2026-09-25:
+
+- One branch in decompose_hit. When the hit normal crossed with the
+  controller's up vector has no direction, the tangent's component along up
+  is the vertical tangent and the rest is the horizontal tangent; Rapier files
+  the whole tangent as vertical there. With a floor normal that is vertical
+  but for its last bit, Rapier's routine then keeps none of a character's
+  horizontal travel for that quantum. The report upstream is
+  https://github.com/dimforge/rapier/issues/1019.
+- The routine is adapted to Rapier's public API: its methods live on a
+  wrapper of KinematicCharacterController, a private method's body is a local
+  function, and a crate-private field is read through its public accessor.
+  The profiling attributes and the 2D branches are removed. Nothing else it
+  computes is changed.

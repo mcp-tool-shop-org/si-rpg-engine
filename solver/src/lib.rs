@@ -14,6 +14,7 @@
 
 #[cfg(target_arch = "wasm32")]
 mod arena;
+mod kcc;
 mod rapier_law;
 
 /// Why the law refused a quantum. Every export turns a refusal into 0. Inside

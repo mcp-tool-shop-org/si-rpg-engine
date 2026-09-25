@@ -2,8 +2,10 @@
 // warm-start cache survives, verb boundaries included: when an action starts or
 // ends, or a body is picked up or put down, the bodies switch in place on the
 // running world (F1). The world is built from the records only at its first
-// load and when the world itself changes. The box step in lib.rs is a
-// separate export.
+// load and when the world itself changes. A driven character moves through
+// the engine's copy of Rapier's character controller, kcc.rs, which adds one
+// branch for a floor normal parallel to `up` (F2). The box step in lib.rs is
+// a separate export.
 //
 // Pins: rapier3d-f64, enhanced-determinism, f64, no SIMD feature, dt = 1/64,
 // sleep threshold = 32 quanta, rotations locked, contact clustering off so the
@@ -20,6 +22,7 @@ use rapier3d_f64::geometry::{ContactData, ContactPair};
 use rapier3d_f64::pipeline::CollisionPipeline;
 use rapier3d_f64::prelude::*;
 
+use crate::kcc::{Mover, Stride};
 use crate::{mode, Mode, Refusal};
 use crate::{BODIES, BODY_STRIDE, COLLIDERS, COLLIDER_STRIDE, DRIVEN, HX, HY, HZ, MAX_BODIES, MAX_COLLIDERS};
 
@@ -741,7 +744,12 @@ struct Plan {
     collisions: Vec<CharacterCollision>,
 }
 
-fn integrate(loaded: &mut Loaded) -> Result<(), Refusal> {
+/// One quantum on the loaded world. Each driven character moves through
+/// `mover` with the law's controller settings: the law passes `Stride`, the
+/// engine's copy of Rapier's controller with its branch on (kcc.rs, F2), and
+/// the control test at the end of this file passes Rapier's own controller
+/// beside the copy with the branch off. The collision impulses are Rapier's.
+fn integrate(loaded: &mut Loaded, mover: &mut impl Mover) -> Result<(), Refusal> {
     let n = loaded.n_bodies;
     let mut plans: Vec<Plan> = Vec::new();
     let controller = loaded.controller;
@@ -786,7 +794,7 @@ fn integrate(loaded: &mut Loaded) -> Result<(), Refusal> {
                 &world.colliders,
                 filter,
             );
-            controller.move_shape(DT, &query, &*shape, &pos, desired, |hit| collisions.push(hit))
+            mover.move_shape(&controller, DT, &query, &*shape, &pos, desired, &mut collisions)
         };
         if movement.grounded {
             vy = 0.0;
@@ -971,11 +979,13 @@ fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, 
     Ok(Load::Built)
 }
 
-fn step_law(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> Result<(), Refusal> {
+/// The quantum `solver_step` runs, with the character's movement named: the
+/// export passes `Stride`; only the tests pass another.
+fn step_law(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, mover: &mut impl Mover) -> Result<(), Refusal> {
     ensure(world_id, n_bodies, n_colliders, rows, cols, cell, shape)?;
     let solver = unsafe { &mut *(&raw mut SOLVER) };
     let loaded = solver.loaded.as_mut().ok_or(Refusal::Unloaded)?;
-    integrate(loaded)?;
+    integrate(loaded, mover)?;
     rebuild_snapshot(loaded, &mut solver.snapshot)
 }
 
@@ -989,7 +999,7 @@ pub extern "C" fn solver_load(world_id: u32, n_bodies: u32, n_colliders: u32, ro
 
 #[unsafe(no_mangle)]
 pub extern "C" fn solver_step(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> u32 {
-    match step_law(world_id, n_bodies, n_colliders, rows, cols, cell, shape) {
+    match step_law(world_id, n_bodies, n_colliders, rows, cols, cell, shape, &mut Stride) {
         Ok(()) => 1,
         Err(_) => 0,
     }
