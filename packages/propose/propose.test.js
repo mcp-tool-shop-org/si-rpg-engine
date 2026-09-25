@@ -477,7 +477,7 @@ test('a scratch world is built only from files under fixtures/ or worlds/, or th
     'worlds/../predicates/intents/move.json',
     './worlds/crate-and-door.json',
     'worlds\\crate-and-door.json',
-    'C:/Users/player/save.json',
+    'D:/saves/slot-1.json',
     join(root, 'worlds', 'crate-and-door.json'),
     'fixtures/golden.txt',
     'worlds',
