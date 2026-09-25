@@ -30,7 +30,7 @@ export const config: SiteConfig = {
       subtitle: 'Each of these is checked by the test suite on every commit.',
       features: [
         { title: 'The same answer everywhere', desc: 'One build of the physics produces the same fingerprint in V8, SpiderMonkey, and JavaScriptCore, and on x64 and ARM64. The build fails if any of them disagrees.' },
-        { title: 'Exact replay', desc: 'A run is its starting seed plus the inputs that were accepted. Replaying them rebuilds every step, and when two runs differ, the tools name the first step, body, and value where they part.' },
+        { title: 'Exact replay', desc: 'A run is its starting seed plus the inputs that were accepted. Replaying them rebuilds every step, and when two runs differ, the tools name the first step, body, and value where they part. A failing check saves one file that reproduces the failure with a single command.' },
         { title: 'Save and restore', desc: 'Restore a world by replaying its inputs, or by copying the physics module\'s memory and putting it back. Both are tested to continue exactly as the original run did.' },
         { title: 'Real 3D physics', desc: 'Boxes fall, slide, stack, tip, and tumble; a character climbs steps and slopes and walks over terrain. The physics is the Rapier engine in its deterministic mode, compiled to one WebAssembly file with a pinned checksum.' },
         { title: 'Content checked before it runs', desc: 'World files and new character actions are validated when they load. A file that fails is rejected with the reason, and the running world does not change.' },

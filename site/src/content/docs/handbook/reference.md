@@ -19,9 +19,11 @@ sidebar:
 
 Runs a JSON array of proposals through a fresh tick. Prints each committed frame as `tick hash`. `--seed` defaults to the fixture seed. `--log` writes `{ seed, world, log }`, where `log` holds every admission with the tick and hash it was admitted against.
 
-### `replay <log.json>`
+### `replay <log.json | name.bundle.json>`
 
 Reruns a log written by `play` or `host`. Advances to each entry's tick, submits it, and compares every hash. Prints `replay ok: N hashes` or fails at the first difference with the entry number and reason. A file without a `log` array is refused as not a play log.
+
+Given a bundle, it rebuilds the world, replays to the bundle's save tick, and compares every recorded hash, printing the first difference on a mismatch. If the bundle carries a memory image recorded on the running binary, it restores that image and requires the rerun to match. If the image came from another binary, it prints `image skipped: recorded on X, running Y`, takes a fresh image at the save tick, restores it, and requires the rerun to match instead. It prints `bundle ok` when everything matches.
 
 ### `load admit <draft.json>`
 

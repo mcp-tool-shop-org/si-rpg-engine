@@ -1,6 +1,6 @@
 # Dispatch F1 — actions switch bodies in place
 
-2026-09-25. Coordinator: Claude. Builder: a seat named at dispatch time. Reviewer: a different family, on a scratch clone, before merge. Depends on S1 and T5, which touch the same code and add the bundle this slice is measured against. Grounded in the Rust knowledge base's answer `requests/driven-switch.md` (wave 3, si-rpg-engine), measured at rapier3d-f64 0.35.3 with a counter build on `main` and a prototype on a scratch clone.
+2026-09-25. Coordinator: Claude. Builder: a seat named at dispatch time. Reviewer: a different family, on a scratch clone, before merge. Depends on S1 and T5, which touch the same code and add the bundle this slice is measured against. Grounded in the Rust knowledge base's answer [`requests/driven-switch.md`](https://github.com/mcp-tool-shop-org/readouts/blob/main/rust-knowledge/waves/wave-03-si-rpg-engine/requests/driven-switch.md) (wave 3, si-rpg-engine), measured at rapier3d-f64 0.35.3 with a counter build on `main` and a prototype on a scratch clone.
 
 ## What it is
 
