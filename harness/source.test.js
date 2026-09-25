@@ -17,6 +17,7 @@ export const BUILDERS = [
   'harness/verbs-scene.mjs',
   'harness/minds-scene.mjs',
   'packages/tick/fixture.js',
+  'harness/caps.test.js',
 ];
 
 const HOST_CHOSEN = /\bMath\s*(?:\.\s*|\[\s*['"`])(sin|cos|tan|atan2|hypot)\b/g;
