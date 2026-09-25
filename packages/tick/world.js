@@ -1,7 +1,7 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
-import { loadSolver, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { imageRefusal, imageSolver, loadSolver, restoreImage, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
 import { subjectText } from './subject.js';
 import { goalsOf as goalsOfMind } from './minds.js';
 
@@ -29,7 +29,8 @@ let nextProductId = 1;
  */
 export function createWorld(init, law) {
   const chosen = law || 'product';
-  const productId = chosen === 'product' ? nextProductId++ : 0;
+  // A restore adopts the saved world's id, so the solver's signature matches.
+  let productId = chosen === 'product' ? nextProductId++ : 0;
   /** @type {Body[]} */
   const bodies = init.bodies.map((b) => ({
     id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz,
@@ -520,6 +521,91 @@ export function createWorld(init, law) {
     }
   }
 
+  /**
+   * @typedef {{ id: string, x: number, y: number, z: number, vx: number, vy: number, vz: number, qx: number, qy: number, qz: number, qw: number, wx: number, wy: number, wz: number, solverMode: number | null }} SavedBody
+   * @typedef {{ binary: string, digest: string, bytes: Uint8Array }} SolverImage
+   * @typedef {{ worldId: number, bodies: SavedBody[], lifted: string[], carried: Array<[string, string]>, image: SolverImage | null }} WorldSave
+   */
+
+  /**
+   * The solver half of a save: the body records as plain numbers, the lifted
+   * and carried sets as arrays, and for the product law an image of the
+   * solver's whole linear memory, which holds Rapier's running world. The
+   * reference and box laws keep no state between quanta, so their image is
+   * null. The tick's memory, minds, actions, and log are T5's bundle.
+   * @returns {WorldSave}
+   */
+  function save() {
+    /** @type {SolverImage | null} */
+    let image = null;
+    if (chosen === 'product') {
+      image = imageSolver();
+      if (!image) {
+        throw new Error('save refused: ' + imageRefusal());
+      }
+    }
+    return {
+      worldId: productId,
+      bodies: bodies.map((b) => {
+        const tagged = /** @type {Body & { solverMode?: number }} */ (b);
+        return {
+          id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz,
+          qx: b.qx, qy: b.qy, qz: b.qz, qw: b.qw, wx: b.wx, wy: b.wy, wz: b.wz,
+          solverMode: typeof tagged.solverMode === 'number' ? tagged.solverMode : null,
+        };
+      }),
+      lifted: Array.from(lifted),
+      carried: Array.from(carrying),
+      image,
+    };
+  }
+
+  /**
+   * Puts a save back: the solver image first, then the records and the sets.
+   * Throws with the reason when the save is not of this world or the image is
+   * refused; nothing has changed then.
+   * @param {WorldSave} saved
+   */
+  function restore(saved) {
+    if (!saved || !Array.isArray(saved.bodies) || saved.bodies.length !== bodies.length) {
+      throw new Error('restore refused: the save does not have the ' + bodies.length + ' bodies of this world');
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      if (saved.bodies[i].id !== bodies[i].id) {
+        throw new Error('restore refused: body ' + i + ' is ' + saved.bodies[i].id + ' in the save and ' + bodies[i].id + ' here');
+      }
+    }
+    if (chosen === 'product') {
+      if (!saved.image || !restoreImage(saved.image)) {
+        throw new Error('restore refused: ' + (saved.image ? imageRefusal() : 'a product world restores from an image'));
+      }
+      productId = saved.worldId;
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const from = saved.bodies[i];
+      const b = /** @type {Body & { solverMode?: number }} */ (bodies[i]);
+      b.x = from.x; b.y = from.y; b.z = from.z;
+      b.vx = from.vx; b.vy = from.vy; b.vz = from.vz;
+      b.qx = from.qx; b.qy = from.qy; b.qz = from.qz; b.qw = from.qw;
+      b.wx = from.wx; b.wy = from.wy; b.wz = from.wz;
+      if (typeof from.solverMode === 'number') {
+        b.solverMode = from.solverMode;
+      } else {
+        delete b.solverMode;
+      }
+    }
+    lifted.clear();
+    for (const id of saved.lifted) {
+      lifted.add(id);
+    }
+    carrying.clear();
+    carriedBy.clear();
+    for (const [actorId, bodyId] of saved.carried) {
+      carrying.set(actorId, bodyId);
+      carriedBy.set(bodyId, actorId);
+    }
+  }
+
   /** Canonical solver snapshot, or null when this world is not the product law. */
   function snapshot() {
     if (chosen !== 'product') {
@@ -793,7 +879,7 @@ export function createWorld(init, law) {
     mindsInstalled: false,
     minds,
     name,
-    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, zoneOf, zoneIndex, law: chosen,
+    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, restore, zoneOf, zoneIndex, law: chosen,
     lifted, carry, release, sleeping, supportAt, linkIndex,
     /**
      * @param {string} mind
