@@ -275,31 +275,42 @@ bundled('outcome 3b: a sled launched at 2.5 units per second down a 35 degree he
 // from the origin in both runs, so Rapier's first sleep check, which compares
 // against the identity pose, reads the same in both.
 //
-// The pin asks for the same sleep quantum for every dynamic body and final
-// positions relative to the offset within 1e-6. On this law it holds for
-// lower, upper, tip, and climber. The rest diverge, and the list below names
-// each with its measured size and cause, so that the test goes red both on any
-// new divergence and on any listed one that stops diverging:
-// - walker, and parcel which it carries: final x off by 0.038. The walker
-//   intermittently loses almost a whole quantum of travel on flat ground
-//   (23 of its first 640 quanta at the origin); which quanta varies with the
-//   offset, first at quantum 3 here. F2 (docs/dispatch-f2-walker-stride.md)
-//   removes the stall and rewrites this test as an outcome.
-// - slider: tumbles down the 45 degree ramp; a 1e-9 difference at quantum 22
-//   grows to 1e-6 by 40 and lands 0.47 away, asleep at 204, not 189.
-// Before F1, lower and upper diverged too, by 5.7e-5 and 1.2e-3 from quantum
-// 261: the climber left the driven set at 260, the solver rebuilt its world,
-// and the sleeping stack was re-solved cold, its first quantum 1e-4 apart
-// between the offsets. That rebuild also found the offset run's slider still
-// tumbling at 201 and re-solved it cold, so it slept at 233. F1 switches the
-// climber in place: the stack stays asleep and ends within 4e-10 of itself
-// (1.9e-10 and 3.6e-10 measured), and the slider sleeps at 204.
+// An outcome since F2 (docs/dispatch-f2-walker-stride.md, pin 7). Until then
+// this test listed the bodies that diverged between the offsets, with their
+// causes: the sleeping stack, re-solved cold by the rebuild at a verb
+// boundary until F1 switched bodies in place, and the walker with the parcel
+// it carries, 0.038 apart because the walker lost most of a quantum's travel
+// on about one flat-ground quantum in 30, and on other quanta at each offset,
+// until F2's copy of the controller (solver/src/kcc.rs). What it asserts now:
+// - lower, upper, tip, and climber, which neither tumble nor carry the
+//   controller's hover, sleep at the same quantum in both runs and end within
+//   1e-6 of their untranslated positions relative to the offset (measured
+//   1.9e-10, 3.6e-10, 4.7e-9, and 1.4e-10);
+// - the walker ends within 1e-6 horizontally (2.3e-7 measured: each quantum's
+//   add at 1e6 rounds to the 2^-33 grid). Its height is held to the
+//   controller's 1e-4 hover instead: the controller leaves the walker either
+//   at its skin or one normal nudge, 1e-4, above it, and which of the two
+//   depends on the last bits of the floor contact at the skin, so the offsets
+//   choose differently on many quanta (the Rust knowledge base measured about
+//   40%; this run prints its own count). The parcel rides on the walker from
+//   quantum 400, so it carries the same hover and is held the same way, and
+//   it sleeps at the same quantum before that;
+// - the slider tumbles down the 45 degree ramp, where a 1e-9 difference at
+//   quantum 22 grows to 1e-6 by 40 and lands 0.47 apart, so its position is
+//   not compared: it must come to rest on the floor in both runs, asleep at the
+//   end, its centre its half-extent above the floor's top within the skin,
+//   and inside the floor's bounds.
+// The flat walk and the step in four directions that F2 fixed and guards are
+// 4b and 4c below.
 
 const OFFSET_X = 1e6;
 const OFFSET_Z = 1e6;
 const RELATIVE_TOLERANCE = 1e-6;
-const SLEEP_DIVERGES = ['slider'];
-const FINAL_DIVERGES = ['walker', 'slider', 'parcel'];
+// The controller's normal nudge, normal_nudge_factor in solver/src/rapier_law.rs.
+const HOVER = 1e-4;
+const HELD = ['lower', 'upper', 'tip', 'climber'];
+const HOVERING = ['walker', 'parcel'];
+const TUMBLES = 'slider';
 
 /**
  * @param {number} ox
@@ -319,41 +330,209 @@ function translatedRun(ox, oz) {
   const world = createWorld(moved, 'product');
   const driven = new Set(productDriven);
   const watch = sleepWatch(world, world.bodies.filter((b) => !driven.has(b.id)).map((b) => b.id));
+  /** @type {number[]} */
+  const walkerY = [];
   for (let i = 0; i < PRODUCT_STEPS; i = i + 1) {
     world.step(applyProductAct(world, i));
     watch.see(i + 1);
+    walkerY.push(/** @type {{ y: number }} */ (world.body('walker')).y);
   }
   /** @type {Record<string, { x: number, y: number, z: number }>} */
   const final = {};
   for (const b of world.bodies) {
     final[b.id] = { x: b.x - ox, y: b.y, z: b.z - oz };
   }
-  return { sleep: watch.sleep(), final };
+  return { sleep: watch.sleep(), final, walkerY, asleep: world.bodies.filter((b) => world.sleeping(b.id)).map((b) => b.id) };
 }
 
-bundled('outcome 4: the product scene translated by (1e6, 0, 1e6) keeps every sleep quantum and final position within 1e-6 over 10000 quanta, except the divergences listed with their causes', (t) => {
+bundled('outcome 4: the product scene translated by (1e6, 0, 1e6) over 10000 quanta: every body that neither tumbles nor hovers keeps its sleep quantum and ends within 1e-6, the walker and its parcel within 1e-6 horizontally and the 1e-4 hover in height, and the tumbling slider comes to rest on the floor in both runs', (t) => {
   const home = translatedRun(0, 0);
   const far = translatedRun(OFFSET_X, OFFSET_Z);
   /** @type {string[]} */
-  const sleepDiffers = [];
+  const failures = [];
   for (const id of Object.keys(home.sleep)) {
     t.diagnostic(id + ' sleeps at ' + home.sleep[id] + ' and ' + far.sleep[id]);
-    if (home.sleep[id] !== far.sleep[id]) {
-      sleepDiffers.push(id);
+    if (id !== TUMBLES && home.sleep[id] !== far.sleep[id]) {
+      failures.push(id + ' sleeps at ' + home.sleep[id] + ' and ' + far.sleep[id]);
     }
   }
-  /** @type {string[]} */
-  const finalDiffers = [];
-  for (const id of Object.keys(home.final)) {
+  for (const id of HELD) {
     const a = home.final[id];
     const b = far.final[id];
     const d = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y), Math.abs(a.z - b.z));
     t.diagnostic(id + ' final relative position differs by ' + d.toExponential(2));
     if (!(d <= RELATIVE_TOLERANCE)) {
-      finalDiffers.push(id);
+      failures.push(id + ' ends ' + d + ' from its untranslated position');
     }
   }
-  assert.ok(sleepDiffers.length < Object.keys(home.sleep).length && finalDiffers.length < Object.keys(home.final).length, 'nothing agreed');
-  assert.deepEqual(sleepDiffers, SLEEP_DIVERGES, 'the bodies whose sleep quantum moves with the offset');
-  assert.deepEqual(finalDiffers, FINAL_DIVERGES, 'the bodies whose final position moves with the offset by more than ' + RELATIVE_TOLERANCE);
+  for (const id of HOVERING) {
+    const a = home.final[id];
+    const b = far.final[id];
+    const across = Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
+    const up = Math.abs(a.y - b.y);
+    t.diagnostic(id + ' final relative position differs by ' + across.toExponential(2) + ' horizontally and ' + up.toExponential(2) + ' in height');
+    if (!(across <= RELATIVE_TOLERANCE)) {
+      failures.push(id + ' ends ' + across + ' from its untranslated position horizontally');
+    }
+    if (!(up <= HOVER + RELATIVE_TOLERANCE)) {
+      failures.push(id + ' ends ' + up + ' from its untranslated height, more than the hover');
+    }
+  }
+  let flips = 0;
+  for (let i = 0; i < home.walkerY.length; i = i + 1) {
+    if (Math.abs(home.walkerY[i] - far.walkerY[i]) > RELATIVE_TOLERANCE) {
+      flips = flips + 1;
+    }
+  }
+  t.diagnostic('the walker\'s height differs between the offsets by more than 1e-6 on ' + flips + ' of ' + home.walkerY.length + ' quanta');
+  const floor = /** @type {{ minX: number, maxX: number, maxY: number, minZ: number, maxZ: number }} */ (productInit().colliders.find((c) => c.id === 'floor'));
+  const slider = /** @type {{ hy: number }} */ (productInit().bodies.find((b) => b.id === TUMBLES));
+  for (const [name, run] of /** @type {Array<[string, ReturnType<typeof translatedRun>]>} */ ([['home', home], ['far', far]])) {
+    const s = run.final[TUMBLES];
+    t.diagnostic(TUMBLES + ' ' + name + ' rests at (' + s.x.toFixed(6) + ', ' + s.y.toFixed(6) + ', ' + s.z.toFixed(6) + '), asleep at ' + run.sleep[TUMBLES]);
+    const rests = run.sleep[TUMBLES] !== null && run.asleep.includes(TUMBLES)
+      && Math.abs(s.y - (floor.maxY + slider.hy)) <= SKIN
+      && s.x > floor.minX && s.x < floor.maxX && s.z > floor.minZ && s.z < floor.maxZ;
+    if (!rests) {
+      failures.push(TUMBLES + ' is not at rest on the floor in the ' + name + ' run');
+    }
+  }
+  assert.deepEqual(failures, []);
+});
+
+// ---------------------------------------------------------------------------
+// 4b. The walker keeps its stride on flat ground (F2 pin 5).
+//
+// The product walker alone on the product floor, as the corpus's walker-stall
+// bundle has it, for 10000 quanta at 0.4 units per second: at the origin, and
+// moved with its floor by (1e6, 0, 1e6). A quantum is short when the walker
+// travels less than the stride it was asked for by more than a millionth of
+// it (at 1e6 every quantum loses 2.3e-11 to rounding, 4e-9 of a stride). The
+// walker starts on the floor at its skin and must stay grounded throughout,
+// so every quantum counts. On main 332 quanta were short at the origin and
+// 323 at the offset: when the floor contact's normal came out vertical but
+// for its last bit, Rapier's controller filed the horizontal travel as
+// vertical and kept none of it (https://github.com/dimforge/rapier/issues/1019).
+// The engine's copy of the controller, solver/src/kcc.rs, files it as
+// horizontal; its native control test, at the end of solver/src/rapier_law.rs,
+// holds the copy to Rapier's own controller bit for bit with the branch off.
+// The run also prints the quanta where the walker sinks more than 1e-3 into
+// its skin while keeping its travel, which docs/PHASE-2.md records as known
+// and not fixed.
+
+const FLAT_QUANTA = 10000;
+const STRIDE = 0.4 * DT;
+const PRODUCT_WALKER = { id: 'walker', x: 10, y: 0.26, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 };
+const PRODUCT_FLOOR = { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 };
+
+/** @param {number} offset */
+function flatWalk(offset) {
+  const init = {
+    bodies: [{ ...PRODUCT_WALKER, x: PRODUCT_WALKER.x + offset, z: PRODUCT_WALKER.z + offset }],
+    colliders: [{ ...PRODUCT_FLOOR, minX: PRODUCT_FLOOR.minX + offset, maxX: PRODUCT_FLOOR.maxX + offset, minZ: PRODUCT_FLOOR.minZ + offset, maxZ: PRODUCT_FLOOR.maxZ + offset }],
+  };
+  recordRun({ seed: 0, steps: FLAT_QUANTA, driven: ['walker'], world: init });
+  const world = createWorld(init, 'product');
+  const driven = new Set(['walker']);
+  let x = PRODUCT_WALKER.x + offset;
+  /** @type {number[]} */
+  const short = [];
+  /** @type {number[]} */
+  const airborne = [];
+  /** @type {number[]} */
+  const sunk = [];
+  let least = Infinity;
+  for (let q = 1; q <= FLAT_QUANTA; q = q + 1) {
+    world.step(driven);
+    const b = /** @type {{ x: number, y: number, vy: number }} */ (world.body('walker'));
+    const travel = b.x - x;
+    x = b.x;
+    least = Math.min(least, travel / STRIDE);
+    if (travel < STRIDE * (1 - 1e-6)) {
+      short.push(q);
+    }
+    if (b.vy !== 0) {
+      airborne.push(q);
+    }
+    if (b.y < PRODUCT_WALKER.y - 1e-3) {
+      sunk.push(q);
+    }
+  }
+  return { short, airborne, sunk, least };
+}
+
+bundled('outcome 4b: the product walker on the product floor travels its full stride on every one of 10000 quanta at 0.4 units per second, at the origin and at (1e6, 0, 1e6), grounded throughout', (t) => {
+  /** @type {string[]} */
+  const failures = [];
+  for (const offset of [0, 1e6]) {
+    const walk = flatWalk(offset);
+    t.diagnostic('at ' + offset + ': ' + walk.short.length + ' short quanta' + (walk.short.length > 0 ? ', first ' + walk.short.slice(0, 5).join(' ') : '') + '; the least travel ' + walk.least + ' of a stride; ' + walk.airborne.length + ' quanta airborne; sunk more than 1e-3 into the skin at ' + (walk.sunk.join(' ') || 'none'));
+    if (walk.short.length > 0) {
+      failures.push('at ' + offset + ' the walker fell short of its stride on ' + walk.short.length + ' quanta, first ' + walk.short[0]);
+    }
+    if (walk.airborne.length > 0) {
+      failures.push('at ' + offset + ' the walker left the floor on ' + walk.airborne.length + ' quanta, first ' + walk.airborne[0]);
+    }
+  }
+  assert.deepEqual(failures, []);
+});
+
+// ---------------------------------------------------------------------------
+// 4c. The step in four directions (F2 pin 5).
+//
+// The course climbs its 0.29 step moving +x only. Here the step's riser is 1
+// ahead of the origin in each of +x, -x, +z, and -z, and the walker starts
+// from 20 positions a twentieth of a stride apart behind the origin, so it
+// meets the riser at 20 phases of a quantum; after 480 quanta every one of the
+// 80 must stand on the step, its feet at 0.29 within 1e-3 and its back face
+// past the riser. The settings fix F2 rejected, tilting `up`, broke this
+// outside a window: the native test
+// the_step_is_climbed_from_every_start_in_four_directions_and_a_tilted_up_refuses_it,
+// at the end of solver/src/rapier_law.rs, runs the same 80 and, with `up`
+// tilted to (0, 1, 1e-8), sees the +z step refused from most starts. That is
+// this test's red; main climbs all 80 too.
+
+const STEP_STARTS = 20;
+const STEP_QUANTA = 480;
+const STEP_HEIGHT = 0.29;
+/** @type {Array<{ name: string, step: { minX: number, maxX: number, minZ: number, maxZ: number }, vx: number, vz: number, along: (b: { x: number, z: number }) => number, start: (back: number) => { x: number, z: number } }>} */
+const STEP_DIRECTIONS = [
+  // 0 - back, not -back, so the first start is +0 and not -0.
+  { name: '+x', step: { minX: 1, maxX: 10, minZ: -5, maxZ: 5 }, vx: 0.4, vz: 0, along: (b) => b.x, start: (back) => ({ x: 0 - back, z: 0 }) },
+  { name: '-x', step: { minX: -10, maxX: -1, minZ: -5, maxZ: 5 }, vx: -0.4, vz: 0, along: (b) => -b.x, start: (back) => ({ x: back, z: 0 }) },
+  { name: '+z', step: { minX: -5, maxX: 5, minZ: 1, maxZ: 10 }, vx: 0, vz: 0.4, along: (b) => b.z, start: (back) => ({ x: 0, z: 0 - back }) },
+  { name: '-z', step: { minX: -5, maxX: 5, minZ: -10, maxZ: -1 }, vx: 0, vz: -0.4, along: (b) => -b.z, start: (back) => ({ x: 0, z: back }) },
+];
+
+bundled('outcome 4c: at 0.4 units per second the 0.29 step is climbed from 20 start positions in each of +x, -x, +z, and -z, 80 of 80', (t) => {
+  /** @type {string[]} */
+  const refused = [];
+  for (const dir of STEP_DIRECTIONS) {
+    let climbed = 0;
+    for (let k = 0; k < STEP_STARTS; k = k + 1) {
+      const at = dir.start(k * STRIDE / STEP_STARTS);
+      const init = {
+        bodies: [{ id: 'walker', x: at.x, y: 0.26, z: at.z, vx: dir.vx, vy: 0, vz: dir.vz, hx: 0.25, hy: 0.25, hz: 0.25 }],
+        colliders: [
+          { id: 'floor', minX: -10, maxX: 10, minY: -1, maxY: 0, minZ: -10, maxZ: 10 },
+          { id: 'step', minX: dir.step.minX, maxX: dir.step.maxX, minY: 0, maxY: STEP_HEIGHT, minZ: dir.step.minZ, maxZ: dir.step.maxZ },
+        ],
+      };
+      recordRun({ seed: 0, steps: STEP_QUANTA, driven: ['walker'], world: init });
+      const world = createWorld(init, 'product');
+      const driven = new Set(['walker']);
+      for (let q = 0; q < STEP_QUANTA; q = q + 1) {
+        world.step(driven);
+      }
+      const b = /** @type {{ x: number, y: number, z: number, hy: number }} */ (world.body('walker'));
+      const feet = b.y - b.hy - SKIN;
+      if (Math.abs(feet - STEP_HEIGHT) <= 1e-3 && dir.along(b) - 0.25 > 1) {
+        climbed = climbed + 1;
+      } else {
+        refused.push(dir.name + ' from start ' + k + ': feet ' + feet + ', ' + dir.along(b) + ' along');
+      }
+    }
+    t.diagnostic(dir.name + ': climbed from ' + climbed + ' of ' + STEP_STARTS + ' starts');
+  }
+  assert.deepEqual(refused, []);
 });

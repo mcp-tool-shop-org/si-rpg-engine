@@ -793,3 +793,79 @@ fn subtract_hit(translation: Vector, hit: &ShapeCastHit) -> Vector {
     let surface_correction = surface_correction * (1.0 + 1.0e-5);
     translation + hit.normal1 * surface_correction
 }
+
+// The branch on one hit, as arithmetic. The law's tests, at the end of
+// solver/src/rapier_law.rs, hold the copy to Rapier's controller over whole
+// runs; these hold the one change to what pin 2 of the dispatch says it is.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rapier3d_f64::control::CharacterAutostep;
+    use rapier3d_f64::parry::query::ShapeCastStatus;
+
+    /// The law's settings (controller() in solver/src/rapier_law.rs).
+    fn settings() -> KinematicCharacterController {
+        KinematicCharacterController {
+            up: Vector::new(0.0, 1.0, 0.0),
+            offset: CharacterLength::Absolute(0.01),
+            slide: true,
+            autostep: Some(CharacterAutostep {
+                max_height: CharacterLength::Absolute(0.3),
+                min_width: CharacterLength::Absolute(0.2),
+                include_dynamic_bodies: false,
+            }),
+            max_slope_climb_angle: core::f64::consts::FRAC_PI_4,
+            min_slope_slide_angle: 50.0 * core::f64::consts::PI / 180.0,
+            snap_to_ground: Some(CharacterLength::Absolute(0.2)),
+            normal_nudge_factor: 1.0e-4,
+        }
+    }
+
+    fn floor_hit(normal_y: f64) -> ShapeCastHit {
+        let normal = Vector::new(0.0, normal_y, 0.0);
+        ShapeCastHit { time_of_impact: 0.0, witness1: Vector::ZERO, witness2: Vector::ZERO, normal1: normal, normal2: -normal, status: ShapeCastStatus::PenetratingOrWithinTargetDist }
+    }
+
+    /// What handle_slopes keeps of one quantum's step on a floor hit at
+    /// time of impact 0, the whole step still to go.
+    fn kept<const BRANCH: bool>(settings: &KinematicCharacterController, normal_y: f64) -> Vector {
+        let step = Vector::new(0.4 / 64.0, -8.0 / 64.0 / 64.0, 0.0);
+        let copy = Controller::<BRANCH>(settings);
+        let info = copy.compute_hit_info(floor_hit(normal_y));
+        let mut result = EffectiveCharacterMovement { translation: Vector::ZERO, grounded: false, is_sliding_down_slope: false };
+        copy.handle_slopes(&info, step, step, copy.normal_nudge_factor, &mut result)
+    }
+
+    // A floor normal vertical but for its last bit, as GJK returns it on the
+    // flat walk's stalled quanta (the knowledge base traced quanta 98 and 125
+    // at the origin). Rapier's lines give the normal no horizontal direction
+    // and file the whole tangent as vertical; its up component is -2^-61, so
+    // the non-slip branch keeps the horizontal tangent, zero, and the nudge.
+    // With the branch the tangent's x is horizontal and kept. With a normal
+    // exactly vertical the tangent's up component is exactly zero, and both
+    // slide the whole step.
+    #[test]
+    fn a_floor_normal_vertical_but_for_its_last_bit_keeps_the_step_only_with_the_branch() {
+        let settings = settings();
+        let last_bit = f64::from_bits(0x3fefffffffffffff);
+        assert_eq!(last_bit, 1.0 - f64::EPSILON / 2.0);
+        let step = 0.4 / 64.0;
+
+        let hit = floor_hit(last_bit);
+        let rapier = Controller::<false>(&settings).decompose_hit(Vector::new(step, -8.0 / 64.0 / 64.0, 0.0), &hit);
+        assert_eq!(rapier.horizontal_tangent, Vector::ZERO);
+        assert_eq!(rapier.vertical_tangent.y, -(1.0 / (1u64 << 61) as f64));
+        assert_eq!(rapier.vertical_tangent.x, step);
+        let ours = Controller::<true>(&settings).decompose_hit(Vector::new(step, -8.0 / 64.0 / 64.0, 0.0), &hit);
+        assert_eq!((ours.horizontal_tangent.x, ours.horizontal_tangent.y), (step, 0.0));
+        assert_eq!(ours.vertical_tangent.y, -(1.0 / (1u64 << 61) as f64));
+
+        let without = kept::<false>(&settings, last_bit);
+        let with = kept::<true>(&settings, last_bit);
+        println!("kept of a {step} step on a normal 1 - 2^-53: {} without the branch, {} with it", without.x, with.x);
+        assert_eq!(without.x, 0.0, "Rapier's routine kept horizontal travel, so the stall's premise is gone");
+        assert_eq!(with.x, step);
+        assert_eq!(kept::<false>(&settings, 1.0).x, step, "an exactly vertical normal lost the step");
+        assert_eq!(kept::<true>(&settings, 1.0).x, step);
+    }
+}

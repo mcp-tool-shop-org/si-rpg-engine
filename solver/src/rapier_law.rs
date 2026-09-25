@@ -1043,6 +1043,12 @@ pub extern "C" fn solver_rebuilds() -> u32 {
 // to dynamic keeps its record velocity, and the wrong order is caught; a
 // capsule world switches the collider's shape, and an omitted shape is caught;
 // and a drop carries a handle generation into the snapshot (pin 6, S1 pin 9).
+//
+// F2, the character's controller, at the end of the module: the control test
+// holds the copy with its branch off to Rapier's controller bit for bit, its
+// red finds the branch on exactly Rapier's stalled quanta, the flat walk keeps
+// its stride, the step is climbed in four directions and a tilted `up` refuses
+// it, and the costs are printed.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1800,5 +1806,597 @@ mod tests {
         with(b);
         assert_eq!(ensure(*turn, 1, 1, 0, 0, 0.0, 0), Ok(Load::Built), "a world whose geometry changed was kept");
         assert_eq!(snapshot(), fresh, "the rebuilt world is not the one those half-extents build");
+    }
+
+    // -----------------------------------------------------------------------
+    // F2: the character moves through the engine's copy of Rapier's
+    // controller, solver/src/kcc.rs, which adds one branch to decompose_hit
+    // (docs/dispatch-f2-walker-stride.md).
+    //
+    // Pin 4, the control test. Rapier's own controller and the copy with its
+    // branch off are called with the same inputs at every quantum of the flat
+    // walk (the product walker alone on the product floor, at the origin and
+    // at an offset of a million), the ten cases of the character course
+    // (harness/course.test.js), the 0.29 step from 20 start positions in each
+    // of four directions (harness/outcome.test.js), and the verb fixture's
+    // carry in a capsule world, and each call must return the same movement
+    // bit for bit. Rapier's result moves the character, so every run is the
+    // run main makes. The same comparison against the copy with its branch on
+    // is the test's red: it parts on the flat walk's stalled quanta, and only
+    // there.
+    //
+    // Pin 5 at the law: with the branch the flat walk keeps its stride at
+    // both offsets, and the step is climbed from all 80 starts; an `up`
+    // tilted past the window the settings fix works in refuses the step,
+    // which is the step check's red.
+    //
+    // Pin 10: the time per call of the copy against Rapier's controller on
+    // the product walker's flat walk, printed.
+
+    use crate::kcc::Controller;
+    use rapier3d_f64::control::EffectiveCharacterMovement;
+    use std::time::{Duration, Instant};
+
+    const WALK: f64 = 0.4;
+    const STRIDE: f64 = WALK * DT;
+    const QUANTA_FLAT: usize = 10_000;
+    const MILLION: f64 = 1.0e6;
+
+    /// One controller call as words, bit for bit: the translation, grounded,
+    /// the sliding flag, and each collision's collider, pose, applied and
+    /// remaining translations, and hit.
+    fn movement_words(m: &EffectiveCharacterMovement, collisions: &[CharacterCollision]) -> Vec<u64> {
+        fn v(out: &mut Vec<u64>, v: Vector) {
+            out.extend([v.x.to_bits(), v.y.to_bits(), v.z.to_bits()]);
+        }
+        let mut out = Vec::new();
+        v(&mut out, m.translation);
+        out.push(m.grounded as u64);
+        out.push(m.is_sliding_down_slope as u64);
+        out.push(collisions.len() as u64);
+        for c in collisions {
+            let (index, generation) = c.handle.into_raw_parts();
+            out.extend([index as u64, generation as u64]);
+            v(&mut out, c.character_pos.translation);
+            let r = c.character_pos.rotation;
+            out.extend([r.x.to_bits(), r.y.to_bits(), r.z.to_bits(), r.w.to_bits()]);
+            v(&mut out, c.translation_applied);
+            v(&mut out, c.translation_remaining);
+            out.push(c.hit.time_of_impact.to_bits());
+            v(&mut out, c.hit.witness1);
+            v(&mut out, c.hit.witness2);
+            v(&mut out, c.hit.normal1);
+            v(&mut out, c.hit.normal2);
+            out.push(c.hit.status as u64);
+        }
+        out
+    }
+
+    /// Rapier's own controller, the copy with its branch off, and the copy
+    /// with its branch on, called with the same inputs; Rapier's result moves
+    /// the character. It keeps the first call where the copy with the branch
+    /// off parts from Rapier, the quanta where the copy with the branch on
+    /// does, and how many hits had a normal parallel to `up`, where the branch
+    /// applies.
+    #[derive(Default)]
+    struct Control {
+        run: String,
+        quantum: usize,
+        calls: usize,
+        parted: Option<String>,
+        branch: Vec<usize>,
+        degenerate: usize,
+    }
+
+    impl Mover for Control {
+        fn move_shape(
+            &mut self,
+            controller: &KinematicCharacterController,
+            dt: f64,
+            queries: &QueryPipeline,
+            character_shape: &dyn Shape,
+            character_pos: &Pose,
+            desired_translation: Vector,
+            collisions: &mut Vec<CharacterCollision>,
+        ) -> EffectiveCharacterMovement {
+            self.calls += 1;
+            let mut theirs = Vec::new();
+            let rapier = controller.move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| theirs.push(hit));
+            let mut ours = Vec::new();
+            let off = Controller::<false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| ours.push(hit));
+            let mut patched = Vec::new();
+            let on = Controller::<true>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| patched.push(hit));
+            let want = movement_words(&rapier, &theirs);
+            let got = movement_words(&off, &ours);
+            if self.parted.is_none() && got != want {
+                let word = want.iter().zip(got.iter()).position(|(a, b)| a != b).unwrap_or(want.len().min(got.len()));
+                self.parted = Some(format!(
+                    "{} quantum {}: word {} of the movement differs.\nRapier: {:?} {:?}\nthe copy, branch off: {:?} {:?}",
+                    self.run, self.quantum, word, rapier, theirs, off, ours
+                ));
+            }
+            if movement_words(&on, &patched) != want && self.branch.last() != Some(&self.quantum) {
+                self.branch.push(self.quantum);
+            }
+            self.degenerate += theirs.iter().filter(|c| c.hit.normal1.cross(controller.up).try_normalize().is_none()).count();
+            collisions.extend(theirs);
+            rapier
+        }
+    }
+
+    /// Rapier's own controller, alone.
+    struct Rapier;
+
+    impl Mover for Rapier {
+        fn move_shape(
+            &mut self,
+            controller: &KinematicCharacterController,
+            dt: f64,
+            queries: &QueryPipeline,
+            character_shape: &dyn Shape,
+            character_pos: &Pose,
+            desired_translation: Vector,
+            collisions: &mut Vec<CharacterCollision>,
+        ) -> EffectiveCharacterMovement {
+            controller.move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit))
+        }
+    }
+
+    /// The copy with its branch off, alone.
+    struct Unpatched;
+
+    impl Mover for Unpatched {
+        fn move_shape(
+            &mut self,
+            controller: &KinematicCharacterController,
+            dt: f64,
+            queries: &QueryPipeline,
+            character_shape: &dyn Shape,
+            character_pos: &Pose,
+            desired_translation: Vector,
+            collisions: &mut Vec<CharacterCollision>,
+        ) -> EffectiveCharacterMovement {
+            Controller::<false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit))
+        }
+    }
+
+    /// Another mover, timed.
+    struct Timed<M: Mover> {
+        inner: M,
+        spent: Duration,
+        calls: usize,
+    }
+
+    impl<M: Mover> Mover for Timed<M> {
+        fn move_shape(
+            &mut self,
+            controller: &KinematicCharacterController,
+            dt: f64,
+            queries: &QueryPipeline,
+            character_shape: &dyn Shape,
+            character_pos: &Pose,
+            desired_translation: Vector,
+            collisions: &mut Vec<CharacterCollision>,
+        ) -> EffectiveCharacterMovement {
+            let start = Instant::now();
+            let out = self.inner.move_shape(controller, dt, queries, character_shape, character_pos, desired_translation, collisions);
+            self.spent += start.elapsed();
+            self.calls += 1;
+            out
+        }
+    }
+
+    /// A walker as the course drives it: a 0.25 box at (x, y, z), driven
+    /// (mode 1) at (vx, 0, vz).
+    fn walker(x: f64, y: f64, z: f64, vx: f64, vz: f64) -> [f64; BODY_STRIDE] {
+        [x, y, z, vx, 0.0, vz, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.25, 0.25, 0.25, 1.0]
+    }
+
+    fn slab(min_x: f64, max_x: f64, min_y: f64, max_y: f64, min_z: f64, max_z: f64) -> [f64; COLLIDER_STRIDE] {
+        [min_x, max_x, min_y, max_y, min_z, max_z, 0.0, 0.0, 0.0, 1.0]
+    }
+
+    /// A run of the law: its bodies and colliders, its length, the character
+    /// shape, and the record edits the tick makes before a quantum, as
+    /// (quantum, body, slot, value). Between edits the tick writes back what
+    /// the law returned, so a record the law wrote stays as it is.
+    struct Run {
+        name: String,
+        bodies: Vec<[f64; BODY_STRIDE]>,
+        colliders: Vec<[f64; COLLIDER_STRIDE]>,
+        quanta: usize,
+        shape: u32,
+        edits: Vec<(usize, usize, usize, f64)>,
+        /// A controller `up` planted after the build, for a red.
+        up: Option<Vector>,
+    }
+
+    impl Run {
+        fn new(name: &str, bodies: Vec<[f64; BODY_STRIDE]>, colliders: Vec<[f64; COLLIDER_STRIDE]>, quanta: usize) -> Run {
+            Run { name: name.to_string(), bodies, colliders, quanta, shape: 0, edits: Vec::new(), up: None }
+        }
+
+        fn edit(&self, q: usize) {
+            for &(at, i, slot, v) in &self.edits {
+                if at == q {
+                    set_slot(i, slot, v);
+                }
+            }
+        }
+    }
+
+    /// Runs `run` through the law with `mover` as a new world: the load, a
+    /// planted `up` if the run has one, then each quantum's edits and step.
+    /// `before` sees the mover and the quantum about to be stepped, counted
+    /// from 1 as the course counts its ticks; `after` sees the quantum once it
+    /// has stepped. A load before the first step is what the first step's own
+    /// load would do.
+    fn drive<M: Mover>(turn: &mut u32, run: &Run, mover: &mut M, mut before: impl FnMut(&mut M, usize), mut after: impl FnMut(usize)) {
+        *turn += 1;
+        for (i, b) in run.bodies.iter().enumerate() {
+            set_body(i, *b);
+        }
+        for (j, c) in run.colliders.iter().enumerate() {
+            set_collider(j, *c);
+        }
+        let (n, m) = (run.bodies.len() as u32, run.colliders.len() as u32);
+        run.edit(0);
+        assert_eq!(ensure(*turn, n, m, 0, 0, 0.0, run.shape), Ok(Load::Built), "{}", run.name);
+        if let Some(up) = run.up {
+            let solver = unsafe { &mut *(&raw mut SOLVER) };
+            solver.loaded.as_mut().expect("a loaded world").controller.up = up;
+        }
+        for q in 0..run.quanta {
+            if q > 0 {
+                run.edit(q);
+            }
+            before(mover, q + 1);
+            assert_eq!(step_law(*turn, n, m, 0, 0, 0.0, run.shape, mover), Ok(()), "{} at quantum {}", run.name, q + 1);
+            after(q + 1);
+        }
+    }
+
+    /// The product walker alone on the product floor, as the corpus's
+    /// walker-stall bundle has it, moved by (offset, 0, offset).
+    fn flat_walk(offset: f64) -> Run {
+        Run::new(
+            &format!("the flat walk at {offset:e}"),
+            vec![walker(10.0 + offset, 0.26, 0.0 + offset, WALK, 0.0)],
+            vec![slab(4.0 + offset, 80.0 + offset, -1.0, 0.0, -2.0 + offset, 6.0 + offset)],
+            QUANTA_FLAT,
+        )
+    }
+
+    /// What a flat walk did: the quanta whose travel fell short of the stride
+    /// by more than a millionth of it, the least travel as a share of the
+    /// stride, and the quanta on which the walker was not grounded.
+    struct FlatWalk {
+        short: Vec<usize>,
+        least: f64,
+        airborne: usize,
+    }
+
+    fn walk_flat<M: Mover>(turn: &mut u32, offset: f64, mover: &mut M, before: impl FnMut(&mut M, usize)) -> FlatWalk {
+        let run = flat_walk(offset);
+        let mut x = run.bodies[0][0];
+        let mut out = FlatWalk { short: Vec::new(), least: f64::INFINITY, airborne: 0 };
+        drive(turn, &run, mover, before, |q| {
+            let b = body_at(0);
+            let travel = b[0] - x;
+            x = b[0];
+            out.least = out.least.min(travel / STRIDE);
+            if travel < STRIDE * (1.0 - 1.0e-6) {
+                out.short.push(q);
+            }
+            if b[4] != 0.0 {
+                out.airborne += 1;
+            }
+        });
+        out
+    }
+
+    /// The ten cases of harness/course.test.js, with its floors, features,
+    /// walkers, and lengths. The slope ramps are the colliders course.test.js
+    /// computes with V8's Math.sin and Math.cos, written as V8 returns them.
+    fn course() -> Vec<Run> {
+        let floor = slab(-10.0, 60.0, -1.0, 0.0, -5.0, 5.0);
+        let ramp44 = [10.35020615013476, 13.15020615013476, 0.3707527885240681, 1.070752788524068, -0.5, 0.5, 0.0, 0.0, 0.374606593415912, 0.9271838545667874];
+        let ramp46 = [10.324290648761124, 13.124290648761125, 0.4139452908134623, 1.1139452908134624, -0.5, 0.5, 0.0, 0.0, 0.3907311284892737, 0.9205048534524404];
+        let drop = |d: f64| vec![slab(-10.0, 12.0, -1.0, 0.0, -5.0, 5.0), slab(12.0, 60.0, -1.0 - d, -d, -5.0, 5.0)];
+        let meet = |speed: f64| vec![walker(10.0, 0.26, 0.0, speed, 0.0), walker(12.0, 0.26, 0.0, -speed, 0.0)];
+        vec![
+            Run::new("course 5.1, the 0.29 step", vec![walker(10.0, 0.26, 0.0, WALK, 0.0)], vec![floor, slab(11.0, 20.0, 0.0, 0.29, -5.0, 5.0)], 480),
+            Run::new("course 5.2, the 0.33 step", vec![walker(10.0, 0.26, 0.0, WALK, 0.0)], vec![floor, slab(11.0, 20.0, 0.0, 0.33, -5.0, 5.0)], 480),
+            Run::new("course 5.3, the 44 degree slope", vec![walker(10.0, 0.26, 0.0, WALK, 0.0)], vec![floor, ramp44], 960),
+            Run::new("course 5.4, the 46 degree slope", vec![walker(10.0, 0.26, 0.0, WALK, 0.0)], vec![floor, ramp46], 960),
+            Run::new("course 5.5, the 0.19 drop", vec![walker(11.5, 0.26, 0.0, WALK, 0.0)], drop(0.19), 240),
+            Run::new("course 5.6, the 0.22 drop", vec![walker(11.5, 0.26, 0.0, WALK, 0.0)], drop(0.22), 240),
+            Run::new("course 5.7, feet 0.1 inside the floor", vec![walker(0.0, 0.16, 0.0, WALK, 0.0)], vec![floor], 1300),
+            Run::new("course 5.8, centre 0.1 inside the floor", vec![walker(0.0, -0.1, 0.0, WALK, 0.0)], vec![floor], 4000),
+            Run::new("course 5.9, walkers meeting at 1", meet(1.0), vec![floor], 192),
+            Run::new("course 5.10, walkers meeting at 8", meet(8.0), vec![floor], 192),
+        ]
+    }
+
+    /// The directions of the step scan: the step's slab beyond a riser 1 from
+    /// the origin, and the walker's velocity.
+    const STEP_DIRECTIONS: [(&str, [f64; 6], f64, f64); 4] = [
+        ("+x", [1.0, 10.0, 0.0, 0.29, -5.0, 5.0], WALK, 0.0),
+        ("-x", [-10.0, -1.0, 0.0, 0.29, -5.0, 5.0], -WALK, 0.0),
+        ("+z", [-5.0, 5.0, 0.0, 0.29, 1.0, 10.0], 0.0, WALK),
+        ("-z", [-5.0, 5.0, 0.0, 0.29, -10.0, -1.0], 0.0, -WALK),
+    ];
+    const STEP_STARTS: usize = 20;
+    const STEP_QUANTA: usize = 480;
+
+    /// The 0.29 step in one direction from start `k`: the walker starts k
+    /// twentieths of a stride back from the origin, so the 20 starts meet the
+    /// riser at 20 phases of a quantum. harness/outcome.test.js runs the same.
+    fn step_run(direction: usize, k: usize) -> Run {
+        let (name, s, vx, vz) = STEP_DIRECTIONS[direction];
+        let back = k as f64 * STRIDE / STEP_STARTS as f64;
+        // 0 - back, not -back, so the first start is +0 and not -0.
+        let (x, z) = match direction {
+            0 => (0.0 - back, 0.0),
+            1 => (back, 0.0),
+            2 => (0.0, 0.0 - back),
+            _ => (0.0, back),
+        };
+        Run::new(
+            &format!("the 0.29 step {name} from start {k}"),
+            vec![walker(x, 0.26, z, vx, vz)],
+            vec![slab(-10.0, 10.0, -1.0, 0.0, -10.0, 10.0), slab(s[0], s[1], s[2], s[3], s[4], s[5])],
+            STEP_QUANTA,
+        )
+    }
+
+    /// Whether the walker of a step run is on the step: its feet within 1e-3
+    /// of 0.29 and its back face past the riser.
+    fn on_the_step(direction: usize) -> bool {
+        let b = body_at(0);
+        let along = match direction {
+            0 => b[0],
+            1 => -b[0],
+            2 => b[2],
+            _ => -b[2],
+        };
+        (b[1] - 0.25 - SKIN - 0.29).abs() <= 1.0e-3 && along - 0.25 > 1.0
+    }
+
+    /// The verb fixture's carry in a capsule world (fixtures/behavior-verbs.json,
+    /// carry-capsule) as the law receives it: the walker, a dynamic box until
+    /// the crate sleeps, is driven to the crate at quantum 42, picks it up at
+    /// 104, carries it over the gap to the far floor, puts it down at 260, and
+    /// stops at 261. The edits are the tick's writes before each quantum that
+    /// differ from what the law returned, recorded from the tick at 48da598;
+    /// the put-down writes the crate's whole record, as the tick's release
+    /// does. The finals are the fixture's, which the replay must reproduce to
+    /// be that run.
+    fn capsule_carry() -> (Run, [[f64; 3]; 2]) {
+        let mut walker_box = walker(0.0, 0.3, 0.0, 0.0, 0.0);
+        walker_box[DRIVEN] = 0.0;
+        let crate_box = [1.1, 0.26, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.12, 0.2, 0.12, 0.0];
+        let mut edits = vec![
+            (41, 0, 3, 1.0),
+            (41, 0, 5, 4.869862308973424e-20),
+            (41, 0, DRIVEN, 1.0),
+            (103, 1, DRIVEN, 3.0),
+            (104, 0, 5, -1.5145179960926063e-11),
+            (256, 0, 3, -1.0),
+            (256, 0, 5, 2.577034723244152e-10),
+        ];
+        let put_down = [3.1436155842291598, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0];
+        for (slot, v) in put_down.iter().enumerate() {
+            edits.push((259, 1, slot, *v));
+        }
+        edits.extend([(259, 1, DRIVEN, 0.0), (260, 0, 3, 0.0), (260, 0, 5, 0.0), (260, 0, DRIVEN, 0.0)]);
+        let run = Run {
+            name: "the capsule carry".to_string(),
+            bodies: vec![walker_box, crate_box],
+            colliders: vec![slab(-2.0, 1.6, -1.0, 0.0, -1.0, 1.0), slab(1.85, 6.0, -1.0, 0.0, -1.0, 1.0)],
+            quanta: 262,
+            shape: 1,
+            edits,
+            up: None,
+        };
+        let finals = [
+            [3.135213727477656, 0.2557054694165416, 5.671878432180297e-12],
+            [3.0131310282146035, 0.2431685875530545, 8.224034844550117e-12],
+        ];
+        (run, finals)
+    }
+
+    fn controlled(turn: &mut u32, run: &Run) -> Control {
+        let mut control = Control { run: run.name.clone(), ..Control::default() };
+        drive(turn, run, &mut control, |c, q| c.quantum = q, |_| {});
+        control
+    }
+
+    // Pin 4.
+    #[test]
+    fn the_copy_with_its_branch_off_moves_the_character_as_rapiers_controller_does_bit_for_bit() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+
+        // The flat walk, which crosses the normal the branch is for.
+        for offset in [0.0, MILLION] {
+            let mut control = Control { run: format!("the flat walk at {offset:e}"), ..Control::default() };
+            let walk = walk_flat(&mut turn, offset, &mut control, |c, q| c.quantum = q);
+            println!(
+                "flat walk at {offset:e}: {} calls, Rapier's run falls short on {} quanta; the branch changes {} quanta; {} hits with the normal parallel to up",
+                control.calls, walk.short.len(), control.branch.len(), control.degenerate
+            );
+            assert_eq!(control.parted, None, "the copy with its branch off parted from Rapier");
+            assert_eq!(control.calls, QUANTA_FLAT);
+            assert!(control.degenerate > 0, "the flat walk at {offset:e} never hit a normal parallel to up, so the control test does not cover the branch's case");
+        }
+
+        // The course, and the step in four directions.
+        for run in course() {
+            let control = controlled(&mut turn, &run);
+            println!("{}: {} calls, the branch changes {} quanta", run.name, control.calls, control.branch.len());
+            assert_eq!(control.parted, None, "the copy with its branch off parted from Rapier");
+            assert!(control.calls >= run.quanta);
+        }
+        let mut changed = 0;
+        for direction in 0..STEP_DIRECTIONS.len() {
+            for k in 0..STEP_STARTS {
+                let control = controlled(&mut turn, &step_run(direction, k));
+                assert_eq!(control.parted, None, "the copy with its branch off parted from Rapier");
+                assert_eq!(control.calls, STEP_QUANTA);
+                changed += control.branch.len();
+            }
+        }
+        println!("the step scan: 80 runs, the branch changes {changed} quanta");
+
+        // The capsule carry: the copy matches in a capsule world, and the
+        // replay under Rapier's controller ends where the fixture's run ended
+        // at 48da598, so it is that run. A bump that moves that run fails the
+        // last check, not the copy, and its edits are recorded again from the
+        // tick.
+        let (run, finals) = capsule_carry();
+        let control = controlled(&mut turn, &run);
+        println!("{}: {} calls, the branch changes {} quanta", run.name, control.calls, control.branch.len());
+        assert_eq!(control.parted, None, "the copy with its branch off parted from Rapier");
+        for (i, want) in finals.iter().enumerate() {
+            let b = body_at(i);
+            assert_eq!([b[0], b[1], b[2]], *want, "body {i} of the capsule carry did not end where the fixture's run ended at 48da598");
+        }
+
+        // The routine's first step runs only when the desired translation is
+        // under 1e-5, which the law never asks for, so it is called directly:
+        // a box and a capsule sunk into the floor and into a wall.
+        let mut world = PhysicsWorld::new();
+        for c in [slab(-4.0, 4.0, -1.0, 0.0, -4.0, 4.0), slab(1.0, 2.0, 0.0, 2.0, -4.0, 4.0)] {
+            let body = RigidBodyBuilder::fixed().translation(Vector::new((c[0] + c[1]) * 0.5, (c[2] + c[3]) * 0.5, (c[4] + c[5]) * 0.5)).build();
+            let _ = world.insert(body, ColliderBuilder::cuboid((c[1] - c[0]) * 0.5, (c[3] - c[2]) * 0.5, (c[5] - c[4]) * 0.5).build());
+        }
+        warm_broadphase(&mut world);
+        let query = world.broad_phase.as_query_pipeline(world.narrow_phase.query_dispatcher(), &world.bodies, &world.colliders, QueryFilter::new());
+        let settings = controller();
+        let mut pushed = 0;
+        for shape in [0u32, 1] {
+            let character = character_shape(shape, Vector::new(0.25, 0.25, 0.25));
+            for (at, desired) in [
+                (Vector::new(0.0, 0.2, 0.0), Vector::ZERO),
+                (Vector::new(0.8, 0.26, 0.0), Vector::ZERO),
+                (Vector::new(0.8, 0.2, 0.0), Vector::new(5.0e-6, 0.0, 0.0)),
+            ] {
+                let pos = Pose::from_translation(at);
+                let mut theirs = Vec::new();
+                let rapier = settings.move_shape(DT, &query, &*character, &pos, desired, |hit| theirs.push(hit));
+                let mut ours = Vec::new();
+                let off = Controller::<false>(&settings).move_shape(DT, &query, &*character, &pos, desired, |hit| ours.push(hit));
+                assert_eq!(movement_words(&off, &ours), movement_words(&rapier, &theirs), "shape {shape} at {at:?}: {rapier:?} against {off:?}");
+                if rapier.translation != Vector::ZERO {
+                    pushed += 1;
+                }
+            }
+        }
+        assert_eq!(pushed, 6, "a sunk character was not pushed out, so the depenetration was not compared");
+    }
+
+    // Pin 4's red, and pin 5's at the law. On Rapier's own flat walk the
+    // walker falls short of its stride on 332 quanta at the origin and 323 at
+    // 1e6, the counts main's binary gives (harness/outcome.test.js, outcome
+    // 4b), and the copy with its branch on, called with the same inputs,
+    // differs from Rapier on exactly those quanta: the comparison the control
+    // test makes goes red on a copy that parts from Rapier, and the branch
+    // changes the stalled quanta and nothing else. Run whole, the law driven
+    // by the copy with the branch off keeps every record bit for bit with the
+    // law driven by Rapier, and the law driven by the copy with the branch on
+    // parts at the first stall.
+    #[test]
+    fn the_control_check_goes_red_on_the_copy_with_its_branch_on_exactly_where_rapier_stalls() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        for (offset, stalls, first_stall) in [(0.0, 332, 98), (MILLION, 323, 3)] {
+            let mut control = Control { run: format!("the flat walk at {offset:e}"), ..Control::default() };
+            let walk = walk_flat(&mut turn, offset, &mut control, |c, q| c.quantum = q);
+            println!("flat walk at {offset:e}, Rapier's run: {} short quanta, first {:?}; the branch-on copy differs on {} quanta", walk.short.len(), walk.short.first(), control.branch.len());
+            assert_eq!((walk.short.len(), walk.short.first()), (stalls, Some(&first_stall)), "Rapier's flat walk at {offset:e} is not the run main's binary makes");
+            assert_eq!(control.branch, walk.short, "the branch changed a quantum Rapier did not stall on, or missed one");
+            assert_eq!(control.parted, None);
+
+            let run = flat_walk(offset);
+            let mut rapier = Vec::new();
+            drive(&mut turn, &run, &mut Rapier, |_, _| {}, |_| rapier.push(body_at(0)));
+            let mut unpatched = Vec::new();
+            drive(&mut turn, &run, &mut Unpatched, |_, _| {}, |_| unpatched.push(body_at(0)));
+            let mut patched = Vec::new();
+            drive(&mut turn, &run, &mut Stride, |_, _| {}, |_| patched.push(body_at(0)));
+            let first = |a: &[[f64; BODY_STRIDE]], b: &[[f64; BODY_STRIDE]]| a.iter().zip(b.iter()).position(|(x, y)| x.map(f64::to_bits) != y.map(f64::to_bits)).map(|q| q + 1);
+            assert_eq!(first(&unpatched, &rapier), None, "the law driven by the copy with its branch off parted from the law driven by Rapier");
+            assert_eq!(first(&patched, &rapier), Some(first_stall), "the law driven by the copy with its branch on did not part at the first stall");
+        }
+    }
+
+    // Pin 5 at the law.
+    #[test]
+    fn with_the_branch_the_flat_walk_keeps_its_stride_at_both_offsets() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        for offset in [0.0, MILLION] {
+            let walk = walk_flat(&mut turn, offset, &mut Stride, |_, _| {});
+            println!("flat walk at {offset:e} with the branch: {} short quanta, the least travel {} of a stride, {} quanta airborne", walk.short.len(), walk.least, walk.airborne);
+            assert_eq!(walk.short, Vec::<usize>::new(), "the walker lost travel at {offset:e}");
+            assert_eq!(walk.airborne, 0);
+        }
+    }
+
+    // Pin 5's step at the law, and its red.
+    #[test]
+    fn the_step_is_climbed_from_every_start_in_four_directions_and_a_tilted_up_refuses_it() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let scan = |turn: &mut u32, up: Option<Vector>| -> [usize; 4] {
+            let mut climbed = [0; 4];
+            for (direction, count) in climbed.iter_mut().enumerate() {
+                for k in 0..STEP_STARTS {
+                    let run = Run { up, ..step_run(direction, k) };
+                    drive(turn, &run, &mut Stride, |_, _| {}, |_| {});
+                    if on_the_step(direction) {
+                        *count += 1;
+                    }
+                }
+            }
+            climbed
+        };
+        let climbed = scan(&mut turn, None);
+        println!("the 0.29 step, climbed from 20 starts in +x, -x, +z, -z: {climbed:?}");
+        assert_eq!(climbed, [STEP_STARTS; 4]);
+        let tilted = scan(&mut turn, Some(Vector::new(0.0, 1.0, 1.0e-8)));
+        println!("with up tilted to (0, 1, 1e-8): {tilted:?}");
+        assert!(tilted.iter().any(|&c| c < STEP_STARTS), "a tilted up climbed from every start, so the step check could not go red");
+    }
+
+    // Pin 10: the costs on record.
+    #[test]
+    fn the_copy_costs_about_what_rapiers_controller_costs_on_the_product_walkers_flat_walk() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let rounds = 5;
+        let per_call = |turn: &mut u32, name: &str, mut run: Box<dyn FnMut(&mut u32) -> (Duration, usize)>| {
+            let mut times: Vec<f64> = (0..rounds)
+                .map(|_| {
+                    let (spent, calls) = run(turn);
+                    spent.as_secs_f64() * 1.0e6 / calls as f64
+                })
+                .collect();
+            times.sort_by(|a, b| a.total_cmp(b));
+            println!("{name}: median of {rounds} flat walks of {QUANTA_FLAT} quanta, {:.2} us a call (from {:.2} to {:.2})", times[rounds / 2], times[0], times[rounds - 1]);
+            times[rounds / 2]
+        };
+        let rapier = per_call(&mut turn, "Rapier's controller", Box::new(|turn| {
+            let mut m = Timed { inner: Rapier, spent: Duration::ZERO, calls: 0 };
+            walk_flat(turn, 0.0, &mut m, |_, _| {});
+            (m.spent, m.calls)
+        }));
+        let off = per_call(&mut turn, "the copy, branch off", Box::new(|turn| {
+            let mut m = Timed { inner: Unpatched, spent: Duration::ZERO, calls: 0 };
+            walk_flat(turn, 0.0, &mut m, |_, _| {});
+            (m.spent, m.calls)
+        }));
+        let on = per_call(&mut turn, "the copy, branch on (the law)", Box::new(|turn| {
+            let mut m = Timed { inner: Stride, spent: Duration::ZERO, calls: 0 };
+            walk_flat(turn, 0.0, &mut m, |_, _| {});
+            (m.spent, m.calls)
+        }));
+        assert!(rapier > 0.0 && off > 0.0 && on > 0.0);
     }
 }

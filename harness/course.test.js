@@ -14,10 +14,15 @@
 //
 // The controller's constants are solver/src/rapier_law.rs: STEP_HEIGHT 0.3,
 // CLIMB_ANGLE 45 degrees, SNAP 0.2, SKIN 0.01. At 0.35.3 autostep's limit is
-// max_height + offset, 0.3101 measured, and the snap threshold at 0.4 units
-// per second is 0.2105. Any bump of the toolchain or of rapier3d-f64 reruns
-// this course before a golden may move (solver/FLAGS.md; write-golden runs
-// it first).
+// max_height + offset: 0.31 is climbed and 0.3101 stops the walker. The drop
+// between snapped and fallen depends on the geometry and on the exact bits,
+// not on the speed alone: in this course's geometry the walker snaps 0.200
+// and falls from 0.205, and between 0.200 and 0.2105 the outcome can turn on
+// one bit, so 5.5 and 5.6 stay at 0.19 and 0.22, either side of that band
+// (the Rust knowledge base, requests/walker-stall.md; the 0.2105 T4 gave
+// holds for one other geometry). F2 moved neither limit. Any bump of the
+// toolchain or of rapier3d-f64 reruns this course before a golden may move
+// (solver/FLAGS.md; write-golden runs it first).
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
