@@ -54,7 +54,9 @@
     },
     {
       "breakage": {
-        "coChangesOnly": [],
+        "coChangesOnly": [
+          "load"
+        ],
         "collapsed": false,
         "confidence": "low",
         "importsAndCoChanges": [
@@ -68,13 +70,14 @@
       "confidence": "low",
       "highWater": null,
       "name": "frame",
-      "qualifyingSourceCommits": 8,
+      "qualifyingSourceCommits": 9,
       "rebaseline": null
     },
     {
       "breakage": {
         "coChangesOnly": [
-          "frame"
+          "frame",
+          "host"
         ],
         "collapsed": false,
         "confidence": "low",
@@ -83,12 +86,12 @@
         ],
         "importsOnly": []
       },
-      "cohesion": 0.261424,
+      "cohesion": 0.212394,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "harness",
-      "qualifyingSourceCommits": 12,
+      "qualifyingSourceCommits": 18,
       "rebaseline": null
     },
     {
@@ -110,6 +113,7 @@
     {
       "breakage": {
         "coChangesOnly": [
+          "harness",
           "tick"
         ],
         "collapsed": false,
@@ -117,12 +121,12 @@
         "importsAndCoChanges": [],
         "importsOnly": []
       },
-      "cohesion": 0.252278,
+      "cohesion": 0.240876,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "host",
-      "qualifyingSourceCommits": 11,
+      "qualifyingSourceCommits": 13,
       "rebaseline": null
     },
     {
@@ -143,20 +147,22 @@
     },
     {
       "breakage": {
-        "coChangesOnly": [],
+        "coChangesOnly": [
+          "frame"
+        ],
         "collapsed": false,
         "confidence": "low",
-        "importsAndCoChanges": [],
-        "importsOnly": [
+        "importsAndCoChanges": [
           "tick"
-        ]
+        ],
+        "importsOnly": []
       },
-      "cohesion": null,
+      "cohesion": 0.213198,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "load",
-      "qualifyingSourceCommits": 6,
+      "qualifyingSourceCommits": 8,
       "rebaseline": null
     },
     {
@@ -172,7 +178,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "propose",
-      "qualifyingSourceCommits": 8,
+      "qualifyingSourceCommits": 9,
       "rebaseline": null
     },
     {
@@ -204,7 +210,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "solver",
-      "qualifyingSourceCommits": 5,
+      "qualifyingSourceCommits": 6,
       "rebaseline": null
     },
     {
@@ -216,19 +222,19 @@
         "confidence": "low",
         "importsAndCoChanges": [
           "harness",
-          "host"
+          "host",
+          "load"
         ],
         "importsOnly": [
-          "load",
           "propose"
         ]
       },
-      "cohesion": 0.281656,
+      "cohesion": 0.184104,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "tick",
-      "qualifyingSourceCommits": 18,
+      "qualifyingSourceCommits": 21,
       "rebaseline": null
     },
     {
@@ -268,23 +274,23 @@
     "definition": "commits is how many commits in the window touch the file, including merges and commits dropped from coupling. lines is added plus deleted in those commits.",
     "files": [
       {
-        "commits": 9,
-        "lines": 217,
+        "commits": 11,
+        "lines": 280,
         "path": ".github/workflows/ci.yml"
       },
       {
-        "commits": 1,
-        "lines": 50,
+        "commits": 2,
+        "lines": 100,
         "path": ".github/workflows/pages.yml"
       },
       {
-        "commits": 4,
-        "lines": 11,
+        "commits": 5,
+        "lines": 16,
         "path": ".gitignore"
       },
       {
-        "commits": 1,
-        "lines": 38,
+        "commits": 2,
+        "lines": 76,
         "path": "CHANGELOG.md"
       },
       {
@@ -293,63 +299,63 @@
         "path": "LICENSE"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "README.es.md"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "README.fr.md"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "README.hi.md"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "README.it.md"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "README.ja.md"
       },
       {
-        "commits": 35,
-        "lines": 203,
+        "commits": 36,
+        "lines": 276,
         "path": "README.md"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "README.pt-BR.md"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "README.zh.md"
       },
       {
-        "commits": 1,
-        "lines": 29,
+        "commits": 2,
+        "lines": 58,
         "path": "SCORECARD.md"
       },
       {
-        "commits": 1,
-        "lines": 40,
+        "commits": 2,
+        "lines": 80,
         "path": "SECURITY.md"
       },
       {
-        "commits": 1,
-        "lines": 84,
+        "commits": 2,
+        "lines": 168,
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 48,
-        "lines": 1503,
+        "commits": 50,
+        "lines": 1623,
         "path": "atlas/README.md"
       },
       {
@@ -358,18 +364,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 48,
-        "lines": 5675,
+        "commits": 50,
+        "lines": 6020,
         "path": "atlas/page.json"
       },
       {
-        "commits": 48,
-        "lines": 8589,
+        "commits": 50,
+        "lines": 9721,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 48,
-        "lines": 12741,
+        "commits": 50,
+        "lines": 13542,
         "path": "atlas/structure.json"
       },
       {
@@ -381,6 +387,11 @@
         "commits": 18,
         "lines": 280,
         "path": "docs/PHASE-1.md"
+      },
+      {
+        "commits": 3,
+        "lines": 96,
+        "path": "docs/PHASE-2.md"
       },
       {
         "commits": 10,
@@ -488,6 +499,11 @@
         "path": "docs/dispatch-e5-minds.md"
       },
       {
+        "commits": 2,
+        "lines": 66,
+        "path": "docs/dispatch-t1-the-first-difference.md"
+      },
+      {
         "commits": 1,
         "lines": 194,
         "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
@@ -508,13 +524,13 @@
         "path": "docs/study-swarm/e2-solver.dispatch.md"
       },
       {
-        "commits": 1,
-        "lines": 26,
+        "commits": 2,
+        "lines": 52,
         "path": "docs/study-swarm/product-alignment.dispatch.citation-receipt.json"
       },
       {
-        "commits": 1,
-        "lines": 56,
+        "commits": 2,
+        "lines": 112,
         "path": "docs/study-swarm/product-alignment.dispatch.md"
       },
       {
@@ -528,13 +544,13 @@
         "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
       },
       {
-        "commits": 1,
-        "lines": 82,
+        "commits": 2,
+        "lines": 164,
         "path": "docs/study-swarm/testing-3d.dispatch.citation-receipt.json"
       },
       {
-        "commits": 1,
-        "lines": 70,
+        "commits": 2,
+        "lines": 140,
         "path": "docs/study-swarm/testing-3d.dispatch.md"
       },
       {
@@ -543,33 +559,33 @@
         "path": "fixtures/behavior-1c.json"
       },
       {
-        "commits": 2,
-        "lines": 4720,
+        "commits": 3,
+        "lines": 4746,
         "path": "fixtures/behavior-3d.json"
       },
       {
-        "commits": 2,
-        "lines": 5040,
+        "commits": 3,
+        "lines": 5072,
         "path": "fixtures/behavior-minds.json"
       },
       {
-        "commits": 2,
-        "lines": 1714,
+        "commits": 3,
+        "lines": 1728,
         "path": "fixtures/behavior-ramp.json"
       },
       {
-        "commits": 2,
-        "lines": 1976,
+        "commits": 3,
+        "lines": 2029,
         "path": "fixtures/behavior-rotation.json"
       },
       {
-        "commits": 2,
-        "lines": 3210,
+        "commits": 3,
+        "lines": 3290,
         "path": "fixtures/behavior-solver.json"
       },
       {
-        "commits": 2,
-        "lines": 4040,
+        "commits": 3,
+        "lines": 4094,
         "path": "fixtures/behavior-verbs.json"
       },
       {
@@ -591,6 +607,11 @@
         "commits": 2,
         "lines": 2,
         "path": "fixtures/golden-arith.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 54,
+        "path": "fixtures/golden-behaviour.json"
       },
       {
         "commits": 17,
@@ -643,14 +664,34 @@
         "path": "harness/arith.mjs"
       },
       {
-        "commits": 5,
-        "lines": 67,
+        "commits": 1,
+        "lines": 166,
+        "path": "harness/behaviour.mjs"
+      },
+      {
+        "commits": 6,
+        "lines": 91,
         "path": "harness/check.js"
       },
       {
-        "commits": 2,
-        "lines": 418,
+        "commits": 1,
+        "lines": 54,
+        "path": "harness/check.test.js"
+      },
+      {
+        "commits": 1,
+        "lines": 256,
+        "path": "harness/first-difference.js"
+      },
+      {
+        "commits": 3,
+        "lines": 429,
         "path": "harness/minds-scene.mjs"
+      },
+      {
+        "commits": 1,
+        "lines": 94,
+        "path": "harness/product-run.mjs"
       },
       {
         "commits": 16,
@@ -673,23 +714,38 @@
         "path": "harness/sim.mjs"
       },
       {
-        "commits": 4,
-        "lines": 94,
+        "commits": 5,
+        "lines": 118,
         "path": "harness/solver-scene.mjs"
       },
       {
-        "commits": 7,
-        "lines": 530,
+        "commits": 8,
+        "lines": 533,
         "path": "harness/solver.test.js"
       },
       {
-        "commits": 2,
-        "lines": 92,
+        "commits": 1,
+        "lines": 104,
+        "path": "harness/trace-line.mjs"
+      },
+      {
+        "commits": 1,
+        "lines": 35,
+        "path": "harness/trace.mjs"
+      },
+      {
+        "commits": 1,
+        "lines": 122,
+        "path": "harness/trace.test.js"
+      },
+      {
+        "commits": 3,
+        "lines": 100,
         "path": "harness/verbs-scene.mjs"
       },
       {
-        "commits": 8,
-        "lines": 41,
+        "commits": 10,
+        "lines": 69,
         "path": "harness/write-golden.js"
       },
       {
@@ -698,8 +754,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 21,
-        "lines": 134,
+        "commits": 24,
+        "lines": 157,
         "path": "package.json"
       },
       {
@@ -718,8 +774,8 @@
         "path": "packages/frame/types.d.ts"
       },
       {
-        "commits": 7,
-        "lines": 213,
+        "commits": 8,
+        "lines": 216,
         "path": "packages/host/bin/host.js"
       },
       {
@@ -753,8 +809,8 @@
         "path": "packages/load/admit.js"
       },
       {
-        "commits": 5,
-        "lines": 175,
+        "commits": 6,
+        "lines": 178,
         "path": "packages/load/bin/load.js"
       },
       {
@@ -773,8 +829,8 @@
         "path": "packages/load/suite.js"
       },
       {
-        "commits": 11,
-        "lines": 639,
+        "commits": 12,
+        "lines": 642,
         "path": "packages/propose/bin/propose.js"
       },
       {
@@ -833,13 +889,13 @@
         "path": "packages/tick/beliefs.js"
       },
       {
-        "commits": 9,
-        "lines": 155,
+        "commits": 10,
+        "lines": 158,
         "path": "packages/tick/bin/play.js"
       },
       {
-        "commits": 11,
-        "lines": 111,
+        "commits": 12,
+        "lines": 114,
         "path": "packages/tick/bin/replay.js"
       },
       {
@@ -858,8 +914,8 @@
         "path": "packages/tick/minds.js"
       },
       {
-        "commits": 2,
-        "lines": 520,
+        "commits": 3,
+        "lines": 521,
         "path": "packages/tick/minds.test.js"
       },
       {
@@ -893,13 +949,13 @@
         "path": "packages/tick/tick.js"
       },
       {
-        "commits": 21,
-        "lines": 1676,
+        "commits": 22,
+        "lines": 1693,
         "path": "packages/tick/tick.test.js"
       },
       {
-        "commits": 3,
-        "lines": 352,
+        "commits": 4,
+        "lines": 353,
         "path": "packages/tick/verbs.test.js"
       },
       {
@@ -908,8 +964,8 @@
         "path": "packages/tick/world.js"
       },
       {
-        "commits": 1,
-        "lines": 28,
+        "commits": 2,
+        "lines": 56,
         "path": "packages/tool/guard.js"
       },
       {
@@ -1063,93 +1119,93 @@
         "path": "scenes/crate-and-door.json"
       },
       {
-        "commits": 1,
-        "lines": 36,
+        "commits": 2,
+        "lines": 72,
         "path": "site/astro.config.mjs"
       },
       {
-        "commits": 1,
-        "lines": 6097,
+        "commits": 2,
+        "lines": 12194,
         "path": "site/package-lock.json"
       },
       {
-        "commits": 1,
-        "lines": 18,
+        "commits": 2,
+        "lines": 36,
         "path": "site/package.json"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "site/public/favicon.svg"
       },
       {
-        "commits": 1,
+        "commits": 2,
         "lines": 0,
         "path": "site/src/assets/logo.png"
       },
       {
-        "commits": 1,
-        "lines": 7,
+        "commits": 2,
+        "lines": 14,
         "path": "site/src/content.config.ts"
       },
       {
-        "commits": 1,
-        "lines": 61,
+        "commits": 2,
+        "lines": 122,
         "path": "site/src/content/docs/handbook/architecture.md"
       },
       {
-        "commits": 1,
-        "lines": 61,
+        "commits": 2,
+        "lines": 122,
         "path": "site/src/content/docs/handbook/getting-started.md"
       },
       {
-        "commits": 1,
-        "lines": 32,
+        "commits": 2,
+        "lines": 64,
         "path": "site/src/content/docs/handbook/index.md"
       },
       {
-        "commits": 1,
-        "lines": 95,
+        "commits": 2,
+        "lines": 190,
         "path": "site/src/content/docs/handbook/reference.md"
       },
       {
-        "commits": 1,
-        "lines": 31,
+        "commits": 2,
+        "lines": 62,
         "path": "site/src/content/docs/handbook/security.md"
       },
       {
-        "commits": 1,
-        "lines": 77,
+        "commits": 2,
+        "lines": 154,
         "path": "site/src/content/docs/handbook/usage.md"
       },
       {
-        "commits": 1,
-        "lines": 71,
+        "commits": 2,
+        "lines": 142,
         "path": "site/src/content/docs/handbook/world-files.md"
       },
       {
-        "commits": 1,
-        "lines": 35,
+        "commits": 2,
+        "lines": 70,
         "path": "site/src/pages/index.astro"
       },
       {
-        "commits": 1,
-        "lines": 52,
+        "commits": 2,
+        "lines": 104,
         "path": "site/src/site-config.ts"
       },
       {
-        "commits": 1,
-        "lines": 3,
+        "commits": 2,
+        "lines": 6,
         "path": "site/src/styles/global.css"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "site/src/styles/starlight-custom.css"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "site/tsconfig.json"
       },
       {
@@ -1213,206 +1269,220 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-25T08:54:36.141Z",
+  "generatedAt": "2026-09-25T09:17:26.206Z",
   "generatedFrom": {
-    "commit": "2e82fc7f790ba0e8b6beca2d344b204c099e9a0e"
+    "commit": "cd21fe8af8e7f38585f83c97e18b61570fc0f43e"
   },
   "pairs": [
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 26,
-      "shared": 26,
+      "either": 29,
+      "shared": 29,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 26,
-      "shared": 26,
+      "either": 29,
+      "shared": 29,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 26,
-      "shared": 26,
+      "either": 29,
+      "shared": 29,
       "strength": 1
     },
     {
       "a": "atlas/boundaries.yaml",
       "b": "package.json",
-      "either": 11,
+      "either": 15,
       "shared": 8,
-      "strength": 0.727273
+      "strength": 0.533333
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 26,
-      "shared": 26,
+      "either": 29,
+      "shared": 29,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 26,
-      "shared": 26,
+      "either": 29,
+      "shared": 29,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 26,
-      "shared": 26,
+      "either": 29,
+      "shared": 29,
       "strength": 1
     },
     {
       "a": "fixtures/golden.txt",
       "b": "harness/product-scene.mjs",
-      "either": 8,
-      "shared": 7,
-      "strength": 0.875
-    },
-    {
-      "a": "fixtures/golden.txt",
-      "b": "harness/sim.mjs",
-      "either": 10,
-      "shared": 7,
-      "strength": 0.7
-    },
-    {
-      "a": "fixtures/golden.txt",
-      "b": "packages/tick/scene.js",
-      "either": 9,
-      "shared": 5,
-      "strength": 0.555556
-    },
-    {
-      "a": "fixtures/golden.txt",
-      "b": "packages/tick/tick.js",
-      "either": 11,
-      "shared": 6,
-      "strength": 0.545455
-    },
-    {
-      "a": "fixtures/golden.txt",
-      "b": "packages/tick/world.js",
-      "either": 12,
-      "shared": 6,
-      "strength": 0.5
-    },
-    {
-      "a": "harness/product-scene.mjs",
-      "b": "harness/product.test.js",
-      "either": 8,
-      "shared": 4,
-      "strength": 0.5
-    },
-    {
-      "a": "harness/product-scene.mjs",
-      "b": "harness/sim.mjs",
-      "either": 9,
-      "shared": 7,
-      "strength": 0.777778
-    },
-    {
-      "a": "harness/product-scene.mjs",
-      "b": "packages/frame/types.d.ts",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "harness/product-scene.mjs",
-      "b": "packages/tick/scene.js",
-      "either": 8,
-      "shared": 5,
-      "strength": 0.625
-    },
-    {
-      "a": "harness/product-scene.mjs",
-      "b": "packages/tick/scene.test.js",
-      "either": 8,
-      "shared": 4,
-      "strength": 0.5
-    },
-    {
-      "a": "harness/product-scene.mjs",
-      "b": "packages/tick/tick.js",
-      "either": 10,
-      "shared": 6,
-      "strength": 0.6
-    },
-    {
-      "a": "harness/product-scene.mjs",
-      "b": "packages/tick/world.js",
-      "either": 11,
-      "shared": 6,
-      "strength": 0.545455
-    },
-    {
-      "a": "harness/product.test.js",
-      "b": "harness/sim.mjs",
-      "either": 9,
-      "shared": 5,
-      "strength": 0.555556
-    },
-    {
-      "a": "harness/sim.mjs",
-      "b": "packages/frame/types.d.ts",
-      "either": 11,
-      "shared": 6,
-      "strength": 0.545455
-    },
-    {
-      "a": "harness/sim.mjs",
-      "b": "packages/tick/scene.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "harness/sim.mjs",
-      "b": "packages/tick/tick.js",
-      "either": 11,
-      "shared": 7,
-      "strength": 0.636364
-    },
-    {
-      "a": "harness/sim.mjs",
-      "b": "packages/tick/world.js",
-      "either": 11,
-      "shared": 8,
-      "strength": 0.727273
-    },
-    {
-      "a": "packages/frame/types.d.ts",
-      "b": "packages/tick/tick.js",
       "either": 9,
       "shared": 8,
       "strength": 0.888889
     },
     {
+      "a": "fixtures/golden.txt",
+      "b": "harness/sim.mjs",
+      "either": 11,
+      "shared": 8,
+      "strength": 0.727273
+    },
+    {
+      "a": "fixtures/golden.txt",
+      "b": "packages/frame/types.d.ts",
+      "either": 12,
+      "shared": 6,
+      "strength": 0.5
+    },
+    {
+      "a": "fixtures/golden.txt",
+      "b": "packages/tick/scene.js",
+      "either": 10,
+      "shared": 5,
+      "strength": 0.5
+    },
+    {
+      "a": "fixtures/golden.txt",
+      "b": "packages/tick/tick.js",
+      "either": 12,
+      "shared": 7,
+      "strength": 0.583333
+    },
+    {
+      "a": "fixtures/golden.txt",
+      "b": "packages/tick/world.js",
+      "either": 13,
+      "shared": 7,
+      "strength": 0.538462
+    },
+    {
+      "a": "harness/product-scene.mjs",
+      "b": "harness/sim.mjs",
+      "either": 10,
+      "shared": 8,
+      "strength": 0.8
+    },
+    {
+      "a": "harness/product-scene.mjs",
+      "b": "packages/frame/types.d.ts",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "harness/product-scene.mjs",
+      "b": "packages/tick/scene.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "harness/product-scene.mjs",
+      "b": "packages/tick/tick.js",
+      "either": 11,
+      "shared": 7,
+      "strength": 0.636364
+    },
+    {
+      "a": "harness/product-scene.mjs",
+      "b": "packages/tick/world.js",
+      "either": 12,
+      "shared": 7,
+      "strength": 0.583333
+    },
+    {
+      "a": "harness/product.test.js",
+      "b": "harness/sim.mjs",
+      "either": 10,
+      "shared": 5,
+      "strength": 0.5
+    },
+    {
+      "a": "harness/sim.mjs",
+      "b": "packages/frame/types.d.ts",
+      "either": 12,
+      "shared": 7,
+      "strength": 0.583333
+    },
+    {
+      "a": "harness/sim.mjs",
+      "b": "packages/host/session.js",
+      "either": 14,
+      "shared": 7,
+      "strength": 0.5
+    },
+    {
+      "a": "harness/sim.mjs",
+      "b": "packages/tick/tick.js",
+      "either": 12,
+      "shared": 8,
+      "strength": 0.666667
+    },
+    {
+      "a": "harness/sim.mjs",
+      "b": "packages/tick/world.js",
+      "either": 12,
+      "shared": 9,
+      "strength": 0.75
+    },
+    {
+      "a": "harness/solver.test.js",
+      "b": "solver/src/rapier_law.rs",
+      "either": 6,
+      "shared": 4,
+      "strength": 0.666667
+    },
+    {
+      "a": "packages/frame/types.d.ts",
+      "b": "packages/load/suite.js",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "packages/frame/types.d.ts",
+      "b": "packages/tick/predicates.js",
+      "either": 10,
+      "shared": 5,
+      "strength": 0.5
+    },
+    {
+      "a": "packages/frame/types.d.ts",
+      "b": "packages/tick/tick.js",
+      "either": 10,
+      "shared": 9,
+      "strength": 0.9
+    },
+    {
       "a": "packages/frame/types.d.ts",
       "b": "packages/tick/world.js",
+      "either": 13,
+      "shared": 7,
+      "strength": 0.538462
+    },
+    {
+      "a": "packages/host/host.test.js",
+      "b": "packages/host/page.html",
       "either": 12,
       "shared": 6,
       "strength": 0.5
     },
     {
       "a": "packages/host/host.test.js",
-      "b": "packages/host/page.html",
-      "either": 11,
-      "shared": 6,
-      "strength": 0.545455
-    },
-    {
-      "a": "packages/host/host.test.js",
       "b": "packages/host/session.js",
-      "either": 11,
+      "either": 12,
       "shared": 8,
-      "strength": 0.727273
+      "strength": 0.666667
     },
     {
       "a": "packages/host/host.test.js",
@@ -1431,27 +1501,48 @@
     {
       "a": "packages/host/page.html",
       "b": "packages/host/session.js",
-      "either": 11,
-      "shared": 7,
-      "strength": 0.636364
+      "either": 12,
+      "shared": 8,
+      "strength": 0.666667
     },
     {
       "a": "packages/host/page.html",
       "b": "packages/tick/scene.js",
-      "either": 9,
+      "either": 10,
       "shared": 5,
-      "strength": 0.555556
+      "strength": 0.5
     },
     {
       "a": "packages/host/session.js",
       "b": "packages/tick/scene.js",
-      "either": 10,
+      "either": 11,
       "shared": 6,
-      "strength": 0.6
+      "strength": 0.545455
     },
     {
-      "a": "packages/host/session.js",
-      "b": "packages/tick/scene.test.js",
+      "a": "packages/load/load.test.js",
+      "b": "packages/load/suite.js",
+      "either": 6,
+      "shared": 4,
+      "strength": 0.666667
+    },
+    {
+      "a": "packages/load/load.test.js",
+      "b": "packages/tick/predicates.js",
+      "either": 6,
+      "shared": 5,
+      "strength": 0.833333
+    },
+    {
+      "a": "packages/load/suite.js",
+      "b": "packages/tick/predicates.js",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
+    },
+    {
+      "a": "packages/load/suite.js",
+      "b": "packages/tick/tick.js",
       "either": 10,
       "shared": 5,
       "strength": 0.5
@@ -1459,23 +1550,23 @@
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/prompt.js",
-      "either": 7,
+      "either": 8,
       "shared": 5,
-      "strength": 0.714286
+      "strength": 0.625
     },
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/propose.test.js",
-      "either": 6,
+      "either": 7,
       "shared": 5,
-      "strength": 0.833333
+      "strength": 0.714286
     },
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/seat.js",
-      "either": 7,
+      "either": 8,
       "shared": 5,
-      "strength": 0.714286
+      "strength": 0.625
     },
     {
       "a": "packages/propose/prompt.js",
@@ -1522,9 +1613,9 @@
     {
       "a": "packages/tick/replay.js",
       "b": "packages/tick/tick.js",
-      "either": 9,
+      "either": 10,
       "shared": 5,
-      "strength": 0.555556
+      "strength": 0.5
     },
     {
       "a": "packages/tick/scene.js",
@@ -1534,29 +1625,22 @@
       "strength": 0.833333
     },
     {
-      "a": "packages/tick/scene.js",
-      "b": "packages/tick/tick.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "packages/tick/tick.js",
-      "b": "packages/tick/tick.test.js",
-      "either": 13,
-      "shared": 7,
-      "strength": 0.538462
-    },
-    {
       "a": "packages/tick/tick.js",
       "b": "packages/tick/world.js",
-      "either": 12,
-      "shared": 7,
-      "strength": 0.583333
+      "either": 13,
+      "shared": 8,
+      "strength": 0.615385
+    },
+    {
+      "a": "solver/build.mjs",
+      "b": "solver/src/rapier_law.rs",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
     }
   ],
   "parameters": {
-    "appliedChangesetLimit": 46.5,
+    "appliedChangesetLimit": 49,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -1565,16 +1649,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-25T04:52:10-04:00",
-    "inScopeFiles": 186,
+    "headDate": "2026-09-25T05:17:15-04:00",
+    "inScopeFiles": 196,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 57,
+    "qualifyingCommits": 66,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-29T08:52:10.000Z",
+    "since": "2026-03-29T09:17:15.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
@@ -1588,7 +1672,7 @@
     ],
     "sourceFileReach": 20,
     "sourceFileRise": 25,
-    "sourceFilesReachingStrongFloor": 3,
+    "sourceFilesReachingStrongFloor": 5,
     "strength": 0.5,
     "windowDays": 180
   },
