@@ -5574,7 +5574,7 @@
   ],
   "doors": [
     {
-      "checksCount": 23,
+      "checksCount": 24,
       "commands": [
         {
           "job": "engines",
@@ -6063,9 +6063,21 @@
           "job": "engines",
           "path": "solver/source.test.js",
           "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "matched": true,
+          "path": "tools/verdicts.js",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "tools/verdicts.test.js",
+          "runKind": "executes"
         }
       ],
-      "runsCount": 52,
+      "runsCount": 54,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -6788,8 +6800,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "132706dbe6a4a71410a9f79c1c23b5e2eaf75ec4",
-    "tracked": 230
+    "commit": "0d0580b47ec0c2cb304161e6b7aec984862e3f0f",
+    "tracked": 232
   },
   "landings": [
     {
@@ -7826,9 +7838,25 @@
           "by": "tools/review.mjs",
           "call": "readFileSync",
           "confidence": "ast"
+        },
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
         }
       ],
       "target": "tools/verdicts.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "tools/verdicts.test.js",
       "writers": []
     },
     {
@@ -7943,7 +7971,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 23,
+  "testFiles": 24,
   "unassigned": [
     {
       "exports": [
@@ -8030,7 +8058,28 @@
     },
     {
       "hash": "d7b25ac3fd663db98e5fe04c214180ced34b1729c4413778c896bfca53393e7c",
+      "importsFiles": [
+        "tools/verdicts.js"
+      ],
       "path": "tools/review.mjs"
+    },
+    {
+      "exports": [
+        "combine",
+        "parseVerdict"
+      ],
+      "hash": "6a3aecbe7010497de571b92d4a43d268aee7845562725d7b9921485b9fb660f4",
+      "path": "tools/verdicts.js"
+    },
+    {
+      "entry": "seat",
+      "entryRule": 1,
+      "hash": "19ac15a6bbc5ceaaaf4b2112ccaed954ec947aab3783e294195972f37d312b8a",
+      "importsFiles": [
+        "tools/verdicts.js"
+      ],
+      "path": "tools/verdicts.test.js",
+      "sequences": []
     }
   ]
 }
