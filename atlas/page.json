@@ -91,111 +91,85 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 16,
-      "changed": 49,
+      "added": 1,
+      "changed": 20,
       "moved": 0,
-      "parts": 7,
+      "parts": 6,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "CI now also runs harness/bundle.mjs and harness/bundle.test.js.",
+        "sentence": "CI now also runs harness/switch.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "harness/bundle.mjs",
-          "harness/bundle.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks harness/corpus.mjs and harness/events.mjs.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/corpus.mjs",
-          "harness/events.mjs"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "Corpus (.github/workflows/corpus.yml) is a new door. It starts on a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. It runs harness/corpus.mjs and solver/build.mjs.",
-        "subjects": [
-          ".github/workflows/corpus.yml",
-          "harness/corpus.mjs",
-          "solver/build.mjs"
+          "harness/switch.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/ is now also read by harness/corpus.mjs.",
+        "sentence": "fixtures/ is now also read by harness/switch.test.js.",
         "subjects": [
           "fixtures/",
+          "harness/switch.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/behavior-3d.json is now also read by harness/switch.test.js.",
+        "subjects": [
+          "fixtures/behavior-3d.json",
+          "harness/switch.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/behavior-minds.json is now also read by harness/switch.test.js.",
+        "subjects": [
+          "fixtures/behavior-minds.json",
+          "harness/switch.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "And 1 more new writer or reader of a place.",
+        "subjects": []
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In harness/corpus.mjs, run corpus gained a step, line, before pair.",
+        "subjects": [
           "harness/corpus.mjs"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "fixtures/behavior-3d.json is now also read by harness/bundle.test.js.",
+        "kind": "sequence",
+        "sentence": "In harness/corpus.mjs, run corpus gained a step, pair, before pair.",
         "subjects": [
-          "fixtures/behavior-3d.json",
-          "harness/bundle.test.js"
+          "harness/corpus.mjs"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "fixtures/behavior-minds.json is now also read by harness/bundle.test.js.",
+        "kind": "sequence",
+        "sentence": "In harness/corpus.mjs, run corpus gained a step, pair, before pair.",
         "subjects": [
-          "fixtures/behavior-minds.json",
-          "harness/bundle.test.js"
+          "harness/corpus.mjs"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "And 7 more new writers and readers of places.",
+        "kind": "sequence",
+        "sentence": "And 18 more changes to the order of work.",
         "subjects": []
-      },
-      {
-        "kind": "sequence",
-        "sentence": "harness/check.js now starts at bundle product; it started at match.",
-        "subjects": [
-          "harness/check.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In harness/course.test.js, step run gained a step, record run, before create world.",
-        "subjects": [
-          "harness/course.test.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In harness/outcome.test.js, translated run gained a step, record run, before create world.",
-        "subjects": [
-          "harness/outcome.test.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "And 9 more changes to the order of work.",
-        "subjects": []
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "site/src/content/docs/handbook/testing.md is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "site/src/content/docs/handbook/testing.md"
-        ]
       },
       {
         "kind": "counts",
-        "sentence": "16 files added and 49 changed content, across 7 parts.",
+        "sentence": "1 file added and 20 changed content, across 6 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "31bb94dfb19aac78295ffa8a098890ec4195346a",
-      "generatedAt": "2026-09-25T12:15:37.482Z"
+      "commit": "e6094ab7d3ec3b0335188973958ed56b83998669",
+      "generatedAt": "2026-09-25T13:22:28.066Z"
     },
     "unchanged": false
   },
@@ -282,9 +256,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "e6094ab7d3ec3b0335188973958ed56b83998669",
+  "commit": "ab579ad7430038ae513678ad3e35bfdb13b1943c",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (80 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (81 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -335,7 +309,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 30
+          "files": 31
         },
         {
           "boundary": "host",
@@ -379,6 +353,7 @@
         "harness/soundness.test.js",
         "harness/source.test.js",
         "harness/surface.test.js",
+        "harness/switch.test.js",
         "harness/trace.mjs",
         "harness/trace.test.js",
         "packages/host/host.test.js",
@@ -394,7 +369,7 @@
         "solver/lint.test.js",
         "solver/source.test.js"
       ],
-      "runsCount": 29,
+      "runsCount": 30,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -758,13 +733,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T13:22:28.066Z",
+  "generatedAt": "2026-09-25T15:00:07.639Z",
   "limits": [
-    "13 import sites could not be resolved.",
+    "14 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "12 writes and 23 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "15 commands are built at run time and not followed, 12 of them in tests.",
+    "16 commands are built at run time and not followed, 13 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -902,13 +877,98 @@
       ]
     },
     {
-      "entry": "rerun",
+      "entry": "restoresAt",
       "file": "harness/restore.test.js",
-      "inner": [],
+      "inner": [
+        {
+          "file": "harness/bundle.mjs",
+          "name": "expectIdentical",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "expect identical",
+          "steps": [
+            {
+              "name": "traceDifference",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "trace difference"
+            },
+            {
+              "name": "withRecords",
+              "part": "harness",
+              "partLabel": "harness",
+              "phrase": "with records"
+            },
+            {
+              "name": "captureBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "capture bundle"
+            },
+            {
+              "name": "writeBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "write bundle"
+            }
+          ]
+        },
+        {
+          "file": "harness/bundle.mjs",
+          "name": "expectIdentical",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "expect identical",
+          "steps": [
+            {
+              "name": "traceDifference",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "trace difference"
+            },
+            {
+              "name": "withRecords",
+              "part": "harness",
+              "partLabel": "harness",
+              "phrase": "with records"
+            },
+            {
+              "name": "captureBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "capture bundle"
+            },
+            {
+              "name": "writeBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "write bundle"
+            }
+          ]
+        }
+      ],
       "part": "harness",
       "partLabel": "harness",
-      "phrase": "rerun",
+      "phrase": "restores at",
       "steps": [
+        {
+          "name": "createWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create world"
+        },
+        {
+          "name": "createHasher",
+          "part": "frame",
+          "partLabel": "frame",
+          "phrase": "create hasher"
+        },
+        {
+          "name": "replayTo",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "replay to"
+        },
         {
           "name": "line",
           "part": null,
@@ -928,10 +988,22 @@
           "phrase": "line"
         },
         {
-          "name": "endLine",
+          "name": "expectIdentical",
           "part": "harness",
           "partLabel": "harness",
-          "phrase": "end line"
+          "phrase": "expect identical"
+        },
+        {
+          "name": "replayTo",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "replay to"
+        },
+        {
+          "name": "expectIdentical",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "expect identical"
         }
       ]
     },
@@ -1366,14 +1438,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 23,
+  "testFiles": 24,
   "testedBy": {
     "frame": 12,
     "host": 1,
     "load": 2,
     "propose": 1,
     "solver": 1,
-    "tick": 19
+    "tick": 20
   },
   "unnamedWrites": 2,
   "unread": [],
