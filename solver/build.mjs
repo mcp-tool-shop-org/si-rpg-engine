@@ -19,18 +19,30 @@ const cargo = process.env.CARGO || 'cargo';
 
 // Dependencies embed their source paths in panic-location strings, which put
 // the cargo home and the user's name into the binary and made the bytes differ
-// between hosts. Remapping strips both. Windows still writes backslashes into
-// the remainder of each path, so the two hosts never produce identical bytes:
-// the pinned artifact is the Linux build, and only a Linux build may write the
-// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD default
-// is repeated here. The flag sets the default feature set only; a function
-// marked #[target_feature(enable = "relaxed-simd")] still emits relaxed
+// between hosts. The cargo-home remap strips both, and of the three remaps it
+// is the only one that changes bytes today; the solver and repository remaps
+// are guards, kept so a path of either never reaches the binary. The pinned
+// artifact is the Linux build, and only a Linux build may write the digest:
+// solver/FLAGS.md says why no other host's bytes can match it.
+//
+// Every flag the build needs is here, in CARGO_ENCODED_RUSTFLAGS (S1 pin 7).
+// Environment rustflags replace the flags in .cargo/config.toml rather than
+// adding to them, so none may live only in that file. The encoded form
+// separates flags with 0x1f, so a path with a space stays one flag; it takes
+// precedence over RUSTFLAGS, so an inherited value cannot override it; and it
+// builds the same digest as RUSTFLAGS did (measured by the knowledge base).
+// Cargo runs with --locked, so a build never resolves a dependency the lock
+// file does not name, and from solver/, so rust-toolchain.toml pins the
+// toolchain.
+//
+// The relaxed-SIMD flag sets the default feature set only; a function marked
+// #[target_feature(enable = "relaxed-simd")] still emits relaxed
 // instructions, so the lint below is what keeps them out. The stack pointer is
 // exported so an image of linear memory can be refused unless it is at its
 // base (see imageSolver below).
 //
 // The memory is not set here: solver/build.rs passes the linker 512 fixed
-// pages and --no-growable-memory, which RUSTFLAGS cannot drop.
+// pages and --no-growable-memory, which environment rustflags cannot drop.
 const cargoHome = process.env.CARGO_HOME || join(process.env.HOME || process.env.USERPROFILE || '', '.cargo');
 const rustflags = [
   '-C', 'target-feature=-relaxed-simd',
@@ -38,12 +50,14 @@ const rustflags = [
   '--remap-path-prefix=' + cargoHome + '=/cargo',
   '--remap-path-prefix=' + solver + '=/solver',
   '--remap-path-prefix=' + root + '=/repo',
-].join(' ');
-const built = spawnSync(cargo, ['build', '--release', '--target', 'wasm32-unknown-unknown'], {
+];
+const env = { ...process.env, CARGO_ENCODED_RUSTFLAGS: rustflags.join('\x1f') };
+delete env.RUSTFLAGS;
+const built = spawnSync(cargo, ['build', '--release', '--locked', '--target', 'wasm32-unknown-unknown'], {
   cwd: solver,
   encoding: 'utf8',
   shell: process.platform === 'win32',
-  env: { ...process.env, RUSTFLAGS: rustflags },
+  env,
 });
 if (built.status !== 0) {
   process.stderr.write(built.stdout || '');

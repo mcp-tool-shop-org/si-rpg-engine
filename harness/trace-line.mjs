@@ -34,16 +34,17 @@ export function bits(x) {
 }
 
 /**
- * The snapshot's FNV digest: its length, then each byte. The trace prints it
- * and fixtures/golden-behaviour.json records it at the load and the last quantum.
+ * The snapshot's FNV digest: its length, then its bytes split across the two
+ * lanes the way doubles are (the hasher's `bytes`), so the two halves differ
+ * and the digest carries 64 bits. Until S1 pin 13 each byte went to both
+ * lanes as a u32 and the halves were equal. The trace prints it and
+ * fixtures/golden-behaviour.json records it at the load and the last quantum.
  * @param {Uint8Array} snap
  */
 export function snapshotDigest(snap) {
   const h = createHasher();
   h.u32(snap.length);
-  for (let i = 0; i < snap.length; i = i + 1) {
-    h.u32(snap[i]);
-  }
+  h.bytes(snap);
   return h.digest();
 }
 

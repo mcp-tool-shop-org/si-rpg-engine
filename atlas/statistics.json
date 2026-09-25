@@ -70,7 +70,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "frame",
-      "qualifyingSourceCommits": 9,
+      "qualifyingSourceCommits": 10,
       "rebaseline": null
     },
     {
@@ -86,12 +86,12 @@
         ],
         "importsOnly": []
       },
-      "cohesion": 0.375678,
+      "cohesion": 0.368556,
       "cohesionDropped": false,
-      "confidence": "low",
+      "confidence": "full",
       "highWater": null,
       "name": "harness",
-      "qualifyingSourceCommits": 26,
+      "qualifyingSourceCommits": 32,
       "rebaseline": null
     },
     {
@@ -157,7 +157,7 @@
         ],
         "importsOnly": []
       },
-      "cohesion": 0.213198,
+      "cohesion": 0.217054,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
@@ -210,7 +210,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "solver",
-      "qualifyingSourceCommits": 14,
+      "qualifyingSourceCommits": 16,
       "rebaseline": null
     },
     {
@@ -229,12 +229,12 @@
           "propose"
         ]
       },
-      "cohesion": 0.21457,
+      "cohesion": 0.180511,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "tick",
-      "qualifyingSourceCommits": 25,
+      "qualifyingSourceCommits": 27,
       "rebaseline": null
     },
     {
@@ -274,8 +274,8 @@
     "definition": "commits is how many commits in the window touch the file, including merges and commits dropped from coupling. lines is added plus deleted in those commits.",
     "files": [
       {
-        "commits": 14,
-        "lines": 523,
+        "commits": 19,
+        "lines": 724,
         "path": ".github/workflows/ci.yml"
       },
       {
@@ -354,8 +354,8 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 54,
-        "lines": 1799,
+        "commits": 57,
+        "lines": 1952,
         "path": "atlas/README.md"
       },
       {
@@ -364,18 +364,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 54,
-        "lines": 6566,
+        "commits": 57,
+        "lines": 7535,
         "path": "atlas/page.json"
       },
       {
-        "commits": 54,
-        "lines": 11625,
+        "commits": 57,
+        "lines": 12231,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 54,
-        "lines": 15602,
+        "commits": 57,
+        "lines": 18869,
         "path": "atlas/structure.json"
       },
       {
@@ -499,8 +499,8 @@
         "path": "docs/dispatch-e5-minds.md"
       },
       {
-        "commits": 11,
-        "lines": 143,
+        "commits": 14,
+        "lines": 149,
         "path": "docs/dispatch-s1-soundness.md"
       },
       {
@@ -524,8 +524,8 @@
         "path": "docs/dispatch-t3-platforms.md"
       },
       {
-        "commits": 10,
-        "lines": 142,
+        "commits": 13,
+        "lines": 160,
         "path": "docs/dispatch-t4-outcome-tests.md"
       },
       {
@@ -644,13 +644,13 @@
         "path": "fixtures/golden-arith.txt"
       },
       {
-        "commits": 4,
-        "lines": 116,
+        "commits": 9,
+        "lines": 146,
         "path": "fixtures/golden-behaviour.json"
       },
       {
-        "commits": 19,
-        "lines": 37,
+        "commits": 21,
+        "lines": 41,
         "path": "fixtures/golden.txt"
       },
       {
@@ -684,8 +684,8 @@
         "path": "fixtures/shape-traversal.json"
       },
       {
-        "commits": 14,
-        "lines": 26,
+        "commits": 18,
+        "lines": 34,
         "path": "fixtures/solver.sha256"
       },
       {
@@ -699,24 +699,29 @@
         "path": "harness/arith.mjs"
       },
       {
-        "commits": 4,
-        "lines": 398,
+        "commits": 7,
+        "lines": 488,
         "path": "harness/behaviour.mjs"
       },
       {
-        "commits": 2,
-        "lines": 246,
+        "commits": 4,
+        "lines": 492,
         "path": "harness/caps.test.js"
       },
       {
-        "commits": 9,
-        "lines": 119,
+        "commits": 11,
+        "lines": 123,
         "path": "harness/check.js"
       },
       {
-        "commits": 4,
-        "lines": 182,
+        "commits": 7,
+        "lines": 291,
         "path": "harness/check.test.js"
+      },
+      {
+        "commits": 2,
+        "lines": 538,
+        "path": "harness/course.test.js"
       },
       {
         "commits": 2,
@@ -724,9 +729,19 @@
         "path": "harness/first-difference.js"
       },
       {
+        "commits": 2,
+        "lines": 86,
+        "path": "harness/golden-gate.test.js"
+      },
+      {
         "commits": 4,
         "lines": 440,
         "path": "harness/minds-scene.mjs"
+      },
+      {
+        "commits": 2,
+        "lines": 674,
+        "path": "harness/outcome.test.js"
       },
       {
         "commits": 4,
@@ -734,8 +749,8 @@
         "path": "harness/product-run.mjs"
       },
       {
-        "commits": 18,
-        "lines": 350,
+        "commits": 20,
+        "lines": 384,
         "path": "harness/product-scene.mjs"
       },
       {
@@ -774,8 +789,13 @@
         "path": "harness/solver.test.js"
       },
       {
-        "commits": 3,
-        "lines": 126,
+        "commits": 1,
+        "lines": 205,
+        "path": "harness/soundness.test.js"
+      },
+      {
+        "commits": 5,
+        "lines": 252,
         "path": "harness/source.test.js"
       },
       {
@@ -784,8 +804,8 @@
         "path": "harness/surface.test.js"
       },
       {
-        "commits": 4,
-        "lines": 250,
+        "commits": 7,
+        "lines": 303,
         "path": "harness/trace-line.mjs"
       },
       {
@@ -804,8 +824,8 @@
         "path": "harness/verbs-scene.mjs"
       },
       {
-        "commits": 11,
-        "lines": 94,
+        "commits": 13,
+        "lines": 170,
         "path": "harness/write-golden.js"
       },
       {
@@ -814,8 +834,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 34,
-        "lines": 177,
+        "commits": 42,
+        "lines": 193,
         "path": "package.json"
       },
       {
@@ -824,13 +844,13 @@
         "path": "packages/frame/frame.js"
       },
       {
-        "commits": 2,
-        "lines": 146,
+        "commits": 3,
+        "lines": 164,
         "path": "packages/frame/hash.js"
       },
       {
-        "commits": 18,
-        "lines": 444,
+        "commits": 19,
+        "lines": 446,
         "path": "packages/frame/types.d.ts"
       },
       {
@@ -979,8 +999,8 @@
         "path": "packages/tick/minds.test.js"
       },
       {
-        "commits": 2,
-        "lines": 164,
+        "commits": 5,
+        "lines": 351,
         "path": "packages/tick/order.test.js"
       },
       {
@@ -1024,8 +1044,8 @@
         "path": "packages/tick/verbs.test.js"
       },
       {
-        "commits": 27,
-        "lines": 2406,
+        "commits": 29,
+        "lines": 2414,
         "path": "packages/tick/world.js"
       },
       {
@@ -1274,43 +1294,43 @@
         "path": "site/tsconfig.json"
       },
       {
-        "commits": 8,
-        "lines": 56,
+        "commits": 11,
+        "lines": 90,
         "path": "solver/.cargo/config.toml"
       },
       {
-        "commits": 5,
-        "lines": 1204,
+        "commits": 7,
+        "lines": 1282,
         "path": "solver/Cargo.lock"
       },
       {
-        "commits": 5,
-        "lines": 42,
+        "commits": 7,
+        "lines": 48,
         "path": "solver/Cargo.toml"
       },
       {
-        "commits": 8,
-        "lines": 154,
+        "commits": 14,
+        "lines": 285,
         "path": "solver/FLAGS.md"
       },
       {
-        "commits": 16,
-        "lines": 1176,
+        "commits": 19,
+        "lines": 1278,
         "path": "solver/build.mjs"
       },
       {
-        "commits": 2,
-        "lines": 32,
+        "commits": 5,
+        "lines": 68,
         "path": "solver/build.rs"
       },
       {
-        "commits": 3,
-        "lines": 1118,
+        "commits": 5,
+        "lines": 2180,
         "path": "solver/lint.mjs"
       },
       {
-        "commits": 4,
-        "lines": 504,
+        "commits": 6,
+        "lines": 998,
         "path": "solver/lint.test.js"
       },
       {
@@ -1319,23 +1339,28 @@
         "path": "solver/rust-toolchain.toml"
       },
       {
-        "commits": 3,
-        "lines": 232,
+        "commits": 1,
+        "lines": 205,
+        "path": "solver/source.test.js"
+      },
+      {
+        "commits": 6,
+        "lines": 458,
         "path": "solver/src/arena.rs"
       },
       {
-        "commits": 9,
-        "lines": 686,
+        "commits": 12,
+        "lines": 793,
         "path": "solver/src/lib.rs"
       },
       {
-        "commits": 11,
-        "lines": 1882,
+        "commits": 14,
+        "lines": 2897,
         "path": "solver/src/rapier_law.rs"
       },
       {
-        "commits": 4,
-        "lines": 32,
+        "commits": 7,
+        "lines": 38,
         "path": "tsconfig.json"
       },
       {
@@ -1354,94 +1379,87 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-25T11:23:48.509Z",
+  "generatedAt": "2026-09-25T12:15:37.482Z",
   "generatedFrom": {
-    "commit": "a276cd715d477579cbf1722a68c8f662210f219e"
+    "commit": "31bb94dfb19aac78295ffa8a098890ec4195346a"
   },
   "pairs": [
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 31,
-      "shared": 31,
+      "either": 32,
+      "shared": 32,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 31,
-      "shared": 31,
+      "either": 32,
+      "shared": 32,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 31,
-      "shared": 31,
+      "either": 32,
+      "shared": 32,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 31,
-      "shared": 31,
+      "either": 32,
+      "shared": 32,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 31,
-      "shared": 31,
+      "either": 32,
+      "shared": 32,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 31,
-      "shared": 31,
+      "either": 32,
+      "shared": 32,
       "strength": 1
     },
     {
       "a": "fixtures/golden.txt",
       "b": "harness/product-scene.mjs",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "fixtures/golden.txt",
       "b": "harness/sim.mjs",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
-    },
-    {
-      "a": "fixtures/golden.txt",
-      "b": "packages/tick/tick.js",
       "either": 14,
-      "shared": 7,
-      "strength": 0.5
+      "shared": 8,
+      "strength": 0.571429
     },
     {
       "a": "harness/check.js",
       "b": "harness/write-golden.js",
-      "either": 7,
+      "either": 8,
       "shared": 4,
-      "strength": 0.571429
+      "strength": 0.5
     },
     {
       "a": "harness/product-scene.mjs",
       "b": "harness/sim.mjs",
-      "either": 12,
+      "either": 13,
       "shared": 8,
-      "strength": 0.666667
+      "strength": 0.615385
     },
     {
       "a": "harness/product-scene.mjs",
       "b": "packages/tick/tick.js",
-      "either": 13,
+      "either": 14,
       "shared": 7,
-      "strength": 0.538462
+      "strength": 0.5
     },
     {
       "a": "harness/product.test.js",
@@ -1453,9 +1471,9 @@
     {
       "a": "harness/sim.mjs",
       "b": "packages/frame/types.d.ts",
-      "either": 12,
+      "either": 13,
       "shared": 7,
-      "strength": 0.583333
+      "strength": 0.538462
     },
     {
       "a": "harness/sim.mjs",
@@ -1474,27 +1492,20 @@
     {
       "a": "harness/sim.mjs",
       "b": "packages/tick/world.js",
-      "either": 15,
+      "either": 16,
       "shared": 9,
-      "strength": 0.6
+      "strength": 0.5625
     },
     {
       "a": "harness/solver.test.js",
       "b": "solver/src/rapier_law.rs",
-      "either": 7,
-      "shared": 5,
-      "strength": 0.714286
-    },
-    {
-      "a": "packages/frame/types.d.ts",
-      "b": "packages/load/suite.js",
       "either": 9,
       "shared": 5,
       "strength": 0.555556
     },
     {
       "a": "packages/frame/types.d.ts",
-      "b": "packages/tick/predicates.js",
+      "b": "packages/load/suite.js",
       "either": 10,
       "shared": 5,
       "strength": 0.5
@@ -1502,9 +1513,9 @@
     {
       "a": "packages/frame/types.d.ts",
       "b": "packages/tick/tick.js",
-      "either": 10,
+      "either": 11,
       "shared": 9,
-      "strength": 0.9
+      "strength": 0.818182
     },
     {
       "a": "packages/host/host.test.js",
@@ -1659,20 +1670,6 @@
       "either": 6,
       "shared": 5,
       "strength": 0.833333
-    },
-    {
-      "a": "packages/tick/tick.js",
-      "b": "packages/tick/world.js",
-      "either": 16,
-      "shared": 8,
-      "strength": 0.5
-    },
-    {
-      "a": "solver/build.mjs",
-      "b": "solver/src/lib.rs",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
     }
   ],
   "parameters": {
@@ -1685,16 +1682,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-25T07:23:40-04:00",
-    "inScopeFiles": 213,
+    "headDate": "2026-09-25T08:15:14-04:00",
+    "inScopeFiles": 218,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 105,
+    "qualifyingCommits": 120,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-29T11:23:40.000Z",
+    "since": "2026-03-29T12:15:14.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
@@ -1708,7 +1705,7 @@
     ],
     "sourceFileReach": 20,
     "sourceFileRise": 25,
-    "sourceFilesReachingStrongFloor": 7,
+    "sourceFilesReachingStrongFloor": 8,
     "strength": 0.5,
     "windowDays": 180
   },

@@ -5,8 +5,10 @@
 # #[target_feature(enable = "relaxed-simd")] still emits relaxed instructions.
 # solver/lint.mjs is what keeps them out of the binary. No flag here flushes
 # subnormals.
-# solver/build.mjs repeats these, because RUSTFLAGS overrides them. The fixed
-# memory is in solver/build.rs, which RUSTFLAGS does not override.
+# solver/build.mjs repeats these in CARGO_ENCODED_RUSTFLAGS, because
+# environment rustflags replace the flags here rather than add to them. The
+# fixed memory is in solver/build.rs, which environment rustflags do not
+# override.
 [target.wasm32-unknown-unknown]
 # The stack pointer is exported so solver/build.mjs's generated module can
 # refuse to image an instance that is inside a call or has trapped.

@@ -12,7 +12,7 @@ use core::sync::atomic::{AtomicBool, Ordering};
 
 const PAGE: usize = 65536;
 
-extern "C" {
+unsafe extern "C" {
     static __heap_base: u8;
 }
 
@@ -80,7 +80,7 @@ fn reached(ptr: *mut u8, size: usize) -> *mut u8 {
 }
 
 /// The heap's high-water mark in bytes from address 0.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn heap_high_water() -> usize {
     unsafe { HIGH_WATER }
 }

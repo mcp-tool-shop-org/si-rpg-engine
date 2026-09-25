@@ -178,6 +178,8 @@ export interface Host {
 }
 
 export interface Hasher {
+  /** a byte stream, bytes 0-3 of every eight to lane 0 and 4-7 to lane 1, as a double is split */
+  bytes(data: Uint8Array): void;
   /** returns false, and mixes nothing, when x is NaN */
   float(x: number): boolean;
   u32(w: number): void;

@@ -4,7 +4,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createHasher } from '../packages/frame/hash.js';
 import { behaviourDifferences } from './behaviour.mjs';
+import { snapshotDigest } from './trace-line.mjs';
 
 const dir = mkdtempSync(join(tmpdir(), 'si-rpg-check-'));
 const saved = JSON.parse(readFileSync('fixtures/golden-behaviour.json', 'utf8'));
@@ -49,7 +51,7 @@ test('the snapshot length and the walker zone are compared too', () => {
   moved.walkerZone = 'west';
   assert.deepEqual(behaviourDifferences(moved, saved), [
     'body walker final zone: expected west, got east',
-    'snapshot bytes at the last quantum: expected ' + moved.snapshotBytes.last + ', got ' + saved.snapshotBytes.last + ': the encoding changed',
+    'snapshot bytes at the last quantum: expected ' + moved.snapshotBytes.last + ', got ' + saved.snapshotBytes.last + ': the snapshot length changed by -8 bytes (-1 double)',
   ]);
 });
 
@@ -61,21 +63,46 @@ test('the snapshot digests are recorded at load and at the last quantum', () => 
   assert.match(run.stdout, new RegExp('snapshot ' + saved.snapshotBytes.load + ' bytes ' + saved.snapshotDigest.load + ' then ' + saved.snapshotBytes.last + ' bytes ' + saved.snapshotDigest.last));
 });
 
+test('the snapshot digests carry 64 bits: their halves differ, where one byte per u32 made them equal', () => {
+  for (const digest of [saved.snapshotDigest.load, saved.snapshotDigest.last]) {
+    assert.notEqual(digest.slice(0, 8), digest.slice(8), digest);
+  }
+  const snap = new Uint8Array(64);
+  for (let i = 0; i < snap.length; i = i + 1) {
+    snap[i] = (i * 37 + 11) & 255;
+  }
+  const split = snapshotDigest(snap);
+  assert.notEqual(split.slice(0, 8), split.slice(8));
+  // The form before S1 pin 13 fed each byte to both lanes and carried 32 bits.
+  const both = createHasher();
+  both.u32(snap.length);
+  for (let i = 0; i < snap.length; i = i + 1) {
+    both.u32(snap[i]);
+  }
+  assert.equal(both.digest().slice(0, 8), both.digest().slice(8));
+  // A byte in either half of a double moves the digest.
+  for (const at of [0, 3, 4, 7, 60]) {
+    const flipped = snap.slice();
+    flipped[at] = flipped[at] ^ 1;
+    assert.notEqual(snapshotDigest(flipped), split, 'byte ' + at);
+  }
+});
+
 test('a same-length snapshot with a changed digest fails as changed values', () => {
   const moved = structuredClone(saved);
   moved.snapshotDigest.last = '0123456789abcdef';
   const run = check(moved);
   assert.equal(run.status, 1);
   assert.match(run.stderr, new RegExp('^snapshot digest at the last quantum: expected 0123456789abcdef, got ' + saved.snapshotDigest.last + ': same length, the values changed$', 'm'));
-  assert.doesNotMatch(run.stderr, /the encoding changed/);
+  assert.doesNotMatch(run.stderr, /the snapshot length changed/);
 });
 
-test('a changed snapshot length fails as a changed encoding, and the digest is not named twice', () => {
+test('a changed snapshot length is named as a length change with its size, and the digest is not named twice', () => {
   const moved = structuredClone(saved);
   moved.snapshotBytes.load = moved.snapshotBytes.load - 8;
   moved.snapshotDigest.load = '0123456789abcdef';
   assert.deepEqual(behaviourDifferences(moved, saved), [
-    'snapshot bytes at load: expected ' + moved.snapshotBytes.load + ', got ' + saved.snapshotBytes.load + ': the encoding changed',
+    'snapshot bytes at load: expected ' + moved.snapshotBytes.load + ', got ' + saved.snapshotBytes.load + ': the snapshot length changed by +8 bytes (+1 double)',
   ]);
 });
 

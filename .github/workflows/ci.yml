@@ -67,6 +67,13 @@ jobs:
       # names the lint's verdict on the pinned Linux bytes in the log.
       - name: Lint the pinned binary
         run: node solver/lint.mjs
+      # The law's native tests: the canon_quat cases, the reload decisions S1
+      # pins, and T4's CCD evidence. They sit at the end of the law's source,
+      # so the release wasm is unchanged by them. Release only: Rapier's
+      # island-manager debug_assert fires when bodies touch at load.
+      - name: Run the law's native tests
+        working-directory: solver
+        run: cargo test --release --locked
       - name: Check the kernel contract
         run: npm run typecheck
       # The course and the outcome tests say what happened, by name. They run
