@@ -18,6 +18,14 @@
 // Neither writes into Rapier. The tick itself (memory, minds, actions, log)
 // is T5's bundle; replay rebuilds it here. A restore that does not rerun
 // identically writes a bundle (harness/bundle.mjs) and fails with its path.
+//
+// Since F1 the solver switches a body in place when an action starts or ends
+// or a body is picked up or put down, so Rapier's running world crosses every
+// verb boundary. One more test restores on both sides of every quantum that
+// switches a body, in the product scene (200 and 201, 260 and 261, 400 and
+// 401) and in every fixture run that has one (the carry cases at each of
+// their four switches, the climb, and the minds fixture), each point by
+// replay and by image (F1 pin 6).
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -30,7 +38,7 @@ import { loadIntentRules } from '../packages/tick/predicates.js';
 import { createWorld } from '../packages/tick/world.js';
 import { bytes as binary, imageDigest, imageSolver, instantiate, restoreImage, snapshotBytes, stackPointer } from '../solver/dist/solver.mjs';
 import { expectIdentical } from './bundle.mjs';
-import { asleep as asleepIn, contacts as contactPairs } from './events.mjs';
+import { asleep as asleepIn, contacts as contactPairs, solverClasses, switched } from './events.mjs';
 import { replayTo } from './replay-to.mjs';
 import { endLine } from './trace-line.mjs';
 import { playVerbs } from './verbs-scene.mjs';
@@ -94,8 +102,9 @@ function asleep(run) {
 }
 
 /**
- * The uninterrupted run: its trace lines (without the end line) and the ticks
- * of its first new contact, first sleep, first wake, and last new contact.
+ * The uninterrupted run: its trace lines (without the end line), the ticks
+ * of its first new contact, first sleep, first wake, and last new contact,
+ * and the ticks of the quanta that switch a body (F1).
  * @param {ReplaySpec} spec
  */
 function wholeRun(spec) {
@@ -103,12 +112,16 @@ function wholeRun(spec) {
   const lines = [run.line()];
   let touching = contacts(run);
   let sleepers = asleep(run);
+  let classes = solverClasses(spec, run);
   /** @type {{ contact: number | null, lastContact: number | null, sleep: number | null, wake: number | null }} */
   const events = { contact: null, lastContact: null, sleep: null, wake: null };
+  /** @type {number[]} */
+  const switches = [];
   while (run.advance()) {
     lines.push(run.line());
     const nowTouching = contacts(run);
     const nowAsleep = asleep(run);
+    const nowClasses = solverClasses(spec, run);
     if (nowTouching > touching) {
       events.contact = events.contact === null ? run.tick : events.contact;
       events.lastContact = run.tick;
@@ -119,10 +132,14 @@ function wholeRun(spec) {
     if (events.wake === null && sleepers.some((id) => !nowAsleep.includes(id))) {
       events.wake = run.tick;
     }
+    if (switched(run, classes, nowClasses).length > 0) {
+      switches.push(run.tick);
+    }
     touching = nowTouching;
     sleepers = nowAsleep;
+    classes = nowClasses;
   }
-  return { lines, events };
+  return { lines, events, switches };
 }
 
 /**
@@ -229,36 +246,73 @@ const threeD = JSON.parse(readFileSync('fixtures/behavior-3d.json', 'utf8'));
 cases.push({ name: 'behavior-3d (reference law)', spec: { seed: threeD.seed, world: threeD.world, log: threeD.log, law: 'reference', retired: true } });
 cases.push({ name: 'the product scene', spec: { scene: 'product' } });
 
+/**
+ * Restores the case at each point by replay, and by image `rounds` times,
+ * and requires every rerun to trace as the whole run did. A difference
+ * writes a bundle (T5 pin 3): the case, the point, the whole run's hashes to
+ * it, and the image that was restored, if one was.
+ * @param {Case} item
+ * @param {ReturnType<typeof wholeRun>} whole
+ * @param {number[]} points
+ * @param {number} rounds
+ */
+function restoresAt(item, whole, points, rounds) {
+  for (const point of points) {
+    evict();
+    const replayed = replayTo(item.spec, point);
+    expectIdentical(item.name + ' replay to ' + point, whole.lines, rerunLines(whole.lines, replayed), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point) }]);
+  }
+  const saves = savesAt(item.spec, points, whole.lines);
+  for (const point of points) {
+    const saved = saves.get(point);
+    if (!saved) {
+      throw new Error('no save at ' + point);
+    }
+    const image = saved.image ? { bytes: saved.image.bytes, worldId: saved.worldId } : false;
+    for (let again = 0; again < rounds; again = again + 1) {
+      const run = replayTo(item.spec, point);
+      evict();
+      scramble(run);
+      run.world.restore(saved);
+      expectIdentical(item.name + ' image at ' + point + ' restore ' + (again + 1), whole.lines, rerunLines(whole.lines, run), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point), image }]);
+    }
+  }
+}
+
 for (const item of cases) {
   const product = 'scene' in item.spec;
   test(item.name + ': replay and image restores rerun identically at every chosen point', (t) => {
     const whole = wholeRun(item.spec);
     const points = choosePoints(whole, product);
     t.diagnostic(item.name + ': ' + (whole.lines.length - 1) + ' quanta, restored at ' + points.join(', ') + ' (events ' + JSON.stringify(whole.events) + ')');
-    // A difference writes a bundle (T5 pin 3): the case, the point, the whole
-    // run's hashes to it, and the image that was restored, if one was.
-    for (const point of points) {
-      evict();
-      const replayed = replayTo(item.spec, point);
-      expectIdentical(item.name + ' replay to ' + point, whole.lines, rerunLines(whole.lines, replayed), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point) }]);
-    }
-    const saves = savesAt(item.spec, points, whole.lines);
-    for (const point of points) {
-      const saved = saves.get(point);
-      if (!saved) {
-        throw new Error('no save at ' + point);
-      }
-      const image = saved.image ? { bytes: saved.image.bytes, worldId: saved.worldId } : false;
-      for (let again = 0; again < 2; again = again + 1) {
-        const run = replayTo(item.spec, point);
-        evict();
-        scramble(run);
-        run.world.restore(saved);
-        expectIdentical(item.name + ' image at ' + point + ' restore ' + (again + 1), whole.lines, rerunLines(whole.lines, run), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point), image }]);
-      }
-    }
+    restoresAt(item, whole, points, 2);
   });
 }
+
+test('restores straddle every switch: replay and image restores on both sides of every quantum that switches a body rerun identically, in the product scene and in every fixture run that switches one', (t) => {
+  let switches = 0;
+  /** @type {string[]} */
+  const runs = [];
+  for (const item of cases) {
+    const whole = wholeRun(item.spec);
+    if (whole.switches.length === 0) {
+      continue;
+    }
+    const end = whole.lines.length - 1;
+    const points = Array.from(new Set(whole.switches.flatMap((tick) => [tick - 1, tick]))).filter((tick) => tick < end).sort((a, b) => a - b);
+    t.diagnostic(item.name + ': switches at ' + whole.switches.join(', ') + '; restored at ' + points.join(', '));
+    if (item.name === 'the product scene') {
+      assert.deepEqual(whole.switches, [201, 261, 401], 'the product scene switches where the climber starts and ends and the parcel is picked up');
+    }
+    restoresAt(item, whole, points, 1);
+    switches = switches + whole.switches.length;
+    runs.push(item.name);
+  }
+  t.diagnostic(switches + ' switches straddled in ' + runs.join(', '));
+  for (const name of ['the product scene', 'behavior-verbs carry', 'behavior-verbs carry-capsule', 'behavior-minds']) {
+    assert.ok(runs.includes(name), name + ' has no switch to straddle');
+  }
+});
 
 test('behavior-1c is a 2D capture the loader refuses, so it has no run to restore', () => {
   const capture = JSON.parse(readFileSync('fixtures/behavior-1c.json', 'utf8'));

@@ -297,6 +297,16 @@ export function snapshotBytes() {
   return new Uint8Array(exp.memory.buffer, ptr, len).slice();
 }
 
+/**
+ * How many worlds the solver has built from records since the instance began:
+ * one per first load, change of world, or change of geometry. A switch of
+ * bodies at a verb boundary happens in place and is not counted (F1 pin 4).
+ * The count is in linear memory, so a restored image carries it.
+ */
+export function solverRebuilds() {
+  return instantiate().exports.solver_rebuilds() >>> 0;
+}
+
 // Images. The instance's whole mutable state is its linear memory plus one
 // global, __stack_pointer: the module has no other global, and its one table
 // is fixed at instantiation. Between exported calls that returned, the stack

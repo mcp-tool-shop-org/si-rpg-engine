@@ -78,15 +78,17 @@ export const CORPUS = [
     },
   },
   {
+    // Named for the verb-boundary rebuild T5 captured it to record, which F1
+    // replaced with the switch in place and recaptured it for.
     name: 'product-rebuild-261',
     spec: { scene: 'product' },
     tick: 200,
     note() {
-      return 'The product scene, 10000 quanta. The solver rebuilds its world when the driven set changes at a verb boundary: at trace tick 201 (the climber\'s lift begins, applyProductAct index 200), '
-        + '261 (the lift ends and the climber leaves the driven set, index 260: the rebuild T4 characterized in harness/outcome.test.js, outcome 4) and 401 (the walker picks up the parcel, index 400). '
-        + 'Each drops the warm-start impulses and wakes the sleeping bodies (the Rust knowledge base measured 18 to 20 impulses and 5 bodies with a rebuild counter). '
-        + 'Saved at 200, before the first, with the solver image, so the replay and the rerun from the image cross all three. '
-        + 'It records the verb-boundary rebuilds a later slice will remove; that slice changes these hashes and rewrites this bundle.';
+      return 'The product scene, 10000 quanta. Named for the rebuild T5 captured it to record: before F1 the solver rebuilt its world whenever the driven or carried set changed at a verb boundary, '
+        + 'dropping the warm-start impulses and waking the sleeping bodies (the Rust knowledge base measured 18 to 20 impulses and 5 bodies with a rebuild counter). '
+        + 'Since F1 it switches bodies in place instead, and nothing it does not switch wakes: at trace tick 201 (the climber\'s lift begins, applyProductAct index 200, and it becomes driven), '
+        + '261 (the lift ends, index 260, and it is dynamic again with its record velocity: the switch T4 characterized as a rebuild in harness/outcome.test.js, outcome 4) and 401 (the walker picks up the parcel, index 400, which leaves the world). '
+        + 'Saved at 200, before the first, with the solver image, so the replay and the rerun from the image cross all three switches.';
     },
   },
 ];

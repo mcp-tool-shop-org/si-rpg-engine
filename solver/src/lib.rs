@@ -38,6 +38,11 @@ pub(crate) enum Refusal {
     Plan,
     /// No world is loaded to step.
     Unloaded,
+    /// At a switch in place, a body the running world should hold has no
+    /// handle, or a carried body it should not hold has one. The masks the
+    /// world last applied say which bodies it holds, so this cannot happen
+    /// while they are kept; it refuses instead of panicking if it does.
+    Handle,
 }
 
 /// What body slot 16 says the solver does with the body.

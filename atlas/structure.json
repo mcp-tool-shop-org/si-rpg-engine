@@ -164,6 +164,10 @@
           "path": "docs/dispatch-t5-replay-corpus.md"
         },
         {
+          "hash": "4a0085bbd80c2e14a9b8777bb0f1da2371a363d722a321cbd46d682014c44ee4",
+          "path": "docs/dispatch-t6-reachability-sweep.md"
+        },
+        {
           "hash": "7081f1c99037ce83b090042ead13d9b7f31c252b8162be99665ec8948b07ffa6",
           "path": "docs/rust-kb-answers.md"
         },
@@ -239,7 +243,7 @@
           "path": "fixtures/behavior-3d.json"
         },
         {
-          "hash": "ecf15bf072ea19efb7364fc04835e7d18c55023c219a848443d6350f828bb222",
+          "hash": "ac610c560306525789d18ff7eceae187dbe2eb9c8cbf00c92707675cb53c5ff5",
           "path": "fixtures/behavior-minds.json"
         },
         {
@@ -255,7 +259,7 @@
           "path": "fixtures/behavior-solver.json"
         },
         {
-          "hash": "e698d57eb1152d4ad6ef75e87c0b5d7b9029d0737d7a13111596efd9475e13ba",
+          "hash": "e8e8952e30bd2edc1f594e30b8d3801c93c58fb778b60ec771a47a3e6111f691",
           "path": "fixtures/behavior-verbs.json"
         },
         {
@@ -263,7 +267,7 @@
           "path": "fixtures/climb-draft.json"
         },
         {
-          "hash": "1b80befb8f741d94f11fc4779ac82d67ec6b45a7027b492d2c49ec8623f6b18c",
+          "hash": "bc2999272f2263cfdda3efd7d7a16fab7c6f25e71bd75dab06713a73d0f20d67",
           "path": "fixtures/corpus/product-rebuild-261.bundle.json"
         },
         {
@@ -283,11 +287,11 @@
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "c352a33c24a9e1485be7634f161841d7b87400b68c730202b353e8c2af427f96",
+          "hash": "1dd89619332fe683d03230ed659e17de4bb9f5fa0e66aeb5956f20c1959fb723",
           "path": "fixtures/golden-behaviour.json"
         },
         {
-          "hash": "d5429c80b52416807fba67871ddb9d3f6dd9437b8f52ac1bd7ae4ad3685bc66a",
+          "hash": "0891de7dce772010890b66ac92f6d2e99c8dfe59d0cae193e5890982312c00cc",
           "path": "fixtures/golden.txt"
         },
         {
@@ -315,7 +319,7 @@
           "path": "fixtures/shape-traversal.json"
         },
         {
-          "hash": "752dbad3935660c0d3a8a6c804bafe938e248b10b90f4741a76e06b83514bf6e",
+          "hash": "fcdf762c21758381d895d07cbf2e5aa71946093c81e34b1839c5c968159f65a8",
           "path": "fixtures/solver.sha256"
         },
         {
@@ -578,7 +582,7 @@
         {
           "entry": "replayCommand",
           "entryRule": 1,
-          "hash": "a5da5034a06759cf59d9ab3febb8240fada8db4c2ee714c3250fae63b5f2c704",
+          "hash": "7c8b329afa856414588865d8574020ed321ae4938a218d12ab1e260c6f2695d3",
           "importsFiles": [
             "harness/bundle.mjs",
             "harness/corpus.mjs",
@@ -692,7 +696,7 @@
             "runCorpus",
             "writeCorpus"
           ],
-          "hash": "078cd2685b83d2225515b6467dca7e139d4c849525a983ad325735892c7980c7",
+          "hash": "1f4edaee51411eafd56a26a1e77653b0c7ae8d201678ac840abd653a2ae23552",
           "importsFiles": [
             "harness/bundle.mjs",
             "harness/events.mjs",
@@ -709,7 +713,7 @@
             {
               "calls": [
                 {
-                  "line": 99,
+                  "line": 101,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -724,14 +728,14 @@
             {
               "calls": [
                 {
-                  "line": 122,
+                  "line": 124,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 124,
+                  "line": 126,
                   "name": "bundleText",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -746,14 +750,14 @@
             {
               "calls": [
                 {
-                  "line": 163,
+                  "line": 165,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "line": 166,
+                  "line": 168,
                   "name": "playVerbs",
                   "target": {
                     "file": "harness/verbs-scene.mjs"
@@ -768,49 +772,49 @@
             {
               "calls": [
                 {
-                  "line": 223,
+                  "line": 225,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 223,
+                  "line": 225,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 223,
+                  "line": 225,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 227,
+                  "line": 229,
                   "name": "withRecords",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   }
                 },
                 {
-                  "line": 227,
+                  "line": 229,
                   "name": "bundleFrom",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 227,
+                  "line": 229,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 227,
+                  "line": 229,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -825,14 +829,14 @@
             {
               "calls": [
                 {
-                  "line": 330,
+                  "line": 332,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   }
                 },
                 {
-                  "line": 323,
+                  "line": 325,
                   "name": "line",
                   "target": null,
                   "via": "keep"
@@ -847,14 +851,14 @@
               "calls": [
                 {
                   "branch": "a !== undefined && b !== undefined",
-                  "line": 372,
+                  "line": 374,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
                   }
                 },
                 {
-                  "line": 378,
+                  "line": 380,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -862,7 +866,7 @@
                 },
                 {
                   "branch": "untraced.end !== quanta",
-                  "line": 389,
+                  "line": 391,
                   "name": "endedBlock",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -877,7 +881,7 @@
             {
               "calls": [
                 {
-                  "line": 330,
+                  "line": 332,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -885,14 +889,14 @@
                   "via": "chain"
                 },
                 {
-                  "line": 323,
+                  "line": 325,
                   "name": "line",
                   "target": null,
                   "via": "keep"
                 },
                 {
                   "branch": "a !== undefined && b !== undefined",
-                  "line": 372,
+                  "line": 374,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -900,7 +904,7 @@
                   "via": "parting"
                 },
                 {
-                  "line": 378,
+                  "line": 380,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -909,7 +913,7 @@
                 },
                 {
                   "branch": "untraced.end !== quanta",
-                  "line": 389,
+                  "line": 391,
                   "name": "endedBlock",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -918,7 +922,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 223,
+                  "line": 225,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
@@ -927,7 +931,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 223,
+                  "line": 225,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
@@ -936,7 +940,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 223,
+                  "line": 225,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -945,7 +949,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 227,
+                  "line": 229,
                   "name": "withRecords",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -954,7 +958,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 227,
+                  "line": 229,
                   "name": "bundleFrom",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -963,7 +967,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 227,
+                  "line": 229,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
@@ -972,7 +976,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 227,
+                  "line": 229,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -980,7 +984,7 @@
                   "via": "failureBundle"
                 },
                 {
-                  "line": 494,
+                  "line": 496,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -988,14 +992,14 @@
                 },
                 {
                   "branch": "imaging.hash !== want",
-                  "line": 502,
+                  "line": 504,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
                   }
                 },
                 {
-                  "line": 510,
+                  "line": 512,
                   "name": "sparseImage",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1003,35 +1007,35 @@
                 },
                 {
                   "branch": "!imaging.advance()",
-                  "line": 520,
+                  "line": 522,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
                   }
                 },
                 {
-                  "line": 545,
+                  "line": 547,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   }
                 },
                 {
-                  "line": 556,
+                  "line": 558,
                   "name": "denseImage",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 584,
+                  "line": 586,
                   "name": "sparsePages",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 594,
+                  "line": 596,
                   "name": "traceDifference",
                   "target": {
                     "file": "harness/bundle.mjs"
@@ -1046,7 +1050,7 @@
             {
               "calls": [
                 {
-                  "line": 632,
+                  "line": 634,
                   "name": "readBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1104,21 +1108,21 @@
                       "via": "traceDifference"
                     }
                   ],
-                  "line": 633,
+                  "line": 635,
                   "name": "replayBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 657,
+                  "line": 659,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 163,
+                  "line": 165,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
@@ -1170,7 +1174,7 @@
                       }
                     }
                   ],
-                  "line": 166,
+                  "line": 168,
                   "name": "playVerbs",
                   "target": {
                     "file": "harness/verbs-scene.mjs"
@@ -1178,7 +1182,7 @@
                   "via": "fixtureRuns"
                 },
                 {
-                  "line": 671,
+                  "line": 673,
                   "name": "bundleFrom",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1236,21 +1240,21 @@
                       "via": "traceDifference"
                     }
                   ],
-                  "line": 675,
+                  "line": 677,
                   "name": "replayBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
                   }
                 },
                 {
-                  "line": 686,
+                  "line": 688,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 686,
+                  "line": 688,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1294,7 +1298,7 @@
                       }
                     }
                   ],
-                  "line": 700,
+                  "line": 702,
                   "name": "play",
                   "target": {
                     "file": "harness/solver-scene.mjs"
@@ -1317,21 +1321,21 @@
                       }
                     }
                   ],
-                  "line": 709,
+                  "line": 711,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 709,
+                  "line": 711,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 709,
+                  "line": 711,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1355,7 +1359,7 @@
                       "via": "validateBelief"
                     }
                   ],
-                  "line": 726,
+                  "line": 728,
                   "name": "validateScene",
                   "target": {
                     "file": "packages/tick/scene.js"
@@ -1380,7 +1384,7 @@
                       }
                     }
                   ],
-                  "line": 330,
+                  "line": 332,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -1388,14 +1392,14 @@
                   "via": "chain"
                 },
                 {
-                  "line": 323,
+                  "line": 325,
                   "name": "line",
                   "target": null,
                   "via": "keep"
                 },
                 {
                   "branch": "a !== undefined && b !== undefined",
-                  "line": 372,
+                  "line": 374,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -1403,7 +1407,7 @@
                   "via": "parting"
                 },
                 {
-                  "line": 378,
+                  "line": 380,
                   "name": "pair",
                   "target": {
                     "file": "packages/tick/difference.js"
@@ -1421,7 +1425,7 @@
                       }
                     }
                   ],
-                  "line": 389,
+                  "line": 391,
                   "name": "endedBlock",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1446,7 +1450,7 @@
                       }
                     }
                   ],
-                  "line": 223,
+                  "line": 225,
                   "name": "makeBundle",
                   "target": {
                     "file": "harness/bundle.mjs"
@@ -1455,7 +1459,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 223,
+                  "line": 225,
                   "name": "bundleDir",
                   "target": {
                     "file": "harness/bundle.mjs"
@@ -1464,7 +1468,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 223,
+                  "line": 225,
                   "name": "writeBundle",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1483,7 +1487,7 @@
                       }
                     }
                   ],
-                  "line": 227,
+                  "line": 229,
                   "name": "withRecords",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -1492,7 +1496,7 @@
                 },
                 {
                   "branch": "split",
-                  "line": 227,
+                  "line": 229,
                   "name": "bundleFrom",
                   "target": {
                     "file": "packages/tick/bundle.js"
@@ -1725,20 +1729,28 @@
           "entryRule": 4,
           "exports": [
             "asleep",
-            "contacts"
+            "contacts",
+            "pairs",
+            "solverClasses",
+            "switchTicks",
+            "switched"
           ],
-          "hash": "88d09333959798c3d61161dbe09f4b403224674cba698d9b8a903cb8a9b9b47f",
+          "hash": "b4da9bf919636f9e14a7bfbe885a3d749c56fa841bfaf1fdd88eebd1b1222ced",
+          "importsFiles": [
+            "harness/product-scene.mjs",
+            "harness/replay-to.mjs"
+          ],
           "path": "harness/events.mjs",
           "sequences": [
             {
               "calls": [
                 {
-                  "line": 16,
+                  "line": 22,
                   "name": "snapshot",
                   "target": null
                 },
                 {
-                  "line": 21,
+                  "line": 27,
                   "name": "carriedByOf",
                   "target": null
                 }
@@ -1751,7 +1763,7 @@
             {
               "calls": [
                 {
-                  "line": 39,
+                  "line": 45,
                   "name": "sleeping",
                   "target": null
                 }
@@ -1760,6 +1772,64 @@
               "invokedAtTopLevel": false,
               "isDefaultExport": false,
               "name": "asleep"
+            },
+            {
+              "calls": [
+                {
+                  "line": 63,
+                  "name": "snapshot",
+                  "target": null
+                },
+                {
+                  "line": 70,
+                  "name": "carriedByOf",
+                  "target": null
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "pairs"
+            },
+            {
+              "calls": [
+                {
+                  "branch": "typeof mode !== 'number'",
+                  "line": 113,
+                  "name": "includes",
+                  "target": {
+                    "file": "harness/product-scene.mjs"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "solverClasses"
+            },
+            {
+              "calls": [
+                {
+                  "line": 144,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                },
+                {
+                  "branch": "typeof mode !== 'number'",
+                  "line": 113,
+                  "name": "includes",
+                  "target": {
+                    "file": "harness/product-scene.mjs"
+                  },
+                  "via": "solverClasses"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "switchTicks"
             }
           ]
         },
@@ -1797,7 +1867,7 @@
         {
           "entry": "translatedRun",
           "entryRule": 1,
-          "hash": "35b432b4d754997b43694cb1a671667d6e17749a9a7cf592f68f26443ceffc66",
+          "hash": "faa8f3e9d6e3794b60dabd7f3a3a8fd00ad1e532bbc86725682571a35e741d5b",
           "importsFiles": [
             "harness/behaviour.mjs",
             "harness/bundle.mjs",
@@ -1913,28 +1983,28 @@
             {
               "calls": [
                 {
-                  "line": 305,
+                  "line": 309,
                   "name": "productInit",
                   "target": {
                     "file": "harness/product-scene.mjs"
                   }
                 },
                 {
-                  "line": 314,
+                  "line": 318,
                   "name": "recordRun",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 315,
+                  "line": 319,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 316,
+                  "line": 320,
                   "name": "productDriven",
                   "passed": true,
                   "target": {
@@ -1942,14 +2012,14 @@
                   }
                 },
                 {
-                  "line": 317,
+                  "line": 321,
                   "name": "sleepWatch",
                   "target": {
                     "file": "harness/behaviour.mjs"
                   }
                 },
                 {
-                  "line": 319,
+                  "line": 323,
                   "name": "applyProductAct",
                   "target": {
                     "file": "harness/product-scene.mjs"
@@ -2087,9 +2157,9 @@
           ]
         },
         {
-          "entry": "rerun",
+          "entry": "restoresAt",
           "entryRule": 1,
-          "hash": "6c09f823b3b41326553dc54574d0938a51ccc6f319d8e8361bdd9d9ff81b9e78",
+          "hash": "69a2e8f9163b0e0147823a31b2bc5a5ba0cbcf67bf3ca4941ba02c67aff10e17",
           "importsFiles": [
             "harness/bundle.mjs",
             "harness/events.mjs",
@@ -2105,14 +2175,14 @@
             {
               "calls": [
                 {
-                  "line": 64,
+                  "line": 72,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 68,
+                  "line": 76,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -2127,7 +2197,7 @@
             {
               "calls": [
                 {
-                  "line": 85,
+                  "line": 93,
                   "name": "contacts",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2142,7 +2212,7 @@
             {
               "calls": [
                 {
-                  "line": 93,
+                  "line": 101,
                   "name": "asleep",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2157,14 +2227,14 @@
             {
               "calls": [
                 {
-                  "line": 102,
+                  "line": 111,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   }
                 },
                 {
-                  "line": 85,
+                  "line": 93,
                   "name": "contacts",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2172,12 +2242,26 @@
                   "via": "contacts"
                 },
                 {
-                  "line": 93,
+                  "line": 101,
                   "name": "asleep",
                   "target": {
                     "file": "harness/events.mjs"
                   },
                   "via": "asleep"
+                },
+                {
+                  "line": 115,
+                  "name": "solverClasses",
+                  "target": {
+                    "file": "harness/events.mjs"
+                  }
+                },
+                {
+                  "line": 135,
+                  "name": "switched",
+                  "target": {
+                    "file": "harness/events.mjs"
+                  }
                 }
               ],
               "exported": false,
@@ -2188,25 +2272,25 @@
             {
               "calls": [
                 {
-                  "line": 171,
+                  "line": 188,
                   "name": "line",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 172,
+                  "line": 189,
                   "name": "advance",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 173,
+                  "line": 190,
                   "name": "line",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 160,
+                  "line": 177,
                   "name": "endLine",
                   "target": {
                     "file": "harness/trace-line.mjs"
@@ -2221,30 +2305,30 @@
             {
               "calls": [
                 {
-                  "line": 171,
+                  "line": 188,
                   "name": "line",
                   "target": null
                 },
                 {
-                  "line": 172,
+                  "line": 189,
                   "name": "advance",
                   "target": null
                 },
                 {
-                  "line": 173,
+                  "line": 190,
                   "name": "line",
                   "target": null
                 }
               ],
               "exported": false,
-              "invokedAtTopLevel": true,
+              "invokedAtTopLevel": false,
               "isDefaultExport": false,
               "name": "rerunLines"
             },
             {
               "calls": [
                 {
-                  "line": 194,
+                  "line": 211,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2252,14 +2336,187 @@
                 }
               ],
               "exported": false,
-              "invokedAtTopLevel": true,
+              "invokedAtTopLevel": false,
               "isDefaultExport": false,
               "name": "savesAt"
             },
             {
               "calls": [
                 {
-                  "line": 102,
+                  "line": 72,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  },
+                  "via": "evict"
+                },
+                {
+                  "line": 76,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  },
+                  "via": "evict"
+                },
+                {
+                  "inner": [
+                    {
+                      "branch": "'scene' in spec",
+                      "line": 42,
+                      "name": "productInit",
+                      "target": {
+                        "file": "harness/product-scene.mjs"
+                      },
+                      "via": "withRecords"
+                    },
+                    {
+                      "line": 54,
+                      "name": "replayTo",
+                      "target": {
+                        "file": "packages/tick/runs.js"
+                      }
+                    }
+                  ],
+                  "line": 262,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                },
+                {
+                  "line": 188,
+                  "name": "line",
+                  "target": null,
+                  "via": "rerunLines"
+                },
+                {
+                  "line": 189,
+                  "name": "advance",
+                  "target": null,
+                  "via": "rerunLines"
+                },
+                {
+                  "line": 190,
+                  "name": "line",
+                  "target": null,
+                  "via": "rerunLines"
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 108,
+                      "name": "traceDifference",
+                      "target": {
+                        "file": "packages/tick/bundle.js"
+                      }
+                    },
+                    {
+                      "line": 51,
+                      "name": "withRecords",
+                      "target": {
+                        "file": "harness/replay-to.mjs"
+                      },
+                      "via": "makeBundle"
+                    },
+                    {
+                      "line": 51,
+                      "name": "captureBundle",
+                      "target": {
+                        "file": "packages/tick/bundle.js"
+                      },
+                      "via": "makeBundle"
+                    },
+                    {
+                      "line": 88,
+                      "name": "writeBundle",
+                      "target": {
+                        "file": "packages/tick/bundle.js"
+                      },
+                      "via": "bundleFailure"
+                    }
+                  ],
+                  "line": 263,
+                  "name": "expectIdentical",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "branch": "'scene' in spec",
+                      "line": 42,
+                      "name": "productInit",
+                      "target": {
+                        "file": "harness/product-scene.mjs"
+                      },
+                      "via": "withRecords"
+                    },
+                    {
+                      "line": 54,
+                      "name": "replayTo",
+                      "target": {
+                        "file": "packages/tick/runs.js"
+                      }
+                    }
+                  ],
+                  "line": 211,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  },
+                  "via": "savesAt"
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 108,
+                      "name": "traceDifference",
+                      "target": {
+                        "file": "packages/tick/bundle.js"
+                      }
+                    },
+                    {
+                      "line": 51,
+                      "name": "withRecords",
+                      "target": {
+                        "file": "harness/replay-to.mjs"
+                      },
+                      "via": "makeBundle"
+                    },
+                    {
+                      "line": 51,
+                      "name": "captureBundle",
+                      "target": {
+                        "file": "packages/tick/bundle.js"
+                      },
+                      "via": "makeBundle"
+                    },
+                    {
+                      "line": 88,
+                      "name": "writeBundle",
+                      "target": {
+                        "file": "packages/tick/bundle.js"
+                      },
+                      "via": "bundleFailure"
+                    }
+                  ],
+                  "line": 277,
+                  "name": "expectIdentical",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "restoresAt"
+            },
+            {
+              "calls": [
+                {
+                  "line": 111,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2267,7 +2524,7 @@
                   "via": "wholeRun"
                 },
                 {
-                  "line": 85,
+                  "line": 93,
                   "name": "contacts",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2275,7 +2532,7 @@
                   "via": "contacts"
                 },
                 {
-                  "line": 93,
+                  "line": 101,
                   "name": "asleep",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2283,7 +2540,23 @@
                   "via": "asleep"
                 },
                 {
-                  "line": 364,
+                  "line": 115,
+                  "name": "solverClasses",
+                  "target": {
+                    "file": "harness/events.mjs"
+                  },
+                  "via": "wholeRun"
+                },
+                {
+                  "line": 135,
+                  "name": "switched",
+                  "target": {
+                    "file": "harness/events.mjs"
+                  },
+                  "via": "wholeRun"
+                },
+                {
+                  "line": 418,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2527,6 +2800,111 @@
           ]
         },
         {
+          "entry": "verbsCase",
+          "entryRule": 1,
+          "hash": "dd2bdae89c079135eeaa8658b5120dc603c40eb538953bc27cf704395b5233d6",
+          "importsFiles": [
+            "harness/events.mjs",
+            "harness/product-scene.mjs",
+            "harness/replay-to.mjs",
+            "harness/verbs-scene.mjs",
+            "packages/tick/predicates.js"
+          ],
+          "path": "harness/switch.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 14,
+                      "name": "createWorld",
+                      "target": {
+                        "file": "packages/tick/world.js"
+                      }
+                    },
+                    {
+                      "line": 15,
+                      "name": "createMemory",
+                      "target": {
+                        "file": "packages/tick/memory.js"
+                      }
+                    },
+                    {
+                      "line": 16,
+                      "name": "createTick",
+                      "target": {
+                        "file": "packages/tick/tick.js"
+                      }
+                    },
+                    {
+                      "line": 19,
+                      "name": "sleepWatch",
+                      "target": {
+                        "file": "harness/behaviour.mjs"
+                      }
+                    },
+                    {
+                      "line": 46,
+                      "name": "settle",
+                      "target": {
+                        "file": "packages/tick/tick.js"
+                      }
+                    },
+                    {
+                      "line": 50,
+                      "name": "finalPositions",
+                      "target": {
+                        "file": "harness/behaviour.mjs"
+                      }
+                    }
+                  ],
+                  "line": 57,
+                  "name": "playVerbs",
+                  "target": {
+                    "file": "harness/verbs-scene.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "verbsCase"
+            },
+            {
+              "calls": [
+                {
+                  "line": 57,
+                  "name": "playVerbs",
+                  "target": {
+                    "file": "harness/verbs-scene.mjs"
+                  },
+                  "via": "verbsCase"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "everyRun"
+            },
+            {
+              "calls": [
+                {
+                  "line": 437,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "ensureTimes"
+            }
+          ]
+        },
+        {
           "hash": "bc2a6955cef3877cf75cf4b3f4737fd8170f3461ba985c08ea58f05f9dc0640f",
           "importsFiles": [
             "packages/tick/trace-line.js"
@@ -2640,8 +3018,8 @@
       "outsideReads": 7,
       "outsideWrites": 4,
       "role": "test",
-      "testedBy": 12,
-      "unresolvedSites": 7
+      "testedBy": 13,
+      "unresolvedSites": 8
     },
     {
       "dynamicReads": 0,
@@ -3566,7 +3944,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "b179bf585249bda106089ea5e702b1340c80fe920d4c9466fe49277d2d129bd9",
+          "hash": "8c222c7114a840fbb135d0dfab0e41b1001b680d6297d99849a48167c023f748",
           "path": "package.json"
         },
         {
@@ -3609,7 +3987,7 @@
           "path": "solver/FLAGS.md"
         },
         {
-          "hash": "1abf317d4062bbda0a2d7efb8d4edbbd7ecb873b2c63121cd84fda82550b1d4d",
+          "hash": "664cc1593441831279c01fc1d8ab43ef68affc0c553fba2ad4db421967683d13",
           "importsFiles": [
             "solver/lint.mjs"
           ],
@@ -4214,11 +4592,11 @@
           "path": "solver/src/arena.rs"
         },
         {
-          "hash": "3842444ca3ba97f914687ad2dcc51e5b9bb9a347e359ea61c3a3d031d121de30",
+          "hash": "965ea43904baad227b6a1fd66d2b3c8c260fca246cf45d19d5dc8c1fd27e8b2a",
           "path": "solver/src/lib.rs"
         },
         {
-          "hash": "affe57815a66de50ec1059929d87f35ccac8e2ef9a611f3949282df4bc26dbdb",
+          "hash": "23b29d31bafebc11e459892bee68641c7ca8fd791ab13351d18b7c55a8fe2809",
           "path": "solver/src/rapier_law.rs"
         }
       ],
@@ -5512,7 +5890,7 @@
       "outsideReads": 11,
       "outsideWrites": 3,
       "role": "code",
-      "testedBy": 19,
+      "testedBy": 20,
       "unresolvedSites": 4
     },
     {
@@ -5720,7 +6098,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 30
+          "files": 31
         },
         {
           "boundary": "host",
@@ -5904,6 +6282,11 @@
         {
           "job": "engines",
           "path": "harness/surface.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "harness/switch.test.js",
           "runKind": "executes"
         },
         {
@@ -6112,7 +6495,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 59,
+      "runsCount": 60,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -6835,8 +7218,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "1b17c4ee0f8ad56e23cd2e12ecaa1af2ad79845b",
-    "tracked": 236
+    "commit": "39ba1fe01bbf2dc960a59309fe32ce983f01b3ea",
+    "tracked": 238
   },
   "landings": [
     {
@@ -6870,6 +7253,12 @@
         },
         {
           "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "harness/switch.test.js",
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
@@ -6917,6 +7306,12 @@
           "fromTests": true
         },
         {
+          "by": "harness/switch.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/tick.test.js",
           "call": "readFileSync",
           "confidence": "ast",
@@ -6936,6 +7331,12 @@
         },
         {
           "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "harness/switch.test.js",
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
@@ -7007,6 +7408,12 @@
       "readers": [
         {
           "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "harness/switch.test.js",
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
@@ -8065,7 +8472,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 26,
+  "testFiles": 27,
   "unassigned": [
     {
       "exports": [
@@ -8155,11 +8562,11 @@
         "choose",
         "panelProblems"
       ],
-      "hash": "04d259c65a7102b7fbe93043a76141737255c63f77136b7a6f115fcd416750c5",
+      "hash": "d25f7c20aa00ebd961f8ac54af440e9c1165ecfee3c489773c1e4bad23458436",
       "path": "tools/panel.js"
     },
     {
-      "hash": "8aa4107817c2ccfa800c068a3888edf4ea040112585023362dadd26b072a3322",
+      "hash": "bbb37fe06d1d1a6aadfb1455c10bb641a73664be3d5d25fba96bc4cdc10446a3",
       "importsFiles": [
         "tools/panel.js"
       ],
@@ -8170,13 +8577,13 @@
         "buildPrompt",
         "fenceTag"
       ],
-      "hash": "23c3ef97d8b54e13cd6dcb1d3f2cab0febf5c30a4269446ffadbf6233351942b",
+      "hash": "c86fd0275188bece0350abd754d40bc3b5675831b76a352186c847658534d697",
       "path": "tools/prompt.js"
     },
     {
       "entry": "gathered",
       "entryRule": 1,
-      "hash": "8aed80d341ca411d60bdfde55c05ec9236b6274921cfd9571e0561d7fe95b695",
+      "hash": "cbc968268f794259a38917c0299254fabe16d7a048a7688f639ea25fbd386799",
       "importsFiles": [
         "tools/prompt.js"
       ],

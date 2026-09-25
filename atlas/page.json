@@ -91,38 +91,134 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 0,
-      "changed": 5,
+      "added": 8,
+      "changed": 8,
       "moved": 0,
-      "parts": 1,
+      "parts": 7,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "CI now also checks tools/review.mjs.",
+        "sentence": "CI's pull request trigger now also names `tools/**`.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "tools/review.mjs"
+          ".github/workflows/ci.yml"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "tools/review.mjs is now also read by tsconfig.json.",
+        "kind": "door",
+        "sentence": "CI's push trigger now also names `tools/**`.",
         "subjects": [
+          ".github/workflows/ci.yml"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also runs tools/panel.test.js, tools/prompt.test.js and tools/verdicts.test.js.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "tools/panel.test.js",
+          "tools/prompt.test.js",
+          "tools/verdicts.test.js"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "And 1 more change to a door.",
+        "subjects": []
+      },
+      {
+        "kind": "landing",
+        "sentence": "tools/panel.js is now read by tools/review.mjs and tsconfig.json.",
+        "subjects": [
+          "tools/panel.js",
           "tools/review.mjs",
           "tsconfig.json"
         ]
       },
       {
+        "kind": "landing",
+        "sentence": "tools/panel.test.js is now read by tsconfig.json.",
+        "subjects": [
+          "tools/panel.test.js",
+          "tsconfig.json"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "tools/prompt.js is now read by tools/review.mjs and tsconfig.json.",
+        "subjects": [
+          "tools/prompt.js",
+          "tools/review.mjs",
+          "tsconfig.json"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "And 4 more new writers and readers of places.",
+        "subjects": []
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In harness/corpus.mjs, run corpus gained a step, ended block, before make bundle.",
+        "subjects": [
+          "harness/corpus.mjs"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In harness/corpus.mjs, run corpus lost a step, pair.",
+        "subjects": [
+          "harness/corpus.mjs"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/bundle.js, replay bundle lost a step, pair.",
+        "subjects": [
+          "packages/tick/bundle.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "And 1 more change to the order of work.",
+        "subjects": []
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/panel.js is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/panel.js"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/panel.test.js is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/panel.test.js"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/prompt.js is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/prompt.js"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "And 4 more new files that belong to no part.",
+        "subjects": []
+      },
+      {
         "kind": "counts",
-        "sentence": "5 files changed content, across 1 part.",
+        "sentence": "8 files added and 8 changed content, across 7 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "5886d194f57e8ad05df44b0867e4c353834ed250",
-      "generatedAt": "2026-09-25T15:04:25.464Z"
+      "commit": "ab579ad7430038ae513678ad3e35bfdb13b1943c",
+      "generatedAt": "2026-09-25T15:00:07.639Z"
     },
     "unchanged": false
   },
@@ -209,9 +305,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "1b17c4ee0f8ad56e23cd2e12ecaa1af2ad79845b",
+  "commit": "39ba1fe01bbf2dc960a59309fe32ce983f01b3ea",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (87 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (88 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -266,7 +362,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 30
+          "files": 31
         },
         {
           "boundary": "host",
@@ -310,6 +406,7 @@
         "harness/soundness.test.js",
         "harness/source.test.js",
         "harness/surface.test.js",
+        "harness/switch.test.js",
         "harness/trace.mjs",
         "harness/trace.test.js",
         "packages/host/host.test.js",
@@ -328,7 +425,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 32,
+      "runsCount": 33,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -692,9 +789,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T15:22:44.544Z",
+  "generatedAt": "2026-09-25T15:34:19.832Z",
   "limits": [
-    "13 import sites could not be resolved.",
+    "14 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "12 writes and 23 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
@@ -836,13 +933,98 @@
       ]
     },
     {
-      "entry": "rerun",
+      "entry": "restoresAt",
       "file": "harness/restore.test.js",
-      "inner": [],
+      "inner": [
+        {
+          "file": "harness/bundle.mjs",
+          "name": "expectIdentical",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "expect identical",
+          "steps": [
+            {
+              "name": "traceDifference",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "trace difference"
+            },
+            {
+              "name": "withRecords",
+              "part": "harness",
+              "partLabel": "harness",
+              "phrase": "with records"
+            },
+            {
+              "name": "captureBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "capture bundle"
+            },
+            {
+              "name": "writeBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "write bundle"
+            }
+          ]
+        },
+        {
+          "file": "harness/bundle.mjs",
+          "name": "expectIdentical",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "expect identical",
+          "steps": [
+            {
+              "name": "traceDifference",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "trace difference"
+            },
+            {
+              "name": "withRecords",
+              "part": "harness",
+              "partLabel": "harness",
+              "phrase": "with records"
+            },
+            {
+              "name": "captureBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "capture bundle"
+            },
+            {
+              "name": "writeBundle",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "write bundle"
+            }
+          ]
+        }
+      ],
       "part": "harness",
       "partLabel": "harness",
-      "phrase": "rerun",
+      "phrase": "restores at",
       "steps": [
+        {
+          "name": "createWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create world"
+        },
+        {
+          "name": "createHasher",
+          "part": "frame",
+          "partLabel": "frame",
+          "phrase": "create hasher"
+        },
+        {
+          "name": "replayTo",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "replay to"
+        },
         {
           "name": "line",
           "part": null,
@@ -862,10 +1044,22 @@
           "phrase": "line"
         },
         {
-          "name": "endLine",
+          "name": "expectIdentical",
           "part": "harness",
           "partLabel": "harness",
-          "phrase": "end line"
+          "phrase": "expect identical"
+        },
+        {
+          "name": "replayTo",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "replay to"
+        },
+        {
+          "name": "expectIdentical",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "expect identical"
         }
       ]
     },
@@ -1300,14 +1494,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 26,
+  "testFiles": 27,
   "testedBy": {
     "frame": 12,
     "host": 1,
     "load": 2,
     "propose": 1,
     "solver": 1,
-    "tick": 19
+    "tick": 20
   },
   "unnamedWrites": 2,
   "unread": [],

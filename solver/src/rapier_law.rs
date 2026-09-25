@@ -1,5 +1,9 @@
 // The product step. One Rapier world lives in this module across quanta so the
-// warm-start cache survives. The box step in lib.rs is a separate export.
+// warm-start cache survives, verb boundaries included: when an action starts or
+// ends, or a body is picked up or put down, the bodies switch in place on the
+// running world (F1). The world is built from the records only at its first
+// load and when the world itself changes. The box step in lib.rs is a
+// separate export.
 //
 // Pins: rapier3d-f64, enhanced-determinism, f64, no SIMD feature, dt = 1/64,
 // sleep threshold = 32 quanta, rotations locked, contact clustering off so the
@@ -48,16 +52,19 @@ pub(crate) static mut HEIGHTS: [f64; MAX_HEIGHTS] = [0.0; MAX_HEIGHTS];
 // body 64 onto body 0. S1 pin 3.
 const _: () = assert!(MAX_BODIES <= 64);
 
-/// What a loaded Rapier world was built from. Pose and velocity are not in
-/// it, so a later quantum keeps the same Rapier state. `ensure` rebuilds the
-/// world only when this differs, so it compares the geometry itself (S1 pin
-/// 15): a hash of it can collide, and the polynomial fold this replaced did,
-/// for half-extents (0.5, 0.5) and (0.5000000000000001, 0.49993896484372585),
+/// What a loaded Rapier world was built from, and the modes last applied to
+/// it. Pose and velocity are not in it, so a later quantum keeps the same
+/// Rapier state. `ensure` rebuilds the world only when `same_world` says the
+/// world itself differs, so it compares the geometry itself (S1 pin 15): a
+/// hash of it can collide, and the polynomial fold this replaced did, for
+/// half-extents (0.5, 0.5) and (0.5000000000000001, 0.49993896484372585),
 /// which would have kept a stale world. `geometry` is the bit pattern of every
 /// value the build reads: each body's half-extents, each collider's ten
 /// values, and the heights, with signed zero canonicalized as the snapshot
 /// canonicalizes it (S1 pin 4). The modes are the two masks, which is how the
-/// build reads them: 1 and 2 are both kinematic and differ only per quantum.
+/// law reads them: 1 and 2 are both kinematic and differ only per quantum.
+/// They are not in the reload test (F1 pin 1): they are the state last
+/// applied, and when only they differ `ensure` switches the bodies in place.
 /// At the limits it is 64 * 3 + 64 * 10 + 256 words, about 8.7 kilobytes.
 struct Signature {
     world_id: u32,
@@ -89,11 +96,21 @@ struct Solver {
 
 static mut SOLVER: Solver = Solver { loaded: None, snapshot: Vec::new() };
 
+/// How many times `ensure` has built a world since the binary was
+/// instantiated: each first load, each change of world, and each change of
+/// geometry. A switch in place is not a build and does not count. The
+/// counter lives in linear memory, so an image carries it and a restore puts
+/// back the count it was taken at. F1 pin 4.
+static mut BUILDS: u32 = 0;
+
 /// What `ensure` did.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Load {
-    /// The loaded world was built from the same signature and stays.
+    /// The loaded world is the same world with the same modes, and stays.
     Kept,
+    /// The loaded world is the same world and only the modes changed: its
+    /// bodies switched in place, in record order (F1 pin 2).
+    Switched,
     /// A new world was built.
     Built,
 }
@@ -192,16 +209,23 @@ fn write_body(
 /// Rust knowledge base measured 31% of canonical quaternions moving under a
 /// second application and 4,623 moving again under a third, so iterating does
 /// not settle. The law canonicalizes at the output boundary (write_body's
-/// callers and rebuild_snapshot), and again at every rebuild from the records:
-/// `ensure` rebuilds whenever the driven or carried mask changes, which is at
-/// every verb boundary, and build_world runs the already-canonical records
-/// through canon_quat once more (the knowledge base saw that renormalize one
-/// product body at trace ticks 201 and 401 and flip its sign at 261). That
-/// path is deterministic, part of the run every replay repeats, and it is not
-/// a restore route. Nothing compares a re-canonicalized quaternion bit for bit,
-/// and a restore is by replay or by image only, never by reloading the saved
-/// records, which is why T2 restores as it does. The tests at the end of this
-/// file hold both sides.
+/// callers and rebuild_snapshot), at the first load, and on a geometry change
+/// only: build_world runs the records through canon_quat, and since F1 it runs
+/// only when a world is first loaded or the world itself changes (its id, its
+/// counts, its grid, its geometry, or the character shape). Before F1 `ensure`
+/// also rebuilt whenever the driven or carried mask changed, at every verb
+/// boundary, and ran every already-canonical record through canon_quat once
+/// more (the knowledge base saw that renormalize one product body at trace
+/// ticks 201 and 401 and flip its sign at 261); the switch in place ended
+/// that, and harness/switch.test.js holds the minds fixture's quaternions to
+/// their bits across its verb boundaries. A switch reads a record's rotation
+/// for one body only, the one entering the running world as dynamic (a return
+/// from driven, or a drop), and the tick writes identity there, on which
+/// canon_quat is exact. A build is deterministic, part of the run every replay
+/// repeats, and it is not a restore route. Nothing compares a re-canonicalized
+/// quaternion bit for bit, and a restore is by replay or by image only, never
+/// by reloading the saved records, which is why T2 restores as it does. The
+/// tests at the end of this file hold both sides.
 fn canon_quat(x: f64, y: f64, z: f64, w: f64) -> Result<(f64, f64, f64, f64), Refusal> {
     if bad(x) || bad(y) || bad(z) || bad(w) {
         return Err(Refusal::Quaternion);
@@ -307,15 +331,17 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
     })
 }
 
-fn same_sig(a: &Signature, b: &Signature) -> bool {
+/// The reload test (F1 pin 1): the world id, the body and collider counts,
+/// the heightfield's shape, the geometry bytes (S1 pin 15), and the character
+/// shape. The driven and carried masks are not in it; a world whose masks
+/// alone differ is the same world with bodies to switch.
+fn same_world(a: &Signature, b: &Signature) -> bool {
     a.world_id == b.world_id
         && a.n_bodies == b.n_bodies
         && a.n_colliders == b.n_colliders
         && a.rows == b.rows
         && a.cols == b.cols
         && a.cell == b.cell
-        && a.driven == b.driven
-        && a.carried == b.carried
         && a.shape == b.shape
         && a.geometry == b.geometry
 }
@@ -377,16 +403,225 @@ fn warm_broadphase(world: &mut PhysicsWorld) {
     // (rapier3d-f64 0.35.3: rigid_body_set.rs iter_mut, collision_pipeline.rs
     // take_modified, rigid_body.rs wake_up.)
     //
-    // This pass is for a world just built, and it cannot be reused for an
-    // in-place type switch: it consumes the bodies' type-change flags without
-    // updating the islands, and trips Rapier's island-manager debug_assert
-    // (manager.rs:140). A later slice that switches driven and carried bodies
-    // in place must not call it.
+    // This pass is for a world just built, and only build_world calls it. It
+    // cannot be reused for an in-place switch (S1 pin 12): it consumes the
+    // bodies' type-change flags without updating the islands, and trips
+    // Rapier's island-manager debug_assert (manager.rs:140). The switch in
+    // place (switch_in_place, F1) does not call it, and pins what that costs
+    // instead of hiding it (F1 pin 3): the character's queries run before the
+    // step, so in the quantum of a switch a removed body is gone from them at
+    // once, and a dropped body is not in them until that step's broad phase
+    // takes it in. harness/switch.test.js holds both.
     for (_, body) in world.bodies.iter_mut() {
         if !body.is_fixed() {
             body.wake_up(true);
         }
     }
+}
+
+/// The shape of a body's collider: a capsule for a driven body in a capsule
+/// world (shape 1), else the box of its half-extents. build_world builds it
+/// and a switch sets it in place, so the two give a body the same shape.
+fn collider_shape(driven: bool, shape: u32, half: Vector) -> SharedShape {
+    if driven && shape == 1 {
+        let radius = half.x.min(half.z);
+        let cylinder = (half.y - radius).max(0.0);
+        SharedShape::capsule_y(cylinder, radius)
+    } else {
+        SharedShape::cuboid(half.x, half.y, half.z)
+    }
+}
+
+/// The body and collider build_world makes from record `b`. Driven: a
+/// kinematic, position-based body at the record's position with identity
+/// rotation, rotations locked, an additional mass of 1, and sleep off.
+/// Dynamic: the record's position, velocities, and rotation through
+/// canon_quat, sleeping after 32 quanta at rest. A drop at a switch inserts
+/// exactly this (F1 pin 2), so a body put back is the body a build would make.
+fn body_for(b: &[f64; BODY_STRIDE], driven: bool, shape: u32) -> Result<(RigidBody, Collider), Refusal> {
+    let pos = Vector::new(b[0], b[1], b[2]);
+    let vel = Vector::new(b[3], b[4], b[5]);
+    let half = Vector::new(b[HX], b[HY], b[HZ]);
+    let rotation = quat_from_body(b)?;
+    let ang = Vector::new(b[WX], b[WY], b[WZ]);
+    let body = if driven {
+        let mut body = RigidBodyBuilder::kinematic_position_based()
+            .translation(pos)
+            .lock_rotations()
+            .additional_mass(1.0)
+            .can_sleep(false)
+            .ccd_enabled(false)
+            .build();
+        body.set_rotation(Rotation::from_xyzw(0.0, 0.0, 0.0, 1.0), false);
+        body
+    } else {
+        let mut body = RigidBodyBuilder::dynamic()
+            .translation(pos)
+            .linvel(vel)
+            .angvel(ang)
+            .can_sleep(true)
+            .ccd_enabled(false)
+            .build();
+        body.set_rotation(rotation, false);
+        body.activation_mut().time_until_sleep = SLEEP_QUANTA * DT;
+        body
+    };
+    let co = ColliderBuilder::new(collider_shape(driven, shape, half)).restitution(0.0).friction(0.8).build();
+    Ok((body, co))
+}
+
+/// The sleep settings a driven body is built with: `can_sleep(false)`, which
+/// sets both thresholds to -1, and the default time until sleep.
+fn driven_sleep(act: &mut RigidBodyActivation) {
+    act.normalized_linear_threshold = -1.0;
+    act.angular_threshold = -1.0;
+    act.time_until_sleep = RigidBodyActivation::default_time_until_sleep();
+}
+
+/// The sleep settings a dynamic body is built with: the default thresholds
+/// and a time until sleep of 32 quanta.
+fn dynamic_sleep(act: &mut RigidBodyActivation) {
+    act.normalized_linear_threshold = RigidBodyActivation::default_normalized_linear_threshold();
+    act.angular_threshold = RigidBodyActivation::default_angular_threshold();
+    act.time_until_sleep = SLEEP_QUANTA * DT;
+}
+
+/// Dynamic to driven, on the running body (F1 pin 2). The velocities are
+/// zeroed first, while the body is still dynamic: Rapier ignores `set_linvel`
+/// and `set_angvel` on a position-based kinematic body, so zeroed after the
+/// type they would keep the dynamic velocities. Then the type, the rotation
+/// lock, the additional mass, identity rotation, and the sleep settings a
+/// driven body is built with, and the body is woken. The collider's shape is
+/// the caller's, since it lives in the collider set.
+fn to_driven(body: &mut RigidBody) {
+    body.set_linvel(Vector::new(0.0, 0.0, 0.0), false);
+    body.set_angvel(Vector::new(0.0, 0.0, 0.0), false);
+    body.set_body_type(RigidBodyType::KinematicPositionBased, false);
+    body.lock_rotations(true, false);
+    body.set_additional_mass(1.0, false);
+    body.set_rotation(Rotation::from_xyzw(0.0, 0.0, 0.0, 1.0), false);
+    driven_sleep(body.activation_mut());
+    body.wake_up(true);
+}
+
+/// Driven to dynamic, on the running body, from record `b` (F1 pin 2). The
+/// type is set first, because Rapier drops a velocity set on a
+/// position-based kinematic body; then the rotation unlocked, the additional
+/// mass removed (the recompute treats `MassProperties::default()` as no
+/// additional mass), the record's rotation through canon_quat, the record's
+/// linear and angular velocity, and the sleep settings a dynamic body is
+/// built with, and the body is woken.
+fn to_dynamic(body: &mut RigidBody, b: &[f64; BODY_STRIDE], rotation: Rotation) {
+    body.set_body_type(RigidBodyType::Dynamic, false);
+    body.lock_rotations(false, false);
+    body.set_additional_mass_properties(MassProperties::default(), false);
+    body.set_rotation(rotation, false);
+    body.set_linvel(Vector::new(b[3], b[4], b[5]), false);
+    body.set_angvel(Vector::new(b[WX], b[WY], b[WZ]), false);
+    dynamic_sleep(body.activation_mut());
+    body.wake_up(true);
+}
+
+/// What one body does at a switch (F1 pin 2).
+enum Transition {
+    /// Dynamic to driven: the body and its collider.
+    ToDriven(RigidBodyHandle, ColliderHandle),
+    /// Driven to dynamic: the body, its collider, and the record's rotation
+    /// through canon_quat.
+    ToDynamic(RigidBodyHandle, ColliderHandle, Rotation),
+    /// Picked up: the body leaves the running world.
+    PickUp(RigidBodyHandle),
+    /// Put down: build_world's body for the record, inserted, driven or not.
+    Drop(RigidBody, Collider, bool),
+}
+
+/// The handle of a body the running world holds, and its one collider.
+fn held(loaded: &Loaded, i: usize) -> Result<(RigidBodyHandle, ColliderHandle), Refusal> {
+    let handle = loaded.handles[i].ok_or(Refusal::Handle)?;
+    let collider = loaded.world.bodies.get(handle).and_then(|body| body.colliders().first().copied()).ok_or(Refusal::Handle)?;
+    if loaded.world.colliders.get(collider).is_none() {
+        return Err(Refusal::Handle);
+    }
+    Ok((handle, collider))
+}
+
+/// Applies a change of the driven and carried masks to the running world, in
+/// place (F1 pin 2). It walks the bodies in record order, never a map's
+/// order. Every lookup and every value that can refuse is taken first, and
+/// nothing moves until all of them have, so a refusal leaves the world as it
+/// was. Modes 1 and 2 are both in the driven mask, so lifted to driving and
+/// back is no switch. A pick-up is `remove_body`; a drop inserts
+/// build_world's body for the record, which takes the most recently freed
+/// slot at the arena's next generation, so handle generations follow the
+/// carry history and reach the hash through the snapshot's pair keys (S1 pin
+/// 9). In a capsule world a driven body's collider becomes the capsule and a
+/// dynamic body's the box, as build_world would make them. The load pass is
+/// never run here (S1 pin 12); see warm_broadphase for what that costs.
+fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(), Refusal> {
+    let shape = loaded.signature.shape;
+    let mut plan: Vec<(usize, Transition)> = Vec::new();
+    for i in 0..loaded.n_bodies {
+        let bit = 1u64 << i;
+        let was_carried = loaded.signature.carried & bit != 0;
+        let now_carried = carried & bit != 0;
+        let was_driven = loaded.signature.driven & bit != 0;
+        let now_driven = driven & bit != 0;
+        let transition = if was_carried != now_carried {
+            if now_carried {
+                Transition::PickUp(held(loaded, i)?.0)
+            } else {
+                if loaded.handles[i].is_some() {
+                    return Err(Refusal::Handle);
+                }
+                let (body, co) = body_for(&body_at(i), now_driven, shape)?;
+                Transition::Drop(body, co, now_driven)
+            }
+        } else if now_carried || was_driven == now_driven {
+            continue;
+        } else if now_driven {
+            let (handle, collider) = held(loaded, i)?;
+            Transition::ToDriven(handle, collider)
+        } else {
+            let (handle, collider) = held(loaded, i)?;
+            Transition::ToDynamic(handle, collider, quat_from_body(&body_at(i))?)
+        };
+        plan.push((i, transition));
+    }
+    for (i, transition) in plan {
+        match transition {
+            Transition::ToDriven(handle, collider) => {
+                to_driven(&mut loaded.world.bodies[handle]);
+                if shape == 1 {
+                    if let Some(co) = loaded.world.colliders.get_mut(collider) {
+                        co.set_shape(collider_shape(true, shape, loaded.halves[i]));
+                    }
+                }
+                loaded.kinematic[i] = true;
+            }
+            Transition::ToDynamic(handle, collider, rotation) => {
+                to_dynamic(&mut loaded.world.bodies[handle], &body_at(i), rotation);
+                if shape == 1 {
+                    if let Some(co) = loaded.world.colliders.get_mut(collider) {
+                        co.set_shape(collider_shape(false, shape, loaded.halves[i]));
+                    }
+                }
+                loaded.kinematic[i] = false;
+            }
+            Transition::PickUp(handle) => {
+                let _removed = loaded.world.remove_body(handle);
+                loaded.handles[i] = None;
+                loaded.kinematic[i] = false;
+            }
+            Transition::Drop(body, co, now_driven) => {
+                let (handle, _) = loaded.world.insert(body, co);
+                loaded.handles[i] = Some(handle);
+                loaded.kinematic[i] = now_driven;
+            }
+        }
+    }
+    loaded.signature.driven = driven;
+    loaded.signature.carried = carried;
+    Ok(())
 }
 
 fn build_world(sig: Signature) -> Result<Loaded, Refusal> {
@@ -466,51 +701,16 @@ fn build_world(sig: Signature) -> Result<Loaded, Refusal> {
     let mut halves = Vec::with_capacity(n_bodies);
     for i in 0..n_bodies {
         let b = body_at(i);
-        let pos = Vector::new(b[0], b[1], b[2]);
-        let vel = Vector::new(b[3], b[4], b[5]);
         let half = Vector::new(b[HX], b[HY], b[HZ]);
         let driven = (sig.driven & (1u64 << i)) != 0;
         let carried_body = (sig.carried & (1u64 << i)) != 0;
-        let rotation = quat_from_body(&b)?;
-        let ang = Vector::new(b[WX], b[WY], b[WZ]);
         if carried_body {
             handles.push(None);
             kinematic.push(false);
             halves.push(half);
             continue;
         }
-        let body = if driven {
-            let mut body = RigidBodyBuilder::kinematic_position_based()
-                .translation(pos)
-                .lock_rotations()
-                .additional_mass(1.0)
-                .can_sleep(false)
-                .ccd_enabled(false)
-                .build();
-            body.set_rotation(Rotation::from_xyzw(0.0, 0.0, 0.0, 1.0), false);
-            body
-        } else {
-            let mut body = RigidBodyBuilder::dynamic()
-                .translation(pos)
-                .linvel(vel)
-                .angvel(ang)
-                .can_sleep(true)
-                .ccd_enabled(false)
-                .build();
-            body.set_rotation(rotation, false);
-            body.activation_mut().time_until_sleep = SLEEP_QUANTA * DT;
-            body
-        };
-        let co = if driven && sig.shape == 1 {
-            let radius = half.x.min(half.z);
-            let cylinder = (half.y - radius).max(0.0);
-            ColliderBuilder::capsule_y(cylinder, radius)
-        } else {
-            ColliderBuilder::cuboid(half.x, half.y, half.z)
-        }
-        .restitution(0.0)
-        .friction(0.8)
-        .build();
+        let (body, co) = body_for(&b, driven, sig.shape)?;
         let (handle, ch) = world.insert(body, co);
         collider_handles.push(ch);
         handles.push(Some(handle));
@@ -741,18 +941,30 @@ fn push_contact(out: &mut Vec<u8>, data: &ContactData) {
     push_f64(out, data.warmstart_tangent_world.z);
 }
 
+/// Makes the loaded world the one the records describe. The same world with
+/// the same modes is kept. The same world with other modes switches its
+/// bodies in place (F1 pins 1 and 2) and stores the new masks. Anything else
+/// (no world yet, another world id, other counts, grid, geometry, or
+/// character shape) builds a new world from the records and counts the build.
 fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> Result<Load, Refusal> {
     let sig = signature(world_id, n_bodies, n_colliders, rows, cols, cell, shape)?;
     let solver = unsafe { &mut *(&raw mut SOLVER) };
-    let reload = match &solver.loaded {
-        Some(loaded) => !same_sig(&loaded.signature, &sig),
-        None => true,
-    };
-    if !reload {
-        return Ok(Load::Kept);
+    if let Some(loaded) = solver.loaded.as_mut() {
+        if same_world(&loaded.signature, &sig) {
+            if loaded.signature.driven == sig.driven && loaded.signature.carried == sig.carried {
+                return Ok(Load::Kept);
+            }
+            switch_in_place(loaded, sig.driven, sig.carried)?;
+            rebuild_snapshot(loaded, &mut solver.snapshot)?;
+            return Ok(Load::Switched);
+        }
     }
     let loaded = build_world(sig)?;
     solver.loaded = Some(loaded);
+    unsafe {
+        let builds = &raw mut BUILDS;
+        *builds = (*builds).wrapping_add(1);
+    }
     if let Some(loaded) = solver.loaded.as_ref() {
         rebuild_snapshot(loaded, &mut solver.snapshot)?;
     }
@@ -793,6 +1005,14 @@ pub extern "C" fn snapshot_len() -> u32 {
     unsafe { (*(&raw const SOLVER)).snapshot.len() as u32 }
 }
 
+/// The number of worlds `ensure` has built since instantiation (F1 pin 4):
+/// one per first load, change of world, or change of geometry, and none for
+/// a switch in place.
+#[unsafe(no_mangle)]
+pub extern "C" fn solver_rebuilds() -> u32 {
+    unsafe { *(&raw const BUILDS) }
+}
+
 // Native tests, at the end of the file: a test module above the product code
 // shifts the line numbers in the binary's panic locations and moves the wasm
 // digest; here the release wasm is unchanged. Run with `cargo test --release`
@@ -804,9 +1024,19 @@ pub extern "C" fn snapshot_len() -> u32 {
 // sets, after the law has built the world.
 //
 // S1: pins 2, 4, 9, 10, 11, and 15, each with the input that goes red.
+//
+// F1, the switch in place, at the law: a mask change switches and only a
+// build counts (pins 1 and 4); an untouched sleeping stack keeps its sleep and
+// its warm start through a switch, where a rebuild in the same quantum wakes
+// it and starts it cold (pin 5); a picked-up body leaves the queries at once
+// and a dropped one enters them only at the step (pin 3); a body switched back
+// to dynamic keeps its record velocity, and the wrong order is caught; a
+// capsule world switches the collider's shape, and an omitted shape is caught;
+// and a drop carries a handle generation into the snapshot (pin 6, S1 pin 9).
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rapier3d_f64::parry::shape::ShapeType;
     use std::sync::Mutex;
 
     // The law's state is module statics, so the tests take turns.
@@ -1014,13 +1244,44 @@ mod tests {
         assert_eq!(ensure(*turn, 2, 1, 0, 0, -0.0, 0), Ok(Load::Kept));
     }
 
-    // Pin 9. Rapier's handle generations come from one counter per set,
-    // raised on every removal, so removal history decides handles. The law
-    // never removes from a loaded world: a carry or a release changes the
-    // signature and builds a new world, so every handle the snapshot records
-    // is from a world with no removals.
+    /// A pair in the snapshot: both collider handles as (index, generation),
+    /// its point count, and its bytes from the count through its last point.
+    struct SnapPair {
+        first: (u32, u32),
+        second: (u32, u32),
+        points: usize,
+        bytes: Vec<u8>,
+    }
+
+    /// The snapshot's pairs, after `bodies` bodies of 15 words each.
+    fn snap_pairs(snap: &[u8], bodies: usize) -> Vec<SnapPair> {
+        let mut w = bodies * 15;
+        let count = snap_f64(snap, w) as usize;
+        w += 1;
+        let mut out = Vec::new();
+        for _ in 0..count {
+            let points = snap_f64(snap, w + 4) as usize;
+            out.push(SnapPair {
+                first: (snap_f64(snap, w) as u32, snap_f64(snap, w + 1) as u32),
+                second: (snap_f64(snap, w + 2) as u32, snap_f64(snap, w + 3) as u32),
+                points,
+                bytes: snap[(w + 4) * 8..(w + 5 + points * 7) * 8].to_vec(),
+            });
+            w += 5 + points * 7;
+        }
+        out
+    }
+
+    // Pin 9, and F1 pin 6. Rapier's handle generations come from one counter
+    // per set, raised on every removal, so removal history decides handles.
+    // Before F1 the law never removed from a loaded world: a carry or a
+    // release rebuilt it, so every handle the snapshot recorded was from a
+    // world with no removals. Since F1 a carry removes the body from the
+    // running world and a release inserts it again, so the dropped body's
+    // collider takes its old slot at generation 1, and the generation reaches
+    // the hash through the snapshot's pair keys.
     #[test]
-    fn removal_history_decides_rapier_handles_and_the_law_never_carries_it() {
+    fn removal_history_decides_rapier_handles_and_a_drop_carries_it_into_the_snapshot() {
         let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
         let mut world = PhysicsWorld::new();
         let (body, first) = world.insert(RigidBodyBuilder::dynamic().build(), ColliderBuilder::cuboid(0.5, 0.5, 0.5).build());
@@ -1037,25 +1298,279 @@ mod tests {
         for _ in 0..8 {
             assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, 0), 1);
         }
+        let before: Vec<(u32, u32)> = snap_pairs(&snapshot(), 2).iter().flat_map(|p| [p.first, p.second]).collect();
+        assert!(before.iter().all(|&(_, g)| g == 0), "a fresh build: every generation is 0, {before:?}");
         set_slot(1, DRIVEN, 3.0);
-        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Built), "a carry builds a new world");
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Switched), "a carry switches in place");
         assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, 0), 1);
         set_slot(1, DRIVEN, 0.0);
-        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Built), "a release builds a new world");
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Switched), "a release switches in place");
         for _ in 0..8 {
             assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, 0), 1);
         }
-        let snap = snapshot();
-        let mut w = 2 * 15;
-        let pairs = snap_f64(&snap, w) as usize;
-        assert!(pairs > 0, "the stack has contact pairs");
-        w += 1;
-        for _ in 0..pairs {
-            assert_eq!(snap_f64(&snap, w + 1), 0.0, "collider generation");
-            assert_eq!(snap_f64(&snap, w + 3), 0.0, "collider generation");
-            let points = snap_f64(&snap, w + 4) as usize;
-            w += 5 + points * 7;
+        let pairs = snap_pairs(&snapshot(), 2);
+        assert!(pairs.iter().any(|p| p.points > 0), "the stack has contact points");
+        // The floor is collider 0, the lower box 1, and the upper box, put
+        // back, is collider 2 again at generation 1.
+        let keys: Vec<((u32, u32), (u32, u32))> = pairs.iter().map(|p| (p.first, p.second)).collect();
+        assert!(keys.contains(&((1, 0), (2, 1))), "the dropped box's pair carries generation 1: {keys:?}");
+        assert!(keys.contains(&((0, 0), (1, 0))), "the untouched pair keeps generation 0: {keys:?}");
+    }
+
+    // F1 pins 1 and 4. The masks are not in the reload test: a mode change is
+    // a switch in place, and the build counter moves only for a build.
+    #[test]
+    fn a_mode_change_switches_in_place_and_only_a_build_counts() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        stack();
+        *turn += 1;
+        let before = solver_rebuilds();
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Built));
+        assert_eq!(solver_rebuilds(), before.wrapping_add(1), "the load is one build");
+        // Dynamic, driven, lifted (the same mask), dynamic, carried, put
+        // back, lifted, carried from driving, put back.
+        let expected = [
+            (1.0, Load::Switched),
+            (2.0, Load::Kept),
+            (0.0, Load::Switched),
+            (3.0, Load::Switched),
+            (0.0, Load::Switched),
+            (2.0, Load::Switched),
+            (3.0, Load::Switched),
+            (0.0, Load::Switched),
+        ];
+        for (mode, load) in expected {
+            set_slot(1, DRIVEN, mode);
+            assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(load), "mode {mode}");
+            for _ in 0..4 {
+                assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, 0), 1, "mode {mode}");
+            }
         }
+        assert_eq!(solver_rebuilds(), before.wrapping_add(1), "a switch built a world");
+        // A change of geometry is a build, and so is another world.
+        set_collider(0, [-4.0, 4.0, -1.0, 0.0, -4.0, 3.5, 0.0, 0.0, 0.0, 1.0]);
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Built));
+        assert_eq!(solver_rebuilds(), before.wrapping_add(2));
+        *turn += 1;
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Built));
+        assert_eq!(solver_rebuilds(), before.wrapping_add(3));
+    }
+
+    /// Two boxes stacked at the origin and one at x = 2, on the floor, run
+    /// until all three sleep, in world `turn`.
+    fn sleeping_stack_and_box(turn: u32) {
+        set_body(0, box_at(0.0, 0.26, 0.0));
+        set_body(1, box_at(0.0, 0.77, 0.0));
+        set_body(2, box_at(2.0, 0.26, 0.0));
+        set_collider(0, FLOOR);
+        assert_eq!(ensure(turn, 3, 1, 0, 0, 0.0, 0), Ok(Load::Built));
+        for _ in 0..160 {
+            assert_eq!(solver_step(turn, 3, 1, 0, 0, 0.0, 0), 1);
+        }
+        let snap = snapshot();
+        for i in 0..3 {
+            assert_eq!(snap_f64(&snap, i * 15 + 14), 1.0, "box {i} sleeps before the switch");
+        }
+    }
+
+    /// The stack's two body entries and its two pairs (floor and lower,
+    /// lower and upper), bit for bit.
+    fn stack_state(snap: &[u8]) -> (Vec<u8>, Vec<Vec<u8>>) {
+        let bodies = snap[..2 * 15 * 8].to_vec();
+        let pairs = snap_pairs(snap, 3)
+            .into_iter()
+            .filter(|p| p.first.0 <= 2 && p.second.0 <= 2)
+            .map(|p| p.bytes)
+            .collect();
+        (bodies, pairs)
+    }
+
+    // F1 pin 5 at the law. The box at x = 2 switches to driven; the stack at
+    // the origin, asleep and untouched, keeps its sleep flags, timers, poses,
+    // and warm-start words bit for bit through the switch and the quantum
+    // after. The same quantum with a rebuild instead (another world id, as a
+    // mask change did before F1) wakes the stack and restarts its contacts,
+    // which is this check's red.
+    #[test]
+    fn an_untouched_sleeping_stack_keeps_its_sleep_and_warm_start_through_a_switch() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        *turn += 1;
+        sleeping_stack_and_box(*turn);
+        let (bodies, pairs) = stack_state(&snapshot());
+        assert_eq!(pairs.len(), 2, "the stack rests on its two pairs");
+        set_slot(2, DRIVEN, 1.0);
+        assert_eq!(ensure(*turn, 3, 1, 0, 0, 0.0, 0), Ok(Load::Switched));
+        assert_eq!(stack_state(&snapshot()), (bodies.clone(), pairs.clone()), "the switch touched the stack");
+        assert_eq!(solver_step(*turn, 3, 1, 0, 0, 0.0, 0), 1);
+        assert_eq!(stack_state(&snapshot()), (bodies.clone(), pairs.clone()), "the quantum of the switch touched the stack");
+
+        // The red: the same quantum, rebuilt.
+        *turn += 1;
+        set_slot(2, DRIVEN, 0.0);
+        sleeping_stack_and_box(*turn);
+        assert_eq!(stack_state(&snapshot()), (bodies.clone(), pairs.clone()), "the same run reached the same stack");
+        set_slot(2, DRIVEN, 1.0);
+        *turn += 1;
+        assert_eq!(solver_step(*turn, 3, 1, 0, 0, 0.0, 0), 1);
+        let (rebuilt_bodies, rebuilt_pairs) = stack_state(&snapshot());
+        assert_ne!(rebuilt_bodies, bodies, "a rebuild left the stack's sleep as it was, so this check could not go red");
+        assert_ne!(rebuilt_pairs, pairs, "a rebuild left the stack's warm start as it was, so this check could not go red");
+        let snap = snapshot();
+        assert_eq!(snap_f64(&snap, 14), 0.0, "the rebuild woke the lower box");
+    }
+
+    /// How many colliders of bodies (not fixed) a box of half-extent 0.3 at
+    /// `at` meets, through the broad phase as the character's queries see it.
+    fn bodies_found_at(at: Vector) -> usize {
+        let solver = unsafe { &*(&raw const SOLVER) };
+        let Some(loaded) = solver.loaded.as_ref() else {
+            return 0;
+        };
+        let world = &loaded.world;
+        let query = world.broad_phase.as_query_pipeline(
+            world.narrow_phase.query_dispatcher(),
+            &world.bodies,
+            &world.colliders,
+            QueryFilter::exclude_fixed(),
+        );
+        let shape = SharedShape::cuboid(0.3, 0.3, 0.3);
+        query.intersect_shape(Pose::from_translation(at), &*shape).count()
+    }
+
+    // F1 pin 3 at the law. The character's queries run before the step and
+    // read the broad phase, which a switch does not update (no load pass). A
+    // picked-up body's collider is removed from the set, so the query cannot
+    // resolve its leaf and it is gone at once; a dropped body's collider has
+    // no leaf until the step's broad phase gives it one.
+    #[test]
+    fn a_picked_up_body_leaves_the_queries_at_once_and_a_dropped_one_enters_them_at_the_step() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let here = Vector::new(0.0, 0.26, 0.0);
+        set_body(0, box_at(0.0, 0.26, 0.0));
+        set_collider(0, FLOOR);
+        *turn += 1;
+        assert_eq!(ensure(*turn, 1, 1, 0, 0, 0.0, 0), Ok(Load::Built));
+        for _ in 0..8 {
+            assert_eq!(solver_step(*turn, 1, 1, 0, 0, 0.0, 0), 1);
+        }
+        assert_eq!(bodies_found_at(here), 1, "the box is in the queries");
+        set_slot(0, DRIVEN, 3.0);
+        assert_eq!(ensure(*turn, 1, 1, 0, 0, 0.0, 0), Ok(Load::Switched));
+        assert_eq!(bodies_found_at(here), 0, "a picked-up body is in the queries before the step");
+        assert_eq!(solver_step(*turn, 1, 1, 0, 0, 0.0, 0), 1);
+        assert_eq!(bodies_found_at(here), 0);
+        set_body(0, box_at(0.0, 0.26, 0.0));
+        assert_eq!(ensure(*turn, 1, 1, 0, 0, 0.0, 0), Ok(Load::Switched));
+        assert_eq!(bodies_found_at(here), 0, "a dropped body is in the queries before its step");
+        assert_eq!(solver_step(*turn, 1, 1, 0, 0, 0.0, 0), 1);
+        assert_eq!(bodies_found_at(here), 1, "the step's broad phase took the dropped body in");
+    }
+
+    /// Driven to dynamic with the velocities set before the type: the order
+    /// F1 pin 2 forbids, planted so the check below is seen to catch it.
+    fn to_dynamic_velocities_first(body: &mut RigidBody, b: &[f64; BODY_STRIDE], rotation: Rotation) {
+        body.set_linvel(Vector::new(b[3], b[4], b[5]), false);
+        body.set_angvel(Vector::new(b[WX], b[WY], b[WZ]), false);
+        body.set_body_type(RigidBodyType::Dynamic, false);
+        body.lock_rotations(false, false);
+        body.set_additional_mass_properties(MassProperties::default(), false);
+        body.set_rotation(rotation, false);
+        dynamic_sleep(body.activation_mut());
+        body.wake_up(true);
+    }
+
+    /// A driven body as the world holds it, switched to dynamic by `apply`
+    /// from a record with velocities: whether it has the record's velocities.
+    fn keeps_record_velocity(apply: fn(&mut RigidBody, &[f64; BODY_STRIDE], Rotation)) -> bool {
+        let mut record = box_at(0.0, 1.0, 0.0);
+        record[3] = 0.5;
+        record[4] = 0.75;
+        record[5] = -0.25;
+        record[WX] = 0.125;
+        record[WY] = -0.5;
+        record[WZ] = 0.25;
+        let Ok((mut body, _)) = body_for(&record, true, 0) else {
+            return false;
+        };
+        let Ok(rotation) = quat_from_body(&record) else {
+            return false;
+        };
+        apply(&mut body, &record, rotation);
+        body.is_dynamic() && body.linvel() == Vector::new(0.5, 0.75, -0.25) && body.angvel() == Vector::new(0.125, -0.5, 0.25)
+    }
+
+    // F1 pin 6. Rapier ignores set_linvel and set_angvel on a position-based
+    // kinematic body, so going back to dynamic sets the type first.
+    #[test]
+    fn a_body_switched_back_to_dynamic_keeps_its_record_velocity_and_the_wrong_order_is_caught() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        assert!(keeps_record_velocity(to_dynamic), "the law's order lost the record velocity");
+        assert!(!keeps_record_velocity(to_dynamic_velocities_first), "velocities set before the type survived, so the check could not go red");
+
+        // Through the law: the upper box driven, then dynamic again with a
+        // velocity in its record.
+        stack();
+        *turn += 1;
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Built));
+        set_slot(1, DRIVEN, 1.0);
+        for _ in 0..4 {
+            assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, 0), 1);
+        }
+        for (slot, v) in [(3, 0.5), (4, 0.75), (5, -0.25), (WX, 0.125), (WY, -0.5), (WZ, 0.25)] {
+            set_slot(1, slot, v);
+        }
+        set_slot(1, DRIVEN, 0.0);
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Switched));
+        let solver = unsafe { &*(&raw const SOLVER) };
+        let loaded = solver.loaded.as_ref().expect("a loaded world");
+        let body = &loaded.world.bodies[loaded.handles[1].expect("the upper box")];
+        assert!(body.is_dynamic());
+        assert_eq!(body.linvel(), Vector::new(0.5, 0.75, -0.25));
+        assert_eq!(body.angvel(), Vector::new(0.125, -0.5, 0.25));
+    }
+
+    /// The shape of body `i`'s collider in the loaded world.
+    fn shape_of(i: usize) -> Option<ShapeType> {
+        let solver = unsafe { &*(&raw const SOLVER) };
+        let loaded = solver.loaded.as_ref()?;
+        let handle = loaded.handles[i]?;
+        let collider = *loaded.world.bodies.get(handle)?.colliders().first()?;
+        Some(loaded.world.colliders.get(collider)?.shape().shape_type())
+    }
+
+    // F1 pin 6: a switch in a capsule world. A driven body's collider is the
+    // capsule and a dynamic body's the box, as build_world makes them, through
+    // every transition; a box world keeps boxes. A to-driven switch that left
+    // the collider alone keeps the box, which the same check sees.
+    #[test]
+    fn in_a_capsule_world_a_switch_sets_the_collider_shape_with_the_type() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        for shape in [1u32, 0] {
+            let capsule = if shape == 1 { ShapeType::Capsule } else { ShapeType::Cuboid };
+            stack();
+            *turn += 1;
+            assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, shape), Ok(Load::Built));
+            assert_eq!((shape_of(0), shape_of(1)), (Some(ShapeType::Cuboid), Some(ShapeType::Cuboid)));
+            // Driven, dynamic, carried, put back driven, dynamic again.
+            let expected = [(1.0, Some(capsule)), (0.0, Some(ShapeType::Cuboid)), (3.0, None), (1.0, Some(capsule)), (0.0, Some(ShapeType::Cuboid))];
+            for (mode, want) in expected {
+                set_slot(1, DRIVEN, mode);
+                assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, shape), Ok(Load::Switched), "shape {shape} mode {mode}");
+                assert_eq!(shape_of(1), want, "shape {shape} mode {mode}");
+                assert_eq!(shape_of(0), Some(ShapeType::Cuboid), "the untouched box, shape {shape} mode {mode}");
+                for _ in 0..4 {
+                    assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, shape), 1);
+                }
+            }
+        }
+        // The red: the type switched and the collider left alone.
+        stack();
+        *turn += 1;
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 1), Ok(Load::Built));
+        let solver = unsafe { &mut *(&raw mut SOLVER) };
+        let loaded = solver.loaded.as_mut().expect("a loaded world");
+        to_driven(&mut loaded.world.bodies[loaded.handles[1].expect("the upper box")]);
+        assert_ne!(shape_of(1), Some(ShapeType::Capsule), "a switch without set_shape made a capsule, so the check could not go red");
     }
 
     // Pin 10. `bad()` tested NaN only, so an infinite velocity reached Rapier,
@@ -1205,8 +1720,11 @@ mod tests {
     // is allowed to differ in the last bits of its quaternion, because
     // build_world canonicalizes it again. That is why a restore never reloads
     // from the saved records (the replay and image restores are held to that
-    // in harness/soundness.test.js). A rebuild at a verb boundary does the
-    // same thing inside a run, deterministically, and nothing here forbids it.
+    // in harness/soundness.test.js). Before F1 a rebuild at every verb
+    // boundary did the same thing inside a run; since F1 a build happens only
+    // at a world's first load and when the world itself changes, and a verb
+    // boundary switches in place (harness/switch.test.js holds the minds
+    // fixture's quaternions to their bits across its verb boundaries).
     #[test]
     fn a_record_reloaded_through_build_world_may_differ_in_the_last_bits_of_its_quaternion() {
         let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
