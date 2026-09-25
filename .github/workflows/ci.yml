@@ -65,8 +65,8 @@ jobs:
         run: node solver/build.mjs --check
       - name: Check the kernel contract
         run: npm run typecheck
-      - name: Run the kernel fixture
-        run: npm test
+      # The engines compare before the node suite, so a golden mismatch is
+      # named by the compare step even when a node test also reads the golden.
       - name: Install pinned engines
         run: |
           set -euo pipefail
@@ -77,6 +77,20 @@ jobs:
       - name: Compare each engine to the golden hash
         run: |
           set -euo pipefail
+          traces="$RUNNER_TEMP/traces"
+          # On a mismatch: trace the product scene under node and under the
+          # engine, and print the first quantum, body, and field that differ.
+          first_difference() {
+            local name="$1"
+            shift
+            mkdir -p "$traces"
+            if [ ! -f "$traces/node.trace" ]; then
+              node harness/trace.mjs > "$traces/node.trace" || true
+            fi
+            "$@" harness/trace.mjs > "$traces/$name.trace" || true
+            echo "first-difference node $name"
+            node harness/first-difference.js "$traces/node.trace" "$traces/$name.trace" || true
+          }
           compare() {
             local harness="$1"
             local golden_file="$2"
@@ -92,11 +106,52 @@ jobs:
               echo "spidermonkey [$sm]"
               echo "javascriptcore [$jsc]"
               echo "golden [$golden]"
+              if [ "$harness" = "harness/sim.mjs" ]; then
+                if [ "$v8" != "$golden" ]; then
+                  first_difference v8 "$HOME/.jsvu/bin/v8-15.6.61" --module
+                fi
+                if [ "$sm" != "$golden" ]; then
+                  first_difference spidermonkey "$HOME/.jsvu/bin/spidermonkey-156.0.1" -m
+                fi
+                if [ "$jsc" != "$golden" ]; then
+                  first_difference javascriptcore "$HOME/.jsvu/bin/javascriptcore-319571" -m
+                fi
+              fi
               exit 1
             fi
             echo "$harness three engines match $golden"
           }
           compare harness/sim.mjs fixtures/golden.txt
           compare harness/arith.mjs fixtures/golden-arith.txt
+      - name: Trace the product scene under every engine
+        run: |
+          set -euo pipefail
+          traces="$RUNNER_TEMP/traces"
+          mkdir -p "$traces"
+          node harness/trace.mjs > "$traces/node.trace"
+          "$HOME/.jsvu/bin/v8-15.6.61" --module harness/trace.mjs > "$traces/v8.trace"
+          "$HOME/.jsvu/bin/spidermonkey-156.0.1" -m harness/trace.mjs > "$traces/spidermonkey.trace"
+          "$HOME/.jsvu/bin/javascriptcore-319571" -m harness/trace.mjs > "$traces/javascriptcore.trace"
+          for engine in v8 spidermonkey javascriptcore; do
+            if out=$(node harness/first-difference.js "$traces/node.trace" "$traces/$engine.trace"); then
+              echo "node $engine $out"
+            else
+              echo "node $engine"
+              echo "$out"
+              exit 1
+            fi
+          done
+      - name: Run the kernel fixture
+        run: npm test
+      - name: Check the golden behaviour numbers
+        run: npm run check
       - name: Check the Atlas map
         run: npx --yes @dogfood-lab/atlas@1.17.0 check
+      - name: Upload the traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces
+          path: ${{ runner.temp }}/traces/
+          if-no-files-found: ignore
+          retention-days: 14
