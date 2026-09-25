@@ -662,7 +662,15 @@ export function createWorld(init, law) {
   }
 
   /**
-   * The heightfield is centred on the origin, matching the solver.
+   * The heightfield is centred on the origin, matching the solver, and has
+   * the solver's surface: two triangles per cell, not a bilinear patch.
+   * Parry's HeightField::triangles_at (parry3d-f64 0.30.2,
+   * src/shape/heightfield3.rs) builds cell (i, j) with no status flag as
+   * (p00, p10, p01) and (p10, p11, p01), where p10 is row i + 1 (+z) and p01
+   * is column j + 1 (+x), so the cell is cut from (x0, z1) to (x1, z0). The
+   * law builds the field with no subdivision flag (build_world in
+   * solver/src/rapier_law.rs); if a later slice sets ZIGZAG_SUBDIVISION, the
+   * diagonal flips and this function changes with it.
    * @param {Heightfield} field
    * @param {number} x
    * @param {number} z
@@ -681,18 +689,24 @@ export function createWorld(init, law) {
     }
     const fj = u * (field.cols - 1);
     const fi = v * (field.rows - 1);
-    const j0 = Math.min(field.cols - 1, Math.floor(fj));
-    const i0 = Math.min(field.rows - 1, Math.floor(fi));
-    const j1 = Math.min(field.cols - 1, j0 + 1);
-    const i1 = Math.min(field.rows - 1, i0 + 1);
-    const tx = j0 === j1 ? 0 : fj - j0;
-    const tz = i0 === i1 ? 0 : fi - i0;
+    // The far edge belongs to the last cell, at fraction 1.
+    const j0 = Math.min(field.cols - 2, Math.floor(fj));
+    const i0 = Math.min(field.rows - 2, Math.floor(fi));
+    const tx = fj - j0;
+    const tz = fi - i0;
     /**
      * @param {number} row
      * @param {number} col
      */
     const at = (row, col) => field.heights[row * field.cols + col];
-    return at(i0, j0) * (1 - tx) * (1 - tz) + at(i0, j1) * tx * (1 - tz) + at(i1, j0) * (1 - tx) * tz + at(i1, j1) * tx * tz;
+    const y00 = at(i0, j0);
+    const y10 = at(i0 + 1, j0);
+    const y01 = at(i0, j0 + 1);
+    const y11 = at(i0 + 1, j0 + 1);
+    if (tx + tz <= 1) {
+      return y00 + tx * (y01 - y00) + tz * (y10 - y00);
+    }
+    return y11 + (1 - tx) * (y10 - y11) + (1 - tz) * (y01 - y11);
   }
 
   /**
