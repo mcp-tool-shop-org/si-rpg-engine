@@ -56,6 +56,17 @@ test('parseVerdict takes the later of a draft and a final verdict whatever their
   assert.equal(parseVerdict(text)?.verdict, 'MERGE');
 });
 
+test('parseVerdict drops entries that are not objects, so combine and the summary cannot crash on them', () => {
+  const v = parseVerdict('{"items":[null,{"n":1,"result":"FAILS","evidence":""},7],"defects":[null,"x",{"file":"a.js","severity":"high","what":"w"}],"verdict":"BLOCK"}');
+  assert.equal(v?.items.length, 1);
+  assert.deepEqual(v?.defects, [{ file: 'a.js', severity: 'high', what: 'w' }]);
+  if (!v) {
+    throw new Error('no verdict');
+  }
+  assert.equal(combine([{ family: 'xAI', parsed: v }]).decision, 'CHECK');
+  assert.deepEqual(parseVerdict('{"items":[],"defects":"none","verdict":"MERGE"}')?.defects, []);
+});
+
 test('combine reports no valid verdicts when nothing was counted', () => {
   assert.equal(combine([]).decision, 'NO VALID VERDICTS');
 });

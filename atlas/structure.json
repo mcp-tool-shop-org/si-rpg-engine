@@ -3570,7 +3570,7 @@
           "path": "package.json"
         },
         {
-          "hash": "aa7c6624a35e32d7ed473d7568eb7623e6901b549acc46ba2fa5497aaf2664dd",
+          "hash": "40661f3acee6a4a716886fc44f6303c16330b4e9799b459615ba2627c17c758a",
           "path": "tsconfig.json"
         }
       ],
@@ -5578,7 +5578,7 @@
   ],
   "doors": [
     {
-      "checksCount": 26,
+      "checksCount": 27,
       "commands": [
         {
           "job": "engines",
@@ -6095,6 +6095,13 @@
         {
           "job": "engines",
           "matched": true,
+          "path": "tools/review.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "matched": true,
           "path": "tools/verdicts.js",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
@@ -6105,7 +6112,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 58,
+      "runsCount": 59,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -6828,7 +6835,7 @@
     }
   ],
   "generatedFrom": {
-    "commit": "5886d194f57e8ad05df44b0867e4c353834ed250",
+    "commit": "1b17c4ee0f8ad56e23cd2e12ecaa1af2ad79845b",
     "tracked": 236
   },
   "landings": [
@@ -7909,6 +7916,11 @@
           "by": "tools/review.mjs",
           "call": "readFileSync",
           "confidence": "ast"
+        },
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
         }
       ],
       "target": "tools/review.mjs",
@@ -8158,7 +8170,7 @@
         "buildPrompt",
         "fenceTag"
       ],
-      "hash": "ee785fcb9d76f9f2c1c3f258da0cde92e233303010201b1dd85f7f60d1cad16c",
+      "hash": "23c3ef97d8b54e13cd6dcb1d3f2cab0febf5c30a4269446ffadbf6233351942b",
       "path": "tools/prompt.js"
     },
     {
@@ -8172,8 +8184,9 @@
       "sequences": []
     },
     {
-      "hash": "8fd9c2ce22a4ea179371577d719a656dbd9511e21967821e6d59370196491956",
+      "hash": "7ccb5d0946f0ca4aab573bd07dfb815b3bf99cb9b8b6e6e0eeed5b195f7db9b8",
       "importsFiles": [
+        "packages/tool/guard.js",
         "tools/panel.js",
         "tools/prompt.js",
         "tools/verdicts.js"
@@ -8186,13 +8199,13 @@
         "parseVerdict",
         "whyNotCounted"
       ],
-      "hash": "46b22cfbc9cbb44a19caf4a592de597d5c1400ed984102d352bd8aad74e1f554",
+      "hash": "4ba9598d4dc9cbae01c4d3c40beff8fcd9bd76720eb5060d99d228fdd617b815",
       "path": "tools/verdicts.js"
     },
     {
       "entry": "seat",
       "entryRule": 1,
-      "hash": "cc5d71866b397c4de85f6cd4cf4a1ae0ce5788dbabd79990ddd1b255e2c55b73",
+      "hash": "01b615e8653a4ffab28ee26db34b04935da7e03375cbfa0258611386b7e13c2e",
       "importsFiles": [
         "tools/verdicts.js"
       ],

@@ -10,5 +10,5 @@
     "types": ["node"],
     "skipLibCheck": true
   },
-  "include": ["packages/**/*.js", "packages/**/*.d.ts", "harness/**/*.js", "harness/**/*.mjs", "solver/lint.mjs", "solver/lint.test.js", "solver/source.test.js", "tools/verdicts.js", "tools/verdicts.test.js", "tools/panel.js", "tools/panel.test.js", "tools/prompt.js", "tools/prompt.test.js"]
+  "include": ["packages/**/*.js", "packages/**/*.d.ts", "harness/**/*.js", "harness/**/*.mjs", "solver/lint.mjs", "solver/lint.test.js", "solver/source.test.js", "tools/verdicts.js", "tools/verdicts.test.js", "tools/panel.js", "tools/panel.test.js", "tools/prompt.js", "tools/prompt.test.js", "tools/review.mjs"]
 }

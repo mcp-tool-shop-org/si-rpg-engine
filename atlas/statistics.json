@@ -359,8 +359,8 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 69,
-        "lines": 2559,
+        "commits": 70,
+        "lines": 2585,
         "path": "atlas/README.md"
       },
       {
@@ -369,18 +369,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 69,
-        "lines": 9767,
+        "commits": 70,
+        "lines": 9866,
         "path": "atlas/page.json"
       },
       {
-        "commits": 69,
-        "lines": 15001,
+        "commits": 70,
+        "lines": 15065,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 69,
-        "lines": 32971,
+        "commits": 70,
+        "lines": 33104,
         "path": "atlas/structure.json"
       },
       {
@@ -884,8 +884,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 47,
-        "lines": 203,
+        "commits": 48,
+        "lines": 205,
         "path": "package.json"
       },
       {
@@ -1439,23 +1439,43 @@
         "path": "solver/src/rapier_law.rs"
       },
       {
-        "commits": 3,
-        "lines": 335,
+        "commits": 1,
+        "lines": 81,
+        "path": "tools/panel.js"
+      },
+      {
+        "commits": 1,
+        "lines": 43,
+        "path": "tools/panel.test.js"
+      },
+      {
+        "commits": 2,
+        "lines": 94,
+        "path": "tools/prompt.js"
+      },
+      {
+        "commits": 1,
+        "lines": 87,
+        "path": "tools/prompt.test.js"
+      },
+      {
+        "commits": 5,
+        "lines": 462,
         "path": "tools/review.mjs"
       },
       {
-        "commits": 2,
-        "lines": 92,
+        "commits": 3,
+        "lines": 154,
         "path": "tools/verdicts.js"
       },
       {
-        "commits": 2,
-        "lines": 109,
+        "commits": 3,
+        "lines": 126,
         "path": "tools/verdicts.test.js"
       },
       {
-        "commits": 10,
-        "lines": 44,
+        "commits": 11,
+        "lines": 46,
         "path": "tsconfig.json"
       },
       {
@@ -1474,51 +1494,51 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-25T15:04:25.464Z",
+  "generatedAt": "2026-09-25T15:22:44.544Z",
   "generatedFrom": {
-    "commit": "5886d194f57e8ad05df44b0867e4c353834ed250"
+    "commit": "1b17c4ee0f8ad56e23cd2e12ecaa1af2ad79845b"
   },
   "pairs": [
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 41,
-      "shared": 41,
+      "either": 42,
+      "shared": 42,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 41,
-      "shared": 41,
+      "either": 42,
+      "shared": 42,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 41,
-      "shared": 41,
+      "either": 42,
+      "shared": 42,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 41,
-      "shared": 41,
+      "either": 42,
+      "shared": 42,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 41,
-      "shared": 41,
+      "either": 42,
+      "shared": 42,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 41,
-      "shared": 41,
+      "either": 42,
+      "shared": 42,
       "strength": 1
     },
     {
@@ -1763,16 +1783,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-25T10:49:41-04:00",
+    "headDate": "2026-09-25T11:06:06-04:00",
     "inScopeFiles": 241,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 150,
+    "qualifyingCommits": 152,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-29T14:49:41.000Z",
+    "since": "2026-03-29T15:06:06.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",

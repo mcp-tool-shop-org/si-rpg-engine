@@ -46,55 +46,77 @@ import { fileURLToPath } from 'node:url';
 import { PANEL, panelProblems, choose } from './panel.js';
 import { SYSTEM, buildPrompt } from './prompt.js';
 import { parseVerdict, combine, whyNotCounted } from './verdicts.js';
+import { guard } from '../packages/tool/guard.js';
+
+const USAGE = 'node tools/review.mjs --pr <n> --dispatch <path> --checklist <file> [--evidence <file>] [--seats <families>] [--dry-run] [--out <receipt.json>] [--repo <owner/name>] [--debug]';
+// --help prints the usage and exits 0; an unexpected failure prints one line and exits 2.
+guard(USAGE);
+
+/**
+ * @typedef {import('./panel.js').Seat} Seat
+ * @typedef {import('./verdicts.js').Verdict} Verdict
+ * @typedef {{ text: string, served: string | null, provider: unknown, usage: any, cost: number | null }} Answer
+ * @typedef {Seat & { served?: string | null, servedOk?: boolean, provider?: unknown, ms: number, usage?: any, cost?: number | null, parsed?: Verdict | null, unparsed?: string | null, raw?: string, error?: string }} Result
+ */
 
 const OMIT = [/^fixtures\/behavior-.*\.json$/, /^fixtures\/corpus\//, /^fixtures\/shape-traversal\.json$/, /^atlas\//, /package-lock\.json$/, /^README\.[a-zA-Z-]+\.md$/];
 const MAX_FILE_DIFF = 60000;
 
-function arg(name, fallback) {
+/**
+ * @param {string} name
+ * @returns {string | undefined}
+ */
+function arg(name) {
   const i = process.argv.indexOf(name);
-  return i >= 0 ? process.argv[i + 1] : fallback;
+  return i >= 0 ? process.argv[i + 1] : undefined;
 }
-if (process.argv.includes('--help')) {
-  process.stdout.write('usage: node tools/review.mjs --pr <n> --dispatch <path> --checklist <file> [--evidence <file>] [--seats <families>] [--dry-run] [--out <receipt.json>] [--repo <owner/name>]\n');
-  process.exit(0);
+
+/**
+ * Ends the run with exit 2 and a line on stderr, before any model is called.
+ * @param {string} message
+ * @returns {never}
+ */
+function stop(message) {
+  process.stderr.write(message + '\n');
+  process.exit(2);
 }
 const pr = arg('--pr');
 const dispatchPath = arg('--dispatch');
 const checklistPath = arg('--checklist');
 const evidencePath = arg('--evidence');
-const outPath = arg('--out', 'review-receipt-' + pr + '.json');
-const repo = arg('--repo', 'mcp-tool-shop-org/si-rpg-engine');
+const outPath = arg('--out') ?? 'review-receipt-' + pr + '.json';
+const repo = arg('--repo') ?? 'mcp-tool-shop-org/si-rpg-engine';
 const seats = arg('--seats');
 const problems = panelProblems(PANEL);
 if (problems.length > 0) {
-  process.stderr.write('the panel is not sound:\n' + problems.map((x) => '  ' + x).join('\n') + '\n');
-  process.exit(2);
+  stop('the panel is not sound:\n' + problems.map((x) => '  ' + x).join('\n'));
 }
 const chosen = choose(PANEL, seats);
 if (chosen.unknown.length > 0 || chosen.seats.length === 0) {
-  process.stderr.write('no seat for: ' + (chosen.unknown.join(', ') || seats) + '; the families are ' + PANEL.map((p) => p.family).join(', ') + '\n');
-  process.exit(2);
+  stop('no seat for: ' + (chosen.unknown.join(', ') || seats) + '; the families are ' + PANEL.map((p) => p.family).join(', '));
 }
 const panel = chosen.seats;
 if (!pr || !dispatchPath || !checklistPath) {
-  process.stderr.write('usage: node tools/review.mjs --pr <n> --dispatch <path> --checklist <file> [--evidence <file>] [--seats <families>] [--dry-run] [--out <receipt.json>]\n');
-  process.exit(2);
+  stop('usage: ' + USAGE);
 }
 if (!process.env.OPENROUTER_API_KEY) {
-  process.stderr.write('OPENROUTER_API_KEY is not set\n');
-  process.exit(2);
+  stop('OPENROUTER_API_KEY is not set');
 }
 
-const sha = (s) => createHash('sha256').update(s).digest('hex');
+const sha = (/** @type {string | Buffer} */ s) => createHash('sha256').update(s).digest('hex');
 const runnerSha = {
   review: sha(readFileSync(fileURLToPath(import.meta.url))),
   panel: sha(readFileSync(fileURLToPath(new URL('./panel.js', import.meta.url)))),
   prompt: sha(readFileSync(fileURLToPath(new URL('./prompt.js', import.meta.url)))),
   verdicts: sha(readFileSync(fileURLToPath(new URL('./verdicts.js', import.meta.url)))),
 };
-const gh = (args) => execFileSync('gh', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] });
+const gh = (/** @type {string[]} */ args) => execFileSync('gh', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] });
 
-function gather() {
+/**
+ * @param {string} pr
+ * @param {string} dispatchPath
+ */
+function gather(pr, dispatchPath) {
   const meta = JSON.parse(gh(['pr', 'view', pr, '--repo', repo, '--json', 'title,body,headRefOid,headRefName,baseRefName']));
   // The contract as merged on the base branch, so a pull request cannot rewrite what it is judged
   // by; a pull request that brings its own contract (the base has no copy) is judged by that copy,
@@ -104,7 +126,13 @@ function gather() {
   let dispatch;
   try {
     dispatch = gh(['api', '-H', 'Accept: application/vnd.github.raw', `repos/${repo}/contents/${dispatchPath}?ref=${meta.baseRefName}`]);
-  } catch {
+  } catch (error) {
+    // Only a file the base does not have sends the review to the head's copy; a rate limit, an
+    // authentication failure, or a network error stops the run instead of demoting the contract.
+    const said = String((error && typeof error === 'object' && 'stderr' in error ? error.stderr : '') || (error instanceof Error ? error.message : error));
+    if (!/HTTP 404|Not Found/.test(said)) {
+      throw new Error('could not read the dispatch from ' + meta.baseRefName + ': ' + said.trim().split('\n')[0]);
+    }
     dispatchFrom = 'head';
     dispatch = gh(['api', '-H', 'Accept: application/vnd.github.raw', `repos/${repo}/contents/${dispatchPath}?ref=${meta.headRefOid}`]);
   }
@@ -129,6 +157,7 @@ function gather() {
   }
   let ci = '';
   try {
+    /** @type {Array<{ databaseId: number, headSha: string, conclusion: string, workflowName: string }>} */
     const runs = JSON.parse(gh(['run', 'list', '--repo', repo, '--branch', meta.headRefName, '--limit', '5', '--json', 'databaseId,headSha,conclusion,workflowName']));
     const run = runs.find((r) => r.headSha === meta.headRefOid && r.workflowName === 'CI');
     if (run) {
@@ -139,11 +168,16 @@ function gather() {
       ci = 'No CI run found for the head commit.';
     }
   } catch (e) {
-    ci = 'CI lines unavailable: ' + String(e.message).slice(0, 200);
+    ci = 'CI lines unavailable: ' + String(e instanceof Error ? e.message : e).slice(0, 200);
   }
   return { meta, dispatch, dispatchFrom, diff: kept.join(''), omitted, ci };
 }
 
+/**
+ * @param {Seat} seat
+ * @param {string} prompt
+ * @returns {Promise<Answer>}
+ */
 async function callOpenRouter(seat, prompt) {
   const { model, maxTokens } = seat;
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -161,6 +195,11 @@ async function callOpenRouter(seat, prompt) {
 
 // Streamed: Ollama sends no headers until a non-streamed answer is complete, and Node's
 // fetch gives up on headers after five minutes, which a large thinking model can exceed.
+/**
+ * @param {Seat} seat
+ * @param {string} prompt
+ * @returns {Promise<Answer>}
+ */
 async function callOllama(seat, prompt) {
   const { model, maxTokens } = seat;
   const res = await fetch('http://127.0.0.1:11434/api/chat', {
@@ -174,8 +213,11 @@ async function callOllama(seat, prompt) {
   let buffer = '';
   let text = '';
   let thinking = 0;
+  /** @type {string | null} */
   let served = null;
+  /** @type {any} */
   let usage = {};
+  if (!res.body) throw new Error('Ollama sent no body');
   for await (const chunk of res.body) {
     buffer += decoder.decode(chunk, { stream: true });
     let nl;
@@ -191,9 +233,14 @@ async function callOllama(seat, prompt) {
       if (j.done) usage = { prompt_tokens: j.prompt_eval_count, completion_tokens: j.eval_count, max_tokens: maxTokens, thinking_chars: thinking, done_reason: j.done_reason };
     }
   }
-  return { text, served, provider: 'Ollama Cloud', usage };
+  return { text, served, provider: 'Ollama Cloud', usage, cost: null };
 }
 
+/**
+ * @param {Seat} seat
+ * @param {string} prompt
+ * @returns {Promise<Result>}
+ */
 async function review(seat, prompt) {
   const t0 = Date.now();
   try {
@@ -203,13 +250,13 @@ async function review(seat, prompt) {
     const why = parsed ? null : whyNotCounted(r.text, r.usage);
     return { ...seat, served: r.served, servedOk, provider: r.provider, ms: Date.now() - t0, usage: r.usage, cost: r.cost, parsed, unparsed: why, raw: r.text };
   } catch (e) {
-    return { ...seat, error: String(e.message || e), ms: Date.now() - t0 };
+    return { ...seat, error: String(e instanceof Error ? e.message : e), ms: Date.now() - t0 };
   }
 }
 
 const checklist = readFileSync(checklistPath, 'utf8');
 const evidence = evidencePath ? readFileSync(evidencePath, 'utf8') : '';
-const g = gather();
+const g = gather(pr, dispatchPath);
 const built = buildPrompt(g, checklist, evidence);
 const prompt = built.text;
 if (process.argv.includes('--dry-run')) {
@@ -221,7 +268,7 @@ if (process.argv.includes('--dry-run')) {
 process.stderr.write(`prompt ${prompt.length} characters; ${g.omitted.length} files not sent; calling ${panel.length} reviewers\n`);
 const results = await Promise.all(panel.map((seat) => review(seat, prompt)));
 
-const counted = results.filter((r) => !r.error && r.servedOk && r.parsed);
+const counted = /** @type {Array<Result & { parsed: Verdict }>} */ (results.filter((r) => !r.error && r.servedOk && r.parsed));
 const aggregate = combine(counted).text;
 
 const receipt = {
@@ -234,7 +281,8 @@ const receipt = {
 writeFileSync(outPath, JSON.stringify(receipt, null, 2));
 
 const lines = [];
-lines.push(`**External review of #${pr} at \`${g.meta.headRefOid.slice(0, 7)}\`** against \`${dispatchPath}\`: ${aggregate}.`);
+const source = g.dispatchFrom === 'base' ? 'as merged on `' + g.meta.baseRefName + '`' : 'the pull request\'s own copy, since `' + g.meta.baseRefName + '` has none';
+lines.push(`**External review of #${pr} at \`${g.meta.headRefOid.slice(0, 7)}\`** against \`${dispatchPath}\` (${source}): ${aggregate}.`);
 lines.push('');
 lines.push('Reviewers read the dispatch, the diff, the CI lines, and the coordinator\'s verification; they did not run code. Generated fixture and map files were listed, not sent.');
 lines.push('');

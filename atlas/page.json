@@ -91,7 +91,7 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 4,
+      "added": 0,
       "changed": 5,
       "moved": 0,
       "parts": 1,
@@ -100,88 +100,29 @@
     "items": [
       {
         "kind": "door",
-        "sentence": "CI now also runs tools/panel.test.js and tools/prompt.test.js.",
+        "sentence": "CI now also checks tools/review.mjs.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "tools/panel.test.js",
-          "tools/prompt.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks tools/panel.js and tools/prompt.js.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "tools/panel.js",
-          "tools/prompt.js"
+          "tools/review.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "tools/panel.js is now read by tools/review.mjs and tsconfig.json.",
+        "sentence": "tools/review.mjs is now also read by tsconfig.json.",
         "subjects": [
-          "tools/panel.js",
           "tools/review.mjs",
           "tsconfig.json"
         ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "tools/panel.test.js is now read by tsconfig.json.",
-        "subjects": [
-          "tools/panel.test.js",
-          "tsconfig.json"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "tools/prompt.js is now read by tools/review.mjs and tsconfig.json.",
-        "subjects": [
-          "tools/prompt.js",
-          "tools/review.mjs",
-          "tsconfig.json"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 1 more new writer or reader of a place.",
-        "subjects": []
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/panel.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/panel.js"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/panel.test.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/panel.test.js"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/prompt.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/prompt.js"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "And 1 more new file that belongs to no part.",
-        "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "4 files added and 5 changed content, across 1 part.",
+        "sentence": "5 files changed content, across 1 part.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "10bdeff928be822378d52fc6e4edbd27185802e1",
-      "generatedAt": "2026-09-25T14:49:10.347Z"
+      "commit": "5886d194f57e8ad05df44b0867e4c353834ed250",
+      "generatedAt": "2026-09-25T15:04:25.464Z"
     },
     "unchanged": false
   },
@@ -268,7 +209,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "5886d194f57e8ad05df44b0867e4c353834ed250",
+  "commit": "1b17c4ee0f8ad56e23cd2e12ecaa1af2ad79845b",
   "defaultBranch": "main",
   "derived": "15 parts, mostly JavaScript (87 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -299,9 +240,10 @@
         "packages/tool/",
         "tools/panel.js",
         "tools/prompt.js",
+        "tools/review.mjs",
         "tools/verdicts.js"
       ],
-      "checksCount": 26,
+      "checksCount": 27,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -750,7 +692,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T15:04:25.464Z",
+  "generatedAt": "2026-09-25T15:22:44.544Z",
   "limits": [
     "13 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",

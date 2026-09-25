@@ -50,7 +50,8 @@ function objectSpans(text) {
  * a verdict of MERGE or BLOCK, it is the one that ends last in the answer, the outermost when two
  * end together. The candidates are every fenced json block and every balanced {...} span that
  * mentions both keys, so the verdict is found whatever order its keys are in and whatever prose
- * comes before or after it. Null when there is none.
+ * comes before or after it. Entries of `items` and `defects` that are not objects are dropped, so a
+ * malformed entry cannot crash what reads them. Null when there is none.
  * @param {string} text
  * @returns {Verdict | null}
  */
@@ -70,7 +71,13 @@ export function parseVerdict(text) {
   for (const c of candidates) {
     try {
       const j = JSON.parse(c.body.trim());
-      if (j && Array.isArray(j.items) && (j.verdict === 'MERGE' || j.verdict === 'BLOCK')) return j;
+      if (j && Array.isArray(j.items) && (j.verdict === 'MERGE' || j.verdict === 'BLOCK')) {
+        return {
+          ...j,
+          items: j.items.filter((/** @type {unknown} */ i) => i !== null && typeof i === 'object'),
+          defects: Array.isArray(j.defects) ? j.defects.filter((/** @type {unknown} */ d) => d !== null && typeof d === 'object') : [],
+        };
+      }
     } catch {}
   }
   return null;
