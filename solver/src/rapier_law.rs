@@ -1720,8 +1720,11 @@ mod tests {
     // is allowed to differ in the last bits of its quaternion, because
     // build_world canonicalizes it again. That is why a restore never reloads
     // from the saved records (the replay and image restores are held to that
-    // in harness/soundness.test.js). A rebuild at a verb boundary does the
-    // same thing inside a run, deterministically, and nothing here forbids it.
+    // in harness/soundness.test.js). Before F1 a rebuild at every verb
+    // boundary did the same thing inside a run; since F1 a build happens only
+    // at a world's first load and when the world itself changes, and a verb
+    // boundary switches in place (harness/switch.test.js holds the minds
+    // fixture's quaternions to their bits across its verb boundaries).
     #[test]
     fn a_record_reloaded_through_build_world_may_differ_in_the_last_bits_of_its_quaternion() {
         let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
