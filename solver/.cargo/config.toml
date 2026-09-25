@@ -2,5 +2,11 @@
 # ("Unknown command line argument"). The wasm32 f64 instruction set has no
 # fused multiply-add unless the relaxed-simd feature is enabled. This build
 # turns that feature off. No flag here flushes subnormals.
+# The memory is fixed at 16 MiB: initial and maximum are equal, so it cannot
+# grow. solver/build.mjs repeats all of these, because RUSTFLAGS overrides them.
 [target.wasm32-unknown-unknown]
-rustflags = ["-C", "target-feature=-relaxed-simd"]
+rustflags = [
+  "-C", "target-feature=-relaxed-simd",
+  "-C", "link-arg=--initial-memory=16777216",
+  "-C", "link-arg=--max-memory=16777216",
+]

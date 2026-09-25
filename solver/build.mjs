@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { facts, lintWasm } from './lint.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const solver = join(root, 'solver');
@@ -21,11 +22,19 @@ const cargo = process.env.CARGO || 'cargo';
 // between hosts. Remapping strips both. Windows still writes backslashes into
 // the remainder of each path, so the two hosts never produce identical bytes:
 // the pinned artifact is the Linux build, and only a Linux build may write the
-// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD pin is
-// repeated here.
+// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD pin and
+// the memory pin are repeated here.
+//
+// The memory is fixed: initial and maximum are the same 256 pages (16 MiB),
+// so the module cannot grow and solver/lint.mjs can hold it to that. At the
+// solver's capacity (64 bodies, 64 colliders, a 256-sample heightfield, a
+// resting pile, 2000 quanta) the old growable build peaked at 71 pages.
+const MEMORY_BYTES = 16 * 1024 * 1024;
 const cargoHome = process.env.CARGO_HOME || join(process.env.HOME || process.env.USERPROFILE || '', '.cargo');
 const rustflags = [
   '-C', 'target-feature=-relaxed-simd',
+  '-C', 'link-arg=--initial-memory=' + MEMORY_BYTES,
+  '-C', 'link-arg=--max-memory=' + MEMORY_BYTES,
   '--remap-path-prefix=' + cargoHome + '=/cargo',
   '--remap-path-prefix=' + solver + '=/solver',
   '--remap-path-prefix=' + root + '=/repo',
@@ -43,6 +52,16 @@ if (built.status !== 0) {
 }
 
 const wasm = readFileSync(wasmPath);
+// The lint runs on every build, before the digest: a binary with a relaxed-SIMD
+// instruction, a memory.grow, or a memory that can grow is not emitted.
+const lint = lintWasm(wasm);
+if (!lint.ok) {
+  for (const reason of lint.reasons) {
+    process.stderr.write('lint refused ' + wasmPath + ': ' + reason + '\n');
+  }
+  process.exit(1);
+}
+process.stderr.write(facts(lint) + '\n');
 const digest = createHash('sha256').update(wasm).digest('hex');
 const linux = process.platform === 'linux';
 if (check) {
