@@ -1,0 +1,35 @@
+# Dispatch E5 — NPC records in the world
+
+2026-09-25. Coordinator: Claude. Builder: the builder seat. Reviewer: a different family, on a scratch clone, before merge. Depends on E3 and E4, merged at `393a93f`. The plan row is E5 in `docs/PHASE-1.md`.
+
+## What it is
+
+Phase 0 designed beliefs as records the sim holds, each citing an admitted episode, superseded by a tombstone the checker can see, with standing goals living in the record. Today the memory is one global list that only a proposal writes, and no body owns any of it. This slice gives a body a mind: a record of what it has seen, what it believes about bodies and zones, and what it is standing to do. The sim writes the mind from what the body can see, the hash covers it, replay rebuilds it from the seed and the log, and a stale write is refused. No model runs. Nothing here plans or speaks; this is the record the spoken-line gate will one day read a slot from.
+
+## Pins
+
+1. **The mind record.** A world file gains `minds: [{ body, sight, goals, beliefs }]`. A mind belongs to exactly one body that exists in the file; a second mind on the same body, a mind on a body that does not exist, and an unknown field are refused at load. `sight` is a finite positive radius. `goals` and `beliefs` are arrays, possibly empty. The mind is in the load hash, and a world with no minds hashes exactly as it does today.
+2. **Beliefs are typed by a table.** A belief is `{ subject, key, value, confidence, source }` where `subject` is `{ body: id }` or `{ zone: id }` naming something in the world. `key` and the type of `value` come from `predicates/beliefs/keys.json`, authored, one entry per key with the subject kind it applies to and the value type: `zone`, `body`, `tick`, or `flag`. The table ships with `at` (a body, value a zone), `seen` (a body, value a tick), `holds` (a body, value a body), `contains` (a zone, value a body), and `visited` (a zone, value a tick). A belief whose key is not in the table, whose subject kind does not match, or whose value does not type-check is refused, at load and at write, with the reason.
+3. **Sight writes the record.** Each quantum, after the step and before the hash, every mind looks: a body is in sight when the distance between the two centres is at most `sight` and the segment between the centres crosses no static collider, using the swept test with zero extents. When a body enters sight, leaves it, or changes zone while in sight, the tick records one episode, `see <mind> <body> <zone or none>`, and writes the mind's `at` belief for that body citing it, superseding the previous `at` belief with a tombstone that cites the same episode; `seen` is written the same way with the tick. At most one `see` episode per mind and body per quantum. Nothing is written while nothing changes. A body out of sight keeps its last belief; the belief's `seen` tick says how old it is, and nothing in the engine calls it stale on its own.
+4. **A stale write is refused.** A write that supersedes a belief must cite a source episode at least as new as the source of the belief it supersedes; older evidence cannot replace newer, and the reason names both episodes. A write citing an episode the log does not hold, superseding a belief already superseded, or superseding without the withdrawing episode is refused as it is today. Authored beliefs in a world file cite the load episode: `load world` and every world load record `load <name>` as the first episode, so an authored belief's source is that id and nothing else.
+5. **Standing goals.** A goal is `{ kind: 'reach', zone }` or `{ kind: 'use', target }` where the zone or the body exists, held in order in the mind's record. A goal is met when the mind's body is in the zone, or when an episode `use <body> <target>` exists after the goal was recorded. On the quantum a goal is first met the tick records one episode, `goal-met <mind> <index>`, and nothing pursues a goal: there is no planner, no pathfinding, and no model in this slice. `world.goalsOf(mind)` returns the goals with their met flag and the tick they were met.
+6. **The hash.** Every quantum mixes, per mind in file order: the goal count, each goal's met flag and met tick, the belief count, and the id of the newest belief, so a supersession moves the hash on the quantum it happens. A belief write mixes at admission as it does today. Sight episodes are derived state and are not logged; replay rebuilds them, and a test shows a replay from the seed and the log produces the same beliefs, tombstones, and episodes in the same order.
+7. **Beliefs are held per mind.** The memory record keeps its one episode log and gains a belief list per mind. A belief proposal from the seat names the mind it writes into and is refused when that mind does not exist. The existing belief tests keep passing with the fixture room's one implicit mind, or they name it; the builder states which in the pull request.
+8. **The fixture.** `fixtures/behavior-minds.json` replays frame for frame on the product law: a mind whose body stands still while the walker crosses two zones in sight, writing and superseding `at` and `seen` with each citing its `see` episode; a crate carried out of sight, whose belief stays with its old `seen` tick; a wall between mind and walker, and no episode while it is there; a refused stale write, a refused unknown key, and a refused wrong value type, each with its reason in the fixture; a `reach` goal met and a `use` goal met, each recorded once. The product scene gains a mind, so the golden covers it; `write-golden` rewrites `fixtures/golden.txt` once with the reason in the commit. The arithmetic golden does not move.
+9. **The binary does not change.** Sight, beliefs, goals, and their hashing are in the tick. `fixtures/solver.sha256` is untouched, and the reviewer checks that it is.
+10. **The debug view** draws each mind's sight radius in the projection and lists its beliefs and goals beside the tick and the hash. Nothing else changes in it.
+11. **The seat stays frozen.** After E5 merges, the plan's thaw condition reads as met. Thawing it is the Director's decision, taken after this merge and not inside it.
+12. **The plan.** The E5 row in `docs/PHASE-1.md` gains one sentence naming sight as the writer, the key table, and the stale rule. No other prose changes.
+
+## Acceptance
+
+- Three engines print the new product golden from the Linux binary; the arithmetic golden is `0d38671370d12d1e`; the solver digest is unchanged.
+- Every load refusal in pins 1, 2, and 5 has a test with its reason.
+- `fixtures/behavior-minds.json` replays frame for frame, and a replay from the seed and the log reproduces the beliefs, tombstones, and episodes in order.
+- The stale rule, the key table, and the one-episode-per-quantum bound are each tested.
+- Every fixture on `main` replays unchanged.
+- Typecheck clean, 68 or more tests, Atlas check green with the map generated by the published Atlas 1.17.0.
+
+## Not in E5
+
+No planner, no pathfinding, no model run, no spoken line, no line gate, no persona, no free text, no consolidation, no belief the sim did not see or the file did not author, no art.
