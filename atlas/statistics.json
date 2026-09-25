@@ -196,7 +196,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "solver",
-      "qualifyingSourceCommits": 1,
+      "qualifyingSourceCommits": 2,
       "rebaseline": null
     },
     {
@@ -261,8 +261,8 @@
         "path": "README.md"
       },
       {
-        "commits": 36,
-        "lines": 1167,
+        "commits": 37,
+        "lines": 1198,
         "path": "atlas/README.md"
       },
       {
@@ -271,18 +271,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 36,
-        "lines": 4414,
+        "commits": 37,
+        "lines": 4515,
         "path": "atlas/page.json"
       },
       {
-        "commits": 36,
-        "lines": 5697,
+        "commits": 37,
+        "lines": 5825,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 36,
-        "lines": 8719,
+        "commits": 37,
+        "lines": 8970,
         "path": "atlas/structure.json"
       },
       {
@@ -376,8 +376,8 @@
         "path": "docs/dispatch-e1-three-dimensions.md"
       },
       {
-        "commits": 3,
-        "lines": 132,
+        "commits": 4,
+        "lines": 134,
         "path": "docs/dispatch-e2-solver.md"
       },
       {
@@ -461,8 +461,8 @@
         "path": "fixtures/push-play-log.json"
       },
       {
-        "commits": 2,
-        "lines": 3,
+        "commits": 3,
+        "lines": 5,
         "path": "fixtures/solver.sha256"
       },
       {
@@ -756,13 +756,13 @@
         "path": "solver/Cargo.toml"
       },
       {
-        "commits": 2,
-        "lines": 15,
+        "commits": 3,
+        "lines": 19,
         "path": "solver/FLAGS.md"
       },
       {
-        "commits": 2,
-        "lines": 216,
+        "commits": 3,
+        "lines": 243,
         "path": "solver/build.mjs"
       },
       {
@@ -791,30 +791,30 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-25T01:33:58.143Z",
+  "generatedAt": "2026-09-25T01:37:45.669Z",
   "generatedFrom": {
-    "commit": "6f197414f4161f90fc26ae54570af0d404fd90d3"
+    "commit": "a6479da4940c6deb480f50b7e92e9da7b907d219"
   },
   "pairs": [
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 18,
-      "shared": 18,
+      "either": 19,
+      "shared": 19,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 18,
-      "shared": 18,
+      "either": 19,
+      "shared": 19,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 18,
-      "shared": 18,
+      "either": 19,
+      "shared": 19,
       "strength": 1
     },
     {
@@ -827,22 +827,22 @@
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 18,
-      "shared": 18,
+      "either": 19,
+      "shared": 19,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 18,
-      "shared": 18,
+      "either": 19,
+      "shared": 19,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 18,
-      "shared": 18,
+      "either": 19,
+      "shared": 19,
       "strength": 1
     },
     {
@@ -905,16 +905,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-24T20:55:33-04:00",
+    "headDate": "2026-09-24T21:35:26-04:00",
     "inScopeFiles": 108,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 34,
+    "qualifyingCommits": 36,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-29T00:55:33.000Z",
+    "since": "2026-03-29T01:35:26.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
@@ -924,9 +924,7 @@
       ".tsx",
       ".mts",
       ".cts",
-      ".py",
-      ".rs",
-      ".gd"
+      ".py"
     ],
     "sourceFileReach": 20,
     "sourceFileRise": 25,
