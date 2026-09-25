@@ -6,7 +6,8 @@
 //
 // The log is what play wrote with --log. A log that carries its world is
 // replayed in that world; one that does not is replayed in the fixture room.
-// The model is not called.
+// The model is not called. A log with a role's entries carries the manifests
+// they cite, and replay gates each against its own (T7a pin 4).
 //
 // A bundle (packages/tick/bundle.js, T5) is replayed to its save tick with
 // every hash compared, on any binary: the hashes are the law's. With an image,
@@ -84,7 +85,7 @@ function isWorld(value) {
 }
 // A play log carries `world`; a host log carries the `scene` it served.
 const world = isWorld(saved.world) ? saved.world : isWorld(saved.scene) ? { bodies: saved.scene.bodies, colliders: saved.scene.colliders } : fixtureWorld();
-const result = replay({ seed: saved.seed, world, rules: catalog.rules, retired: catalog.retired, log: saved.log, law: saved.law });
+const result = replay({ seed: saved.seed, world, rules: catalog.rules, retired: catalog.retired, log: saved.log, manifests: saved.manifests, law: saved.law });
 if (!result.ok) {
   process.stderr.write('replay failed at entry ' + result.at + ': ' + result.reason + '\n');
   process.exit(1);

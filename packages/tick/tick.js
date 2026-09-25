@@ -17,13 +17,27 @@
 // are on the tick createRestorableTick makes, not the one createTick makes:
 // restore writes body records, and a tick handed to a host has no method that
 // writes geometry (packages/tick/tick.test.js, the host boundary).
+//
+// A role's proposal (T7a) carries provenance: submit(proposal, provenance).
+// The role gate (gate.js) checks it against the role's manifest, its
+// freshness window, and its admission budget before any predicate runs; then
+// every predicate is checked on the current state, as for the host. Its log
+// entry carries the provenance, and its admission mixes the provenance, and a
+// belief's trust label, into the running hash after what the class already
+// mixes. A proposal without provenance is the host's: admitted exactly as
+// before, with a log entry of the same form and the same hashes. With a role
+// catalog the tick keeps, for each of its last frames, the frame's hash and
+// the least trusted label in each mind, which the gate reads.
 
 import { createHasher } from '../frame/hash.js';
 import { commitFrame } from '../frame/frame.js';
 import { beliefRefusal, subjectText } from './beliefs.js';
+import { canonical } from './canonical.js';
+import { beliefLabel, budgetRefusal, freshnessRefusal, roleRefusal } from './gate.js';
 import { memorySaveProblem } from './memory.js';
 import { installMinds, mindsSaveProblem, mixMinds, observeMinds, restoreMinds, saveMinds } from './minds.js';
 import { admitIntent } from './predicates.js';
+import { AUTHORED } from './trust.js';
 
 /**
  * @typedef {import('../frame/types.js').Proposal} Proposal
@@ -40,6 +54,10 @@ import { admitIntent } from './predicates.js';
  *   minds: import('./minds.js').MindsSave, memory: import('./memory.js').MemorySave,
  *   log: LogEntry[], world: WorldSave
  * }} TickSave
+ * @typedef {import('../frame/types.js').Provenance} Provenance
+ * @typedef {import('./gate.js').WindowFrame} WindowFrame
+ * @typedef {import('./trust.js').Label} Label
+ * @typedef {{ entry: import('./roles.js').RoleEntry, provenance: Provenance, key: string, label: Label | null }} RoleAdmission
  */
 
 /**
@@ -49,6 +67,7 @@ import { admitIntent } from './predicates.js';
  *   rules: Map<string, IntentRule>;
  *   retired?: Set<string>;
  *   memory: ReturnType<import('./memory.js').createMemory>;
+ *   roles?: import('./roles.js').Catalog;
  * }} TickInit
  */
 
@@ -76,6 +95,7 @@ export function createRestorableTick(init) {
 function buildTick(init) {
   const { seed, world, rules, memory } = init;
   const retired = init.retired ?? new Set();
+  const roles = init.roles ?? null;
   const hasher = createHasher();
   /** @type {LogEntry[]} */
   const inputLog = [];
@@ -94,6 +114,18 @@ function buildTick(init) {
   /** Quanta owed by admissions that are not actions: a belief or a body draft takes one. */
   let pending = 0;
 
+  /**
+   * The freshness window (T7a pin 8): each of the last frames' tick, hash,
+   * and the least trusted label in each mind (pin 5), oldest first, one per
+   * committed frame. Kept only with a role catalog, and long enough for the
+   * oldest frame any of its roles may cite.
+   * @type {WindowFrame[]}
+   */
+  const frames = [];
+  const frameCount = roles === null ? 0 : roles.maxAge + 1;
+  /** The ticks of each role instance's admissions, for its admission budget (pin 10). @type {Map<string, number[]>} */
+  const admissions = new Map();
+
   // No verb consumes randomness in slice 2. The seed is part of the hash so a
   // replay with the wrong seed fails on the first frame.
   installMinds(world, memory);
@@ -106,6 +138,51 @@ function buildTick(init) {
 
   /** @type {Frame} */
   let current = commitFrame(0, hasher.digest(), world.bodies);
+  remember(current);
+
+  /** The least trusted label in each mind, as the minds stand now. */
+  function mindLabels() {
+    const minds = world.minds || [];
+    return minds.map((mind) => /** @type {const} */ ([mind.body, memory.leastLabel(mind.body)]));
+  }
+
+  /**
+   * Keeps a committed frame in the window.
+   * @param {Frame} frame
+   */
+  function remember(frame) {
+    if (frameCount === 0) {
+      return;
+    }
+    frames.push({ tick: frame.tick, hash: frame.hash, minds: mindLabels() });
+    if (frames.length > frameCount) {
+      frames.shift();
+    }
+  }
+
+  /**
+   * A belief admitted before the next quantum is in the mind for any prompt
+   * built from the current frame, so the window's newest frame is read again.
+   */
+  function rememberMinds() {
+    if (frames.length > 0) {
+      const last = frames[frames.length - 1];
+      frames[frames.length - 1] = { tick: last.tick, hash: last.hash, minds: mindLabels() };
+    }
+  }
+
+  /**
+   * The window's frame at a tick, if the window still holds it.
+   * @param {number} at
+   * @returns {WindowFrame | undefined}
+   */
+  function frameAt(at) {
+    if (frames.length === 0) {
+      return undefined;
+    }
+    const i = at - frames[0].tick;
+    return i >= 0 && i < frames.length ? frames[i] : undefined;
+  }
 
   /**
    * The product snapshot. A reference or box world has none, so its hash does not move.
@@ -246,6 +323,7 @@ function buildTick(init) {
     observeMinds(world, memory, tick);
     mixQuantum();
     current = commitFrame(tick, hasher.digest(), world.bodies);
+    remember(current);
     emit();
     if (pending > 0) {
       pending = pending - 1;
@@ -280,25 +358,84 @@ function buildTick(init) {
   }
 
   /**
-   * Records an admission at the tick and hash it was admitted against.
+   * Records an admission at the tick and hash it was admitted against. A
+   * role's entry carries its provenance, which is mixed into the running
+   * hash with a belief's label; the host's entry is what it always was.
    * @param {Proposal} proposal
+   * @param {RoleAdmission | null} role
    */
-  function record(proposal) {
-    inputLog.push({ tick, proposal, hash: current.hash });
+  function record(proposal, role) {
+    if (role === null) {
+      inputLog.push({ tick, proposal, hash: current.hash });
+      return;
+    }
+    inputLog.push({ tick, proposal, hash: current.hash, provenance: role.provenance });
+    hasher.text(canonical(role.provenance));
+    if (role.label !== null) {
+      hasher.text(role.label.label);
+      hasher.text(role.label.heard || '');
+    }
+    const kept = (admissions.get(role.key) || []).filter((at) => roles !== null && at > tick - roles.maxWindow);
+    kept.push(tick);
+    admissions.set(role.key, kept);
+  }
+
+  /**
+   * The role gate's checks that read the tick: the catalog and the manifest
+   * (gate.js roleRefusal), then the freshness window, then the admission
+   * budget. A belief's label is set here, from the manifest and the minds at
+   * builtAt, never from the caller.
+   * @param {Proposal} proposal
+   * @param {unknown} provenance
+   * @returns {{ ok: true, role: RoleAdmission } | { ok: false, reason: string }}
+   */
+  function roleGate(proposal, provenance) {
+    const checked = roleRefusal(roles, proposal, provenance);
+    if (!checked.ok) {
+      return checked;
+    }
+    const p = checked.provenance;
+    const built = frameAt(p.builtAt.tick);
+    const stale = freshnessRefusal(checked.entry, p, tick, built);
+    if (stale !== null) {
+      return { ok: false, reason: stale };
+    }
+    const key = p.role + ' ' + p.instance;
+    const over = budgetRefusal(checked.entry, admissions.get(key) || [], tick);
+    if (over !== null) {
+      return { ok: false, reason: over };
+    }
+    const label = proposal.kind === 'belief' ? beliefLabel(checked.entry, p.instance, /** @type {WindowFrame} */ (built)) : null;
+    return { ok: true, role: { entry: checked.entry, provenance: structuredClone(p), key, label } };
   }
 
   /**
    * The front door. Declare and validate now; resolve across later quanta.
+   * A proposal with provenance is a role's: the role gate checks it first,
+   * and it is then held to every predicate on the current state. Without
+   * provenance it is the host's, admitted exactly as before.
    * @param {Proposal} proposal
+   * @param {Provenance} [provenance]
    * @returns {Admission}
    */
-  function submit(proposal) {
+  function submit(proposal, provenance) {
+    /** @type {RoleAdmission | null} */
+    let role = null;
+    if (provenance !== undefined) {
+      const gate = roleGate(proposal, provenance);
+      if (!gate.ok) {
+        return { admitted: false, reason: gate.reason };
+      }
+      role = gate.role;
+    }
     if (!proposal || typeof proposal !== 'object') {
       return { admitted: false, reason: 'a proposal is an object with a kind' };
     }
     switch (proposal.kind) {
       case 'intent': {
-        if (proposal.frameHash !== current.hash) {
+        // The host's intent cites the newest frame. A role's cites the frame
+        // it was built from, which the gate has checked against its window.
+        if (role === null && proposal.frameHash !== current.hash) {
           return { admitted: false, reason: 'stale frame: intent names ' + String(proposal.frameHash) + ', current is ' + current.hash };
         }
         const busy = actions.get(proposal.actor);
@@ -331,7 +468,7 @@ function buildTick(init) {
         if (effect === 'episode') {
           const name = check.zoneId || check.otherId || '';
           memory.recordEpisode(tick, 'use', 'use ' + proposal.actor + ' ' + name);
-          record(proposal);
+          record(proposal, role);
           actions.set(proposal.actor, { remaining: 1, effect, riseQuanta: 0, aimX: actor.x, aimZ: actor.z, otherId: check.otherId || null, speed: 0 });
           return { admitted: true, quanta: 1, hash: current.hash };
         }
@@ -356,7 +493,7 @@ function buildTick(init) {
           aimZ = check.aimZ;
         }
         memory.recordEpisode(tick, 'intent', proposal.verb + ' ' + proposal.actor);
-        record(proposal);
+        record(proposal, role);
         actions.set(proposal.actor, {
           remaining: check.quanta,
           effect,
@@ -382,7 +519,7 @@ function buildTick(init) {
           if (refusal) {
             return { admitted: false, reason: refusal };
           }
-          const named = memory.admitMindBelief(mindName, proposal);
+          const named = memory.admitMindBelief(mindName, proposal, role === null ? AUTHORED : /** @type {Label} */ (role.label));
           if (!named.ok) {
             return { admitted: false, reason: named.reason };
           }
@@ -397,11 +534,13 @@ function buildTick(init) {
             hasher.text(String(proposal.withdrawnBy));
           }
           memory.recordEpisode(tick, 'belief', named.belief.id);
-          record(proposal);
+          record(proposal, role);
+          rememberMinds();
           pending = pending + 1;
           return { admitted: true, quanta: 1, hash: current.hash };
         }
-        const check = memory.admitBeliefWrite(proposal);
+        // The gate refuses a role's belief that names no mind, so only the host comes here.
+        const check = memory.admitBeliefWrite(proposal, AUTHORED);
         if (!check.ok) {
           return { admitted: false, reason: check.reason };
         }
@@ -416,7 +555,7 @@ function buildTick(init) {
           hasher.text(String(proposal.withdrawnBy));
         }
         memory.recordEpisode(tick, 'belief', check.belief.id);
-        record(proposal);
+        record(proposal, role);
         pending = pending + 1;
         return { admitted: true, quanta: 1, hash: current.hash };
       }
@@ -440,7 +579,7 @@ function buildTick(init) {
           hx: proposal.hx, hy: proposal.hy, hz: proposal.hz,
         });
         memory.recordEpisode(tick, 'body', proposal.id);
-        record(proposal);
+        record(proposal, role);
         pending = pending + 1;
         return { admitted: true, quanta: 1, hash: current.hash };
       }

@@ -17,6 +17,7 @@ import { loadIntentRules } from './predicates.js';
 import { replay } from './replay.js';
 import { FIXTURE_SEED, fixtureWorld } from './fixture.js';
 import { validateScene } from './scene.js';
+import { AUTHORED } from './trust.js';
 import { finalPositions } from '../../harness/behaviour.mjs';
 
 function fresh(seed = FIXTURE_SEED, retired = loadIntentRules().retired) {
@@ -164,14 +165,14 @@ test('supersession is a tombstone, not a delete', () => {
   const memory = createMemory();
   memory.recordEpisode(0, 'intent', 'seed');
   memory.recordEpisode(1, 'intent', 'withdraw');
-  const first = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v1', confidence: 0.5, source: 'e1' });
+  const first = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v1', confidence: 0.5, source: 'e1' }, AUTHORED);
   assert.ok(first.ok);
-  const second = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v2', confidence: 0.6, source: 'e2', supersedes: 'b1', withdrawnBy: 'e2' });
+  const second = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v2', confidence: 0.6, source: 'e2', supersedes: 'b1', withdrawnBy: 'e2' }, AUTHORED);
   assert.ok(second.ok);
   assert.equal(memory.beliefs.length, 2);
   assert.equal(memory.beliefs[0].supersededBy, 'b2');
   assert.equal(memory.beliefs[0].withdrawnBy, 'e2');
-  const twice = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v3', confidence: 0.6, source: 'e2', supersedes: 'b1', withdrawnBy: 'e2' });
+  const twice = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v3', confidence: 0.6, source: 'e2', supersedes: 'b1', withdrawnBy: 'e2' }, AUTHORED);
   assert.equal(twice.ok, false);
 });
 

@@ -1,13 +1,16 @@
 // The authored key table. A mind belief is refused when the key, the subject
-// kind, or the value type is not what the table names.
+// kind, or the value type is not what the table names, or when a string it
+// holds is longer than the key's maxLength, or than 120 characters where the
+// key declares none (T7a pin 5).
 
 import { readFileSync } from 'node:fs';
+import { BELIEF_TEXT_LIMIT } from './memory.js';
 import { subjectKind, subjectText } from './subject.js';
 
 export { subjectKind, subjectText };
 
 /**
- * @typedef {{ subject: 'body' | 'zone', value: 'zone' | 'body' | 'tick' | 'flag' }} BeliefKey
+ * @typedef {{ subject: 'body' | 'zone', value: 'zone' | 'body' | 'tick' | 'flag', maxLength?: number }} BeliefKey
  */
 
 /** @type {Record<string, BeliefKey> | null} */
@@ -23,11 +26,12 @@ export function beliefKeys() {
 /**
  * @param {ReturnType<import('./world.js').createWorld>} world
  * @param {{ subject: { body?: string, zone?: string } | string, key: string, value: unknown }} belief
+ * @param {Record<string, BeliefKey>} [table] the key table; predicates/beliefs/keys.json when omitted
  * @returns {string | null}
  */
-export function beliefRefusal(world, belief) {
-  const keys = beliefKeys();
-  const spec = keys[belief.key];
+export function beliefRefusal(world, belief, table) {
+  const keys = table || beliefKeys();
+  const spec = Object.hasOwn(keys, belief.key) ? keys[belief.key] : undefined;
   if (!spec) {
     return 'unknown belief key: ' + belief.key;
   }
@@ -36,6 +40,13 @@ export function beliefRefusal(world, belief) {
     return 'belief ' + belief.key + ' applies to a ' + spec.subject;
   }
   const named = kind === 'body' ? /** @type {{ body: string }} */ (belief.subject).body : /** @type {{ zone: string }} */ (belief.subject).zone;
+  const limit = typeof spec.maxLength === 'number' ? spec.maxLength : BELIEF_TEXT_LIMIT;
+  if (named.length > limit) {
+    return 'belief ' + belief.key + ' subject is ' + named.length + ' characters, over the bound of ' + limit;
+  }
+  if (typeof belief.value === 'string' && belief.value.length > limit) {
+    return 'belief ' + belief.key + ' value is ' + belief.value.length + ' characters, over the bound of ' + limit;
+  }
   if (kind === 'body' && !world.body(named)) {
     return 'belief subject names no body: ' + named;
   }
