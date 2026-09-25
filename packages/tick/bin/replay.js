@@ -8,15 +8,18 @@
 // replayed in that world; one that does not is replayed in the fixture room.
 // The model is not called.
 //
-// A bundle (harness/bundle.mjs, T5) is replayed to its save tick with every
-// hash compared, and its image, when it has one, restored there and rerun
-// against the replay. It prints `bundle ok` or the T1 first-difference block
-// and exits 1; a bundle from another binary is refused with both digests.
+// A bundle (packages/tick/bundle.js, T5) is replayed to its save tick with
+// every hash compared, on any binary: the hashes are the law's. With an image,
+// one is restored at the save tick and rerun against the replay: the stored
+// image when this binary recorded the bundle, else a fresh one taken here,
+// after the line `image skipped: recorded on <digest>, running <digest>`. It
+// prints `bundle ok`, or the T1 first-difference block and exits 1.
 
 import { readFileSync } from 'node:fs';
 import { chdir } from 'node:process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isBundle, readBundle, replayBundle } from '../bundle.js';
 import { replay } from '../replay.js';
 import { loadIntentRules } from '../predicates.js';
 import { fixtureWorld } from '../fixture.js';
@@ -35,10 +38,12 @@ if (!file) {
 const path = file.endsWith('.bundle.json') ? resolve(file) : resolve(root, file);
 const saved = JSON.parse(readFileSync(path, 'utf8'));
 chdir(root);
-if (saved && typeof saved === 'object' && 'bundle' in saved) {
-  const { readBundle, replayBundle } = await import('../../../harness/bundle.mjs');
+if (isBundle(saved)) {
   const bundle = readBundle(path);
   const result = replayBundle(bundle);
+  if (result.skipped) {
+    process.stdout.write(result.skipped + '\n');
+  }
   if (result.status === 'refused') {
     process.stderr.write('bundle refused: ' + result.reason + '\n');
     process.exit(1);
@@ -48,8 +53,13 @@ if (saved && typeof saved === 'object' && 'bundle' in saved) {
     process.exit(1);
   }
   process.stdout.write('bundle ok\n');
-  process.stderr.write(bundle.name + ': ' + (result.tick + 1) + ' hashes to tick ' + result.tick + ' in ' + result.ms.replay.toFixed(0) + ' ms'
-    + (result.restored ? '; image of ' + result.pages + ' pages decoded in ' + result.ms.decode.toFixed(1) + ' ms, restored in ' + result.ms.restore.toFixed(1) + ' ms, rerun to ' + result.end + ' identically in ' + result.ms.rerun.toFixed(0) + ' ms' : '; no image') + '\n');
+  const image = result.image === 'stored'
+    ? '; stored image of ' + result.pages + ' pages decoded in ' + result.ms.decode.toFixed(1) + ' ms'
+    : result.image === 'fresh'
+      ? '; fresh image of ' + result.pages + ' pages taken at tick ' + result.tick + ' in ' + result.ms.image.toFixed(1) + ' ms'
+      : '; no image';
+  const rerun = result.image === 'none' ? '' : ', restored in ' + result.ms.restore.toFixed(1) + ' ms, rerun to ' + result.end + ' identically in ' + result.ms.rerun.toFixed(0) + ' ms';
+  process.stderr.write(bundle.name + ': ' + (result.tick + 1) + ' hashes to tick ' + result.tick + ' in ' + result.ms.replay.toFixed(0) + ' ms' + image + rerun + '\n');
   process.exit(0);
 }
 if (!Array.isArray(saved.log)) {

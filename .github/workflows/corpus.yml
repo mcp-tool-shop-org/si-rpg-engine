@@ -7,10 +7,13 @@
 # The job replays and reports. It never pushes, never opens a pull request,
 # and never edits a golden. On failure it opens one issue titled with the
 # first failing bundle and its first-difference block, with the bundles
-# attached as this run's `bundles` artifact. Every run also uploads
-# `fresh-corpus`, the corpus's own bundles written by this build: they carry
-# the binary's digest, so a slice that moves the binary, or fixes a bundled
-# defect, commits those in place of the old ones.
+# attached as this run's `bundles` artifact. A bundle's hashes are the law's,
+# so every bundle replays on any binary; its stored image is one binary's
+# bytes, used on that binary and otherwise skipped for a fresh image taken at
+# its save tick, and the run prints how many were used and skipped. Every run
+# also uploads `fresh-corpus`, the corpus's own bundles written by this build:
+# a slice that changes the law, or fixes a bundled defect, commits those in
+# place of the old ones; a slice that only moves the binary need not.
 #
 # Standards compliance (0 missing, 1 partial, 2 present, 3 exemplary):
 # - PIN_PER_STEP 2: node 22, Rust 1.98.1, the solver's Linux digest (build --check refuses any other before a bundle replays), the actions by major tag; ubuntu-latest cannot be pinned by digest, so the job prints ImageOS and ImageVersion, the drift it exists to catch. Remediation: pin the actions by commit SHA, owner coordinator, target T6.

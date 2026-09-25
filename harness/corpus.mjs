@@ -6,14 +6,17 @@
 //   node harness/corpus.mjs --write <dir>
 //
 // It replays, against this build and with the T1 trace hashes:
-//   1. every bundle in fixtures/corpus/, with its image restored and rerun;
+//   1. every bundle in fixtures/corpus/, with an image restored and rerun: its
+//      stored image when this binary recorded it, else a fresh one taken at
+//      its save tick (the hashes are the law's; the image is one binary's
+//      bytes); the run reports how many stored images were used and skipped;
 //   2. every behaviour fixture case and every log in fixtures/ that replays,
 //      each as a bundle whose hashes are the fixture's recorded frames, and
 //      the four 2D captures, which must still be refused;
 //   3. the product scene for 100,000 quanta (--quanta), twice, with the solver
 //      imaged at ten ticks (--points) chosen from its events, each just before
 //      one, and each image restored into a fresh replay and rerun to the end
-//      against the traced run with harness/first-difference.js.
+//      against the traced run, a difference printed as the T1 block.
 // It prints the wall time of each, the replay cost per quantum, the sparse
 // image sizes, and the restore times. A failure writes a bundle into
 // $SI_RPG_BUNDLES (harness/bundle.mjs) and exits 1; --summary and --title
@@ -21,17 +24,19 @@
 // its first-difference block.
 //
 // `--write <dir>` writes the corpus's own bundles, CORPUS below, from this
-// build. They are of this binary's digest, so the committed ones are written
-// on Linux, by the job (its fresh-corpus artifact); a slice that moves the
-// binary rewrites them from there.
+// build: the fresh-corpus artifact of every job run. A slice that moves only
+// the binary keeps them, since their hashes are the law's and the replay takes
+// a fresh image where the stored one is another binary's; a slice that changes
+// the law, or fixes a bundled defect, commits the rewritten ones from there.
 
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { PAGE, bundleFrom, bundleText, denseImage, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
 import { validateScene } from '../packages/tick/scene.js';
 import { binaryDigest } from '../solver/dist/solver.mjs';
-import { PAGE, bundleDir, bundleFrom, bundleText, denseImage, makeBundle, readBundle, replayBundle, sparseImage, sparsePages, traceDifference, writeBundle } from './bundle.mjs';
+import { bundleDir, makeBundle, traceDifference } from './bundle.mjs';
 import { asleep, contacts } from './events.mjs';
 import { replayTo } from './replay-to.mjs';
 import { play } from './solver-scene.mjs';
@@ -40,9 +45,9 @@ import { playVerbs } from './verbs-scene.mjs';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /**
- * @typedef {import('./bundle.mjs').Bundle} Bundle
+ * @typedef {import('../packages/tick/bundle.js').Bundle} Bundle
  * @typedef {import('./replay-to.mjs').ReplaySpec} ReplaySpec
- * @typedef {{ name: string, kind: string, status: 'ok' | 'different' | 'refused' | 'error', ms: number, detail: string, block?: string, bundle?: string }} Result
+ * @typedef {{ name: string, kind: string, status: 'ok' | 'different' | 'refused' | 'error', ms: number, detail: string, block?: string, bundle?: string, image?: 'used' | 'skipped' | 'unreached' }} Result
  */
 
 // ---------------------------------------------------------------------------
@@ -140,12 +145,12 @@ function frameHashes(frames, name) {
 /**
  * Every behaviour fixture case and log in fixtures/ that replays, as a spec
  * and the hashes the fixture recorded.
- * @returns {Array<{ name: string, spec: ReplaySpec, hashes: string[] }>}
+ * @returns {Array<{ name: string, spec: import('../packages/tick/runs.js').RunSpec, hashes: string[] }>}
  */
 export function fixtureRuns() {
   /** @param {string} file */
   const read = (file) => JSON.parse(readFileSync(join(root, 'fixtures', file), 'utf8'));
-  /** @type {Array<{ name: string, spec: ReplaySpec, hashes: string[] }>} */
+  /** @type {Array<{ name: string, spec: import('../packages/tick/runs.js').RunSpec, hashes: string[] }>} */
   const runs = [];
   // behavior-solver predates the frame hash; runCorpus compares its behaviour.
   for (const file of ['behavior-rotation', 'behavior-ramp', 'shape-traversal']) {
@@ -282,7 +287,7 @@ function productLong(quanta, count, say) {
 
   // Images at the points from a third run, stored sparse.
   const imaging = replayTo(spec, 0);
-  /** @type {Map<number, import('./bundle.mjs').SparseImage>} */
+  /** @type {Map<number, import('../packages/tick/bundle.js').SparseImage>} */
   const images = new Map();
   for (;;) {
     if (points.some((p) => p.tick === imaging.tick)) {
@@ -341,7 +346,7 @@ function productLong(quanta, count, say) {
     const restored = lines.slice(0, point.tick).concat(rest);
     const block = traceDifference(lines, restored);
     const bundle = makeBundle(spec, { name, tick: point.tick, image: { bytes, worldId: sparse.worldId }, hashes: lines.slice(0, point.tick + 1).map((line) => line.split(' ')[1]), failure: { test: 'corpus', block } });
-    const path = writeBundle(bundle);
+    const path = writeBundle(bundle, bundleDir());
     results.push({ name, kind: 'product', status: 'different', ms: replayMs + decodeMs + restoreMs + rerunMs, detail, block, bundle: path });
     say('FAIL  ' + name + ': ' + detail + '\n' + block + 'bundle: ' + path);
   }
@@ -384,12 +389,23 @@ export function runCorpus(options) {
       const bundle = readBundle(path);
       const got = replayBundle(bundle);
       const ms = performance.now() - t0;
+      const skipped = got.skipped ? got.skipped + '; ' : '';
       if (got.status === 'ok') {
-        result = { name: bundle.name, kind: 'corpus', status: 'ok', ms, detail: (got.tick + 1) + ' hashes to tick ' + got.tick + (got.restored ? ', image of ' + got.pages + ' pages restored in ' + got.ms.restore.toFixed(1) + ' ms and rerun to ' + got.end + ' identically' : '') };
+        const image = got.image === 'stored'
+          ? ', stored image of ' + got.pages + ' pages restored in ' + got.ms.restore.toFixed(1) + ' ms and rerun to ' + got.end + ' identically'
+          : got.image === 'fresh'
+            ? ', fresh image of ' + got.pages + ' pages taken at ' + got.tick + ', restored in ' + got.ms.restore.toFixed(1) + ' ms and rerun to ' + got.end + ' identically'
+            : ', no image';
+        result = { name: bundle.name, kind: 'corpus', status: 'ok', ms, detail: skipped + (got.tick + 1) + ' hashes to tick ' + got.tick + image };
       } else if (got.status === 'different') {
-        result = { name: bundle.name, kind: 'corpus', status: 'different', ms, detail: 'replay differs', block: got.block };
+        result = { name: bundle.name, kind: 'corpus', status: 'different', ms, detail: skipped + (got.stage === 'hashes' ? 'the replay differs from its hashes' : 'the rerun from the image differs from the replay'), block: got.block };
       } else {
-        result = { name: bundle.name, kind: 'corpus', status: 'refused', ms, detail: got.reason };
+        result = { name: bundle.name, kind: 'corpus', status: 'refused', ms, detail: skipped + got.reason };
+      }
+      // A stored image is used when its restore is reached on the binary that
+      // recorded it, and skipped on any other.
+      if (bundle.image !== null) {
+        result.image = got.skipped ? 'skipped' : got.status === 'ok' || (got.status === 'different' && got.stage === 'rerun') ? 'used' : 'unreached';
       }
     } catch (error) {
       result = { name: file, kind: 'corpus', status: 'error', ms: performance.now() - t0, detail: /** @type {Error} */ (error).message };
@@ -424,7 +440,7 @@ export function runCorpus(options) {
       result = { name: run.name, kind: 'fixture', status: 'error', ms: performance.now() - t0, detail: /** @type {Error} */ (error).message };
     }
     if (result.status !== 'ok') {
-      result.bundle = writeBundle({ ...bundle, failure: { test: 'corpus', block: result.block || result.detail } });
+      result.bundle = writeBundle({ ...bundle, failure: { test: 'corpus', block: result.block || result.detail } }, bundleDir());
     }
     record(result);
   }
@@ -447,7 +463,7 @@ export function runCorpus(options) {
       ? { name, kind: 'fixture', status: 'ok', ms, detail: 'behaviour numbers match; its frames predate the frame hash and first differ at tick 0, as recorded' }
       : { name, kind: 'fixture', status: 'different', ms, detail: same ? 'its frames now first differ at ' + first + ', not 0' : 'the behaviour numbers moved: ' + JSON.stringify(played.behaviour) + ' against ' + JSON.stringify(spec.behaviour) };
     if (result.status !== 'ok') {
-      result.bundle = writeBundle(makeBundle({ seed: spec.seed, steps: spec.steps, driven: spec.driven, world: spec.world }, { name, image: true, failure: { test: 'corpus', block: result.detail } }));
+      result.bundle = writeBundle(makeBundle({ seed: spec.seed, steps: spec.steps, driven: spec.driven, world: spec.world }, { name, image: true, failure: { test: 'corpus', block: result.detail } }), bundleDir());
     }
     record(result);
   }
@@ -491,6 +507,20 @@ export function runCorpus(options) {
 }
 
 /**
+ * How the corpus's stored images were used: restored on the binary that
+ * recorded them, skipped on another (a fresh image restored instead), or not
+ * reached because the replay differed first.
+ * @param {Result[]} results
+ */
+export function imageCounts(results) {
+  const count = (/** @type {string} */ how) => results.filter((r) => r.image === how).length;
+  const used = count('used');
+  const skipped = count('skipped');
+  const unreached = count('unreached');
+  return { used, skipped, unreached, line: 'stored images: ' + used + ' used, ' + skipped + ' skipped (recorded on another binary; a fresh image restored instead)' + (unreached > 0 ? ', ' + unreached + ' not reached' : '') };
+}
+
+/**
  * The issue's title and body for a failed run.
  * @param {Result[]} results
  */
@@ -500,7 +530,7 @@ export function issueText(results) {
   const blockLines = first && first.block ? first.block.trim().split('\n') : [];
   const title = 'corpus: ' + (first ? first.name + ': ' + (blockLines.length > 0 ? blockLines.slice(0, 2).join(', ') : first.status + ', ' + first.detail) : 'green');
   const body = [
-    failed.length + ' of ' + results.length + ' failed. The first failing bundle is **' + (first ? first.name : '-') + '**.',
+    failed.length + ' of ' + results.length + ' failed. The first failing bundle is **' + (first ? first.name : '-') + '**. ' + imageCounts(results).line + '.',
     '',
     '```',
     first ? (first.block || first.detail).trim() : '',
@@ -546,6 +576,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     say: (line) => process.stdout.write(line + '\n'),
   });
   const failed = results.filter((r) => r.status !== 'ok');
+  process.stdout.write('corpus: ' + imageCounts(results).line + '\n');
   process.stdout.write('corpus: ' + (results.length - failed.length) + ' of ' + results.length + ' ok in ' + ((performance.now() - started) / 1000).toFixed(1) + ' s\n');
   if (failed.length > 0) {
     const issue = issueText(results);

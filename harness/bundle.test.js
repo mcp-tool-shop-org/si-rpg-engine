@@ -1,9 +1,10 @@
 // The bundle and the corpus, T5 (docs/dispatch-t5-replay-corpus.md). A bundle
 // replays in one command and says `bundle ok` or prints the T1 block; its
-// sparse image restores to the digest of the whole image; a bundle of another
-// binary is refused with both digests; a planted failure in a real test run
-// writes one that `replay` reproduces with the same block; and the corpus's
-// own bundles are of the pinned binary and replay green on it.
+// sparse image restores to the digest of the whole image; a bundle recorded
+// on another binary still replays and compares every hash, with its stored
+// image skipped and a fresh one restored in its place; a planted failure in a
+// real test run writes one that `replay` reproduces with the same block; and
+// the corpus's own bundles replay green on whatever binary runs them.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,14 +13,17 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { binaryDigest, imageDigest, imageSolver } from '../solver/dist/solver.mjs';
-import { PAGE, PAGES, bundleText, denseImage, makeBundle, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from './bundle.mjs';
-import { CORPUS } from './corpus.mjs';
+import { PAGE, PAGES, bundleText, denseImage, imageSkipped, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
+import { binaryDigest, imageDigest, imageSolver, instantiate } from '../solver/dist/solver.mjs';
+import { makeBundle } from './bundle.mjs';
+import { CORPUS, imageCounts, runCorpus } from './corpus.mjs';
 import { replayTo } from './replay-to.mjs';
 
 const dir = mkdtempSync(join(tmpdir(), 'si-rpg-bundle-test-'));
 const pinned = readFileSync('fixtures/solver.sha256', 'utf8').trim();
 const stall = /** @type {import('./solver-scene.mjs').PlaySpec} */ (CORPUS[0].spec);
+/** A digest that is not this binary's: the pinned Linux one where this host built another. */
+const other = pinned === binaryDigest() ? '0'.repeat(64) : pinned;
 
 /**
  * `replay <path>` as a person runs it.
@@ -60,7 +64,7 @@ test('the sparse image: 512 pages of 64 KiB, the non-zero ones kept, restoring t
   assert.throws(() => sparseImage(image.bytes.subarray(0, PAGE * 3), 1), /an image is 512 pages of 64 KiB/);
 });
 
-test('a bundle with an image replays in one command: every hash to the save tick, then the image restored and rerun identically', (t) => {
+test('a bundle with an image replays in one command: every hash to the save tick, then its stored image restored and rerun identically', (t) => {
   const bundle = makeBundle(stall, { name: 'stall at 97', tick: 97, image: true });
   assert.equal(bundle.bundle, 1);
   assert.equal(bundle.binary, binaryDigest());
@@ -78,7 +82,7 @@ test('a bundle with an image replays in one command: every hash to the save tick
   t.diagnostic(run.stderr.trim());
   assert.equal(run.stdout, 'bundle ok\n', run.stderr);
   assert.equal(run.status, 0);
-  assert.match(run.stderr, /98 hashes to tick 97 .*restored in [\d.]+ ms, rerun to 640 identically/);
+  assert.match(run.stderr, /98 hashes to tick 97 .*; stored image of \d+ pages decoded in [\d.]+ ms, restored in [\d.]+ ms, rerun to 640 identically/);
 });
 
 test('a log run and a product run bundle and replay too; a reference-law run has no image', () => {
@@ -96,27 +100,72 @@ test('a log run and a product run bundle and replay too; a reference-law run has
   assert.equal(replayBundle(reference).status, 'ok');
 });
 
-test('a bundle from a binary with another digest is refused, naming both digests', () => {
-  const bundle = makeBundle(stall, { name: 'other binary', tick: 10, image: true });
-  const other = pinned === binaryDigest() ? '0'.repeat(64) : pinned;
+test('(a) a bundle recorded on another binary still replays and compares every hash: its image is skipped with one line, then bundle ok', (t) => {
+  const bundle = makeBundle(stall, { name: 'other binary', tick: 97, image: true });
   const path = writeBundle({ ...bundle, binary: other }, dir);
   const run = replayCommand(path);
-  assert.equal(run.status, 1);
-  assert.equal(run.stdout, '');
-  assert.equal(run.stderr, 'bundle refused: the bundle is from binary ' + other + ' and this binary is ' + binaryDigest() + '; its image and hashes are of those exact bytes\n');
+  t.diagnostic(run.stdout.trim() + ' / ' + run.stderr.trim());
+  assert.equal(run.status, 0, run.stderr);
+  assert.equal(run.stdout, 'image skipped: recorded on ' + other + ', running ' + binaryDigest() + '\nbundle ok\n');
+  assert.match(run.stderr, /^other binary: 98 hashes to tick 97 in \d+ ms; fresh image of \d+ pages taken at tick 97 in [\d.]+ ms, restored in [\d.]+ ms, rerun to 640 identically in \d+ ms\n$/);
+  // With no image there is nothing to skip: the hashes are compared, no more.
+  const bare = makeBundle(stall, { name: 'other binary, no image', tick: 97, image: false });
+  const plain = replayCommand(writeBundle({ ...bare, binary: other }, dir));
+  assert.equal(plain.stdout, 'bundle ok\n', plain.stderr);
+  assert.match(plain.stderr, /; no image\n$/);
 });
 
-test('a bundle whose chain differs at one tick prints the T1 block there, and one cut short prints length', () => {
-  const bundle = makeBundle(stall, { name: 'chain', tick: 60 });
+test('(b) a stored image from another binary is not used: a fresh image taken at the save tick on this binary is restored and must rerun the same', () => {
+  const bundle = makeBundle(stall, { name: 'fresh', tick: 97, image: true });
+  const from = { ...bundle, binary: other };
+  const before = instantiate();
+  const got = replayBundle(from);
+  assert.equal(got.status, 'ok', JSON.stringify(got));
+  if (got.status !== 'ok') {
+    return;
+  }
+  assert.equal(got.image, 'fresh');
+  assert.equal(got.skipped, imageSkipped(other, binaryDigest()));
+  assert.equal(got.end, 640);
+  assert.ok(got.pages !== null && got.pages > 0 && got.pages < PAGES / 8, 'pages ' + got.pages);
+  assert.notEqual(instantiate(), before, 'the fresh image was restored into a new instance');
+  // The stored image is not read: spoiled, it spoils nothing on another binary,
+  // and it is refused on the binary that recorded it.
+  if (!bundle.image) {
+    throw new Error('no image');
+  }
+  const spoiled = { ...bundle.image, digest: '0123456789abcdef' };
+  assert.equal(replayBundle({ ...from, image: spoiled }).status, 'ok');
+  const own = replayBundle({ ...bundle, image: spoiled });
+  assert.equal(own.status, 'refused');
+  assert.match(own.status === 'refused' ? own.reason : '', /the sparse image restores to digest [0-9a-f]{16}, not its own 0123456789abcdef/);
+  // Red: a fresh image of tick 102 restored at 97 does not rerun the same,
+  // and the block names the save tick.
+  const planted = replayBundle(from, { imageFrom: 102 });
+  assert.equal(planted.status, 'different', JSON.stringify(planted));
+  if (planted.status === 'different') {
+    assert.equal(planted.stage, 'rerun');
+    assert.match(planted.block, /^first difference at tick 97\n(snapshot|body walker field [a-z]+)\n {2}whole\.trace {4}.+\n {2}restored\.trace .+\n$/);
+  }
+});
+
+test('(c) a bundle whose trace hashes differ fails with the first-difference block, from this binary or another', () => {
+  const bundle = makeBundle(stall, { name: 'chain', tick: 60, image: true });
   const hashes = bundle.hashes.slice();
   const was = hashes[33];
   hashes[33] = was === '0000000000000000' ? '0000000000000001' : '0000000000000000';
-  const path = writeBundle({ ...bundle, hashes }, dir);
-  const run = replayCommand(path);
-  assert.equal(run.status, 1);
-  assert.equal(run.stdout, 'first difference at tick 33\nhash\n  bundle ' + hashes[33] + '\n  replay ' + was + '\n');
+  const block = 'first difference at tick 33\nhash\n  bundle ' + hashes[33] + '\n  replay ' + was + '\n';
+  const here = replayCommand(writeBundle({ ...bundle, hashes }, dir));
+  assert.equal(here.status, 1);
+  assert.equal(here.stdout, block);
+  // Recorded on another binary: the image line, then the same block. A law
+  // change looks like this whatever the binary.
+  const away = replayCommand(writeBundle({ ...bundle, hashes, binary: other }, dir));
+  assert.equal(away.status, 1);
+  assert.equal(away.stdout, 'image skipped: recorded on ' + other + ', running ' + binaryDigest() + '\n' + block);
+  // A run that ends before the bundle's save tick is a length block.
   const short = replayBundle({ ...bundle, steps: 30 });
-  assert.deepEqual(short, { status: 'different', block: 'first difference at tick 31\nlength\n  bundle continues\n  replay ends after 31 lines\n' });
+  assert.deepEqual(short, { status: 'different', stage: 'hashes', skipped: null, block: 'first difference at tick 31\nlength\n  bundle continues\n  replay ends after 31 lines\n' });
 });
 
 test('every failure writes one: planted failures in a real test run write bundles, and replay reproduces the restore failure with the same first-difference block', () => {
@@ -185,27 +234,30 @@ test('every failure writes one: planted failures in a real test run write bundle
   assert.equal(again.stdout, 'bundle ok\n', again.stderr);
 });
 
-test('the corpus: two bundles of the pinned binary, the walker stall and the product scene rebuilds, and on it they replay green', (t) => {
+test('the corpus: the walker stall and the product scene rebuilds replay green on this binary, with their stored images where it recorded them and fresh ones where it did not, and the job counts which', (t) => {
   const files = readdirSync('fixtures/corpus').filter((f) => f.endsWith('.bundle.json')).sort();
   assert.deepEqual(files, ['product-rebuild-261.bundle.json', 'walker-stall-flat-ground.bundle.json']);
+  const here = binaryDigest();
   for (const item of CORPUS) {
     const bundle = readBundle('fixtures/corpus/' + item.name + '.bundle.json');
     assert.equal(bundle.name, item.name);
     assert.equal(bundle.tick, item.tick);
     assert.ok(bundle.image, item.name + ' has an image');
-    assert.equal(bundle.binary, pinned, item.name + ' is of the pinned Linux binary; a slice that moves the binary rewrites it from the corpus job');
     assert.ok(bundle.note.length > 100, item.name + ' says what it records');
     const result = replayBundle(bundle);
-    if (binaryDigest() === pinned) {
-      assert.equal(result.status, 'ok', JSON.stringify(result));
-      t.diagnostic(item.name + ': ' + JSON.stringify(result));
-    } else {
-      // Not the Linux build: refused, both digests named. CI and the corpus
-      // job run the pinned binary and replay them.
-      assert.deepEqual(result, { status: 'refused', reason: 'the bundle is from binary ' + pinned + ' and this binary is ' + binaryDigest() + '; its image and hashes are of those exact bytes' });
-      t.diagnostic(item.name + ': refused on this host, whose binary is ' + binaryDigest() + ', not the pinned ' + pinned);
+    assert.equal(result.status, 'ok', JSON.stringify(result));
+    if (result.status === 'ok') {
+      assert.equal(result.image, bundle.binary === here ? 'stored' : 'fresh');
+      assert.equal(result.skipped, bundle.binary === here ? null : imageSkipped(bundle.binary, here));
+      t.diagnostic(item.name + ': recorded on ' + bundle.binary + ', running ' + here + ': ' + result.image + ' image of ' + result.pages + ' pages, rerun to ' + result.end + ' identically');
     }
   }
   assert.match(readBundle('fixtures/corpus/walker-stall-flat-ground.bundle.json').note, /on 23 of its 640 quanta .* first at 98/);
   assert.match(readBundle('fixtures/corpus/product-rebuild-261.bundle.json').note, /201 .*261 .*401 .*verb-boundary rebuilds a later slice will remove/);
+  // What the job prints: how many stored images it used and how many it skipped.
+  const results = runCorpus({ quanta: 0, points: 10, only: 'walker-stall', say: () => {} });
+  assert.deepEqual(results.map((r) => r.name + ' ' + r.status), ['walker-stall-flat-ground ok']);
+  const stored = readBundle('fixtures/corpus/walker-stall-flat-ground.bundle.json').binary === here;
+  assert.deepEqual({ used: imageCounts(results).used, skipped: imageCounts(results).skipped }, stored ? { used: 1, skipped: 0 } : { used: 0, skipped: 1 });
+  assert.match(imageCounts(results).line, /^stored images: [01] used, [01] skipped \(recorded on another binary; a fresh image restored instead\)$/);
 });
