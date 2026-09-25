@@ -22,8 +22,10 @@ const cargo = process.env.CARGO || 'cargo';
 // between hosts. Remapping strips both. Windows still writes backslashes into
 // the remainder of each path, so the two hosts never produce identical bytes:
 // the pinned artifact is the Linux build, and only a Linux build may write the
-// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD pin and
-// the memory pin are repeated here.
+// digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD default
+// and the memory pin are repeated here. The flag sets the default feature set
+// only; a function marked #[target_feature(enable = "relaxed-simd")] still
+// emits relaxed instructions, so the lint below is what keeps them out.
 //
 // The memory is fixed: initial and maximum are the same 256 pages (16 MiB),
 // so the module cannot grow and solver/lint.mjs can hold it to that. At the
