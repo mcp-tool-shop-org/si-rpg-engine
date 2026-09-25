@@ -12,27 +12,32 @@
   <a href="https://mcp-tool-shop-org.github.io/si-rpg-engine/"><img src="https://img.shields.io/badge/Landing-Page-blue" alt="Landing Page"></a>
 </p>
 
-Un moteur de simulation 3D déterministe, haché et rejouable. Le cycle s’exécute à un pas de temps fixe, chaque état est haché, et la loi physique est compilée en Rust en un seul fichier WebAssembly. La relecture se fait à partir de la graine et du journal des éléments acceptés. Un modèle de langage peut proposer des éléments dans le monde ; un vérificateur défini manuellement décide de ce qui y est intégré. Il s’agit de la contrepartie de [ai-rpg-engine](https://github.com/mcp-tool-shop-org/ai-rpg-engine), et il est évalué en fonction de ce qu’il simule.
+si-rpg-engine est un moteur de simulation pour les mondes 3D qui permet de rejouer exactement les mêmes séquences. Il effectue les calculs physiques à un rythme fixe de 64 étapes par seconde, enregistre une empreinte du monde après chaque étape et peut reconstruire n'importe quelle séquence à partir de sa configuration initiale et des entrées qu'elle a reçues, bit par bit. Les calculs physiques sont réalisés en Rust et compilés en un seul fichier WebAssembly. Un modèle de langage peut suggérer ce qui se passe ensuite ; des règles écrites à la main déterminent ce qui est pris en compte. Il est l'équivalent de [ai-rpg-engine](https://github.com/mcp-tool-shop-org/ai-rpg-engine), et son efficacité est mesurée par ce qu'il simule.
 
 ## Ce que c’est et ce que cela vise à être
 
-Trois moteurs JavaScript, V8, SpiderMonkey et JavaScriptCore, affichent le même hachage pour le même monde à chaque validation. C’est la promesse sur laquelle repose le reste du moteur : un monde sur lequel deux machines peuvent s’accorder, octet par octet, à partir d’une graine et d’une liste d’entrées acceptées. Au-dessus, il y a des corps qui tombent, glissent, poussent, basculent et roulent dans les trois dimensions ; un personnage qui marche, escalade des pentes, transporte des objets et les pose ; des fichiers de monde qui sont refusés avec une explication lorsqu’ils sont incorrects ; et des esprits qui voient, se souviennent de ce qu’ils ont vu et refusent une croyance qui repose sur des preuves plus anciennes que celles qu’ils remplaceraient.
+Les moteurs JavaScript utilisés par Chrome, Firefox et Safari, à savoir V8, SpiderMonkey et JavaScriptCore, affichent la même empreinte pour le même monde à chaque validation, et la même simulation physique affiche cette empreinte sur x64 et ARM64. Tout le reste repose sur cette promesse : deux machines s'accordent sur un monde, octet par octet, en se basant sur une configuration initiale et une liste d'entrées acceptées. Au-dessus de cela, on trouve des objets qui tombent, glissent, poussent, basculent et roulent dans trois dimensions ; un personnage qui marche, escalade des pentes, transporte des objets et les pose ; des fichiers de monde qui sont rejetés avec une explication lorsqu'ils sont incorrects ; et des personnages dotés d'une intelligence qui voit, se souvient de ce qu'ils ont vu et refusent une croyance basée sur des preuves plus anciennes que celles qu'ils remplaceraient.
 
-Ce que cela vise à être est le noyau de simulation à l’intérieur d’un hôte : un navigateur, Godot ou Unreal dessine l’image et envoie des intentions, tandis que la loi, le hachage et l’enregistrement restent ici. La phase suivante est la suite de tests d’un moteur prêt à être déployé, définie par une étude sur la façon dont les studios effectuent des tests aujourd’hui ; ensuite, il y a les collisions à partir de maillages, une liaison à l’hôte et le dégel du modèle en tant qu’instrument de test. Les plans sont [docs/PHASE-0.md](docs/PHASE-0.md) et [docs/PHASE-1.md](docs/PHASE-1.md), et chaque étape a été construite à partir d’un document écrit dans `docs/`.
+L'objectif est de créer le moteur de simulation au sein d'un environnement hôte : un navigateur, Godot ou Unreal dessinent l'image et envoient des entrées, tandis que les calculs physiques, l'empreinte et l'enregistrement restent ici. Le travail actuel consiste en la suite de tests dont un moteur de jeu a besoin, et la plupart de ces tests sont les suivants : un enregistrement qui indique la première étape et la valeur où deux simulations divergent, une sauvegarde et une restauration qui sont prouvées exactes, une deuxième architecture de CPU, une analyse du code physique compilé et des tests qui vérifient ce que le monde a fait plutôt que seulement son empreinte. Après la suite de tests, il y aura des collisions entre les maillages et une liaison avec l'environnement hôte. La conception et les plans se trouvent dans [docs/PHASE-0.md](docs/PHASE-0.md), [docs/PHASE-1.md](docs/PHASE-1.md) et [docs/PHASE-2.md](docs/PHASE-2.md).
 
 ## Ce qui est construit
 
 | Capacité | Où | Preuve |
 |---|---|---|
-| Cycle à pas de temps fixe, hachage FNV-1a sur chaque nombre à virgule flottante, NaN refusé, zéro signé normalisé | `packages/tick`, `packages/frame` | `fixtures/golden-arith.txt` a lu `0d38671370d12d1e` depuis le premier ensemble de tests |
+| Un pas de temps fixe ; l'état de chaque étape est haché avec un FNV-1a à deux voies sur chaque f64 ; NaN est refusé ; le zéro signé est normalisé. | `packages/tick`, `packages/frame` | `fixtures/golden-arith.txt` a lu `0d38671370d12d1e` depuis le premier ensemble de tests |
 | Loi physique en Rust sur `rapier3d-f64` avec `enhanced-determinism`, un seul fichier WebAssembly, hachage Linux enregistré | `solver/` | `fixtures/solver.sha256` ; CI reconstruit et compare |
-| Corps avec position, vitesse, un quaternion canonique, vitesse angulaire et demi-dimensions ; les boîtes dynamiques tournent ; un personnage cinématique avec un pas de 0,3, une montée de 45°, un ajustement de 0,2 ; le sommeil est compté en quanta ; l’instantané du solveur est haché | `solver/src/rapier_law.rs`, `packages/tick/world.js` | `fixtures/behavior-3d.json`, `behavior-rotation.json`, `behavior-ramp.json`, `shape-traversal.json` |
-| Fichiers de monde : corps, collisionneurs statiques orientés, champs de hauteur, zones en tant que partition, douze refus de chargement, dangers au chargement, un index auquel l’hôte fait confiance | `packages/tick/scene.js`, `packages/tick/admit-world.js`, `worlds/` | `packages/tick/scene.test.js` |
+| Objets avec position, vitesse, un quaternion canonique, vitesse angulaire et demi-dimensions ; les boîtes dynamiques tournent ; un personnage cinématique avec un pas automatique de 0,3, une escalade de 45° et un ajustement de 0,2 ; le sommeil est compté en étapes. | `solver/src/rapier_law.rs`, `packages/tick/world.js` | `fixtures/behavior-3d.json`, `behavior-rotation.json`, `behavior-ramp.json`, `shape-traversal.json` |
+| Fichiers de monde : objets, collisionneurs statiques orientés, champs de hauteur, zones en tant que partition, douze refus de chargement, dangers au chargement et un index auquel l'environnement hôte fait confiance ; les actions se déroulent sur la même surface de terrain à deux triangles avec laquelle les objets physiques entrent en collision. | `packages/tick/scene.js`, `packages/tick/admit-world.js`, `worlds/` | `packages/tick/scene.test.js`, `harness/surface.test.js` |
 | Verbes acceptés au chargement avec effets `drive`, `climb`, `carry`, `release`, `episode`, chacun avec des scénarios de danger | `predicates/`, `packages/load` | `fixtures/behavior-verbs.json` |
-| Esprits : vision avec ligne de mire, croyances typées citant des épisodes, suppression de la tombe, refus des écritures obsolètes, objectifs en suspens avec un indicateur « atteint » | `packages/tick/memory.js`, `predicates/beliefs/keys.json` | `fixtures/behavior-minds.json` |
+| Intelligences : vision avec champ de vision, croyances typées citant l'épisode dont elles proviennent, suppression par pierre tombale, refus des écritures obsolètes et objectifs permanents avec un indicateur "réalisé". | `packages/tick/memory.js`, `predicates/beliefs/keys.json` | `fixtures/behavior-minds.json` |
+| Un enregistrement de chaque étape en bits exacts, et un outil qui indique la première étape, l'objet et le champ où deux simulations divergent. | `harness/trace.mjs`, `harness/first-difference.js` | `harness/trace.test.js` ; CI affiche la première différence lorsqu'un moteur s'écarte de la version de référence. |
+| Nombres de comportement à côté de la version de référence : l'étape de sommeil et la position finale de chaque objet, la zone du personnage qui marche et la longueur et le hachage de l'instantané. | `fixtures/golden-behaviour.json`, `harness/check.js` | `harness/check.test.js` |
+| Sauvegarde et restauration de deux manières, soit en rejouant les entrées jusqu'à une étape, soit en copiant la mémoire du module de physique, chacune étant prouvée pour continuer exactement. | `harness/replay-to.mjs`, `solver/build.mjs` | `harness/restore.test.js` |
+| Un seul binaire sur deux architectures de CPU, avec une mémoire fixée à 32 Mio et une analyse qui refuse les instructions choisies par l'environnement hôte, l'augmentation de la mémoire et l'état conservé en dehors de la mémoire. | `solver/build.rs`, `solver/src/arena.rs`, `solver/lint.mjs` | Tâche ARM64 de CI ; `solver/lint.test.js`, `harness/caps.test.js` |
+| Tests de ce que le monde a fait : un parcours de personnage aux limites mesurées du contrôleur, un objet fin et rapide contre un mur fin et des joints de terrain. | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuse d'écrire tant que l'un d'eux échoue. |
 | Relecture à partir de la graine et du journal ; une vue de débogage du cycle sur localhost | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` est une personne qui joue à travers la limite de l’hôte |
 
-Soixante-treize tests, sept ensembles de comportements qui rejouent image par image, et deux hachages de référence sous trois moteurs, à chaque validation.
+174 tests, sept ensembles de comportement qui rejouent étape par étape, et deux hachages de référence affichés par trois moteurs sur x64 et par node sur ARM64, à chaque validation.
 
 ## Installation
 
@@ -42,7 +47,7 @@ Prérequis : Node 20 ou version ultérieure, et la chaîne d’outils Rust avec
 git clone https://github.com/mcp-tool-shop-org/si-rpg-engine.git
 cd si-rpg-engine
 npm ci
-npm run verify     # typecheck, the suite, and both goldens under node
+npm run verify     # typecheck, the suite, both goldens, and the behaviour numbers under node
 ```
 
 `npm test` construit d’abord le solveur. Sous Linux, la construction est comparée au hachage enregistré ; sur un autre hôte, elle signale son propre hachage, car la construction Linux est l’artefact enregistré.
@@ -52,14 +57,24 @@ npm run verify     # typecheck, the suite, and both goldens under node
 Chaque commande s’exécute à partir de n’importe quel répertoire, renvoie `--help`, se termine avec 0 en cas de succès, 1 avec une explication en cas de refus et 2 en cas d’erreur d’utilisation ou de défaillance inattendue. `--debug` permet à une trace de pile de passer.
 
 ```bash
-npx play proposals.json --seed 7 --log out.json    # run proposals through the tick, print every committed frame
+npx play proposals.json --seed 7 --log out.json    # run proposals through the tick and print every committed frame
 npx replay out.json                                 # rerun a log; fails on the first hash that differs
-npx load world worlds/crate-and-door.json           # validate a world, run its hazards, write its load hash to the index
-npx load admit fixtures/climb-draft.json            # compile a verb draft, run the hazards for its effect, add it to the catalog
-npx load retire climb                               # take a verb out of the catalog
+npx load world worlds/crate-and-door.json           # validate a world, run its hazards, and write its load hash to the index
+npx load admit fixtures/climb-draft.json            # compile an action draft, run the hazards for its effect, and add it to the catalog
+npx load retire climb                               # take an action out of the catalog
 npx host --world worlds/crate-and-door.json         # serve the debug view at http://127.0.0.1:4173
-npx write-golden                                    # rewrite fixtures/golden.txt from harness/sim.mjs, with a reason in the commit
+npx write-golden                                    # run the course and outcome tests, then rewrite the goldens and name what moved
 ```
+
+Lorsque deux simulations sont en désaccord, l'enregistrement indique où :
+
+```bash
+node harness/trace.mjs > a.trace                    # the product scene, one line per step in exact bits
+node harness/first-difference.js a.trace b.trace    # identical, or the first step, body, and field that differ
+node solver/lint.mjs                                # refuse a binary that could grow memory or let the host choose a result
+```
+
+Un monde se restaure de deux manières, et aucune ne s'écrit dans l'état interne du moteur physique, ce qui explique pourquoi les deux sont exactes : rejouer ses entrées acceptées jusqu'à une étape, ou copier toute la mémoire du module physique avec `imageSolver()` et la remettre en place avec `restoreImage()`. Une image provenant d'un autre binaire, de la mauvaise longueur ou avec un octet modifié, est refusée.
 
 La vue de débogage est une vue de débogage. Elle dessine les images validées sous forme de boîtes projetées le long de l’axe choisi avec `x`, `y` ou `z` ; un clic est une cible du plan de sol ; `M`, `C`, `G`, `D` et `U` choisissent les actions de déplacement, d’escalade, de ramassage, de dépose et d’utilisation ; la zone du personnage et les croyances de chaque esprit se trouvent à côté du cycle et du hachage. Elle n’affiche jamais rien que le cycle ne contient pas.
 
@@ -71,7 +86,7 @@ Un cycle avec graine est la loi. Le quantum est de 1/64 s, chaque quantum est ha
 
 ## Modèle de confiance
 
-Le moteur s’exécute localement et n’accède qu’aux fichiers situés dans son propre répertoire de validation : mondes, ébauches de verbes, ensembles de tests et tout journal que vous demandez à une commande d’écrire. `host` ne lie `127.0.0.1` que. Aucune commande n’ouvre un autre socket ; l’instrument `propose` gelé, une fois qu’une personne le débloque, communique avec un serveur Ollama local et nulle part ailleurs. Aucune information d’identification n’est lue, stockée ou envoyée. Aucune télémétrie n’est collectée. Le contenu créé est considéré comme non fiable et est validé au moment du chargement ; un fichier refusé ne change rien. Le fichier WebAssembly est construit à partir du code source dans CI et est enregistré par son SHA-256, et n’est jamais validé en tant qu’octets. Voir [SECURITY.md](SECURITY.md).
+Le moteur s'exécute localement et ne touche que les fichiers à l'intérieur de son propre répertoire de validation : mondes, brouillons d'actions, ensembles de tests et tout journal que vous demandez à une commande d'écrire. `host` ne lie que `127.0.0.1`. Aucune commande n'ouvre un autre socket ; l'instrument `propose` gelé, une fois qu'une personne le débloque, communique avec un serveur Ollama local et nulle part ailleurs. Aucun identifiant n'est lu, stocké ou envoyé. Aucune télémétrie n'est collectée. Le contenu créé est considéré comme non fiable et est validé au chargement ; un fichier refusé ne change rien. Le binaire WebAssembly est construit à partir du code source dans CI et est verrouillé par son SHA-256, et n'est jamais validé en tant qu'octets. Sa mémoire est fixée à 32 Mio et ne peut pas augmenter, de sorte qu'un monde trop dense pour lui s'arrête de la même manière sur chaque environnement hôte au lieu de diverger. Voir [SECURITY.md](SECURITY.md).
 
 ## État du support
 

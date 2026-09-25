@@ -2,7 +2,7 @@
 title: Security
 description: What the engine touches, what it never does, and how to report a problem.
 sidebar:
-  order: 6
+  order: 7
 ---
 
 ## Scope
@@ -20,7 +20,7 @@ World files, verb drafts, and play logs are untrusted. Each is validated at load
 
 ## The binary
 
-The WebAssembly binary is built from source in CI on Linux and pinned by its SHA-256 in `fixtures/solver.sha256`. It is never committed as bytes. A build on another host reports its own digest and does not write the pin.
+The WebAssembly binary is built from source in CI on Linux and pinned by its SHA-256 in `fixtures/solver.sha256`. It is never committed as bytes. A build on another host reports its own digest and does not write the pin. Its memory is fixed at 32 MiB and cannot grow, and a lint refuses any binary that could grow its memory, let the host choose an instruction's result, or keep state outside its memory. A memory image is refused if it came from another binary, has the wrong length, carries a changed byte, or was taken while a call was running.
 
 ## Dependencies
 
