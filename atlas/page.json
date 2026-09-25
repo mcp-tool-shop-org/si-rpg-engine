@@ -5,7 +5,7 @@
     "predicates/hazards/",
     "predicates/intents/",
     "root",
-    "scenes/"
+    "worlds/"
   ],
   "breaks": [
     {
@@ -67,45 +67,62 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 3,
-      "changed": 44,
+      "added": 5,
+      "changed": 21,
       "moved": 0,
-      "parts": 9,
-      "removed": 0
+      "parts": 11,
+      "removed": 1
     },
     "items": [
       {
         "kind": "landing",
-        "sentence": "fixtures/behavior-rotation.json is now read by harness/solver.test.js.",
+        "sentence": "fixtures/behavior-ramp.json is now read by harness/solver.test.js.",
         "subjects": [
-          "fixtures/behavior-rotation.json",
+          "fixtures/behavior-ramp.json",
           "harness/solver.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/shape-traversal.json is now read by harness/solver.test.js.",
+        "sentence": "worlds/crate-and-door.json is now read by README.md, packages/host/host.test.js, packages/tick/scene.test.js and packages/tick/tick.test.js.",
         "subjects": [
-          "fixtures/shape-traversal.json",
-          "harness/solver.test.js"
+          "worlds/crate-and-door.json",
+          "README.md",
+          "packages/host/host.test.js",
+          "packages/tick/scene.test.js",
+          "packages/tick/tick.test.js"
+        ]
+      },
+      {
+        "kind": "part",
+        "sentence": "worlds is a new part, drawn from `worlds/**`.",
+        "subjects": [
+          "worlds"
+        ]
+      },
+      {
+        "kind": "part",
+        "sentence": "scenes is no longer a part.",
+        "subjects": [
+          "scenes"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "3 files added and 44 changed content, across 9 parts.",
+        "sentence": "5 files added, 1 removed and 21 changed content, across 11 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "a6479da4940c6deb480f50b7e92e9da7b907d219",
-      "generatedAt": "2026-09-25T01:37:45.669Z"
+      "commit": "aad8a8c03d654dd14ead908b84ccc0af8776a1e0",
+      "generatedAt": "2026-09-25T05:49:48.401Z"
     },
     "unchanged": false
   },
   "changesTogether": [
     {
       "a": "packages/propose/bin/propose.js",
-      "b": "packages/propose/prompt.js",
+      "b": "packages/propose/propose.test.js",
       "either": 5,
       "partLabels": [
         "propose",
@@ -120,23 +137,8 @@
     },
     {
       "a": "packages/propose/bin/propose.js",
-      "b": "packages/propose/propose.test.js",
-      "either": 5,
-      "partLabels": [
-        "propose",
-        "propose"
-      ],
-      "parts": [
-        "propose",
-        "propose"
-      ],
-      "relation": "inside",
-      "shared": 5
-    },
-    {
-      "a": "packages/propose/prompt.js",
-      "b": "packages/propose/propose.test.js",
-      "either": 5,
+      "b": "packages/propose/prompt.js",
+      "either": 6,
       "partLabels": [
         "propose",
         "propose"
@@ -165,6 +167,21 @@
     },
     {
       "a": "packages/propose/prompt.js",
+      "b": "packages/propose/propose.test.js",
+      "either": 6,
+      "partLabels": [
+        "propose",
+        "propose"
+      ],
+      "parts": [
+        "propose",
+        "propose"
+      ],
+      "relation": "inside",
+      "shared": 5
+    },
+    {
+      "a": "packages/propose/propose.test.js",
       "b": "packages/propose/seat.js",
       "either": 6,
       "partLabels": [
@@ -184,9 +201,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 0 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "aad8a8c03d654dd14ead908b84ccc0af8776a1e0",
+  "commit": "8c3c252e349160b34c0999766a3e08c92f474f62",
   "defaultBranch": "main",
-  "derived": "14 parts, mostly JavaScript (41 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "14 parts, mostly JavaScript (42 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -251,7 +268,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 11
+          "files": 12
         }
       ],
       "runs": [
@@ -291,11 +308,11 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 6
+          "files": 7
         },
         {
           "boundary": "frame",
-          "depth": 3,
+          "depth": 2,
           "files": 2
         }
       ],
@@ -324,12 +341,12 @@
         },
         {
           "boundary": "tick",
-          "depth": 2,
-          "files": 4
+          "depth": 1,
+          "files": 6
         },
         {
           "boundary": "frame",
-          "depth": 3,
+          "depth": 2,
           "files": 2
         }
       ],
@@ -537,12 +554,12 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T05:49:48.401Z",
+  "generatedAt": "2026-09-25T06:44:24.341Z",
   "limits": [
     "4 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "5 writes and 7 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "6 writes and 9 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "5 commands are built at run time and not followed, 3 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
@@ -558,10 +575,10 @@
     "load": "load",
     "propose": "propose",
     "root": "the repository root",
-    "scenes": "scenes",
     "solver": "solver",
     "tick": "tick",
-    "workflows": "workflows"
+    "workflows": "workflows",
+    "worlds": "worlds"
   },
   "parts": 14,
   "readers": [],

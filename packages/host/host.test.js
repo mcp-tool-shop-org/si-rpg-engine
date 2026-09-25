@@ -166,7 +166,7 @@ test('the page stream is a world line, then frames, and a posted intent is admit
 });
 
 test('P pushes the nearest body on the newest frame', () => {
-  const loaded = loadScene('scenes/crate-and-door.json');
+  const loaded = loadScene('worlds/crate-and-door.json');
   assert.equal(loaded.ok, true);
   if (!loaded.ok) {
     return;
@@ -188,24 +188,23 @@ test('P pushes the nearest body on the newest frame', () => {
 });
 
 test('the door tick is sticky: a frame drawn late still names the tick the sim reached it', () => {
-  const loaded = loadScene('scenes/crate-and-door.json');
+  const loaded = loadScene('worlds/crate-and-door.json');
   assert.equal(loaded.ok, true);
   if (!loaded.ok) {
     return;
   }
   const session = createSession(loaded.scene, 'reference');
-  // Let the walker land first. A push from the air lands the walker on the crate instead of behind it.
   for (let i = 0; i < 200; i = i + 1) {
     session.advance();
   }
-  const pushed = session.intent({ verb: 'push', actor: 'walker', frameHash: session.frame().hash });
+  const pushed = session.intent({ verb: 'move', actor: 'walker', target: { x: 3.6, z: 0 }, frameHash: session.frame().hash });
   assert.equal(pushed.admitted, true);
   let first = null;
   for (let i = 0; i < 600 && first === null; i = i + 1) {
     const frame = session.advance();
     first = session.doorTick(frame);
   }
-  assert.ok(first !== null, 'the crate reached the door');
+  assert.ok(first !== null, 'the walker reached the door');
   for (let i = 0; i < 50; i = i + 1) {
     session.advance();
   }

@@ -28,8 +28,23 @@ export interface Body {
   hz: number;
 }
 
-/** A static collider the tick can query. It never moves. */
+/** A static collider the tick can query. It never moves. Optional quaternion rotates the box about the centre of its extent. */
 export interface StaticCollider {
+  id: string;
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  minZ: number;
+  maxZ: number;
+  qx?: number;
+  qy?: number;
+  qz?: number;
+  qw?: number;
+}
+
+/** A gameplay partition. Half-open on every axis. */
+export interface Zone {
   id: string;
   minX: number;
   maxX: number;

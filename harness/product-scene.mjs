@@ -63,10 +63,13 @@ export function createProductWorld() {
       { id: 'lower', x: 6, y: 0.3, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
       { id: 'upper', x: 6, y: 0.85, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
       { id: 'tip', x: 8.15, y: 0.7, z: -1.5, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'slider', x: 22.53760930650349, y: 2.3347518010647184, z: 4, vx: 0, vy: 0, vz: 0, hx: 0.12, hy: 0.12, hz: 0.12 },
     ],
     colliders: [
       { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 },
       { id: 'rail', minX: 7.7, maxX: 8, minY: 0, maxY: 0.4, minZ: -1.8, maxZ: -1.2 },
+      // 45° about Z. Half-extents stay at 1.4, 0.35, 0.5: a longer rotated cuboid is missed after the broad-phase warm.
+      { id: 'ramp', minX: 20.6, maxX: 23.4, minY: 0.5424621202458748, maxY: 1.2424621202458748, minZ: 3.5, maxZ: 4.5, qx: 0, qy: 0, qz: 0.3826834323650898, qw: 0.9238795325112867 },
     ],
     heightfield: {
       rows: 2,
@@ -74,5 +77,9 @@ export function createProductWorld() {
       cell: 1,
       heights: [0, 0.25, 0.5, 0, 0.25, 0.5],
     },
+    zones: [
+      { id: 'west', minX: 4, maxX: 40, minY: -1, maxY: 4, minZ: -2, maxZ: 6 },
+      { id: 'east', minX: 40, maxX: 80, minY: -1, maxY: 4, minZ: -2, maxZ: 6 },
+    ],
   }, 'product');
 }

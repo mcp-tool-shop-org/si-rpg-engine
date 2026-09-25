@@ -282,6 +282,7 @@ function refusedRecord(label, bodies) {
     seed: 1,
     bodies,
     colliders: [{ id: 'floor', minX: -1, maxX: 5, minY: -1, maxY: 0, minZ: -1, maxZ: 1 }],
+    zones: [],
     goal: {
       actor: 'walker',
       zone: { minX: -1, maxX: 1, minY: -1, maxY: 0, minZ: -1, maxZ: 1 },
@@ -447,7 +448,7 @@ test('the 3D behavior fixture replays frame for frame', () => {
 });
 
 test('the replay command replays a host log, which carries a scene instead of a world', () => {
-  const scene = JSON.parse(readFileSync('scenes/crate-and-door.json', 'utf8'));
+  const scene = JSON.parse(readFileSync('worlds/crate-and-door.json', 'utf8'));
   const catalog = loadIntentRules();
   const t = createTick({ seed: scene.seed, world: createWorld({ bodies: scene.bodies, colliders: scene.colliders }, 'reference'), rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
   for (let i = 0; i < 30; i = i + 1) {
@@ -464,7 +465,7 @@ test('the replay command replays a host log, which carries a scene instead of a 
 });
 
 test('a walker resting on the floor can still move and push: touching a swept face is not a crossing', () => {
-  const scene = JSON.parse(readFileSync('scenes/crate-and-door.json', 'utf8'));
+  const scene = JSON.parse(readFileSync('worlds/crate-and-door.json', 'utf8'));
   const world = createWorld({ bodies: scene.bodies, colliders: scene.colliders });
   const pad = { hx: 0.25, hy: 0.25, hz: 0.25 };
   assert.equal(world.segmentHits(1.7, 0.25, 0, 2.7, 0.25, 0, pad), null, 'along the floor at rest');

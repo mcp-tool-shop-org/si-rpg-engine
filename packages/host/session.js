@@ -23,9 +23,10 @@ const STEPS = { left: -1, right: 1 };
 export function createSession(scene, law) {
   instantiate();
   const catalog = loadIntentRules();
+  const sim = createWorld(scene ? { bodies: scene.bodies, colliders: scene.colliders, zones: scene.zones, heightfield: scene.heightfield } : fixtureWorld(), law);
   const tick = createTick({
     seed: scene ? scene.seed : FIXTURE_SEED,
-    world: createWorld(scene ? { bodies: scene.bodies, colliders: scene.colliders, heightfield: scene.heightfield } : fixtureWorld(), law),
+    world: sim,
     rules: catalog.rules,
     retired: catalog.retired,
     memory: createMemory(),
@@ -48,14 +49,19 @@ export function createSession(scene, law) {
   }
 
   function worldRecord() {
-    /** @type {{ kind: string, dt: number, colliders: ReturnType<typeof fixtureColliders>, goal?: import('../tick/scene.js').Zone }} */
+    /** @type {{ kind: string, dt: number, colliders: ReturnType<typeof fixtureColliders>, zones: import('../tick/scene.js').Zone[], goal?: import('../tick/scene.js').Zone }} */
     const record = {
       kind: 'world',
       dt: DT,
       colliders: scene ? scene.colliders : fixtureColliders(),
+      zones: scene ? scene.zones : [],
     };
-    if (scene) {
-      record.goal = scene.goal.zone;
+    const goal = scene && scene.goal;
+    if (scene && goal) {
+      const zone = scene.zones.find((item) => item.id === goal.zone);
+      if (zone) {
+        record.goal = zone;
+      }
     }
     return record;
   }
@@ -88,6 +94,7 @@ export function createSession(scene, law) {
         hz: body.hz,
       })),
       door: doorTick(frame),
+      zone: sim.zoneOf('walker'),
     };
   }
 

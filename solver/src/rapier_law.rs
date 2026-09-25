@@ -8,7 +8,8 @@
 use rapier3d_f64::control::{
     CharacterAutostep, CharacterCollision, CharacterLength, KinematicCharacterController,
 };
-use rapier3d_f64::geometry::{BroadPhasePairEvent, ContactData, ContactManifold, ContactPair};
+use rapier3d_f64::geometry::{ContactData, ContactManifold, ContactPair};
+use rapier3d_f64::pipeline::CollisionPipeline;
 use rapier3d_f64::prelude::*;
 
 use crate::{BODIES, BODY_STRIDE, COLLIDERS, COLLIDER_STRIDE, DRIVEN, HX, HY, HZ, MAX_BODIES, MAX_COLLIDERS};
@@ -221,6 +222,15 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
             }
             geom = mix_f64(geom, c[k]);
         }
+        for k in 6..10 {
+            if bad(c[k]) {
+                return None;
+            }
+            geom = mix_f64(geom, c[k]);
+        }
+        if canon_quat(c[6], c[7], c[8], c[9]).is_none() {
+            return None;
+        }
     }
     if rows > 0 {
         unsafe {
@@ -279,10 +289,32 @@ fn controller() -> KinematicCharacterController {
     }
 }
 
-fn warm_broadphase(world: &mut PhysicsWorld, colliders: &[ColliderHandle]) {
-    let mut events: Vec<BroadPhasePairEvent> = Vec::new();
-    let PhysicsWorld { integration_parameters, broad_phase, bodies, colliders: collider_set, .. } = world;
-    broad_phase.update(integration_parameters, collider_set, bodies, colliders, &[], &mut events);
+// One collision pass at load through Rapier's own pipeline. The character's
+// first query runs before the first step, so the broad phase must hold the
+// colliders by then. Updating the broad phase by hand and discarding its pair
+// events left pairs unregistered with the narrow phase: a box dropped above
+// the centre of a rotated slab passed through it. The pipeline takes the
+// modified colliders once, so the first step does not update them twice.
+fn warm_broadphase(world: &mut PhysicsWorld) {
+    let prediction = world.integration_parameters.prediction_distance();
+    let mut pipeline = CollisionPipeline::new();
+    pipeline.step(
+        prediction,
+        &mut world.islands,
+        &mut world.broad_phase,
+        &mut world.narrow_phase,
+        &mut world.bodies,
+        &mut world.colliders,
+        &(),
+        &(),
+    );
+    // The pass clears the bodies' change flags, which the physics pipeline
+    // reads to admit a new body to its active set. Waking them restores that.
+    for (_, body) in world.bodies.iter_mut() {
+        if !body.is_fixed() {
+            body.wake_up(true);
+        }
+    }
 }
 
 fn build_world(sig: &Signature) -> Option<Loaded> {
@@ -309,7 +341,11 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         if !(hx > 0.0) || !(hy > 0.0) || !(hz > 0.0) {
             return None;
         }
-        let body = RigidBodyBuilder::fixed().translation(Vector::new(cx, cy, cz)).build();
+        let Some((qx, qy, qz, qw)) = canon_quat(c[6], c[7], c[8], c[9]) else {
+            return None;
+        };
+        let mut body = RigidBodyBuilder::fixed().translation(Vector::new(cx, cy, cz)).build();
+        body.set_rotation(Rotation::from_xyzw(qx, qy, qz, qw), false);
         let co = ColliderBuilder::cuboid(hx, hy, hz).restitution(0.0).friction(0.8).build();
         let (_b, ch) = world.insert(body, co);
         collider_handles.push(ch);
@@ -389,7 +425,7 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         halves.push(half);
     }
 
-    warm_broadphase(&mut world, &collider_handles);
+    warm_broadphase(&mut world);
 
     Some(Loaded {
         world,
@@ -511,7 +547,7 @@ fn push_f64(out: &mut Vec<u8>, x: f64) {
     out.extend_from_slice(&canon(x).to_le_bytes());
 }
 
-fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) {
+fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) -> bool {
     out.clear();
     for i in 0..loaded.n_bodies {
         let handle = loaded.handles[i];
@@ -522,7 +558,7 @@ fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) {
         } else {
             let rot = body.rotation();
             let Some((qx, qy, qz, qw)) = canon_quat(rot.x, rot.y, rot.z, rot.w) else {
-                continue;
+                return false;
             };
             let w = body.angvel();
             (qx, qy, qz, qw, w.x, w.y, w.z)
@@ -587,6 +623,7 @@ fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) {
             }
         }
     }
+    true
 }
 
 fn push_contact(out: &mut Vec<u8>, data: &ContactData) {
@@ -629,7 +666,9 @@ fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, 
         };
         solver.loaded = Some(loaded);
         if let Some(loaded) = solver.loaded.as_ref() {
-            rebuild_snapshot(loaded, &mut solver.snapshot);
+            if !rebuild_snapshot(loaded, &mut solver.snapshot) {
+                return false;
+            }
         }
     }
     true
@@ -652,7 +691,9 @@ pub extern "C" fn solver_step(world_id: u32, n_bodies: u32, n_colliders: u32, ro
     if !integrate(loaded) {
         return 0;
     }
-    rebuild_snapshot(loaded, &mut solver.snapshot);
+    if !rebuild_snapshot(loaded, &mut solver.snapshot) {
+        return 0;
+    }
     1
 }
 
@@ -688,6 +729,8 @@ pub extern "C" fn solver_clear_warmstart() -> u32 {
             n += zero_manifolds(&mut pair.solver_clusters);
         }
     }
-    rebuild_snapshot(loaded, &mut solver.snapshot);
+    if !rebuild_snapshot(loaded, &mut solver.snapshot) {
+        return 0;
+    }
     n
 }

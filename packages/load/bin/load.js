@@ -3,6 +3,7 @@
 //
 //   load admit <draft.json>
 //   load retire <verb>
+//   load world <world.json>
 //
 // A draft that compiles and passes predicates/hazards is written under
 // predicates/intents and named by the index. Retire moves it to index.retired.
@@ -14,6 +15,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { considerDraft, retireVerb } from '../admit.js';
 import { loadHazards } from '../suite.js';
+import { loadScene } from '../../tick/scene.js';
+import { loadHash, settles } from '../../tick/admit-world.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);
@@ -46,7 +49,36 @@ if (command === 'admit' && subject) {
   }
   writeFileSync(INDEX, JSON.stringify(result.index, null, 2) + '\n');
   process.stdout.write('retired ' + subject + '\n');
+} else if (command === 'world' && subject) {
+  const loaded = loadScene(subject);
+  if (!loaded.ok) {
+    process.stderr.write(loaded.reason + '\n');
+    process.exit(1);
+  }
+  if (!settles(loaded.scene)) {
+    process.stderr.write('world does not settle\n');
+    process.exit(1);
+  }
+  const hash = loadHash(loaded.scene);
+  if (hash !== loadHash(loaded.scene)) {
+    process.stderr.write('load hash is not stable\n');
+    process.exit(1);
+  }
+  const indexPath = 'worlds/index.json';
+  /** @type {{ worlds: Record<string, string> }} */
+  let index = { worlds: {} };
+  try {
+    index = JSON.parse(readFileSync(indexPath, 'utf8'));
+  } catch {
+    index = { worlds: {} };
+  }
+  if (!index.worlds) {
+    index.worlds = {};
+  }
+  index.worlds[loaded.scene.name] = hash;
+  writeFileSync(indexPath, JSON.stringify(index, null, 2) + '\n');
+  process.stdout.write(hash + '\n');
 } else {
-  process.stderr.write('usage: load admit <draft.json> | load retire <verb>\n');
+  process.stderr.write('usage: load admit <draft.json> | load retire <verb> | load world <world.json>\n');
   process.exit(2);
 }

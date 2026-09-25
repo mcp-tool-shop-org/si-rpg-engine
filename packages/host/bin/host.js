@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 // host: pump the fixture room at one quantum per timer fire and serve a page.
 //
-//   host [--port N] [--scene file] [--log file]
+//   host [--port N] [--world file] [--log file]
 //
 // The page draws boxes. Clicks and arrow keys become move intents.
 // P pushes the nearest body. The process stamps the newest committed hash.
 // Bind is loopback only. --log writes when the goal is first reached, and again on exit.
 
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { chdir } from 'node:process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSession, startPump } from '../session.js';
 import { createHostServer } from '../server.js';
 import { loadScene } from '../../tick/scene.js';
+import { indexReason } from '../../tick/admit-world.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 chdir(root);
@@ -21,7 +22,7 @@ chdir(root);
 const args = process.argv.slice(2);
 const portIndex = args.indexOf('--port');
 const port = portIndex >= 0 ? Number(args[portIndex + 1]) : 4173;
-const sceneIndex = args.indexOf('--scene');
+const sceneIndex = args.indexOf('--world');
 const logIndex = args.indexOf('--log');
 const logPath = logIndex >= 0 ? args[logIndex + 1] : null;
 
@@ -34,6 +35,12 @@ if (sceneIndex >= 0) {
     process.exit(1);
   }
   scene = loaded.scene;
+  const index = JSON.parse(readFileSync('worlds/index.json', 'utf8'));
+  const reason = indexReason(scene, index);
+  if (reason) {
+    process.stderr.write(reason + '\n');
+    process.exit(1);
+  }
 }
 
 const session = createSession(scene);
@@ -47,7 +54,7 @@ function saveLog(when) {
   }
   writeFileSync(logPath, JSON.stringify({
     seed: scene.seed,
-    scene,
+    world: scene,
     when,
     log: session.log(),
   }, null, 2) + '\n');

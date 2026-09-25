@@ -94,6 +94,10 @@ export function createTick(init) {
           throw new Error('NaN in body ' + b.id + ' at tick ' + tick);
         }
       }
+      if (world.zones && world.zones.length > 0 && world.zoneIndex) {
+        const index = world.zoneIndex(b.id);
+        hasher.u32(index === null ? 0xffffffff : index);
+      }
     }
     mixSnapshot(hasher);
   }

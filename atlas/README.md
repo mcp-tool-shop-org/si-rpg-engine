@@ -1,18 +1,20 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit aad8a8c.
+Mapped at 2026-09-25 from commit 8c3c252.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-14 parts, mostly JavaScript (41 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+14 parts, mostly JavaScript (42 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (a6479da)
+## What changed since 2026-09-25 (aad8a8c)
 
-- fixtures/behavior-rotation.json is now read by harness/solver.test.js.
-- fixtures/shape-traversal.json is now read by harness/solver.test.js.
-- 3 files added and 44 changed content, across 9 parts.
+- fixtures/behavior-ramp.json is now read by harness/solver.test.js.
+- worlds/crate-and-door.json is now read by README.md, packages/host/host.test.js, packages/tick/scene.test.js and packages/tick/tick.test.js.
+- worlds is a new part, drawn from `worlds/**`.
+- scenes is no longer a part.
+- 5 files added, 1 removed and 21 changed content, across 11 parts.
 
 ## What comes in
 
@@ -26,7 +28,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 ## What happens through CI
 
-1. The workflow runs harness/product.test.js and harness/solver.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, solver/build.mjs in solver, and packages/tick/scene.test.js and packages/tick/tick.test.js in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 6 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 20 files in 2 more parts.
+1. The workflow runs harness/product.test.js and harness/solver.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, solver/build.mjs in solver, and packages/tick/scene.test.js and packages/tick/tick.test.js in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 6 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 21 files in 2 more parts.
    1. Inside packages/propose/propose.test.js, fresh does, in order: load intent rules (tick), fixture world, create world, create memory and create tick.
    2. **Create tick** (tick) runs, in order: create hasher (frame), mix load, snapshot, u 32 and commit frame.
    3. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
@@ -61,11 +63,11 @@ CI writes nothing this map can see.
 
 ## What tends to change together
 
-- **packages/propose/bin/propose.js** and **packages/propose/prompt.js** changed together in 5 of 5 commits, inside the propose part.
 - **packages/propose/bin/propose.js** and **packages/propose/propose.test.js** changed together in 5 of 5 commits, inside the propose part.
-- **packages/propose/prompt.js** and **packages/propose/propose.test.js** changed together in 5 of 5 commits, inside the propose part.
+- **packages/propose/bin/propose.js** and **packages/propose/prompt.js** changed together in 5 of 6 commits, inside the propose part.
 - **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 5 of 6 commits, inside the propose part.
-- **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 5 of 6 commits, inside the propose part.
+- **packages/propose/prompt.js** and **packages/propose/propose.test.js** changed together in 5 of 6 commits, inside the propose part.
+- **packages/propose/propose.test.js** and **packages/propose/seat.js** changed together in 5 of 6 commits, inside the propose part.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
@@ -92,7 +94,7 @@ These are candidates from names and call order, not a judgement.
 
 ## Hand-authored
 
-People write .github/, docs/, predicates/hazards/, predicates/intents/, the repository root and scenes/. Nothing in this repository writes to them.
+People write .github/, docs/, predicates/hazards/, predicates/intents/, the repository root and worlds/. Nothing in this repository writes to them.
 
 ## Where to start
 
@@ -105,7 +107,7 @@ Read those in order to follow one pull request end to end.
 - 4 import sites could not be resolved.
 - 2 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
-- 5 writes and 7 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 6 writes and 9 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
 - 5 commands are built at run time and not followed, 3 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 

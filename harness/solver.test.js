@@ -9,6 +9,7 @@ import { play } from './solver-scene.mjs';
 const saved = JSON.parse(readFileSync('fixtures/behavior-solver.json', 'utf8'));
 const rotation = JSON.parse(readFileSync('fixtures/behavior-rotation.json', 'utf8'));
 const shapes = JSON.parse(readFileSync('fixtures/shape-traversal.json', 'utf8'));
+const ramp = JSON.parse(readFileSync('fixtures/behavior-ramp.json', 'utf8'));
 
 test('the E2 solver fixture first differs at tick 0', () => {
   for (const spec of saved.cases) {
@@ -46,6 +47,20 @@ test('the rotation fixture replays frame for frame', () => {
   assert.ok(stack[0].qw > 0.999 && stack[1].qw > 0.999, 'the stack has not tipped');
   assert.ok(Math.abs(stack[0].wx) + Math.abs(stack[0].wy) + Math.abs(stack[0].wz) < 1e-8);
   assert.ok(Math.abs(stack[1].wx) + Math.abs(stack[1].wy) + Math.abs(stack[1].wz) < 1e-8);
+});
+
+test('a body slides down a rotated ramp', () => {
+  const spec = ramp.cases[0];
+  const played = play(spec);
+  assert.deepEqual(played.frames, spec.frames);
+  const body = played.bodies[0];
+  const start = spec.world.bodies[0];
+  assert.ok(body.x < start.x - 1, 'the box moves down the ramp');
+  assert.ok(body.y > 0.119 && body.y < 0.121, 'the box rests on the floor');
+  assert.equal(body.vx, 0);
+  assert.equal(body.vy, 0);
+  assert.ok(body.qw < 0.01, 'the box rotates while it slides');
+  assert.throws(() => createWorld(spec.world, 'reference'), /a rotated collider is refused/);
 });
 
 test('the traversal frames keep the box', () => {
@@ -216,4 +231,33 @@ test('a quaternion and its negation hash to one digest, and a NaN angular field 
     colliders: [floor],
   }, 'product');
   assert.throws(() => poisoned.step(new Set()), /NaN/);
+});
+
+test('a body dropped anywhere along a rotated ramp slides down it', () => {
+  // Warming the broad phase by hand and discarding its pair events left pairs
+  // unregistered: a box dropped above the centre of this slab passed through it,
+  // and on a longer slab almost every drop point did. The load pass now runs
+  // through Rapier's collision pipeline.
+  const cx = 22;
+  const cy = 0.8924621202458748;
+  const q = { qx: 0, qy: 0, qz: 0.3826834323650898, qw: 0.9238795325112867 };
+  for (const [hx, dx] of [[1.4, 0], [3.0, 0.5], [3.0, 1.5]]) {
+    const surface = cy + dx + 0.35 * Math.SQRT2;
+    const spec = {
+      name: 'ramp-' + hx + '-' + dx,
+      seed: 1,
+      steps: 300,
+      driven: [],
+      world: {
+        bodies: [{ id: 'slider', x: cx + dx, y: surface + 0.4, z: 4, vx: 0, vy: 0, vz: 0, hx: 0.12, hy: 0.12, hz: 0.12 }],
+        colliders: [
+          { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 },
+          { id: 'ramp', minX: cx - hx, maxX: cx + hx, minY: cy - 0.35, maxY: cy + 0.35, minZ: 3.5, maxZ: 4.5, ...q },
+        ],
+      },
+    };
+    const body = play(spec).bodies[0];
+    assert.ok(body.x < cx + dx - 0.5, 'half-length ' + hx + ' drop ' + dx + ' slid: x ' + body.x);
+    assert.ok(Math.abs(body.y - 0.12) < 1e-3, 'half-length ' + hx + ' drop ' + dx + ' rests on the floor: y ' + body.y);
+  }
 });
