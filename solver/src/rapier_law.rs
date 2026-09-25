@@ -11,7 +11,15 @@ use rapier3d_f64::control::{
 use rapier3d_f64::geometry::{BroadPhasePairEvent, ContactData, ContactManifold, ContactPair};
 use rapier3d_f64::prelude::*;
 
-use crate::{BODIES, BODY_STRIDE, COLLIDERS, COLLIDER_STRIDE, MAX_BODIES, MAX_COLLIDERS};
+use crate::{BODIES, BODY_STRIDE, COLLIDERS, COLLIDER_STRIDE, DRIVEN, HX, HY, HZ, MAX_BODIES, MAX_COLLIDERS};
+
+const QX: usize = 6;
+const QY: usize = 7;
+const QZ: usize = 8;
+const QW: usize = 9;
+const WX: usize = 10;
+const WY: usize = 11;
+const WZ: usize = 12;
 
 const DT: f64 = 1.0 / 64.0;
 const G: f64 = -8.0;
@@ -35,6 +43,7 @@ struct Signature {
     cell: u64,
     driven: u64,
     geom: u64,
+    shape: u32,
 }
 
 struct Loaded {
@@ -94,16 +103,60 @@ fn collider_at(j: usize) -> [f64; COLLIDER_STRIDE] {
     out
 }
 
-fn write_body(i: usize, x: f64, y: f64, z: f64, vx: f64, vy: f64, vz: f64) {
+fn write_body(
+    i: usize,
+    x: f64,
+    y: f64,
+    z: f64,
+    vx: f64,
+    vy: f64,
+    vz: f64,
+    qx: f64,
+    qy: f64,
+    qz: f64,
+    qw: f64,
+    wx: f64,
+    wy: f64,
+    wz: f64,
+) -> bool {
+    let parts = [x, y, z, vx, vy, vz, qx, qy, qz, qw, wx, wy, wz];
+    if parts.iter().any(|v| v.is_nan()) {
+        return false;
+    }
     unsafe {
         let base = i * BODY_STRIDE;
-        BODIES[base] = canon(x);
-        BODIES[base + 1] = canon(y);
-        BODIES[base + 2] = canon(z);
-        BODIES[base + 3] = canon(vx);
-        BODIES[base + 4] = canon(vy);
-        BODIES[base + 5] = canon(vz);
+        for (k, v) in parts.iter().enumerate() {
+            BODIES[base + k] = canon(*v);
+        }
     }
+    true
+}
+
+/// Unit quaternion, w non-negative, signed zero canonicalized. None on NaN or a zero quaternion.
+fn canon_quat(x: f64, y: f64, z: f64, w: f64) -> Option<(f64, f64, f64, f64)> {
+    if x.is_nan() || y.is_nan() || z.is_nan() || w.is_nan() {
+        return None;
+    }
+    let n = (x * x + y * y + z * z + w * w).sqrt();
+    if !(n > 0.0) {
+        return None;
+    }
+    let mut x = canon(x / n);
+    let mut y = canon(y / n);
+    let mut z = canon(z / n);
+    let mut w = canon(w / n);
+    if w.is_sign_negative() {
+        x = canon(-x);
+        y = canon(-y);
+        z = canon(-z);
+        w = canon(-w);
+    }
+    Some((x, y, z, w))
+}
+
+fn quat_from_body(b: &[f64]) -> Option<Rotation> {
+    let (x, y, z, w) = canon_quat(b[QX], b[QY], b[QZ], b[QW])?;
+    Some(Rotation::from_xyzw(x, y, z, w))
 }
 
 fn mix_u64(h: u64, x: u64) -> u64 {
@@ -114,7 +167,7 @@ fn mix_f64(h: u64, x: f64) -> u64 {
     mix_u64(h, x.to_bits())
 }
 
-fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> Option<Signature> {
+fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> Option<Signature> {
     if n_bodies as usize > MAX_BODIES || n_colliders as usize > MAX_COLLIDERS {
         return None;
     }
@@ -131,12 +184,15 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
     let mut driven = 0u64;
     for i in 0..n_bodies as usize {
         let b = body_at(i);
-        for k in 0..6 {
+        for k in 0..13 {
             if bad(b[k]) {
                 return None;
             }
         }
-        if b[9] != 0.0 {
+        if canon_quat(b[QX], b[QY], b[QZ], b[QW]).is_none() {
+            return None;
+        }
+        if b[DRIVEN] != 0.0 {
             driven |= 1u64 << i;
         }
     }
@@ -145,12 +201,12 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
     let mut geom = 0xcbf29ce484222325u64;
     for i in 0..n_bodies as usize {
         let b = body_at(i);
-        if bad(b[6]) || bad(b[7]) || bad(b[8]) || !(b[6] > 0.0) || !(b[7] > 0.0) || !(b[8] > 0.0) {
+        if bad(b[HX]) || bad(b[HY]) || bad(b[HZ]) || !(b[HX] > 0.0) || !(b[HY] > 0.0) || !(b[HZ] > 0.0) {
             return None;
         }
-        geom = mix_f64(geom, b[6]);
-        geom = mix_f64(geom, b[7]);
-        geom = mix_f64(geom, b[8]);
+        geom = mix_f64(geom, b[HX]);
+        geom = mix_f64(geom, b[HY]);
+        geom = mix_f64(geom, b[HZ]);
         for k in 0..6 {
             if bad(b[k]) {
                 return None;
@@ -180,7 +236,8 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
         geom = mix_u64(geom, rows as u64);
         geom = mix_u64(geom, cols as u64);
     }
-    Some(Signature { world_id, n_bodies, n_colliders, rows, cols, cell: cell.to_bits(), driven, geom })
+    geom = mix_u64(geom, shape as u64);
+    Some(Signature { world_id, n_bodies, n_colliders, rows, cols, cell: cell.to_bits(), driven, geom, shape })
 }
 
 fn same_sig(a: &Signature, b: &Signature) -> bool {
@@ -192,6 +249,17 @@ fn same_sig(a: &Signature, b: &Signature) -> bool {
         && a.cell == b.cell
         && a.driven == b.driven
         && a.geom == b.geom
+        && a.shape == b.shape
+}
+
+fn character_shape(shape: u32, half: Vector) -> SharedShape {
+    if shape == 1 {
+        let radius = half.x.min(half.z);
+        let cylinder = (half.y - radius).max(0.0);
+        SharedShape::capsule_y(cylinder, radius)
+    } else {
+        SharedShape::cuboid(half.x, half.y, half.z)
+    }
 }
 
 fn controller() -> KinematicCharacterController {
@@ -276,31 +344,44 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
         let b = body_at(i);
         let pos = Vector::new(b[0], b[1], b[2]);
         let vel = Vector::new(b[3], b[4], b[5]);
-        let half = Vector::new(b[6], b[7], b[8]);
+        let half = Vector::new(b[HX], b[HY], b[HZ]);
         let driven = (sig.driven & (1u64 << i)) != 0;
+        let Some(rotation) = quat_from_body(&b) else {
+            return None;
+        };
+        let ang = Vector::new(b[WX], b[WY], b[WZ]);
         let body = if driven {
-            RigidBodyBuilder::kinematic_position_based()
+            let mut body = RigidBodyBuilder::kinematic_position_based()
                 .translation(pos)
                 .lock_rotations()
                 .additional_mass(1.0)
                 .can_sleep(false)
                 .ccd_enabled(false)
-                .build()
+                .build();
+            body.set_rotation(Rotation::from_xyzw(0.0, 0.0, 0.0, 1.0), false);
+            body
         } else {
             let mut body = RigidBodyBuilder::dynamic()
                 .translation(pos)
                 .linvel(vel)
-                .lock_rotations()
+                .angvel(ang)
                 .can_sleep(true)
                 .ccd_enabled(false)
                 .build();
+            body.set_rotation(rotation, false);
             body.activation_mut().time_until_sleep = SLEEP_QUANTA * DT;
             body
         };
-        let co = ColliderBuilder::cuboid(half.x, half.y, half.z)
-            .restitution(0.0)
-            .friction(0.8)
-            .build();
+        let co = if driven && sig.shape == 1 {
+            let radius = half.x.min(half.z);
+            let cylinder = (half.y - radius).max(0.0);
+            ColliderBuilder::capsule_y(cylinder, radius)
+        } else {
+            ColliderBuilder::cuboid(half.x, half.y, half.z)
+        }
+        .restitution(0.0)
+        .friction(0.8)
+        .build();
         let (handle, ch) = world.insert(body, co);
         collider_handles.push(ch);
         handles.push(handle);
@@ -325,6 +406,7 @@ fn build_world(sig: &Signature) -> Option<Loaded> {
             cell: sig.cell,
             driven: sig.driven,
             geom: sig.geom,
+            shape: sig.shape,
         },
         controller: controller(),
     })
@@ -356,7 +438,7 @@ fn integrate(loaded: &mut Loaded) -> bool {
         let desired = Vector::new(b[3], vy, b[5]) * DT;
         let handle = loaded.handles[i];
         let half = loaded.halves[i];
-        let shape = Cuboid::new(half);
+        let shape = character_shape(loaded.signature.shape, half);
         let mut collisions = Vec::new();
         let pos = *loaded.world.bodies[handle].position();
         let filter = QueryFilter::new().exclude_rigid_body(handle);
@@ -368,7 +450,7 @@ fn integrate(loaded: &mut Loaded) -> bool {
                 &world.colliders,
                 filter,
             );
-            controller.move_shape(DT, &query, &shape, &pos, desired, |hit| collisions.push(hit))
+            controller.move_shape(DT, &query, &*shape, &pos, desired, |hit| collisions.push(hit))
         };
         if movement.grounded {
             vy = 0.0;
@@ -386,7 +468,7 @@ fn integrate(loaded: &mut Loaded) -> bool {
 
     for plan in &plans {
         let half = loaded.halves[plan.index];
-        let shape = Cuboid::new(half);
+        let shape = character_shape(loaded.signature.shape, half);
         let filter = QueryFilter::new().exclude_rigid_body(plan.handle);
         let world = &mut loaded.world;
         let PhysicsWorld { broad_phase, narrow_phase, bodies, colliders, .. } = world;
@@ -396,7 +478,7 @@ fn integrate(loaded: &mut Loaded) -> bool {
             colliders,
             filter,
         );
-        controller.solve_character_collision_impulses(DT, &mut query, &shape, 1.0, &plan.collisions);
+        controller.solve_character_collision_impulses(DT, &mut query, &*shape, 1.0, &plan.collisions);
     }
 
     loaded.world.step();
@@ -407,16 +489,19 @@ fn integrate(loaded: &mut Loaded) -> bool {
         let p = body.translation();
         if loaded.kinematic[i] {
             let plan = plans.iter().find(|plan| plan.index == i).unwrap();
-            if bad(p.x) || bad(p.y) || bad(p.z) {
+            if !write_body(i, p.x, p.y, p.z, plan.vx, plan.vy, plan.vz, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0) {
                 return false;
             }
-            write_body(i, p.x, p.y, p.z, plan.vx, plan.vy, plan.vz);
         } else {
             let v = body.linvel();
-            if bad(p.x) || bad(p.y) || bad(p.z) || bad(v.x) || bad(v.y) || bad(v.z) {
+            let w = body.angvel();
+            let rot = body.rotation();
+            let Some((qx, qy, qz, qw)) = canon_quat(rot.x, rot.y, rot.z, rot.w) else {
+                return false;
+            };
+            if !write_body(i, p.x, p.y, p.z, v.x, v.y, v.z, qx, qy, qz, qw, w.x, w.y, w.z) {
                 return false;
             }
-            write_body(i, p.x, p.y, p.z, v.x, v.y, v.z);
         }
     }
     true
@@ -432,6 +517,16 @@ fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) {
         let handle = loaded.handles[i];
         let body = &loaded.world.bodies[handle];
         let p = body.translation();
+        let (qx, qy, qz, qw, wx, wy, wz) = if loaded.kinematic[i] {
+            (0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)
+        } else {
+            let rot = body.rotation();
+            let Some((qx, qy, qz, qw)) = canon_quat(rot.x, rot.y, rot.z, rot.w) else {
+                continue;
+            };
+            let w = body.angvel();
+            (qx, qy, qz, qw, w.x, w.y, w.z)
+        };
         if loaded.kinematic[i] {
             let b = body_at(i);
             push_f64(out, p.x);
@@ -440,19 +535,28 @@ fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) {
             push_f64(out, b[3]);
             push_f64(out, b[4]);
             push_f64(out, b[5]);
-            push_f64(out, 0.0);
-            push_f64(out, 0.0);
         } else {
             let v = body.linvel();
-            let act = body.activation();
-            let quanta = act.time_since_can_sleep / DT;
             push_f64(out, p.x);
             push_f64(out, p.y);
             push_f64(out, p.z);
             push_f64(out, v.x);
             push_f64(out, v.y);
             push_f64(out, v.z);
-            push_f64(out, quanta);
+        }
+        push_f64(out, qx);
+        push_f64(out, qy);
+        push_f64(out, qz);
+        push_f64(out, qw);
+        push_f64(out, wx);
+        push_f64(out, wy);
+        push_f64(out, wz);
+        if loaded.kinematic[i] {
+            push_f64(out, 0.0);
+            push_f64(out, 0.0);
+        } else {
+            let act = body.activation();
+            push_f64(out, act.time_since_can_sleep / DT);
             push_f64(out, if act.sleeping { 1.0 } else { 0.0 });
         }
     }
@@ -510,8 +614,8 @@ fn zero_manifolds(manifolds: &mut [ContactManifold]) -> u32 {
     n
 }
 
-fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> bool {
-    let Some(sig) = signature(world_id, n_bodies, n_colliders, rows, cols, cell) else {
+fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> bool {
+    let Some(sig) = signature(world_id, n_bodies, n_colliders, rows, cols, cell, shape) else {
         return false;
     };
     let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };
@@ -532,13 +636,13 @@ fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, 
 }
 
 #[no_mangle]
-pub extern "C" fn solver_load(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> u32 {
-    if ensure(world_id, n_bodies, n_colliders, rows, cols, cell) { 1 } else { 0 }
+pub extern "C" fn solver_load(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> u32 {
+    if ensure(world_id, n_bodies, n_colliders, rows, cols, cell, shape) { 1 } else { 0 }
 }
 
 #[no_mangle]
-pub extern "C" fn solver_step(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64) -> u32 {
-    if !ensure(world_id, n_bodies, n_colliders, rows, cols, cell) {
+pub extern "C" fn solver_step(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> u32 {
+    if !ensure(world_id, n_bodies, n_colliders, rows, cols, cell, shape) {
         return 0;
     }
     let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };

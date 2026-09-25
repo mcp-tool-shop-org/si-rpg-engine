@@ -28,6 +28,13 @@
  *     hx?: { type: string },
  *     hy?: { type: string },
  *     hz?: { type: string },
+ *     qx?: { type: string },
+ *     qy?: { type: string },
+ *     qz?: { type: string },
+ *     qw?: { type: string },
+ *     wx?: { type: string },
+ *     wy?: { type: string },
+ *     wz?: { type: string },
  *   },
  * }} ProposalBranch
  */
@@ -91,6 +98,13 @@ export function proposalSchema(verbs, actors, sources) {
           hx: { type: 'number' },
           hy: { type: 'number' },
           hz: { type: 'number' },
+          qx: { type: 'number' },
+          qy: { type: 'number' },
+          qz: { type: 'number' },
+          qw: { type: 'number' },
+          wx: { type: 'number' },
+          wy: { type: 'number' },
+          wz: { type: 'number' },
         },
       },
   );

@@ -22,7 +22,7 @@ export const UNDRIVEN_DRAG = 0;
 let nextProductId = 1;
 
 /**
- * @param {{ bodies: Body[]; colliders: StaticCollider[]; heightfield?: Heightfield | null }} init
+ * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; heightfield?: Heightfield | null; shape?: 'box' | 'capsule' }} init
  * @param {'product' | 'box' | 'reference'} [law] product is the Rapier step; box is the E1 binary; reference is the JavaScript kernel
  */
 export function createWorld(init, law) {
@@ -30,8 +30,17 @@ export function createWorld(init, law) {
   const productId = chosen === 'product' ? nextProductId++ : 0;
   /** @type {Body[]} */
   const bodies = init.bodies.map((b) => ({
-    id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz, hx: b.hx, hy: b.hy, hz: b.hz,
+    id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz,
+    qx: typeof b.qx === 'number' ? b.qx : 0,
+    qy: typeof b.qy === 'number' ? b.qy : 0,
+    qz: typeof b.qz === 'number' ? b.qz : 0,
+    qw: typeof b.qw === 'number' ? b.qw : 1,
+    wx: typeof b.wx === 'number' ? b.wx : 0,
+    wy: typeof b.wy === 'number' ? b.wy : 0,
+    wz: typeof b.wz === 'number' ? b.wz : 0,
+    hx: b.hx, hy: b.hy, hz: b.hz,
   }));
+  const shapeId = init.shape === 'capsule' ? 1 : 0;
   /** @type {StaticCollider[]} */
   const colliders = init.colliders.map((c) => ({
     id: c.id, minX: c.minX, maxX: c.maxX, minY: c.minY, maxY: c.maxY, minZ: c.minZ, maxZ: c.maxZ,
@@ -68,7 +77,7 @@ export function createWorld(init, law) {
       return;
     }
     if (chosen === 'product') {
-      if (!stepSolver(productId, bodies, colliders, heightfield, driving)) {
+      if (!stepSolver(productId, bodies, colliders, heightfield, driving, shapeId)) {
         throw new Error('NaN');
       }
       return;
@@ -338,7 +347,7 @@ export function createWorld(init, law) {
       }
     }
     if (chosen === 'product') {
-      if (!loadSolver(productId, bodies, colliders, heightfield, driven || new Set())) {
+      if (!loadSolver(productId, bodies, colliders, heightfield, driven || new Set(), shapeId)) {
         throw new Error('NaN');
       }
     }

@@ -10,7 +10,14 @@ const MAX_SPEED: f64 = 2.0;
 const UNDRIVEN_DRAG: f64 = 0.0;
 pub(crate) const MAX_BODIES: usize = 64;
 pub(crate) const MAX_COLLIDERS: usize = 64;
-pub(crate) const BODY_STRIDE: usize = 10;
+pub(crate) const BODY_STRIDE: usize = 17;
+// 0..5 translation and linear velocity, 6..9 quaternion, 10..12 angular
+// velocity, 13..15 half-extents, 16 driven. The box step reads only the
+// half-extents and the driven flag out of that tail.
+pub(crate) const HX: usize = 13;
+pub(crate) const HY: usize = 14;
+pub(crate) const HZ: usize = 15;
+pub(crate) const DRIVEN: usize = 16;
 pub(crate) const COLLIDER_STRIDE: usize = 6;
 
 pub(crate) static mut BODIES: [f64; MAX_BODIES * BODY_STRIDE] = [0.0; MAX_BODIES * BODY_STRIDE];
@@ -70,17 +77,17 @@ fn resolve_pair(bodies: &mut [f64], i: usize, j: usize) {
     let ax = *field(bodies, i, 0);
     let ay = *field(bodies, i, 1);
     let az = *field(bodies, i, 2);
-    let ahx = *field(bodies, i, 6);
-    let ahy = *field(bodies, i, 7);
-    let ahz = *field(bodies, i, 8);
-    let a_driven = *field(bodies, i, 9) != 0.0;
+    let ahx = *field(bodies, i, HX);
+    let ahy = *field(bodies, i, HY);
+    let ahz = *field(bodies, i, HZ);
+    let a_driven = *field(bodies, i, DRIVEN) != 0.0;
     let bx = *field(bodies, j, 0);
     let by = *field(bodies, j, 1);
     let bz = *field(bodies, j, 2);
-    let bhx = *field(bodies, j, 6);
-    let bhy = *field(bodies, j, 7);
-    let bhz = *field(bodies, j, 8);
-    let b_driven = *field(bodies, j, 9) != 0.0;
+    let bhx = *field(bodies, j, HX);
+    let bhy = *field(bodies, j, HY);
+    let bhz = *field(bodies, j, HZ);
+    let b_driven = *field(bodies, j, DRIVEN) != 0.0;
     let overlap_x = js_min(ax + ahx, bx + bhx) - js_max(ax - ahx, bx - bhx);
     let overlap_y = js_min(ay + ahy, by + bhy) - js_max(ay - ahy, by - bhy);
     let overlap_z = js_min(az + ahz, bz + bhz) - js_max(az - ahz, bz - bhz);
@@ -177,7 +184,7 @@ pub extern "C" fn step(n_bodies: u32, n_colliders: u32) -> u32 {
         let colliders = &COLLIDERS;
         let mut i = 0usize;
         while i < n {
-            let driven = *field(bodies, i, 9) != 0.0;
+            let driven = *field(bodies, i, DRIVEN) != 0.0;
             if !driven {
                 let vx = *field(bodies, i, 3);
                 let vz = *field(bodies, i, 5);
@@ -203,9 +210,9 @@ pub extern "C" fn step(n_bodies: u32, n_colliders: u32) -> u32 {
                 let cmax_y = colliders[j * COLLIDER_STRIDE + 3];
                 let cmin_z = colliders[j * COLLIDER_STRIDE + 4];
                 let cmax_z = colliders[j * COLLIDER_STRIDE + 5];
-                let hx = *field(bodies, i, 6);
-                let hy = *field(bodies, i, 7);
-                let hz = *field(bodies, i, 8);
+                let hx = *field(bodies, i, HX);
+                let hy = *field(bodies, i, HY);
+                let hz = *field(bodies, i, HZ);
                 let bx = *field(bodies, i, 0);
                 let by = *field(bodies, i, 1);
                 let bz = *field(bodies, i, 2);

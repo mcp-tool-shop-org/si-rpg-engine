@@ -98,6 +98,95 @@ export function projectionAxes(along) {
  * @param {Record<string, number>} box min/max or a centre plus half-extents
  * @param {boolean} extents true when box is a body centre
  */
+/**
+ * Rotate a local offset by a unit quaternion (x, y, z, w).
+ * @param {number} qx @param {number} qy @param {number} qz @param {number} qw
+ * @param {number} x @param {number} y @param {number} z
+ */
+function rotate(qx, qy, qz, qw, x, y, z) {
+  const tx = 2 * (qy * z - qz * y);
+  const ty = 2 * (qz * x - qx * z);
+  const tz = 2 * (qx * y - qy * x);
+  return {
+    x: x + qw * tx + (qy * tz - qz * ty),
+    y: y + qw * ty + (qz * tx - qx * tz),
+    z: z + qw * tz + (qx * ty - qy * tx),
+  };
+}
+
+/**
+ * Convex hull of a flat point set, monotone chain, clockwise in (h, v)
+ * with v increasing downward on the page only after projection.
+ * @param {Array<{ h: number, v: number }>} points
+ */
+function hull(points) {
+  const unique = [];
+  const seen = new Set();
+  for (const point of points) {
+    const key = point.h.toFixed(9) + ',' + point.v.toFixed(9);
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(point);
+    }
+  }
+  unique.sort((a, b) => a.h - b.h || a.v - b.v);
+  if (unique.length < 3) {
+    return unique;
+  }
+  /** @param {{ h: number, v: number }} o @param {{ h: number, v: number }} a @param {{ h: number, v: number }} b */
+  const cross = (o, a, b) => (a.h - o.h) * (b.v - o.v) - (a.v - o.v) * (b.h - o.h);
+  /** @type {Array<{ h: number, v: number }>} */
+  const lower = [];
+  for (const point of unique) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+      lower.pop();
+    }
+    lower.push(point);
+  }
+  /** @type {Array<{ h: number, v: number }>} */
+  const upper = [];
+  for (let i = unique.length - 1; i >= 0; i = i - 1) {
+    const point = unique[i];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+      upper.pop();
+    }
+    upper.push(point);
+  }
+  lower.pop();
+  upper.pop();
+  return lower.concat(upper);
+}
+
+/**
+ * The projected outline of an oriented box. Identity orientation matches the axis-aligned span.
+ * @param {string} along
+ * @param {{ x: number, y: number, z: number, hx: number, hy: number, hz: number, qx?: number, qy?: number, qz?: number, qw?: number }} body
+ */
+export function projectedOutline(along, body) {
+  const axes = projectionAxes(along);
+  const qx = body.qx ?? 0;
+  const qy = body.qy ?? 0;
+  const qz = body.qz ?? 0;
+  const qw = body.qw ?? 1;
+  /** @type {Array<{ h: number, v: number }>} */
+  const corners = [];
+  for (const sx of [-1, 1]) {
+    for (const sy of [-1, 1]) {
+      for (const sz of [-1, 1]) {
+        const turned = rotate(qx, qy, qz, qw, sx * body.hx, sy * body.hy, sz * body.hz);
+        const world = { x: body.x + turned.x, y: body.y + turned.y, z: body.z + turned.z };
+        corners.push({ h: world[axes.horizontal], v: world[axes.vertical] });
+      }
+    }
+  }
+  return hull(corners);
+}
+
+/**
+ * @param {string} along
+ * @param {Record<string, number>} box min/max or a centre plus half-extents
+ * @param {boolean} extents true when box is a body centre
+ */
 export function projectedSpan(along, box, extents) {
   const axes = projectionAxes(along);
   if (extents) {

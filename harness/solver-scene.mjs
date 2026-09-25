@@ -36,6 +36,9 @@ export function play(spec) {
       if (!hasher.float(body.x) || !hasher.float(body.y) || !hasher.float(body.z) || !hasher.float(body.vx) || !hasher.float(body.vy) || !hasher.float(body.vz)) {
         throw new Error('NaN');
       }
+      if (!hasher.float(body.qx) || !hasher.float(body.qy) || !hasher.float(body.qz) || !hasher.float(body.qw) || !hasher.float(body.wx) || !hasher.float(body.wy) || !hasher.float(body.wz)) {
+        throw new Error('NaN');
+      }
     }
     mixSnapshot(hasher);
     frames.push({ tick: i + 1, hash: hasher.digest() });

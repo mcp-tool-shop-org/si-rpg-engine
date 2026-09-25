@@ -93,17 +93,24 @@ export function stepBodies(bodies, colliders, driven) {
   const colliderBase = instance.exports.colliders_ptr() / 8;
   for (let i = 0; i < bodies.length; i = i + 1) {
     const body = bodies[i];
-    const at = bodyBase + i * 10;
+    const at = bodyBase + i * 17;
     view[at] = body.x;
     view[at + 1] = body.y;
     view[at + 2] = body.z;
     view[at + 3] = body.vx;
     view[at + 4] = body.vy;
     view[at + 5] = body.vz;
-    view[at + 6] = body.hx;
-    view[at + 7] = body.hy;
-    view[at + 8] = body.hz;
-    view[at + 9] = driven.has(body.id) ? 1 : 0;
+    view[at + 6] = body.qx;
+    view[at + 7] = body.qy;
+    view[at + 8] = body.qz;
+    view[at + 9] = body.qw;
+    view[at + 10] = body.wx;
+    view[at + 11] = body.wy;
+    view[at + 12] = body.wz;
+    view[at + 13] = body.hx;
+    view[at + 14] = body.hy;
+    view[at + 15] = body.hz;
+    view[at + 16] = driven.has(body.id) ? 1 : 0;
   }
   for (let j = 0; j < colliders.length; j = j + 1) {
     const box = colliders[j];
@@ -118,7 +125,7 @@ export function stepBodies(bodies, colliders, driven) {
   const ok = instance.exports.step(bodies.length, colliders.length);
   for (let i = 0; i < bodies.length; i = i + 1) {
     const body = bodies[i];
-    const at = bodyBase + i * 10;
+    const at = bodyBase + i * 17;
     body.x = view[at];
     body.y = view[at + 1];
     body.z = view[at + 2];
@@ -136,17 +143,24 @@ function writeInputs(exp, bodies, colliders, heightfield, driven) {
   const colliderBase = exp.colliders_ptr() / 8;
   for (let i = 0; i < bodies.length; i = i + 1) {
     const body = bodies[i];
-    const at = bodyBase + i * 10;
+    const at = bodyBase + i * 17;
     view[at] = body.x;
     view[at + 1] = body.y;
     view[at + 2] = body.z;
     view[at + 3] = body.vx;
     view[at + 4] = body.vy;
     view[at + 5] = body.vz;
-    view[at + 6] = body.hx;
-    view[at + 7] = body.hy;
-    view[at + 8] = body.hz;
-    view[at + 9] = driven && driven.has(body.id) ? 1 : 0;
+    view[at + 6] = body.qx;
+    view[at + 7] = body.qy;
+    view[at + 8] = body.qz;
+    view[at + 9] = body.qw;
+    view[at + 10] = body.wx;
+    view[at + 11] = body.wy;
+    view[at + 12] = body.wz;
+    view[at + 13] = body.hx;
+    view[at + 14] = body.hy;
+    view[at + 15] = body.hz;
+    view[at + 16] = driven && driven.has(body.id) ? 1 : 0;
   }
   for (let j = 0; j < colliders.length; j = j + 1) {
     const box = colliders[j];
@@ -174,13 +188,20 @@ function readBodies(exp, bodies) {
   const bodyBase = exp.bodies_ptr() / 8;
   for (let i = 0; i < bodies.length; i = i + 1) {
     const body = bodies[i];
-    const at = bodyBase + i * 10;
+    const at = bodyBase + i * 17;
     body.x = view[at];
     body.y = view[at + 1];
     body.z = view[at + 2];
     body.vx = view[at + 3];
     body.vy = view[at + 4];
     body.vz = view[at + 5];
+    body.qx = view[at + 6];
+    body.qy = view[at + 7];
+    body.qz = view[at + 8];
+    body.qw = view[at + 9];
+    body.wx = view[at + 10];
+    body.wy = view[at + 11];
+    body.wz = view[at + 12];
   }
 }
 
@@ -192,10 +213,10 @@ function readBodies(exp, bodies) {
  * @param {{ rows: number, cols: number, cell: number, heights: number[] } | null} heightfield
  * @param {ReadonlySet<string>} driven
  */
-export function loadSolver(worldId, bodies, colliders, heightfield, driven) {
+export function loadSolver(worldId, bodies, colliders, heightfield, driven, shapeId) {
   const exp = instantiate().exports;
   const shape = writeInputs(exp, bodies, colliders, heightfield, driven);
-  const ok = exp.solver_load(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell);
+  const ok = exp.solver_load(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0);
   return ok === 1;
 }
 
@@ -207,10 +228,10 @@ export function loadSolver(worldId, bodies, colliders, heightfield, driven) {
  * @param {{ rows: number, cols: number, cell: number, heights: number[] } | null} heightfield
  * @param {ReadonlySet<string>} driven
  */
-export function stepSolver(worldId, bodies, colliders, heightfield, driven) {
+export function stepSolver(worldId, bodies, colliders, heightfield, driven, shapeId) {
   const exp = instantiate().exports;
   const shape = writeInputs(exp, bodies, colliders, heightfield, driven);
-  const ok = exp.solver_step(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell);
+  const ok = exp.solver_step(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0);
   readBodies(exp, bodies);
   return ok === 1;
 }

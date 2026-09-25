@@ -21,7 +21,8 @@ import { createWorld } from './world.js';
 const SCENE_KEYS = ['name', 'seed', 'bodies', 'colliders', 'goal'];
 const SCENE_ALLOWED = ['name', 'seed', 'bodies', 'colliders', 'goal', 'heightfield'];
 const HEIGHTFIELD_KEYS = ['rows', 'cols', 'cell', 'heights'];
-const BODY_KEYS = ['id', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'hx', 'hy', 'hz'];
+const BODY_KEYS = ['id', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz', 'hx', 'hy', 'hz'];
+const BODY_OPTIONAL = ['qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz'];
 const COLLIDER_KEYS = ['id', 'minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'];
 const GOAL_KEYS = ['actor', 'zone'];
 const ZONE_KEYS = ['minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ'];
@@ -88,6 +89,11 @@ export function validateScene(value) {
     }
     for (const key of ['x', 'y', 'z', 'vx', 'vy', 'vz', 'hx', 'hy', 'hz']) {
       if (typeof body[key] !== 'number' || !Number.isFinite(/** @type {number} */ (body[key]))) {
+        return { ok: false, reason: 'body ' + body.id + ' needs a finite ' + key };
+      }
+    }
+    for (const key of BODY_OPTIONAL) {
+      if (body[key] !== undefined && (typeof body[key] !== 'number' || !Number.isFinite(/** @type {number} */ (body[key])))) {
         return { ok: false, reason: 'body ' + body.id + ' needs a finite ' + key };
       }
     }

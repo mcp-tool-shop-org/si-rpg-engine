@@ -89,6 +89,11 @@ export function createTick(init) {
       if (!hasher.float(b.x) || !hasher.float(b.y) || !hasher.float(b.z) || !hasher.float(b.vx) || !hasher.float(b.vy) || !hasher.float(b.vz)) {
         throw new Error('NaN in body ' + b.id + ' at tick ' + tick);
       }
+      if (world.law === 'product') {
+        if (!hasher.float(b.qx) || !hasher.float(b.qy) || !hasher.float(b.qz) || !hasher.float(b.qw) || !hasher.float(b.wx) || !hasher.float(b.wy) || !hasher.float(b.wz)) {
+          throw new Error('NaN in body ' + b.id + ' at tick ' + tick);
+        }
+      }
     }
     mixSnapshot(hasher);
   }
@@ -249,7 +254,8 @@ export function createTick(init) {
         }
         world.bodies.push({
           id: proposal.id, x: proposal.x, y: proposal.y, z: proposal.z,
-          vx: 0, vy: 0, vz: 0, hx: proposal.hx, hy: proposal.hy, hz: proposal.hz,
+          vx: 0, vy: 0, vz: 0, qx: 0, qy: 0, qz: 0, qw: 1, wx: 0, wy: 0, wz: 0,
+          hx: proposal.hx, hy: proposal.hy, hz: proposal.hz,
         });
         memory.recordEpisode(tick, 'body', proposal.id);
         record(proposal);

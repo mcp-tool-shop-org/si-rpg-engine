@@ -1,0 +1,988 @@
+{
+  "engine": "E2b rotation",
+  "cases": [
+    {
+      "name": "tip",
+      "seed": 11,
+      "steps": 40,
+      "driven": [],
+      "world": {
+        "bodies": [
+          {
+            "id": "tip",
+            "x": 0.2,
+            "y": 0.4,
+            "z": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": 0,
+            "hx": 0.25,
+            "hy": 0.25,
+            "hz": 0.25
+          }
+        ],
+        "colliders": [
+          {
+            "id": "ledge",
+            "minX": -1,
+            "maxX": 0,
+            "minY": -1,
+            "maxY": 0,
+            "minZ": -1,
+            "maxZ": 1
+          }
+        ]
+      },
+      "frames": [
+        {
+          "tick": 0,
+          "hash": "62ec042162ec0421"
+        },
+        {
+          "tick": 1,
+          "hash": "c58f9ea21f20ef26"
+        },
+        {
+          "tick": 2,
+          "hash": "183b64b9b509dd65"
+        },
+        {
+          "tick": 3,
+          "hash": "e7df0a990032a9b8"
+        },
+        {
+          "tick": 4,
+          "hash": "3e8af2423dabdd8a"
+        },
+        {
+          "tick": 5,
+          "hash": "41f2ed6fdb1344c5"
+        },
+        {
+          "tick": 6,
+          "hash": "8f99cc291d2a5b11"
+        },
+        {
+          "tick": 7,
+          "hash": "b7f9a237839bade4"
+        },
+        {
+          "tick": 8,
+          "hash": "be1cfdcd21c96b4a"
+        },
+        {
+          "tick": 9,
+          "hash": "5aaff9e9c9ebcb9d"
+        },
+        {
+          "tick": 10,
+          "hash": "a17cd1ebfdc62b75"
+        },
+        {
+          "tick": 11,
+          "hash": "0f1db6eca4d91f00"
+        },
+        {
+          "tick": 12,
+          "hash": "ec9b4d97c2736be2"
+        },
+        {
+          "tick": 13,
+          "hash": "81fb2be7b6a613ee"
+        },
+        {
+          "tick": 14,
+          "hash": "cb73396ecc5a33b0"
+        },
+        {
+          "tick": 15,
+          "hash": "7d38324f2ee093db"
+        },
+        {
+          "tick": 16,
+          "hash": "09ed7ba250afa756"
+        },
+        {
+          "tick": 17,
+          "hash": "8f6613e15cb384bd"
+        },
+        {
+          "tick": 18,
+          "hash": "232a389d15e5dd40"
+        },
+        {
+          "tick": 19,
+          "hash": "eb3374fe54a6bb0d"
+        },
+        {
+          "tick": 20,
+          "hash": "2941f396cef862ca"
+        },
+        {
+          "tick": 21,
+          "hash": "264b12a1f89bbc4e"
+        },
+        {
+          "tick": 22,
+          "hash": "1c5113e747b063a9"
+        },
+        {
+          "tick": 23,
+          "hash": "1afe0ebc6d35e0d2"
+        },
+        {
+          "tick": 24,
+          "hash": "68704a40c1cac8eb"
+        },
+        {
+          "tick": 25,
+          "hash": "20fd464e314309e8"
+        },
+        {
+          "tick": 26,
+          "hash": "e0118facadea3755"
+        },
+        {
+          "tick": 27,
+          "hash": "358073501e034e05"
+        },
+        {
+          "tick": 28,
+          "hash": "16173dc6705d196c"
+        },
+        {
+          "tick": 29,
+          "hash": "6393cbffc5f2549d"
+        },
+        {
+          "tick": 30,
+          "hash": "e3fd9a1a5cd0dd8f"
+        },
+        {
+          "tick": 31,
+          "hash": "4d8fa09e713c3862"
+        },
+        {
+          "tick": 32,
+          "hash": "8faaae32481f03cc"
+        },
+        {
+          "tick": 33,
+          "hash": "815223e2c6340ef3"
+        },
+        {
+          "tick": 34,
+          "hash": "f042fb545bfc37eb"
+        },
+        {
+          "tick": 35,
+          "hash": "d5c85a12b34659f3"
+        },
+        {
+          "tick": 36,
+          "hash": "6966624d4be690a8"
+        },
+        {
+          "tick": 37,
+          "hash": "a59fd568e8bb6bb2"
+        },
+        {
+          "tick": 38,
+          "hash": "1c3e0a55f10f763a"
+        },
+        {
+          "tick": 39,
+          "hash": "2115078b60dc7d39"
+        },
+        {
+          "tick": 40,
+          "hash": "5566da2d850f032f"
+        }
+      ]
+    },
+    {
+      "name": "tumble",
+      "seed": 11,
+      "steps": 90,
+      "driven": [
+        "walker"
+      ],
+      "world": {
+        "bodies": [
+          {
+            "id": "walker",
+            "x": 0.3,
+            "y": 0.3,
+            "z": 0,
+            "vx": 1.2,
+            "vy": 0,
+            "vz": 0,
+            "hx": 0.25,
+            "hy": 0.25,
+            "hz": 0.25
+          },
+          {
+            "id": "crate",
+            "x": 1.1,
+            "y": 0.3,
+            "z": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": 0,
+            "hx": 0.25,
+            "hy": 0.25,
+            "hz": 0.25
+          }
+        ],
+        "colliders": [
+          {
+            "id": "plat",
+            "minX": -1,
+            "maxX": 2,
+            "minY": -1,
+            "maxY": 0,
+            "minZ": -1,
+            "maxZ": 1
+          }
+        ]
+      },
+      "frames": [
+        {
+          "tick": 0,
+          "hash": "d9cf0cdbd9cf0cdb"
+        },
+        {
+          "tick": 1,
+          "hash": "ceec5ed313e46105"
+        },
+        {
+          "tick": 2,
+          "hash": "d40d16fa49fb2b52"
+        },
+        {
+          "tick": 3,
+          "hash": "db122c8dce2ae368"
+        },
+        {
+          "tick": 4,
+          "hash": "537c17c105771a76"
+        },
+        {
+          "tick": 5,
+          "hash": "a145b945b9bc6cb2"
+        },
+        {
+          "tick": 6,
+          "hash": "31851cbcd52b01cf"
+        },
+        {
+          "tick": 7,
+          "hash": "01a2719f658640bc"
+        },
+        {
+          "tick": 8,
+          "hash": "80cdc4f2748762a6"
+        },
+        {
+          "tick": 9,
+          "hash": "abbcc19128607ca9"
+        },
+        {
+          "tick": 10,
+          "hash": "07b445917af36e4e"
+        },
+        {
+          "tick": 11,
+          "hash": "e45e8db04c943e72"
+        },
+        {
+          "tick": 12,
+          "hash": "5b0cbaa72f1c6206"
+        },
+        {
+          "tick": 13,
+          "hash": "e82a839d0b52edbd"
+        },
+        {
+          "tick": 14,
+          "hash": "2b20192a6c2d0551"
+        },
+        {
+          "tick": 15,
+          "hash": "dbdb4c73e76e4f02"
+        },
+        {
+          "tick": 16,
+          "hash": "92baf182fe6349a2"
+        },
+        {
+          "tick": 17,
+          "hash": "eeca3cf46f353f37"
+        },
+        {
+          "tick": 18,
+          "hash": "ac55e802b6e50493"
+        },
+        {
+          "tick": 19,
+          "hash": "13046ad58590b206"
+        },
+        {
+          "tick": 20,
+          "hash": "105a67b362561965"
+        },
+        {
+          "tick": 21,
+          "hash": "cd2233bd20e89e0b"
+        },
+        {
+          "tick": 22,
+          "hash": "49d04af24198c8ea"
+        },
+        {
+          "tick": 23,
+          "hash": "ccb77434aab9637b"
+        },
+        {
+          "tick": 24,
+          "hash": "4519fb4a05215b71"
+        },
+        {
+          "tick": 25,
+          "hash": "8a0c10dbb89fcac0"
+        },
+        {
+          "tick": 26,
+          "hash": "bd3a0fda7834b527"
+        },
+        {
+          "tick": 27,
+          "hash": "c4b81a2f21e25149"
+        },
+        {
+          "tick": 28,
+          "hash": "709c0ce1071731c2"
+        },
+        {
+          "tick": 29,
+          "hash": "d45baf8d0c7380c8"
+        },
+        {
+          "tick": 30,
+          "hash": "ef5a7b7dd4de2840"
+        },
+        {
+          "tick": 31,
+          "hash": "c970fc2c02ca82fc"
+        },
+        {
+          "tick": 32,
+          "hash": "08eb62992f0d54c0"
+        },
+        {
+          "tick": 33,
+          "hash": "08d5dabbb8d9866a"
+        },
+        {
+          "tick": 34,
+          "hash": "4540cda99c6b7b14"
+        },
+        {
+          "tick": 35,
+          "hash": "922ff720f870c3f1"
+        },
+        {
+          "tick": 36,
+          "hash": "7e5189fdb23c43d7"
+        },
+        {
+          "tick": 37,
+          "hash": "735864f22547bb2f"
+        },
+        {
+          "tick": 38,
+          "hash": "3250be9398cc4327"
+        },
+        {
+          "tick": 39,
+          "hash": "c55e3a6a5367f617"
+        },
+        {
+          "tick": 40,
+          "hash": "c6bf1790a108476d"
+        },
+        {
+          "tick": 41,
+          "hash": "fd0fdc166a0dcc5d"
+        },
+        {
+          "tick": 42,
+          "hash": "39a3b0b4df9afa78"
+        },
+        {
+          "tick": 43,
+          "hash": "cd244dc6ddcf33e0"
+        },
+        {
+          "tick": 44,
+          "hash": "64541f53802cd3dd"
+        },
+        {
+          "tick": 45,
+          "hash": "8db8302e1230a382"
+        },
+        {
+          "tick": 46,
+          "hash": "e0112990026be001"
+        },
+        {
+          "tick": 47,
+          "hash": "bc19fb9417672b3f"
+        },
+        {
+          "tick": 48,
+          "hash": "02fb101b2a8cf722"
+        },
+        {
+          "tick": 49,
+          "hash": "1c877f0c008296a0"
+        },
+        {
+          "tick": 50,
+          "hash": "572f89c963883d02"
+        },
+        {
+          "tick": 51,
+          "hash": "4fbe94a55cdb2331"
+        },
+        {
+          "tick": 52,
+          "hash": "a2eabfbf7d49f221"
+        },
+        {
+          "tick": 53,
+          "hash": "8415c2929f923359"
+        },
+        {
+          "tick": 54,
+          "hash": "19ed651c78728a58"
+        },
+        {
+          "tick": 55,
+          "hash": "e2117fa18dca976b"
+        },
+        {
+          "tick": 56,
+          "hash": "39af70bdbfb79671"
+        },
+        {
+          "tick": 57,
+          "hash": "43e1967ba680c860"
+        },
+        {
+          "tick": 58,
+          "hash": "5f0b6a1c4a59f067"
+        },
+        {
+          "tick": 59,
+          "hash": "5a17f5862993a082"
+        },
+        {
+          "tick": 60,
+          "hash": "e5f1f8bd0cf02c60"
+        },
+        {
+          "tick": 61,
+          "hash": "f511bdd9f056795f"
+        },
+        {
+          "tick": 62,
+          "hash": "121503b1d4a3ced8"
+        },
+        {
+          "tick": 63,
+          "hash": "128acb5828375807"
+        },
+        {
+          "tick": 64,
+          "hash": "c853ab9bc805627e"
+        },
+        {
+          "tick": 65,
+          "hash": "c448db3de67b43c1"
+        },
+        {
+          "tick": 66,
+          "hash": "9ddb9dc336a2d103"
+        },
+        {
+          "tick": 67,
+          "hash": "251251ed59cfa4b8"
+        },
+        {
+          "tick": 68,
+          "hash": "b02bcd5b48d444cd"
+        },
+        {
+          "tick": 69,
+          "hash": "2d692ec242a4c849"
+        },
+        {
+          "tick": 70,
+          "hash": "f8d43e73245c2111"
+        },
+        {
+          "tick": 71,
+          "hash": "20b656524bc88d9d"
+        },
+        {
+          "tick": 72,
+          "hash": "a80f7321ce2cbc20"
+        },
+        {
+          "tick": 73,
+          "hash": "d3c573eba414a8f3"
+        },
+        {
+          "tick": 74,
+          "hash": "0f9d6604a9804a69"
+        },
+        {
+          "tick": 75,
+          "hash": "4fdf3f76dae06c4d"
+        },
+        {
+          "tick": 76,
+          "hash": "b64f5273d92ca03b"
+        },
+        {
+          "tick": 77,
+          "hash": "a37fb2c14d813b1c"
+        },
+        {
+          "tick": 78,
+          "hash": "4f8bc23749a75fc9"
+        },
+        {
+          "tick": 79,
+          "hash": "487024657e7f10d3"
+        },
+        {
+          "tick": 80,
+          "hash": "b259567432df03ce"
+        },
+        {
+          "tick": 81,
+          "hash": "583d39092921ba71"
+        },
+        {
+          "tick": 82,
+          "hash": "37fa9fb904a42ca5"
+        },
+        {
+          "tick": 83,
+          "hash": "e0ab2d6776ea0eab"
+        },
+        {
+          "tick": 84,
+          "hash": "11f9bcd0b5079adc"
+        },
+        {
+          "tick": 85,
+          "hash": "8951a851b026c956"
+        },
+        {
+          "tick": 86,
+          "hash": "8f8b8f54d62c6ceb"
+        },
+        {
+          "tick": 87,
+          "hash": "dc860206297df572"
+        },
+        {
+          "tick": 88,
+          "hash": "3f6bdaa8c67a2a5a"
+        },
+        {
+          "tick": 89,
+          "hash": "3cbcfbeb9355bc6c"
+        },
+        {
+          "tick": 90,
+          "hash": "fc604ea602888734"
+        }
+      ]
+    },
+    {
+      "name": "stack",
+      "seed": 11,
+      "steps": 80,
+      "driven": [],
+      "world": {
+        "bodies": [
+          {
+            "id": "lower",
+            "x": 0,
+            "y": 0.3,
+            "z": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": 0,
+            "hx": 0.25,
+            "hy": 0.25,
+            "hz": 0.25
+          },
+          {
+            "id": "upper",
+            "x": 0,
+            "y": 0.85,
+            "z": 0,
+            "vx": 0,
+            "vy": 0,
+            "vz": 0,
+            "hx": 0.25,
+            "hy": 0.25,
+            "hz": 0.25
+          }
+        ],
+        "colliders": [
+          {
+            "id": "floor",
+            "minX": -4,
+            "maxX": 4,
+            "minY": -1,
+            "maxY": 0,
+            "minZ": -2,
+            "maxZ": 2
+          }
+        ]
+      },
+      "frames": [
+        {
+          "tick": 0,
+          "hash": "f4d5d2aef4d5d2ae"
+        },
+        {
+          "tick": 1,
+          "hash": "bdfff63009fdaefe"
+        },
+        {
+          "tick": 2,
+          "hash": "3568f675a3217d56"
+        },
+        {
+          "tick": 3,
+          "hash": "31f06c76942517c7"
+        },
+        {
+          "tick": 4,
+          "hash": "d0531ab8473d558d"
+        },
+        {
+          "tick": 5,
+          "hash": "aa92ebf2c81ef3c2"
+        },
+        {
+          "tick": 6,
+          "hash": "d1d6e03c08473652"
+        },
+        {
+          "tick": 7,
+          "hash": "46825fb62cb44a5b"
+        },
+        {
+          "tick": 8,
+          "hash": "5d96fa607ce69aed"
+        },
+        {
+          "tick": 9,
+          "hash": "b2cf5b6a1792546f"
+        },
+        {
+          "tick": 10,
+          "hash": "35420a2ebd90a78c"
+        },
+        {
+          "tick": 11,
+          "hash": "cc919d4952b4cd9c"
+        },
+        {
+          "tick": 12,
+          "hash": "c425bbe84e8b95d0"
+        },
+        {
+          "tick": 13,
+          "hash": "4bc34bb10d2177d5"
+        },
+        {
+          "tick": 14,
+          "hash": "14adea0a1f75d34f"
+        },
+        {
+          "tick": 15,
+          "hash": "9c65da4239a395b2"
+        },
+        {
+          "tick": 16,
+          "hash": "0371ad8004e194b9"
+        },
+        {
+          "tick": 17,
+          "hash": "9c0385436eca9c7e"
+        },
+        {
+          "tick": 18,
+          "hash": "b8d88b68dc4ad9fb"
+        },
+        {
+          "tick": 19,
+          "hash": "137718aee9563812"
+        },
+        {
+          "tick": 20,
+          "hash": "5fe1e747ecdb88af"
+        },
+        {
+          "tick": 21,
+          "hash": "ad61e28c6c4ca6ff"
+        },
+        {
+          "tick": 22,
+          "hash": "1eed955ece7e8755"
+        },
+        {
+          "tick": 23,
+          "hash": "8faf3e1d7f0ed63f"
+        },
+        {
+          "tick": 24,
+          "hash": "86b37fa6d965f3a9"
+        },
+        {
+          "tick": 25,
+          "hash": "ffe078dfaf374ede"
+        },
+        {
+          "tick": 26,
+          "hash": "3bb4f43b41866044"
+        },
+        {
+          "tick": 27,
+          "hash": "efab3716363eff18"
+        },
+        {
+          "tick": 28,
+          "hash": "ed2189b67cb64349"
+        },
+        {
+          "tick": 29,
+          "hash": "1c175879cb31ceea"
+        },
+        {
+          "tick": 30,
+          "hash": "3b973d8d75eb7a06"
+        },
+        {
+          "tick": 31,
+          "hash": "9145be07161de2d5"
+        },
+        {
+          "tick": 32,
+          "hash": "6884ce059dc28ffa"
+        },
+        {
+          "tick": 33,
+          "hash": "242c9dc6c37b7238"
+        },
+        {
+          "tick": 34,
+          "hash": "6f719d7f7cfbe15e"
+        },
+        {
+          "tick": 35,
+          "hash": "dae0a6f00121ca34"
+        },
+        {
+          "tick": 36,
+          "hash": "a469852cb14d8359"
+        },
+        {
+          "tick": 37,
+          "hash": "0a55fccd7cb87e7c"
+        },
+        {
+          "tick": 38,
+          "hash": "bd500591ab66a5ae"
+        },
+        {
+          "tick": 39,
+          "hash": "17a75d0d5836d0c8"
+        },
+        {
+          "tick": 40,
+          "hash": "bb81c18a564ccdab"
+        },
+        {
+          "tick": 41,
+          "hash": "0c4d0bae59fb99d8"
+        },
+        {
+          "tick": 42,
+          "hash": "b5adc4881e90469a"
+        },
+        {
+          "tick": 43,
+          "hash": "7eabba75d0104548"
+        },
+        {
+          "tick": 44,
+          "hash": "854dfa3319f2b09b"
+        },
+        {
+          "tick": 45,
+          "hash": "3899f28dca955747"
+        },
+        {
+          "tick": 46,
+          "hash": "2c720dbb60568f45"
+        },
+        {
+          "tick": 47,
+          "hash": "f68cd4ac46f33796"
+        },
+        {
+          "tick": 48,
+          "hash": "d58ed884be6b6cea"
+        },
+        {
+          "tick": 49,
+          "hash": "6cd08a217c47d66b"
+        },
+        {
+          "tick": 50,
+          "hash": "473c40cb95d2d835"
+        },
+        {
+          "tick": 51,
+          "hash": "3e278160540c640a"
+        },
+        {
+          "tick": 52,
+          "hash": "f5c03d6c1412b862"
+        },
+        {
+          "tick": 53,
+          "hash": "8f05bdf5c3c58c3f"
+        },
+        {
+          "tick": 54,
+          "hash": "79bd7d9bf0d02ea5"
+        },
+        {
+          "tick": 55,
+          "hash": "374fde74263da51e"
+        },
+        {
+          "tick": 56,
+          "hash": "0c2b7cd48bca7a6a"
+        },
+        {
+          "tick": 57,
+          "hash": "c3891d69f4600723"
+        },
+        {
+          "tick": 58,
+          "hash": "6290220b9fccf5f5"
+        },
+        {
+          "tick": 59,
+          "hash": "25c6f04856f881f2"
+        },
+        {
+          "tick": 60,
+          "hash": "f403d84c6ba80df2"
+        },
+        {
+          "tick": 61,
+          "hash": "2b7b765da97773f7"
+        },
+        {
+          "tick": 62,
+          "hash": "6739687b14928265"
+        },
+        {
+          "tick": 63,
+          "hash": "3b169d3cc825fe46"
+        },
+        {
+          "tick": 64,
+          "hash": "45c961242c418a0a"
+        },
+        {
+          "tick": 65,
+          "hash": "359aa6314950abdb"
+        },
+        {
+          "tick": 66,
+          "hash": "6ee5956bcbbd7c75"
+        },
+        {
+          "tick": 67,
+          "hash": "ab8840b0cb108f7a"
+        },
+        {
+          "tick": 68,
+          "hash": "1b4785cccf8fe362"
+        },
+        {
+          "tick": 69,
+          "hash": "30153185feced20f"
+        },
+        {
+          "tick": 70,
+          "hash": "e648f19b3e050ee5"
+        },
+        {
+          "tick": 71,
+          "hash": "161730c4cc2c742e"
+        },
+        {
+          "tick": 72,
+          "hash": "ca214f14877e14aa"
+        },
+        {
+          "tick": 73,
+          "hash": "71980439353d9133"
+        },
+        {
+          "tick": 74,
+          "hash": "ba2cf36b0b68f815"
+        },
+        {
+          "tick": 75,
+          "hash": "a0c9c41890c59dc2"
+        },
+        {
+          "tick": 76,
+          "hash": "84e3806cee3c4cb2"
+        },
+        {
+          "tick": 77,
+          "hash": "1f89e1ad1dd5c3a7"
+        },
+        {
+          "tick": 78,
+          "hash": "949df6fb7b1f73c5"
+        },
+        {
+          "tick": 79,
+          "hash": "7b7f5a8c2d11acf6"
+        },
+        {
+          "tick": 80,
+          "hash": "28b099c408f0e1ea"
+        }
+      ]
+    }
+  ]
+}

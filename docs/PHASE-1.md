@@ -24,7 +24,7 @@ Each slice is one pull request, built by the builder seat, reviewed by a differe
 
 ## The world is three-dimensional
 
-This engine's law is fully 3D and stays that way. No presentation style, product line, or market frame names this law, its bodies, its colliders, or its verbs, and none appears in a slice contract, a brief, or a research prompt for this engine. E2 locks rotation for one slice so the frame contract and the fixtures keep their shape while the solver lands; orientation and angular velocity for dynamic bodies, and the box-or-capsule question for the character, are the first work after E2 and carry their own fixture.
+This engine's law is fully 3D and stays that way. No presentation style, product line, or market frame names this law, its bodies, its colliders, or its verbs, and none appears in a slice contract, a brief, or a research prompt for this engine. E2 locked rotation for one slice so the frame contract and the fixtures kept their shape while the solver landed. E2b takes that lock off dynamic bodies. The character stays a box: it climbs a step of the maximum height and holds a ledge and a narrow gap at standing height, while a capsule of the same height and width misses that step and drops at the ledge, and only the capsule climbs a slope lying exactly on the 45 degree limit.
 
 ## What stays, renamed
 
