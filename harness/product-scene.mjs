@@ -32,13 +32,6 @@ export const productDriven = ['walker'];
  */
 export function applyProductAct(world, step) {
   world.lifted.delete('climber');
-  // Throwaway: under a shell only, nudge the walker at step 5000. Reverted next.
-  if (step === 5000 && typeof /** @type {any} */ (globalThis).print === 'function') {
-    const walker = world.body('walker');
-    if (walker) {
-      walker.vx = walker.vx + 1e-9;
-    }
-  }
   const driven = new Set(productDriven);
   if (step >= 200 && step < 260) {
     const climber = world.body('climber');
