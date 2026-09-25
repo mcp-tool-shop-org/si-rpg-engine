@@ -85,6 +85,26 @@ test('the lint refuses a relaxed-SIMD instruction and names its opcode', () => {
   assert.match(lint.reasons[0], /^relaxed-SIMD opcode 0xfd 0x107 at byte \d+ in function body 0$/);
 });
 
+test('the lint refuses every relaxed-SIMD opcode, 0x100 through 0x113, and only those', () => {
+  // The rustc flag sets the default feature set only: a function marked
+  // #[target_feature(enable = "relaxed-simd")] still emits these, so the scan
+  // has to catch each one. The bodies are decoded, not validated, so each
+  // opcode stands alone after its operands' v128.const.
+  for (let op = 0x100; op <= 0x113; op = op + 1) {
+    const lint = lintWasm(module(FIXED, [...V128_CONST, ...V128_CONST, ...V128_CONST, 0xfd, ...uleb(op), 0x1a, 0x0b]));
+    assert.equal(lint.ok, false, 'opcode 0x' + op.toString(16));
+    assert.equal(lint.reasons.length, 1);
+    assert.match(lint.reasons[0], new RegExp('^relaxed-SIMD opcode 0xfd 0x' + op.toString(16) + ' at byte \\d+ in function body 0$'));
+  }
+  // 0xff, f64x2.convert_low_i32x4_u, the opcode just below the range, is not relaxed.
+  const below = lintWasm(module(FIXED, [...V128_CONST, 0xfd, ...uleb(0xff), 0x1a, 0x0b]));
+  assert.deepEqual(below.reasons, []);
+  // 0x114 is past the range and unassigned: refused as undecodable, not as relaxed.
+  const above = lintWasm(module(FIXED, [...V128_CONST, 0xfd, ...uleb(0x114), 0x1a, 0x0b]));
+  assert.equal(above.ok, false);
+  assert.match(above.reasons[0], /^opcode 0xfd 0x114 at byte \d+ in function body 0 is not one this lint decodes$/);
+});
+
 test('the lint refuses memory.grow', () => {
   const lint = lintWasm(grows);
   assert.equal(lint.ok, false);
