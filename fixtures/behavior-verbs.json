@@ -753,7 +753,19 @@
       ],
       "episodes": [
         "climb walker"
-      ]
+      ],
+      "behaviour": {
+        "sleep": {
+          "walker": null
+        },
+        "final": {
+          "walker": {
+            "x": 2.3844581552426387,
+            "y": 1.0600999997543783,
+            "z": 3.5016247581084966e-12
+          }
+        }
+      }
     },
     {
       "name": "carry",
@@ -1895,7 +1907,25 @@
         "drop walker",
         "use walker crate",
         "use walker east"
-      ]
+      ],
+      "behaviour": {
+        "sleep": {
+          "walker": 40,
+          "crate": 41
+        },
+        "final": {
+          "walker": {
+            "x": 3.1436155842291598,
+            "y": 0.2557054687535594,
+            "z": -0.000005120174077284798
+          },
+          "crate": {
+            "x": 3.1436155842291598,
+            "y": 0.2417644084565629,
+            "z": 0.23186116998798642
+          }
+        }
+      }
     },
     {
       "name": "refusals",
@@ -2014,7 +2044,25 @@
           "hash": "3710d7011dc8a475"
         }
       ],
-      "episodes": []
+      "episodes": [],
+      "behaviour": {
+        "sleep": {
+          "walker": null,
+          "crate": null
+        },
+        "final": {
+          "walker": {
+            "x": 0.5,
+            "y": 0.3,
+            "z": 0
+          },
+          "crate": {
+            "x": 1.8,
+            "y": 1.2,
+            "z": 0
+          }
+        }
+      }
     }
   ]
 }

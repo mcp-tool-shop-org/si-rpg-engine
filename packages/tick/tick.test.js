@@ -17,6 +17,7 @@ import { loadIntentRules } from './predicates.js';
 import { replay } from './replay.js';
 import { FIXTURE_SEED, fixtureWorld } from './fixture.js';
 import { validateScene } from './scene.js';
+import { finalPositions } from '../../harness/behaviour.mjs';
 
 function fresh(seed = FIXTURE_SEED, retired = loadIntentRules().retired) {
   return createTick({ seed, world: createWorld(fixtureWorld(), 'reference'), rules: loadIntentRules().rules, retired, memory: createMemory() });
@@ -433,6 +434,8 @@ test('the 3D behavior fixture replays frame for frame', () => {
   const catalog = loadIntentRules();
   /** @type {{ tick: number; hash: string }[]} */
   const frames = [];
+  /** @type {ReadonlyArray<import('../frame/types.js').Body>} */
+  let bodies = [];
   const result = replay({
     seed: saved.seed,
     world: saved.world,
@@ -440,11 +443,23 @@ test('the 3D behavior fixture replays frame for frame', () => {
     retired: catalog.retired,
     log: saved.log,
     law: 'reference',
-    onFrame: (f) => void frames.push({ tick: f.tick, hash: f.hash }),
+    onFrame: (f) => {
+      frames.push({ tick: f.tick, hash: f.hash });
+      bodies = f.bodies;
+    },
   });
   assert.ok(result.ok, JSON.stringify(result));
   assert.deepEqual(/** @type {any} */ (result).hashes, saved.log.map((/** @type {any} */ entry) => entry.hash));
   assert.deepEqual(frames, saved.frames, 'every committed frame, quantum for quantum');
+  // The reference law has no solver, so no body sleeps; the final positions are the last frame's.
+  const reference = createWorld(saved.world, 'reference');
+  /** @type {Record<string, null>} */
+  const sleep = {};
+  for (const body of reference.bodies) {
+    assert.equal(reference.sleeping(body.id), false);
+    sleep[body.id] = null;
+  }
+  assert.deepEqual({ sleep, final: finalPositions(bodies) }, saved.behaviour, 'behaviour');
 });
 
 test('the replay command replays a host log, which carries a scene instead of a world', () => {

@@ -215,6 +215,7 @@ test('the minds fixture replays frame for frame, and the log rebuilds the record
   assert.deepEqual(played.beliefs, saved.beliefs);
   assert.deepEqual(played.goals, saved.goals);
   assert.deepEqual(played.reasons, saved.reasons);
+  assert.deepEqual(played.behaviour, saved.behaviour, 'behaviour');
   const walker = played.episodes.filter((episode) => episode.detail.startsWith('see watcher walker'));
   assert.deepEqual(walker.map((episode) => episode.detail), [
     'see watcher walker west',

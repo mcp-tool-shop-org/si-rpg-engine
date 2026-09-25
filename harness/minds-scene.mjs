@@ -1,4 +1,5 @@
-// One product-law run of a mind script. The fixture stores the frames this returns.
+// One product-law run of a mind script. The fixture stores the frames and the
+// behaviour numbers this returns.
 // Sight episodes are derived: the admitted log does not contain them, and a
 // second run from that log builds the same episodes and beliefs.
 
@@ -6,6 +7,7 @@ import { createTick, settle } from '../packages/tick/tick.js';
 import { createWorld } from '../packages/tick/world.js';
 import { createMemory } from '../packages/tick/memory.js';
 import { subjectText } from '../packages/tick/beliefs.js';
+import { finalPositions, sleepWatch } from './behaviour.mjs';
 
 /**
  * @param {ReturnType<typeof createMemory>} memory
@@ -43,7 +45,7 @@ function episodeSnapshot(memory) {
  * @typedef {{ id: string, tick: number, kind: string, detail: string }} MindEpisode
  * @typedef {{ id: string, subject: string, key: string, value: string | number | boolean, source: string, supersededBy: string | null }} MindBeliefRow
  * @typedef {{ mind: string, beliefs: MindBeliefRow[] }} MindBeliefList
- * @typedef {{ ok: true, frames: { tick: number, hash: string }[], episodes: MindEpisode[], beliefs: MindBeliefList[], goals: unknown[], log: { tick: number, hash: string, proposal: import('../packages/frame/types.js').Proposal }[], reasons: string[], bodies: import('../packages/frame/types.js').Body[] } | { ok: false, reason: string, frames: { tick: number, hash: string }[], episodes: MindEpisode[], beliefs: MindBeliefList[], goals: unknown[], log: { tick: number, hash: string, proposal: import('../packages/frame/types.js').Proposal }[], reasons: string[], bodies: import('../packages/frame/types.js').Body[] }} MindPlay
+ * @typedef {{ ok: true, frames: { tick: number, hash: string }[], episodes: MindEpisode[], beliefs: MindBeliefList[], goals: unknown[], log: { tick: number, hash: string, proposal: import('../packages/frame/types.js').Proposal }[], reasons: string[], bodies: import('../packages/frame/types.js').Body[], behaviour: import('./behaviour.mjs').CaseBehaviour } | { ok: false, reason: string, frames: { tick: number, hash: string }[], episodes: MindEpisode[], beliefs: MindBeliefList[], goals: unknown[], log: { tick: number, hash: string, proposal: import('../packages/frame/types.js').Proposal }[], reasons: string[], bodies: import('../packages/frame/types.js').Body[] }} MindPlay
  */
 
 /**
@@ -57,9 +59,11 @@ export function playMinds(spec, rules) {
   const tick = createTick({ seed: spec.seed, world, rules, memory });
   /** @type {{ tick: number, hash: string }[]} */
   const frames = [];
+  const watch = sleepWatch(world, world.bodies.map((body) => body.id));
   tick.attach({
     draw(frame) {
       frames.push({ tick: frame.tick, hash: frame.hash });
+      watch.see(frame.tick);
     },
   });
   /** @type {string[]} */
@@ -148,6 +152,7 @@ export function playMinds(spec, rules) {
     log: tick.log().map((entry) => ({ tick: entry.tick, hash: entry.hash, proposal: entry.proposal })),
     reasons,
     bodies: world.bodies,
+    behaviour: { sleep: watch.sleep(), final: finalPositions(world.bodies) },
   };
 }
 
@@ -160,7 +165,7 @@ export function playMinds(spec, rules) {
  */
 function fail(reason, frames, memory, world, reasons) {
   return {
-    ok: false,
+    ok: /** @type {false} */ (false),
     reason,
     frames,
     episodes: episodeSnapshot(memory),
