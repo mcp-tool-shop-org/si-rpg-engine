@@ -4,6 +4,7 @@
 import { instantiate } from '../../solver/dist/solver.mjs';
 import { createTick } from '../tick/tick.js';
 import { createWorld, DT, fixtureColliders } from '../tick/world.js';
+import { subjectText } from '../tick/beliefs.js';
 import { createMemory } from '../tick/memory.js';
 import { loadIntentRules } from '../tick/predicates.js';
 import { FIXTURE_SEED, fixtureWorld } from '../tick/fixture.js';
@@ -23,13 +24,21 @@ const STEPS = { left: -1, right: 1 };
 export function createSession(scene, law) {
   instantiate();
   const catalog = loadIntentRules();
-  const sim = createWorld(scene ? { bodies: scene.bodies, colliders: scene.colliders, zones: scene.zones, heightfield: scene.heightfield } : fixtureWorld(), law);
+  const sim = createWorld(scene ? {
+    bodies: scene.bodies,
+    colliders: scene.colliders,
+    zones: scene.zones,
+    heightfield: scene.heightfield,
+    name: scene.name,
+    minds: scene.minds,
+  } : fixtureWorld(), law);
+  const memory = createMemory();
   const tick = createTick({
     seed: scene ? scene.seed : FIXTURE_SEED,
     world: sim,
     rules: catalog.rules,
     retired: catalog.retired,
-    memory: createMemory(),
+    memory,
   });
   /** @type {Array<(frame: Frame) => void>} */
   const watchers = [];
@@ -95,7 +104,27 @@ export function createSession(scene, law) {
       })),
       door: doorTick(frame),
       zone: sim.zoneOf('walker'),
+      ...(sim.minds.length > 0 ? { minds: mindRecord() } : {}),
     };
+  }
+
+  function mindRecord() {
+    return sim.minds.map((mind) => {
+      const body = sim.body(mind.body);
+      return {
+        body: mind.body,
+        sight: mind.sight,
+        x: body ? body.x : 0,
+        y: body ? body.y : 0,
+        z: body ? body.z : 0,
+        beliefs: memory.mindBeliefs(mind.body).filter((item) => !item.supersededBy).map((item) => ({
+          subject: subjectText(item.subject),
+          key: item.key,
+          value: item.value,
+        })),
+        goals: sim.goalsOf(mind.body),
+      };
+    });
   }
 
   /**

@@ -5,6 +5,8 @@
 // Run as a module: `v8 --module`, `spidermonkey -m`, `javascriptcore -m`, or node.
 
 import { createHasher } from '../packages/frame/hash.js';
+import { createMemory } from '../packages/tick/memory.js';
+import { installMinds, mixMinds, observeMinds } from '../packages/tick/minds.js';
 import { instantiate } from '../solver/dist/solver.mjs';
 import { applyProductAct, createProductWorld } from './product-scene.mjs';
 
@@ -23,11 +25,14 @@ function out(line) {
 
 instantiate();
 const world = createProductWorld();
+const memory = createMemory();
+installMinds(world, memory);
 const h = createHasher();
 let ok = true;
 
 try {
   world.mixLoad(h, new Set(['walker']));
+  mixMinds(h, world, memory);
 } catch {
   ok = false;
 }
@@ -35,6 +40,7 @@ try {
 for (let i = 0; ok && i < STEPS; i = i + 1) {
   try {
     world.step(applyProductAct(world, i));
+    observeMinds(world, memory, i + 1);
   } catch {
     ok = false;
     break;
@@ -58,6 +64,7 @@ for (let i = 0; ok && i < STEPS; i = i + 1) {
       h.u32(world.linkIndex(world.carriedByOf(body.id)));
     }
   }
+  mixMinds(h, world, memory);
   const snap = world.snapshot();
   if (snap) {
     h.u32(snap.length);

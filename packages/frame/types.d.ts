@@ -76,9 +76,11 @@ export interface Intent {
 /** One typed belief, citing the admitted episode it came from. */
 export interface BeliefWrite {
   kind: 'belief';
-  subject: string;
+  /** Absent on the fixture room's implicit mind. A named mind is the per-mind list. */
+  mind?: string;
+  subject: string | { body: string } | { zone: string };
   key: string;
-  value: string;
+  value: string | number | boolean;
   confidence: number;
   /** an episode id the log already holds */
   source: string;
@@ -125,9 +127,9 @@ export type Admission =
 /** A belief record the sim holds. Superseded beliefs are tombstoned, never deleted. */
 export interface Belief {
   id: string;
-  subject: string;
+  subject: string | { body: string } | { zone: string };
   key: string;
-  value: string;
+  value: string | number | boolean;
   confidence: number;
   source: string;
   supersededBy?: string;

@@ -2,6 +2,7 @@
   "authored": [
     ".github/",
     "docs/",
+    "predicates/beliefs/",
     "predicates/hazards/",
     "predicates/intents/",
     "root",
@@ -71,83 +72,95 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 28,
-      "changed": 35,
+      "added": 8,
+      "changed": 42,
       "moved": 0,
-      "parts": 12,
+      "parts": 10,
       "removed": 0
     },
     "items": [
       {
-        "kind": "cycle",
-        "sentence": "tick now imports harness, which closes the cycle tick → harness → tick.",
+        "kind": "door",
+        "sentence": "CI now also runs packages/tick/minds.test.js.",
         "subjects": [
-          "tick",
-          "harness"
-        ]
-      },
-      {
-        "kind": "cycle",
-        "sentence": "tick now imports load, which closes the cycle tick → load → tick.",
-        "subjects": [
-          "tick",
-          "load"
+          ".github/workflows/ci.yml",
+          "packages/tick/minds.test.js"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI now also runs packages/tick/verbs.test.js.",
+        "sentence": "CI now also checks harness/minds-scene.mjs.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "packages/tick/verbs.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks harness/verbs-scene.mjs.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/verbs-scene.mjs"
+          "harness/minds-scene.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/ is now read by packages/tick/verbs.test.js.",
+        "sentence": "fixtures/behavior-minds.json is now read by packages/tick/minds.test.js.",
         "subjects": [
-          "fixtures/",
-          "packages/tick/verbs.test.js"
+          "fixtures/behavior-minds.json",
+          "packages/tick/minds.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/behavior-verbs.json is now read by packages/tick/verbs.test.js.",
+        "sentence": "predicates/beliefs/keys.json is now read by packages/tick/beliefs.js.",
         "subjects": [
-          "fixtures/behavior-verbs.json",
-          "packages/tick/verbs.test.js"
+          "predicates/beliefs/keys.json",
+          "packages/tick/beliefs.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/climb-draft.json is now read by packages/tick/verbs.test.js.",
+        "sentence": "worlds/crate-and-door.json is now also read by packages/tick/minds.test.js.",
         "subjects": [
-          "fixtures/climb-draft.json",
-          "packages/tick/verbs.test.js"
+          "worlds/crate-and-door.json",
+          "packages/tick/minds.test.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "And 2 more new writers and readers of places.",
+        "kind": "sequence",
+        "sentence": "In packages/tick/tick.js, create tick gained a step, install minds, before mix load.",
+        "subjects": [
+          "packages/tick/tick.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/tick.js, create tick gained a step, mix minds, before snapshot.",
+        "subjects": [
+          "packages/tick/tick.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/scene.js, validate scene gained a step, belief refusal, after create world.",
+        "subjects": [
+          "packages/tick/scene.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "And 2 more changes to the order of work.",
         "subjects": []
       },
       {
+        "kind": "part",
+        "sentence": "beliefs is a new part, drawn from `predicates/beliefs/**`.",
+        "subjects": [
+          "beliefs"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "28 files added and 35 changed content, across 12 parts.",
+        "sentence": "8 files added and 42 changed content, across 10 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "8c3c252e349160b34c0999766a3e08c92f474f62",
-      "generatedAt": "2026-09-25T06:44:24.341Z"
+      "commit": "3aa2ddc4c6c6c214175554d08b58591822a98e34",
+      "generatedAt": "2026-09-25T07:36:10.289Z"
     },
     "unchanged": false
   },
@@ -234,9 +247,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 1 source file reaches 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "3aa2ddc4c6c6c214175554d08b58591822a98e34",
+  "commit": "7122b6c1b795ef66b1b1585da8b08f8d35ec7429",
   "defaultBranch": "main",
-  "derived": "14 parts, mostly JavaScript (44 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (49 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -245,6 +258,7 @@
         "harness/arith.mjs",
         "harness/sim.mjs",
         "harness/check.js",
+        "harness/minds-scene.mjs",
         "harness/product-scene.mjs",
         "harness/solver-scene.mjs",
         "harness/verbs-scene.mjs",
@@ -257,7 +271,7 @@
         "packages/propose/",
         "packages/tick/"
       ],
-      "checksCount": 16,
+      "checksCount": 17,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -277,7 +291,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 9
+          "files": 10
         },
         {
           "boundary": "host",
@@ -302,7 +316,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 13
+          "files": 17
         }
       ],
       "runs": [
@@ -311,12 +325,13 @@
         "packages/host/host.test.js",
         "packages/load/load.test.js",
         "packages/propose/propose.test.js",
+        "packages/tick/minds.test.js",
         "packages/tick/scene.test.js",
         "packages/tick/tick.test.js",
         "packages/tick/verbs.test.js",
         "solver/build.mjs"
       ],
-      "runsCount": 9,
+      "runsCount": 10,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -343,7 +358,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 7
+          "files": 10
         },
         {
           "boundary": "frame",
@@ -377,7 +392,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 6
+          "files": 9
         },
         {
           "boundary": "frame",
@@ -411,7 +426,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 6
+          "files": 9
         },
         {
           "boundary": "frame",
@@ -451,8 +466,8 @@
         },
         {
           "boundary": "tick",
-          "depth": 2,
-          "files": 1
+          "depth": 1,
+          "files": 4
         }
       ],
       "runs": [
@@ -477,7 +492,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 6
+          "files": 9
         },
         {
           "boundary": "frame",
@@ -506,7 +521,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 7
+          "files": 10
         },
         {
           "boundary": "frame",
@@ -599,17 +614,18 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T07:36:10.289Z",
+  "generatedAt": "2026-09-25T08:23:41.857Z",
   "limits": [
-    "4 import sites could not be resolved.",
+    "5 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "6 writes and 12 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "6 writes and 14 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "5 commands are built at run time and not followed, 3 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
   "partLabels": {
+    "beliefs": "beliefs",
     "docs": "docs",
     "fixtures": "fixtures",
     "frame": "frame",
@@ -625,7 +641,7 @@
     "workflows": "workflows",
     "worlds": "worlds"
   },
-  "parts": 14,
+  "parts": 15,
   "readers": [],
   "repo": "mcp-tool-shop-org/si-rpg-engine",
   "sequences": [
@@ -647,10 +663,22 @@
               "phrase": "create hasher"
             },
             {
+              "name": "installMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "install minds"
+            },
+            {
               "name": "mixLoad",
               "part": null,
               "partLabel": null,
               "phrase": "mix load"
+            },
+            {
+              "name": "mixMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "mix minds"
             },
             {
               "name": "snapshot",
@@ -727,10 +755,22 @@
               "phrase": "create hasher"
             },
             {
+              "name": "installMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "install minds"
+            },
+            {
               "name": "mixLoad",
               "part": null,
               "partLabel": null,
               "phrase": "mix load"
+            },
+            {
+              "name": "mixMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "mix minds"
             },
             {
               "name": "snapshot",
@@ -797,14 +837,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 8,
+  "testFiles": 9,
   "testedBy": {
-    "frame": 6,
+    "frame": 7,
     "host": 1,
     "load": 2,
     "propose": 1,
     "solver": 0,
-    "tick": 8
+    "tick": 9
   },
   "unnamedWrites": 0,
   "unread": [],

@@ -2,6 +2,8 @@
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
 import { clearWarmstart, loadSolver, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { subjectText } from './subject.js';
+import { goalsOf as goalsOfMind } from './minds.js';
 
 export const DT = 1 / 64;
 export const G = -8;
@@ -22,7 +24,7 @@ export const UNDRIVEN_DRAG = 0;
 let nextProductId = 1;
 
 /**
- * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; shape?: 'box' | 'capsule' }} init
+ * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; shape?: 'box' | 'capsule'; name?: string; minds?: import('./minds.js').Mind[] }} init
  * @param {'product' | 'box' | 'reference'} [law] product is the Rapier step; box is the E1 binary; reference is the JavaScript kernel
  */
 export function createWorld(init, law) {
@@ -49,6 +51,24 @@ export function createWorld(init, law) {
     qz: typeof c.qz === 'number' ? c.qz : 0,
     qw: typeof c.qw === 'number' ? c.qw : 1,
   }));
+  const name = typeof init.name === 'string' ? init.name : '';
+  /** @type {import('./minds.js').Mind[]} */
+  const minds = Array.isArray(init.minds) ? init.minds.map((mind) => ({
+    body: mind.body,
+    sight: mind.sight,
+    goals: (mind.goals || []).map((goal) => (
+      goal.kind === 'reach'
+        ? { kind: /** @type {'reach'} */ ('reach'), zone: goal.zone }
+        : { kind: /** @type {'use'} */ ('use'), target: goal.target }
+    )),
+    beliefs: (mind.beliefs || []).map((belief) => ({
+      subject: belief.subject,
+      key: belief.key,
+      value: belief.value,
+      confidence: belief.confidence,
+      source: belief.source,
+    })),
+  })) : [];
   const zones = Array.isArray(init.zones) ? init.zones.map((z) => ({
     id: z.id, minX: z.minX, maxX: z.maxX, minY: z.minY, maxY: z.maxY, minZ: z.minZ, maxZ: z.maxZ,
   })) : [];
@@ -454,6 +474,33 @@ export function createWorld(init, law) {
         }
       }
     }
+    if (minds.length > 0) {
+      hasher.u32(minds.length);
+      for (let i = 0; i < minds.length; i = i + 1) {
+        const mind = minds[i];
+        hasher.text(mind.body);
+        if (!hasher.float(mind.sight)) {
+          throw new Error('NaN');
+        }
+        hasher.u32(mind.goals.length);
+        for (let g = 0; g < mind.goals.length; g = g + 1) {
+          const goal = mind.goals[g];
+          hasher.text(goal.kind);
+          hasher.text(goal.kind === 'reach' ? goal.zone : goal.target);
+        }
+        hasher.u32(mind.beliefs.length);
+        for (let b = 0; b < mind.beliefs.length; b = b + 1) {
+          const belief = mind.beliefs[b];
+          hasher.text(subjectText(belief.subject));
+          hasher.text(belief.key);
+          hasher.text(String(belief.value));
+          if (!hasher.float(belief.confidence)) {
+            throw new Error('NaN');
+          }
+          hasher.text(belief.source);
+        }
+      }
+    }
     if (heightfield) {
       hasher.u32(heightfield.rows);
       hasher.u32(heightfield.cols);
@@ -742,9 +789,18 @@ export function createWorld(init, law) {
     return 0xffffffff;
   }
 
-  return {
+  const api = {
+    mindsInstalled: false,
+    minds,
+    name,
     bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, zoneOf, zoneIndex, law: chosen,
     lifted, carry, release, sleeping, supportAt, linkIndex,
+    /**
+     * @param {string} mind
+     */
+    goalsOf(mind) {
+      return goalsOfMind(/** @type {ReturnType<typeof createWorld>} */ (api), mind);
+    },
     anyCarried() {
       return carriedBy.size > 0;
     },
@@ -761,6 +817,7 @@ export function createWorld(init, law) {
       return carriedBy.get(id) || null;
     },
   };
+  return api;
 }
 
 /**

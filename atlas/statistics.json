@@ -16,6 +16,22 @@
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
+      "name": "beliefs",
+      "qualifyingSourceCommits": 0,
+      "rebaseline": null
+    },
+    {
+      "breakage": {
+        "coChangesOnly": [],
+        "collapsed": false,
+        "confidence": "low",
+        "importsAndCoChanges": [],
+        "importsOnly": []
+      },
+      "cohesion": null,
+      "cohesionDropped": false,
+      "confidence": "low",
+      "highWater": null,
       "name": "docs",
       "qualifyingSourceCommits": 0,
       "rebaseline": null
@@ -213,7 +229,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "tick",
-      "qualifyingSourceCommits": 15,
+      "qualifyingSourceCommits": 16,
       "rebaseline": null
     },
     {
@@ -273,8 +289,8 @@
         "path": "README.md"
       },
       {
-        "commits": 43,
-        "lines": 1327,
+        "commits": 45,
+        "lines": 1399,
         "path": "atlas/README.md"
       },
       {
@@ -283,18 +299,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 43,
-        "lines": 4966,
+        "commits": 45,
+        "lines": 5284,
         "path": "atlas/page.json"
       },
       {
-        "commits": 43,
-        "lines": 7155,
+        "commits": 45,
+        "lines": 7781,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 43,
-        "lines": 10510,
+        "commits": 45,
+        "lines": 11708,
         "path": "atlas/structure.json"
       },
       {
@@ -303,8 +319,8 @@
         "path": "docs/PHASE-0.md"
       },
       {
-        "commits": 14,
-        "lines": 272,
+        "commits": 16,
+        "lines": 276,
         "path": "docs/PHASE-1.md"
       },
       {
@@ -408,6 +424,11 @@
         "path": "docs/dispatch-e4-verbs.md"
       },
       {
+        "commits": 2,
+        "lines": 70,
+        "path": "docs/dispatch-e5-minds.md"
+      },
+      {
         "commits": 1,
         "lines": 194,
         "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
@@ -464,6 +485,21 @@
       },
       {
         "commits": 2,
+        "lines": 4040,
+        "path": "fixtures/behavior-verbs.json"
+      },
+      {
+        "commits": 2,
+        "lines": 18,
+        "path": "fixtures/climb-draft.json"
+      },
+      {
+        "commits": 2,
+        "lines": 16,
+        "path": "fixtures/drop-draft.json"
+      },
+      {
+        "commits": 2,
         "lines": 178,
         "path": "fixtures/first-scene-played.json"
       },
@@ -473,14 +509,19 @@
         "path": "fixtures/golden-arith.txt"
       },
       {
-        "commits": 13,
-        "lines": 25,
+        "commits": 15,
+        "lines": 29,
         "path": "fixtures/golden.txt"
       },
       {
         "commits": 2,
         "lines": 2500,
         "path": "fixtures/legacy-play-log.json"
+      },
+      {
+        "commits": 2,
+        "lines": 20,
+        "path": "fixtures/pick-up-draft.json"
       },
       {
         "commits": 8,
@@ -503,9 +544,14 @@
         "path": "fixtures/shape-traversal.json"
       },
       {
-        "commits": 9,
-        "lines": 16,
+        "commits": 11,
+        "lines": 20,
         "path": "fixtures/solver.sha256"
+      },
+      {
+        "commits": 2,
+        "lines": 16,
+        "path": "fixtures/use-draft.json"
       },
       {
         "commits": 2,
@@ -518,8 +564,8 @@
         "path": "harness/check.js"
       },
       {
-        "commits": 12,
-        "lines": 274,
+        "commits": 14,
+        "lines": 322,
         "path": "harness/product-scene.mjs"
       },
       {
@@ -533,8 +579,8 @@
         "path": "harness/sim.js"
       },
       {
-        "commits": 15,
-        "lines": 320,
+        "commits": 17,
+        "lines": 342,
         "path": "harness/sim.mjs"
       },
       {
@@ -548,6 +594,11 @@
         "path": "harness/solver.test.js"
       },
       {
+        "commits": 2,
+        "lines": 92,
+        "path": "harness/verbs-scene.mjs"
+      },
+      {
         "commits": 7,
         "lines": 38,
         "path": "harness/write-golden.js"
@@ -558,8 +609,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 16,
-        "lines": 107,
+        "commits": 18,
+        "lines": 111,
         "path": "package.json"
       },
       {
@@ -573,8 +624,8 @@
         "path": "packages/frame/hash.js"
       },
       {
-        "commits": 14,
-        "lines": 404,
+        "commits": 16,
+        "lines": 424,
         "path": "packages/frame/types.d.ts"
       },
       {
@@ -588,8 +639,8 @@
         "path": "packages/host/host.test.js"
       },
       {
-        "commits": 13,
-        "lines": 612,
+        "commits": 15,
+        "lines": 684,
         "path": "packages/host/page.html"
       },
       {
@@ -598,8 +649,8 @@
         "path": "packages/host/server.js"
       },
       {
-        "commits": 15,
-        "lines": 554,
+        "commits": 17,
+        "lines": 570,
         "path": "packages/host/session.js"
       },
       {
@@ -618,18 +669,18 @@
         "path": "packages/load/bin/load.js"
       },
       {
-        "commits": 4,
-        "lines": 126,
+        "commits": 6,
+        "lines": 222,
         "path": "packages/load/compile.js"
       },
       {
-        "commits": 8,
-        "lines": 278,
+        "commits": 10,
+        "lines": 290,
         "path": "packages/load/load.test.js"
       },
       {
-        "commits": 8,
-        "lines": 174,
+        "commits": 10,
+        "lines": 274,
         "path": "packages/load/suite.js"
       },
       {
@@ -708,8 +759,8 @@
         "path": "packages/tick/memory.js"
       },
       {
-        "commits": 10,
-        "lines": 530,
+        "commits": 12,
+        "lines": 1030,
         "path": "packages/tick/predicates.js"
       },
       {
@@ -728,8 +779,8 @@
         "path": "packages/tick/scene.test.js"
       },
       {
-        "commits": 16,
-        "lines": 754,
+        "commits": 18,
+        "lines": 1022,
         "path": "packages/tick/tick.js"
       },
       {
@@ -738,8 +789,13 @@
         "path": "packages/tick/tick.test.js"
       },
       {
-        "commits": 17,
-        "lines": 1416,
+        "commits": 3,
+        "lines": 352,
+        "path": "packages/tick/verbs.test.js"
+      },
+      {
+        "commits": 19,
+        "lines": 2006,
         "path": "packages/tick/world.js"
       },
       {
@@ -748,9 +804,49 @@
         "path": "predicates/hazards/beyond-wall.json"
       },
       {
+        "commits": 2,
+        "lines": 28,
+        "path": "predicates/hazards/carry-awake.json"
+      },
+      {
+        "commits": 2,
+        "lines": 30,
+        "path": "predicates/hazards/carry-rest.json"
+      },
+      {
+        "commits": 2,
+        "lines": 30,
+        "path": "predicates/hazards/carry-size.json"
+      },
+      {
+        "commits": 2,
+        "lines": 32,
+        "path": "predicates/hazards/carry-wall.json"
+      },
+      {
         "commits": 6,
         "lines": 44,
         "path": "predicates/hazards/clear-step.json"
+      },
+      {
+        "commits": 2,
+        "lines": 28,
+        "path": "predicates/hazards/climb-blocked.json"
+      },
+      {
+        "commits": 2,
+        "lines": 26,
+        "path": "predicates/hazards/climb-ledge.json"
+      },
+      {
+        "commits": 2,
+        "lines": 26,
+        "path": "predicates/hazards/climb-rise.json"
+      },
+      {
+        "commits": 2,
+        "lines": 26,
+        "path": "predicates/hazards/climb-step.json"
       },
       {
         "commits": 6,
@@ -758,9 +854,29 @@
         "path": "predicates/hazards/corner-clip.json"
       },
       {
-        "commits": 6,
-        "lines": 14,
+        "commits": 8,
+        "lines": 60,
         "path": "predicates/hazards/index.json"
+      },
+      {
+        "commits": 2,
+        "lines": 30,
+        "path": "predicates/hazards/release-blocked.json"
+      },
+      {
+        "commits": 2,
+        "lines": 28,
+        "path": "predicates/hazards/release-clear.json"
+      },
+      {
+        "commits": 2,
+        "lines": 24,
+        "path": "predicates/hazards/release-empty.json"
+      },
+      {
+        "commits": 2,
+        "lines": 28,
+        "path": "predicates/hazards/release-near.json"
       },
       {
         "commits": 6,
@@ -768,8 +884,38 @@
         "path": "predicates/hazards/through-collider.json"
       },
       {
-        "commits": 6,
-        "lines": 22,
+        "commits": 2,
+        "lines": 28,
+        "path": "predicates/hazards/use-body.json"
+      },
+      {
+        "commits": 2,
+        "lines": 28,
+        "path": "predicates/hazards/use-far.json"
+      },
+      {
+        "commits": 2,
+        "lines": 34,
+        "path": "predicates/hazards/use-other-zone.json"
+      },
+      {
+        "commits": 2,
+        "lines": 34,
+        "path": "predicates/hazards/use-zone.json"
+      },
+      {
+        "commits": 2,
+        "lines": 18,
+        "path": "predicates/intents/climb.json"
+      },
+      {
+        "commits": 2,
+        "lines": 16,
+        "path": "predicates/intents/drop.json"
+      },
+      {
+        "commits": 8,
+        "lines": 34,
         "path": "predicates/intents/index.json"
       },
       {
@@ -779,8 +925,18 @@
       },
       {
         "commits": 2,
+        "lines": 20,
+        "path": "predicates/intents/pick-up.json"
+      },
+      {
+        "commits": 2,
         "lines": 16,
         "path": "predicates/intents/push.json"
+      },
+      {
+        "commits": 2,
+        "lines": 16,
+        "path": "predicates/intents/use.json"
       },
       {
         "commits": 4,
@@ -808,8 +964,8 @@
         "path": "solver/FLAGS.md"
       },
       {
-        "commits": 8,
-        "lines": 610,
+        "commits": 10,
+        "lines": 618,
         "path": "solver/build.mjs"
       },
       {
@@ -823,8 +979,8 @@
         "path": "solver/src/lib.rs"
       },
       {
-        "commits": 7,
-        "lines": 1692,
+        "commits": 9,
+        "lines": 1792,
         "path": "solver/src/rapier_law.rs"
       },
       {
@@ -848,9 +1004,9 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-25T07:36:10.289Z",
+  "generatedAt": "2026-09-25T08:23:41.857Z",
   "generatedFrom": {
-    "commit": "3aa2ddc4c6c6c214175554d08b58591822a98e34"
+    "commit": "7122b6c1b795ef66b1b1585da8b08f8d35ec7429"
   },
   "pairs": [
     {
@@ -1044,7 +1200,7 @@
     }
   ],
   "parameters": {
-    "appliedChangesetLimit": 35.75,
+    "appliedChangesetLimit": 37.75,
     "changeset": 50,
     "changesetFraction": 0.25,
     "cohesionDrop": 0.2,
@@ -1053,16 +1209,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-25T00:08:01-07:00",
-    "inScopeFiles": 143,
+    "headDate": "2026-09-25T00:49:17-07:00",
+    "inScopeFiles": 151,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 52,
+    "qualifyingCommits": 55,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-29T07:08:01.000Z",
+    "since": "2026-03-29T07:49:17.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
