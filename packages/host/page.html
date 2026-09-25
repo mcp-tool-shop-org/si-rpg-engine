@@ -40,6 +40,7 @@
     let newest = null;
     let arrived = 0;
     let along = 'z';
+    let verbMode = 'move';
 
     function showProjection() {
       projection.textContent = 'projection: ' + projectionAxes(along).label;
@@ -153,7 +154,7 @@
             ctx.fill();
           }
         }
-        status.textContent = 'tick ' + newest.tick + '  ' + newest.hash + '  zone ' + (newest.zone || 'none');
+        status.textContent = 'tick ' + newest.tick + '  ' + newest.hash + '  zone ' + (newest.zone || 'none') + '  ' + verbMode;
         if (newest.door !== null && newest.door !== undefined && door.textContent === '') {
           door.textContent = 'door reached at tick ' + newest.door;
         }
@@ -188,7 +189,32 @@
       const ratio = canvas.width / rectBox.width;
       const view = viewOf();
       const point = canvasToWorld(view, (event.clientX - rectBox.left) * ratio, (event.clientY - rectBox.top) * ratio);
-      send({ verb: 'move', actor: 'walker', target: groundTarget(along, point.x, point.y, actor) });
+      const ground = groundTarget(along, point.x, point.y, actor);
+      if (verbMode === 'pick-up' || verbMode === 'use') {
+        let nearest = null;
+        let nearestDistance = Infinity;
+        for (const body of newest.bodies) {
+          if (body.id === actor.id) {
+            continue;
+          }
+          const dx = body.x - actor.x;
+          const dz = body.z - actor.z;
+          const distance = Math.sqrt(dx * dx + dz * dz);
+          if (distance < nearestDistance) {
+            nearest = body;
+            nearestDistance = distance;
+          }
+        }
+        if (verbMode === 'use' && (!nearest || nearestDistance > 2)) {
+          send({ verb: 'use', actor: 'walker', target: { zone: newest.zone || 'none' } });
+          return;
+        }
+        if (nearest) {
+          send({ verb: verbMode, actor: 'walker', target: { body: nearest.id } });
+          return;
+        }
+      }
+      send({ verb: verbMode, actor: 'walker', target: ground });
     });
 
     window.addEventListener('keydown', (event) => {
@@ -196,6 +222,12 @@
         event.preventDefault();
         along = event.key;
         showProjection();
+        return;
+      }
+      const verbKeys = { m: 'move', M: 'move', c: 'climb', C: 'climb', g: 'pick-up', G: 'pick-up', D: 'drop', u: 'use', U: 'use' };
+      if (verbKeys[event.key]) {
+        event.preventDefault();
+        verbMode = verbKeys[event.key];
         return;
       }
       if (event.key === 'p' || event.key === 'P') {

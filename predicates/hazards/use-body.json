@@ -1,0 +1,14 @@
+{
+  "id": "use-body-admits",
+  "bodies": [
+    { "id": "walker", "x": 0.5, "y": 0.3, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 },
+    { "id": "crate", "x": 1.8, "y": 0.36, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.3, "hy": 0.3, "hz": 0.3 }
+  ],
+  "colliders": [
+    { "id": "floor", "minX": -2, "maxX": 8, "minY": -1, "maxY": 0, "minZ": -2, "maxZ": 2 }
+  ],
+  "actor": "walker",
+  "target": { "x": 1.8, "z": 0 },
+  "targetBody": "crate",
+  "expect": "admit"
+}

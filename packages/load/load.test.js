@@ -14,7 +14,7 @@ const index = { rules: ['move.json'], retired: [] };
 
 test('the shipped move rule passes the hazard suite', () => {
   const rule = JSON.parse(readFileSync('predicates/intents/move.json', 'utf8'));
-  const scenarios = loadHazards();
+  const scenarios = loadHazards().filter((scenario) => scenario.effect === 'drive');
   assert.equal(scenarios.length, 4);
   assert.deepEqual(runHazards(rule, scenarios), []);
 });
@@ -22,7 +22,7 @@ test('the shipped move rule passes the hazard suite', () => {
 test('push passes the four hazards', () => {
   const rule = JSON.parse(readFileSync('predicates/intents/push.json', 'utf8'));
   assert.equal(rule.targetKind, 'body');
-  const scenarios = loadHazards();
+  const scenarios = loadHazards().filter((scenario) => scenario.effect === 'drive');
   assert.equal(scenarios.length, 4);
   assert.deepEqual(runHazards(rule, scenarios), []);
   const missing = scenarios.map((scenario) => ({ ...scenario, targetBody: undefined }));
@@ -61,7 +61,7 @@ test('a draft that walks through a collider is not admitted', () => {
   );
   assert.equal(result.ok, false);
   assert.match(result.ok ? '' : result.reason, /path-through-collider-refuses was admitted/);
-  assert.deepEqual(JSON.parse(readFileSync('predicates/intents/index.json', 'utf8')).rules, ['move.json', 'push.json']);
+  assert.deepEqual(JSON.parse(readFileSync('predicates/intents/index.json', 'utf8')).rules, ['move.json', 'push.json', 'climb.json', 'pick-up.json', 'drop.json', 'use.json']);
 });
 
 test('a draft that keeps the invariants is admitted, and retire takes it back out', () => {

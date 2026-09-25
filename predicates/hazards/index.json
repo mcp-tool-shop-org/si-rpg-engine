@@ -1,3 +1,24 @@
 {
-  "scenarios": ["through-collider.json", "clear-step.json", "corner-clip.json", "beyond-wall.json"]
+  "scenarios": [
+    { "file": "through-collider.json", "effect": "drive" },
+    { "file": "clear-step.json", "effect": "drive" },
+    { "file": "corner-clip.json", "effect": "drive" },
+    { "file": "beyond-wall.json", "effect": "drive" },
+    { "file": "climb-ledge.json", "effect": "climb" },
+    { "file": "climb-rise.json", "effect": "climb" },
+    { "file": "climb-blocked.json", "effect": "climb" },
+    { "file": "climb-step.json", "effect": "climb" },
+    { "file": "carry-rest.json", "effect": "carry" },
+    { "file": "carry-size.json", "effect": "carry" },
+    { "file": "carry-awake.json", "effect": "carry" },
+    { "file": "carry-wall.json", "effect": "carry" },
+    { "file": "release-clear.json", "effect": "release" },
+    { "file": "release-near.json", "effect": "release" },
+    { "file": "release-empty.json", "effect": "release" },
+    { "file": "release-blocked.json", "effect": "release" },
+    { "file": "use-body.json", "effect": "episode" },
+    { "file": "use-zone.json", "effect": "episode" },
+    { "file": "use-far.json", "effect": "episode" },
+    { "file": "use-other-zone.json", "effect": "episode" }
+  ]
 }

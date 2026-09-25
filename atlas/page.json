@@ -35,10 +35,22 @@
     {
       "doors": 2,
       "importedBy": [],
-      "importedByTests": [],
+      "importedByTests": [
+        "tick"
+      ],
       "kind": "part",
       "name": "harness",
       "partLabel": "harness"
+    },
+    {
+      "doors": 2,
+      "importedBy": [],
+      "importedByTests": [
+        "tick"
+      ],
+      "kind": "part",
+      "name": "load",
+      "partLabel": "load"
     },
     {
       "doors": 2,
@@ -53,69 +65,89 @@
       "importedBy": [],
       "importedByTests": [],
       "kind": "part",
-      "name": "load",
-      "partLabel": "load"
-    },
-    {
-      "doors": 2,
-      "importedBy": [],
-      "importedByTests": [],
-      "kind": "part",
       "name": "propose",
       "partLabel": "propose"
     }
   ],
   "changes": {
     "fileCounts": {
-      "added": 5,
-      "changed": 21,
+      "added": 28,
+      "changed": 35,
       "moved": 0,
-      "parts": 11,
-      "removed": 1
+      "parts": 12,
+      "removed": 0
     },
     "items": [
       {
-        "kind": "landing",
-        "sentence": "fixtures/behavior-ramp.json is now read by harness/solver.test.js.",
+        "kind": "cycle",
+        "sentence": "tick now imports harness, which closes the cycle tick → harness → tick.",
         "subjects": [
-          "fixtures/behavior-ramp.json",
-          "harness/solver.test.js"
+          "tick",
+          "harness"
+        ]
+      },
+      {
+        "kind": "cycle",
+        "sentence": "tick now imports load, which closes the cycle tick → load → tick.",
+        "subjects": [
+          "tick",
+          "load"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also runs packages/tick/verbs.test.js.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "packages/tick/verbs.test.js"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also checks harness/verbs-scene.mjs.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "harness/verbs-scene.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "worlds/crate-and-door.json is now read by README.md, packages/host/host.test.js, packages/tick/scene.test.js and packages/tick/tick.test.js.",
+        "sentence": "fixtures/ is now read by packages/tick/verbs.test.js.",
         "subjects": [
-          "worlds/crate-and-door.json",
-          "README.md",
-          "packages/host/host.test.js",
-          "packages/tick/scene.test.js",
-          "packages/tick/tick.test.js"
+          "fixtures/",
+          "packages/tick/verbs.test.js"
         ]
       },
       {
-        "kind": "part",
-        "sentence": "worlds is a new part, drawn from `worlds/**`.",
+        "kind": "landing",
+        "sentence": "fixtures/behavior-verbs.json is now read by packages/tick/verbs.test.js.",
         "subjects": [
-          "worlds"
+          "fixtures/behavior-verbs.json",
+          "packages/tick/verbs.test.js"
         ]
       },
       {
-        "kind": "part",
-        "sentence": "scenes is no longer a part.",
+        "kind": "landing",
+        "sentence": "fixtures/climb-draft.json is now read by packages/tick/verbs.test.js.",
         "subjects": [
-          "scenes"
+          "fixtures/climb-draft.json",
+          "packages/tick/verbs.test.js"
         ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "And 2 more new writers and readers of places.",
+        "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "5 files added, 1 removed and 21 changed content, across 11 parts.",
+        "sentence": "28 files added and 35 changed content, across 12 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "aad8a8c03d654dd14ead908b84ccc0af8776a1e0",
-      "generatedAt": "2026-09-25T05:49:48.401Z"
+      "commit": "8c3c252e349160b34c0999766a3e08c92f474f62",
+      "generatedAt": "2026-09-25T06:44:24.341Z"
     },
     "unchanged": false
   },
@@ -134,6 +166,21 @@
       ],
       "relation": "inside",
       "shared": 5
+    },
+    {
+      "a": "packages/frame/types.d.ts",
+      "b": "packages/tick/tick.js",
+      "either": 7,
+      "partLabels": [
+        "frame",
+        "tick"
+      ],
+      "parts": [
+        "frame",
+        "tick"
+      ],
+      "relation": "b-imports-a",
+      "shared": 6
     },
     {
       "a": "packages/propose/bin/propose.js",
@@ -179,31 +226,17 @@
       ],
       "relation": "inside",
       "shared": 5
-    },
-    {
-      "a": "packages/propose/propose.test.js",
-      "b": "packages/propose/seat.js",
-      "either": 6,
-      "partLabels": [
-        "propose",
-        "propose"
-      ],
-      "parts": [
-        "propose",
-        "propose"
-      ],
-      "relation": "inside",
-      "shared": 5
     }
   ],
   "changesTogetherNote": [
+    "1 file changed together with its own test, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
-    "Window: 180 days; a pair counts from 3 shared commits, since 0 source files reach 10 revisions; the floor rises to 10 when 25 do."
+    "Window: 180 days; a pair counts from 3 shared commits, since 1 source file reaches 10 revisions; the floor rises to 10 when 25 do."
   ],
-  "changesTogetherWithTests": 0,
-  "commit": "8c3c252e349160b34c0999766a3e08c92f474f62",
+  "changesTogetherWithTests": 1,
+  "commit": "3aa2ddc4c6c6c214175554d08b58591822a98e34",
   "defaultBranch": "main",
-  "derived": "14 parts, mostly JavaScript (42 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "14 parts, mostly JavaScript (44 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -214,6 +247,7 @@
         "harness/check.js",
         "harness/product-scene.mjs",
         "harness/solver-scene.mjs",
+        "harness/verbs-scene.mjs",
         "harness/write-golden.js",
         "packages/frame/frame.js",
         "packages/frame/hash.js",
@@ -223,7 +257,7 @@
         "packages/propose/",
         "packages/tick/"
       ],
-      "checksCount": 15,
+      "checksCount": 16,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -243,7 +277,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 8
+          "files": 9
         },
         {
           "boundary": "host",
@@ -268,7 +302,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 12
+          "files": 13
         }
       ],
       "runs": [
@@ -279,9 +313,10 @@
         "packages/propose/propose.test.js",
         "packages/tick/scene.test.js",
         "packages/tick/tick.test.js",
+        "packages/tick/verbs.test.js",
         "solver/build.mjs"
       ],
-      "runsCount": 8,
+      "runsCount": 9,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -537,6 +572,16 @@
       "from": "tick",
       "fromTests": false,
       "to": "frame"
+    },
+    {
+      "from": "tick",
+      "fromTests": true,
+      "to": "harness"
+    },
+    {
+      "from": "tick",
+      "fromTests": true,
+      "to": "load"
     }
   ],
   "generated": [
@@ -554,12 +599,12 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T06:44:24.341Z",
+  "generatedAt": "2026-09-25T07:36:10.289Z",
   "limits": [
     "4 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "6 writes and 9 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "6 writes and 12 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "5 commands are built at run time and not followed, 3 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
@@ -752,14 +797,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 7,
+  "testFiles": 8,
   "testedBy": {
-    "frame": 5,
+    "frame": 6,
     "host": 1,
-    "load": 1,
+    "load": 2,
     "propose": 1,
     "solver": 0,
-    "tick": 7
+    "tick": 8
   },
   "unnamedWrites": 0,
   "unread": [],

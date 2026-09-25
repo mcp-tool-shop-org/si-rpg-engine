@@ -78,6 +78,57 @@ export function createWorld(init, law) {
    * static colliders, and the speed clamp. Dynamic pairs are i < j.
    * @param {ReadonlySet<string>} [driven] body ids with a scheduled action
    */
+  /** Body ids whose kinematic step is lifted: the record's vertical velocity, no gravity, no snap. */
+  const lifted = new Set();
+  /** @type {Map<string, string>} actor id to the one body it carries */
+  const carrying = new Map();
+  /** @type {Map<string, string>} carried body id to the actor */
+  const carriedBy = new Map();
+
+  /**
+   * @param {ReadonlySet<string>} driving
+   */
+  function solverModes(driving) {
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const tagged = /** @type {Body & { solverMode?: number }} */ (bodies[i]);
+      if (carriedBy.has(tagged.id)) {
+        tagged.solverMode = 3;
+      } else if (driving.has(tagged.id) && lifted.has(tagged.id)) {
+        tagged.solverMode = 2;
+      } else if (driving.has(tagged.id)) {
+        tagged.solverMode = 1;
+      } else {
+        tagged.solverMode = 0;
+      }
+    }
+  }
+
+  function pinCarried() {
+    for (const [bodyId, actorId] of carriedBy) {
+      const actor = body(actorId);
+      const carried = body(bodyId);
+      if (!actor || !carried) {
+        continue;
+      }
+      carried.x = actor.x;
+      carried.y = actor.y + actor.hy + carried.hy;
+      carried.z = actor.z;
+      carried.vx = 0;
+      carried.vy = 0;
+      carried.vz = 0;
+      carried.qx = 0;
+      carried.qy = 0;
+      carried.qz = 0;
+      carried.qw = 1;
+      carried.wx = 0;
+      carried.wy = 0;
+      carried.wz = 0;
+    }
+  }
+
+  /**
+   * @param {ReadonlySet<string>} [driven] body ids with a scheduled action
+   */
   function step(driven) {
     const driving = driven || new Set();
     if (chosen === 'box') {
@@ -87,9 +138,11 @@ export function createWorld(init, law) {
       return;
     }
     if (chosen === 'product') {
+      solverModes(driving);
       if (!stepSolver(productId, bodies, colliders, heightfield, driving, shapeId)) {
         throw new Error('NaN');
       }
+      pinCarried();
       return;
     }
     for (let i = 0; i < bodies.length; i = i + 1) {
@@ -467,7 +520,247 @@ export function createWorld(init, law) {
     return null;
   }
 
-  return { bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, zoneOf, zoneIndex, law: chosen };
+  /**
+   * Highest surface at or below fromY under (x, z). A rotated collider is
+   * tested in its local frame. A resting body is one whose velocity is zero.
+   * @param {number} x
+   * @param {number} z
+   * @param {number} fromY
+   * @returns {number | null}
+   */
+  function supportAt(x, z, fromY) {
+    /** @type {number | null} */
+    let best = null;
+    /**
+     * @param {number | null} y
+     */
+    function consider(y) {
+      if (y !== null && y <= fromY && (best === null || y > best)) {
+        best = y;
+      }
+    }
+    for (let j = 0; j < colliders.length; j = j + 1) {
+      consider(colliderSupport(colliders[j], x, z, fromY));
+    }
+    if (heightfield) {
+      consider(heightfieldSupport(heightfield, x, z));
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const b = bodies[i];
+      if (carriedBy.has(b.id) || b.vx !== 0 || b.vy !== 0 || b.vz !== 0) {
+        continue;
+      }
+      if (x < b.x - b.hx || x > b.x + b.hx || z < b.z - b.hz || z > b.z + b.hz) {
+        continue;
+      }
+      consider(b.y + b.hy);
+    }
+    return best;
+  }
+
+  /**
+   * @param {StaticCollider & { qx: number, qy: number, qz: number, qw: number }} collider
+   * @param {number} x
+   * @param {number} z
+   * @param {number} fromY
+   * @returns {number | null}
+   */
+  function colliderSupport(collider, x, z, fromY) {
+    const cx = (collider.minX + collider.maxX) / 2;
+    const cy = (collider.minY + collider.maxY) / 2;
+    const cz = (collider.minZ + collider.maxZ) / 2;
+    const hx = (collider.maxX - collider.minX) / 2;
+    const hy = (collider.maxY - collider.minY) / 2;
+    const hz = (collider.maxZ - collider.minZ) / 2;
+    const o = localOf(collider.qx, collider.qy, collider.qz, collider.qw, x - cx, fromY - cy, z - cz);
+    const d = localOf(collider.qx, collider.qy, collider.qz, collider.qw, 0, -1, 0);
+    const min = [-hx, -hy, -hz];
+    const max = [hx, hy, hz];
+    const origin = [o.x, o.y, o.z];
+    const dir = [d.x, d.y, d.z];
+    let t0 = 0;
+    let t1 = 1e12;
+    for (let a = 0; a < 3; a = a + 1) {
+      if (Math.abs(dir[a]) < 1e-15) {
+        if (origin[a] < min[a] || origin[a] > max[a]) {
+          return null;
+        }
+        continue;
+      }
+      let near = (min[a] - origin[a]) / dir[a];
+      let far = (max[a] - origin[a]) / dir[a];
+      if (near > far) {
+        const swap = near;
+        near = far;
+        far = swap;
+      }
+      if (near > t0) {
+        t0 = near;
+      }
+      if (far < t1) {
+        t1 = far;
+      }
+      if (t0 > t1) {
+        return null;
+      }
+    }
+    if (t0 === 0) {
+      const inside = origin[0] > min[0] && origin[0] < max[0] && origin[1] > min[1] && origin[1] < max[1] && origin[2] > min[2] && origin[2] < max[2];
+      return inside ? null : fromY;
+    }
+    if (!(t0 > 0) || !(t0 < 1e12)) {
+      return null;
+    }
+    return fromY - t0;
+  }
+
+  /**
+   * The heightfield is centred on the origin, matching the solver.
+   * @param {Heightfield} field
+   * @param {number} x
+   * @param {number} z
+   * @returns {number | null}
+   */
+  function heightfieldSupport(field, x, z) {
+    const scaleX = (field.cols - 1) * field.cell;
+    const scaleZ = (field.rows - 1) * field.cell;
+    if (!(scaleX > 0) || !(scaleZ > 0)) {
+      return null;
+    }
+    const u = x / scaleX + 0.5;
+    const v = z / scaleZ + 0.5;
+    if (u < 0 || u > 1 || v < 0 || v > 1) {
+      return null;
+    }
+    const fj = u * (field.cols - 1);
+    const fi = v * (field.rows - 1);
+    const j0 = Math.min(field.cols - 1, Math.floor(fj));
+    const i0 = Math.min(field.rows - 1, Math.floor(fi));
+    const j1 = Math.min(field.cols - 1, j0 + 1);
+    const i1 = Math.min(field.rows - 1, i0 + 1);
+    const tx = j0 === j1 ? 0 : fj - j0;
+    const tz = i0 === i1 ? 0 : fi - i0;
+    /**
+     * @param {number} row
+     * @param {number} col
+     */
+    const at = (row, col) => field.heights[row * field.cols + col];
+    return at(i0, j0) * (1 - tx) * (1 - tz) + at(i0, j1) * tx * (1 - tz) + at(i1, j0) * (1 - tx) * tz + at(i1, j1) * tx * tz;
+  }
+
+  /**
+   * Asleep in the solver snapshot. A reference world has no snapshot.
+   * @param {string} id
+   */
+  function sleeping(id) {
+    if (chosen !== 'product' || carriedBy.has(id) || !snapshot) {
+      return false;
+    }
+    const snap = snapshot();
+    if (!snap) {
+      return false;
+    }
+    const view = new DataView(snap.buffer, snap.byteOffset, snap.byteLength);
+    let slot = 0;
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      if (carriedBy.has(bodies[i].id)) {
+        continue;
+      }
+      if (bodies[i].id === id) {
+        const word = (slot * 15 + 14) * 8;
+        if (word + 8 > snap.length) {
+          return false;
+        }
+        return view.getFloat64(word, true) === 1;
+      }
+      slot = slot + 1;
+    }
+    return false;
+  }
+
+  /**
+   * @param {string} actorId
+   * @param {string} bodyId
+   */
+  function carry(actorId, bodyId) {
+    if (actorId === bodyId || carrying.has(actorId) || carriedBy.has(bodyId) || !body(actorId) || !body(bodyId)) {
+      return false;
+    }
+    carrying.set(actorId, bodyId);
+    carriedBy.set(bodyId, actorId);
+    return true;
+  }
+
+  /**
+   * Puts the carried body back in the solver, awake, just above the support.
+   * A bottom that starts exactly on a surface falls through the discrete step.
+   * @param {string} actorId
+   * @param {number} x
+   * @param {number} z
+   */
+  function release(actorId, x, z) {
+    const bodyId = carrying.get(actorId);
+    const actor = body(actorId);
+    const carried = bodyId ? body(bodyId) : undefined;
+    if (!bodyId || !actor || !carried) {
+      return false;
+    }
+    const support = supportAt(x, z, actor.y + 8);
+    if (support === null) {
+      return false;
+    }
+    carried.x = x;
+    carried.y = support + carried.hy + 0.05;
+    carried.z = z;
+    carried.vx = 0;
+    carried.vy = 0;
+    carried.vz = 0;
+    carried.qx = 0;
+    carried.qy = 0;
+    carried.qz = 0;
+    carried.qw = 1;
+    carried.wx = 0;
+    carried.wy = 0;
+    carried.wz = 0;
+    carrying.delete(actorId);
+    carriedBy.delete(bodyId);
+    return true;
+  }
+
+  /**
+   * @param {string | null | undefined} id
+   */
+  function linkIndex(id) {
+    if (!id) {
+      return 0xffffffff;
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      if (bodies[i].id === id) {
+        return i;
+      }
+    }
+    return 0xffffffff;
+  }
+
+  return {
+    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, zoneOf, zoneIndex, law: chosen,
+    lifted, carry, release, sleeping, supportAt, linkIndex,
+    anyCarried() {
+      return carriedBy.size > 0;
+    },
+    /**
+     * @param {string} id
+     */
+    carryingOf(id) {
+      return carrying.get(id) || null;
+    },
+    /**
+     * @param {string} id
+     */
+    carriedByOf(id) {
+      return carriedBy.get(id) || null;
+    },
+  };
 }
 
 /**

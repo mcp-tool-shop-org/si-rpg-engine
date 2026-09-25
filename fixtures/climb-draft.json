@@ -1,0 +1,9 @@
+{
+  "verb": "climb",
+  "effect": "climb",
+  "speed": 1,
+  "maxDistance": 3,
+  "requiresClearPath": true,
+  "maxQuanta": 256,
+  "maxRise": 1.5
+}

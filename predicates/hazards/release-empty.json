@@ -1,0 +1,12 @@
+{
+  "id": "release-empty-refuses",
+  "bodies": [
+    { "id": "walker", "x": 0.5, "y": 0.3, "z": 0, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 }
+  ],
+  "colliders": [
+    { "id": "floor", "minX": -2, "maxX": 8, "minY": -1, "maxY": 0, "minZ": -2, "maxZ": 2 }
+  ],
+  "actor": "walker",
+  "target": { "x": 1.2, "z": 0 },
+  "expect": "refuse"
+}

@@ -6,7 +6,7 @@
 
 import { createHasher } from '../packages/frame/hash.js';
 import { instantiate } from '../solver/dist/solver.mjs';
-import { createProductWorld, productDriven } from './product-scene.mjs';
+import { applyProductAct, createProductWorld } from './product-scene.mjs';
 
 const STEPS = 10000;
 
@@ -23,19 +23,18 @@ function out(line) {
 
 instantiate();
 const world = createProductWorld();
-const driven = new Set(productDriven);
 const h = createHasher();
 let ok = true;
 
 try {
-  world.mixLoad(h, driven);
+  world.mixLoad(h, new Set(['walker']));
 } catch {
   ok = false;
 }
 
 for (let i = 0; ok && i < STEPS; i = i + 1) {
   try {
-    world.step(driven);
+    world.step(applyProductAct(world, i));
   } catch {
     ok = false;
     break;
@@ -53,6 +52,10 @@ for (let i = 0; ok && i < STEPS; i = i + 1) {
     if (world.zones && world.zones.length > 0) {
       const index = world.zoneIndex(body.id);
       h.u32(index === null ? 0xffffffff : index);
+    }
+    if (world.anyCarried()) {
+      h.u32(world.linkIndex(world.carryingOf(body.id)));
+      h.u32(world.linkIndex(world.carriedByOf(body.id)));
     }
   }
   const snap = world.snapshot();
