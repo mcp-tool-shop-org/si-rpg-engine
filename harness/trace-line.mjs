@@ -34,18 +34,27 @@ export function bits(x) {
 }
 
 /**
+ * The snapshot's FNV digest: its length, then each byte. The trace prints it
+ * and fixtures/golden-behaviour.json records it at the load and the last quantum.
+ * @param {Uint8Array} snap
+ */
+export function snapshotDigest(snap) {
+  const h = createHasher();
+  h.u32(snap.length);
+  for (let i = 0; i < snap.length; i = i + 1) {
+    h.u32(snap[i]);
+  }
+  return h.digest();
+}
+
+/**
  * @param {Uint8Array | null} snap
  */
 export function snapshotField(snap) {
   if (!snap) {
     return 'snap - -';
   }
-  const h = createHasher();
-  h.u32(snap.length);
-  for (let i = 0; i < snap.length; i = i + 1) {
-    h.u32(snap[i]);
-  }
-  return 'snap ' + snap.length + ' ' + h.digest();
+  return 'snap ' + snap.length + ' ' + snapshotDigest(snap);
 }
 
 /**
