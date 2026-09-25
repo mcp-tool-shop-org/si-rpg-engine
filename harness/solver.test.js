@@ -232,3 +232,32 @@ test('a quaternion and its negation hash to one digest, and a NaN angular field 
   }, 'product');
   assert.throws(() => poisoned.step(new Set()), /NaN/);
 });
+
+test('a body dropped anywhere along a rotated ramp slides down it', () => {
+  // Warming the broad phase by hand and discarding its pair events left pairs
+  // unregistered: a box dropped above the centre of this slab passed through it,
+  // and on a longer slab almost every drop point did. The load pass now runs
+  // through Rapier's collision pipeline.
+  const cx = 22;
+  const cy = 0.8924621202458748;
+  const q = { qx: 0, qy: 0, qz: 0.3826834323650898, qw: 0.9238795325112867 };
+  for (const [hx, dx] of [[1.4, 0], [3.0, 0.5], [3.0, 1.5]]) {
+    const surface = cy + dx + 0.35 * Math.SQRT2;
+    const spec = {
+      name: 'ramp-' + hx + '-' + dx,
+      seed: 1,
+      steps: 300,
+      driven: [],
+      world: {
+        bodies: [{ id: 'slider', x: cx + dx, y: surface + 0.4, z: 4, vx: 0, vy: 0, vz: 0, hx: 0.12, hy: 0.12, hz: 0.12 }],
+        colliders: [
+          { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 },
+          { id: 'ramp', minX: cx - hx, maxX: cx + hx, minY: cy - 0.35, maxY: cy + 0.35, minZ: 3.5, maxZ: 4.5, ...q },
+        ],
+      },
+    };
+    const body = play(spec).bodies[0];
+    assert.ok(body.x < cx + dx - 0.5, 'half-length ' + hx + ' drop ' + dx + ' slid: x ' + body.x);
+    assert.ok(Math.abs(body.y - 0.12) < 1e-3, 'half-length ' + hx + ' drop ' + dx + ' rests on the floor: y ' + body.y);
+  }
+});
