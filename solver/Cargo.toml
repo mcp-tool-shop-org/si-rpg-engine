@@ -16,3 +16,6 @@ overflow-checks = false
 
 [dependencies]
 rapier3d-f64 = { version = "0.35.3", features = ["enhanced-determinism"] }
+# The allocator std links on wasm32, at std 1.98.1's version, given a fixed
+# arena instead of memory.grow. See src/arena.rs.
+dlmalloc = { version = "=0.2.13", default-features = false }

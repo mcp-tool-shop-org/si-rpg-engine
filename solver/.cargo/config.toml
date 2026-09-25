@@ -1,8 +1,16 @@
 # Toolchain 1.98.1. rustc rejects clang's -fno-fast-math as an llvm-arg
 # ("Unknown command line argument"). The wasm32 f64 instruction set has no
-# fused multiply-add unless the relaxed-simd feature is enabled. This build
-# turns that feature off. No flag here flushes subnormals.
+# fused multiply-add unless the relaxed-simd feature is enabled. The flag
+# below sets the default feature set only: a function marked
+# #[target_feature(enable = "relaxed-simd")] still emits relaxed instructions.
+# solver/lint.mjs is what keeps them out of the binary. No flag here flushes
+# subnormals.
+# solver/build.mjs repeats these, because RUSTFLAGS overrides them. The fixed
+# memory is in solver/build.rs, which RUSTFLAGS does not override.
 [target.wasm32-unknown-unknown]
 # The stack pointer is exported so solver/build.mjs's generated module can
 # refuse to image an instance that is inside a call or has trapped.
-rustflags = ["-C", "target-feature=-relaxed-simd", "-C", "link-arg=--export=__stack_pointer"]
+rustflags = [
+  "-C", "target-feature=-relaxed-simd",
+  "-C", "link-arg=--export=__stack_pointer",
+]

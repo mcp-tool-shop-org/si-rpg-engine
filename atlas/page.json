@@ -68,72 +68,78 @@
       "kind": "part",
       "name": "propose",
       "partLabel": "propose"
+    },
+    {
+      "kind": "place",
+      "readers": [
+        "harness",
+        "workflows"
+      ],
+      "target": "fixtures/golden.txt",
+      "writers": [
+        "harness"
+      ]
     }
   ],
   "changes": {
     "fileCounts": {
-      "added": 10,
-      "changed": 30,
+      "added": 7,
+      "changed": 17,
       "moved": 0,
-      "parts": 7,
+      "parts": 6,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "CI now also runs harness/restore.test.js and harness/surface.test.js.",
+        "sentence": "CI now also runs harness/caps.test.js, harness/source.test.js, packages/tick/order.test.js and 2 more.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "harness/restore.test.js",
-          "harness/surface.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks harness/replay-to.mjs.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/replay-to.mjs"
+          "harness/caps.test.js",
+          "harness/source.test.js",
+          "packages/tick/order.test.js",
+          "solver/lint.mjs",
+          "solver/lint.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/ is now also read by harness/restore.test.js.",
+        "sentence": "fixtures/golden-arith.txt is now also read by .github/workflows/ci.yml.",
         "subjects": [
-          "fixtures/",
-          "harness/restore.test.js"
+          "fixtures/golden-arith.txt",
+          ".github/workflows/ci.yml"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/behavior-1c.json is now also read by harness/restore.test.js.",
+        "sentence": "fixtures/golden.txt is now also read by .github/workflows/ci.yml.",
         "subjects": [
-          "fixtures/behavior-1c.json",
-          "harness/restore.test.js"
+          "fixtures/golden.txt",
+          ".github/workflows/ci.yml"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/behavior-3d.json is now also read by harness/restore.test.js.",
+        "sentence": "fixtures/solver.sha256 is now also read by .github/workflows/ci.yml.",
         "subjects": [
-          "fixtures/behavior-3d.json",
-          "harness/restore.test.js"
+          "fixtures/solver.sha256",
+          ".github/workflows/ci.yml"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "And 4 more new writers and readers of places.",
+        "sentence": "And 13 more new writers and readers of places.",
         "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "10 files added and 30 changed content, across 7 parts.",
+        "sentence": "7 files added and 17 changed content, across 6 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "cd21fe8af8e7f38585f83c97e18b61570fc0f43e",
-      "generatedAt": "2026-09-25T09:17:26.206Z"
+      "commit": "8e86882da021c62be065a647f79ec8047df0604d",
+      "generatedAt": "2026-09-25T11:02:29.302Z"
     },
     "unchanged": false
   },
@@ -217,12 +223,12 @@
   "changesTogetherNote": [
     "1 file changed together with its own test, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
-    "Window: 180 days; a pair counts from 3 shared commits, since 6 source files reach 10 revisions; the floor rises to 10 when 25 do."
+    "Window: 180 days; a pair counts from 3 shared commits, since 7 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "8e86882da021c62be065a647f79ec8047df0604d",
+  "commit": "a276cd715d477579cbf1722a68c8f662210f219e",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (61 files). Work enters through 8 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (66 files). Work enters through 8 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -268,7 +274,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 20
+          "files": 22
         },
         {
           "boundary": "host",
@@ -288,21 +294,23 @@
         {
           "boundary": "solver",
           "depth": 0,
-          "files": 1
+          "files": 3
         },
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 17
+          "files": 18
         }
       ],
       "runs": [
+        "harness/caps.test.js",
         "harness/check.js",
         "harness/check.test.js",
         "harness/first-difference.js",
         "harness/product.test.js",
         "harness/restore.test.js",
         "harness/solver.test.js",
+        "harness/source.test.js",
         "harness/surface.test.js",
         "harness/trace.mjs",
         "harness/trace.test.js",
@@ -310,12 +318,15 @@
         "packages/load/load.test.js",
         "packages/propose/propose.test.js",
         "packages/tick/minds.test.js",
+        "packages/tick/order.test.js",
         "packages/tick/scene.test.js",
         "packages/tick/tick.test.js",
         "packages/tick/verbs.test.js",
-        "solver/build.mjs"
+        "solver/build.mjs",
+        "solver/lint.mjs",
+        "solver/lint.test.js"
       ],
-      "runsCount": 17,
+      "runsCount": 22,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -465,7 +476,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 5
+          "files": 6
         },
         {
           "boundary": "frame",
@@ -629,13 +640,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T11:02:29.302Z",
+  "generatedAt": "2026-09-25T11:23:48.509Z",
   "limits": [
-    "7 import sites could not be resolved.",
+    "9 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "6 writes and 16 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "8 commands are built at run time and not followed, 6 of them in tests.",
+    "6 writes and 17 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "10 commands are built at run time and not followed, 8 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -787,6 +798,92 @@
       ]
     },
     {
+      "entry": "firstHashes",
+      "file": "packages/tick/order.test.js",
+      "inner": [
+        {
+          "file": "packages/tick/tick.js",
+          "name": "createTick",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create tick",
+          "steps": [
+            {
+              "name": "createHasher",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "create hasher"
+            },
+            {
+              "name": "installMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "install minds"
+            },
+            {
+              "name": "mixLoad",
+              "part": null,
+              "partLabel": null,
+              "phrase": "mix load"
+            },
+            {
+              "name": "mixMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "mix minds"
+            },
+            {
+              "name": "snapshot",
+              "part": null,
+              "partLabel": null,
+              "phrase": "snapshot"
+            },
+            {
+              "name": "u32",
+              "part": null,
+              "partLabel": null,
+              "phrase": "u 32"
+            },
+            {
+              "name": "commitFrame",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "commit frame"
+            }
+          ]
+        }
+      ],
+      "part": "tick",
+      "partLabel": "tick",
+      "phrase": "first hashes",
+      "steps": [
+        {
+          "name": "createWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create world"
+        },
+        {
+          "name": "loadIntentRules",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "load intent rules"
+        },
+        {
+          "name": "createMemory",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create memory"
+        },
+        {
+          "name": "createTick",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create tick"
+        }
+      ]
+    },
+    {
       "entry": "fresh",
       "file": "packages/tick/tick.test.js",
       "inner": [
@@ -877,6 +974,136 @@
           "phrase": "create tick"
         }
       ]
+    },
+    {
+      "entry": "lintWasm",
+      "file": "solver/lint.mjs",
+      "inner": [],
+      "part": "solver",
+      "partLabel": "solver",
+      "phrase": "lint wasm",
+      "steps": [
+        {
+          "name": "byte",
+          "part": null,
+          "partLabel": null,
+          "phrase": "byte"
+        },
+        {
+          "name": "signed",
+          "part": null,
+          "partLabel": null,
+          "phrase": "signed"
+        },
+        {
+          "name": "byte",
+          "part": null,
+          "partLabel": null,
+          "phrase": "byte"
+        },
+        {
+          "name": "u32",
+          "part": null,
+          "partLabel": null,
+          "phrase": "u 32"
+        },
+        {
+          "name": "byte",
+          "part": null,
+          "partLabel": null,
+          "phrase": "byte"
+        },
+        {
+          "name": "signed",
+          "part": null,
+          "partLabel": null,
+          "phrase": "signed"
+        },
+        {
+          "name": "skip",
+          "part": null,
+          "partLabel": null,
+          "phrase": "skip"
+        },
+        {
+          "name": "u32",
+          "part": null,
+          "partLabel": null,
+          "phrase": "u 32"
+        },
+        {
+          "name": "byte",
+          "part": null,
+          "partLabel": null,
+          "phrase": "byte"
+        },
+        {
+          "name": "u32",
+          "part": null,
+          "partLabel": null,
+          "phrase": "u 32"
+        },
+        {
+          "name": "byte",
+          "part": null,
+          "partLabel": null,
+          "phrase": "byte"
+        },
+        {
+          "name": "signed",
+          "part": null,
+          "partLabel": null,
+          "phrase": "signed"
+        },
+        {
+          "name": "u32",
+          "part": null,
+          "partLabel": null,
+          "phrase": "u 32"
+        },
+        {
+          "name": "signed",
+          "part": null,
+          "partLabel": null,
+          "phrase": "signed"
+        },
+        {
+          "name": "skip",
+          "part": null,
+          "partLabel": null,
+          "phrase": "skip"
+        },
+        {
+          "name": "u32",
+          "part": null,
+          "partLabel": null,
+          "phrase": "u 32"
+        },
+        {
+          "name": "skip",
+          "part": null,
+          "partLabel": null,
+          "phrase": "skip"
+        },
+        {
+          "name": "byte",
+          "part": null,
+          "partLabel": null,
+          "phrase": "byte"
+        },
+        {
+          "name": "u32",
+          "part": null,
+          "partLabel": null,
+          "phrase": "u 32"
+        },
+        {
+          "name": "skip",
+          "part": null,
+          "partLabel": null,
+          "phrase": "skip"
+        }
+      ]
     }
   ],
   "startDoor": ".github/workflows/ci.yml",
@@ -886,26 +1113,20 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 13,
+  "testFiles": 17,
   "testedBy": {
-    "frame": 9,
+    "frame": 11,
     "host": 1,
     "load": 2,
     "propose": 1,
-    "solver": 0,
-    "tick": 12
+    "solver": 1,
+    "tick": 14
   },
   "unnamedWrites": 0,
   "unread": [],
   "unreadFiles": 0,
   "unreadNote": [],
-  "untested": [
-    {
-      "part": "solver",
-      "partLabel": "solver",
-      "testedBy": 0
-    }
-  ],
+  "untested": [],
   "untestedNote": [],
   "written": 3
 }

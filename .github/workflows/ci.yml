@@ -63,6 +63,10 @@ jobs:
           workspaces: solver
       - name: Rebuild the solver and check its digest
         run: node solver/build.mjs --check
+      # build.mjs already refuses to emit a binary the lint refuses; this step
+      # names the lint's verdict on the pinned Linux bytes in the log.
+      - name: Lint the pinned binary
+        run: node solver/lint.mjs
       - name: Check the kernel contract
         run: npm run typecheck
       # The course and the outcome tests say what happened, by name. They run
@@ -152,11 +156,99 @@ jobs:
         run: npm run check
       - name: Check the Atlas map
         run: npx --yes @dogfood-lab/atlas@1.17.0 check
+      # The ARM lane tests these bytes, not a rebuild: the module that embeds
+      # the pinned Linux binary, and node's x64 trace of the product scene.
+      - name: Collect the x64 artifacts for the ARM lane
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/x64"
+          cp solver/dist/solver.mjs "$RUNNER_TEMP/x64/solver.mjs"
+          cp "$RUNNER_TEMP/traces/node.trace" "$RUNNER_TEMP/x64/node.trace"
+      - name: Upload the x64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: x64
+          path: ${{ runner.temp }}/x64/
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload the traces
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: traces
+          path: ${{ runner.temp }}/traces/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # The second architecture. jsvu publishes no ARM builds of the three shells,
+  # so this lane runs node's V8 on ARM64, which is the architecture drift it
+  # exists to catch. It does not rebuild the solver: it runs the x64 job's
+  # module, checks that its bytes are the pinned digest, and requires both
+  # goldens and a trace identical to the x64 trace. The workflow's concurrency
+  # group covers this job.
+  arm:
+    needs: engines
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: x64
+          path: ${{ runner.temp }}/x64
+      - name: Install the x64 solver module and check its bytes
+        run: |
+          set -euo pipefail
+          uname -m
+          mkdir -p solver/dist
+          cp "$RUNNER_TEMP/x64/solver.mjs" solver/dist/solver.mjs
+          node --input-type=module -e "
+            import { createHash } from 'node:crypto';
+            import { readFileSync, writeFileSync } from 'node:fs';
+            import { bytes } from './solver/dist/solver.mjs';
+            const digest = createHash('sha256').update(bytes).digest('hex');
+            const pinned = readFileSync('fixtures/solver.sha256', 'utf8').trim();
+            if (digest !== pinned) {
+              console.error('the x64 module embeds ' + digest + ', not the pinned ' + pinned);
+              process.exit(1);
+            }
+            writeFileSync(process.env.RUNNER_TEMP + '/si_solver.wasm', bytes);
+            console.log('the module embeds the pinned binary ' + digest);
+          "
+          node solver/lint.mjs "$RUNNER_TEMP/si_solver.wasm"
+      - name: Compare node on ARM64 to the golden hashes
+        run: |
+          set -euo pipefail
+          for pair in "harness/sim.mjs fixtures/golden.txt" "harness/arith.mjs fixtures/golden-arith.txt"; do
+            set -- $pair
+            golden=$(tr -d '\r\n' < "$2")
+            got=$(node "$1" | tr -d '\r\n')
+            if [ "$got" != "$golden" ]; then
+              echo "$1 node arm64 [$got] golden [$golden]"
+              exit 1
+            fi
+            echo "$1 node arm64 matches $golden"
+          done
+      - name: Trace the product scene and diff it against the x64 trace
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/traces"
+          node harness/trace.mjs > "$RUNNER_TEMP/traces/arm64.trace"
+          if out=$(node harness/first-difference.js "$RUNNER_TEMP/x64/node.trace" "$RUNNER_TEMP/traces/arm64.trace"); then
+            echo "x64 arm64 $out"
+          else
+            echo "x64 arm64"
+            echo "$out"
+            exit 1
+          fi
+      - name: Upload the ARM trace
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-arm64
           path: ${{ runner.temp }}/traces/
           if-no-files-found: ignore
           retention-days: 14
