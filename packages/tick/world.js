@@ -1,7 +1,7 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
-import { clearWarmstart, loadSolver, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { loadSolver, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
 import { subjectText } from './subject.js';
 import { goalsOf as goalsOfMind } from './minds.js';
 
@@ -793,7 +793,7 @@ export function createWorld(init, law) {
     mindsInstalled: false,
     minds,
     name,
-    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, clearWarmstart, zoneOf, zoneIndex, law: chosen,
+    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, zoneOf, zoneIndex, law: chosen,
     lifted, carry, release, sleeping, supportAt, linkIndex,
     /**
      * @param {string} mind

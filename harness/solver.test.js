@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createHasher } from '../packages/frame/hash.js';
 import { createWorld } from '../packages/tick/world.js';
 import { canonZero } from '../solver/dist/solver.mjs';
+import { applyProductAct, createProductWorld } from './product-scene.mjs';
 import { play } from './solver-scene.mjs';
 
 const saved = JSON.parse(readFileSync('fixtures/behavior-solver.json', 'utf8'));
@@ -133,46 +134,113 @@ test('the solver fixture shows the six cases', () => {
   assert.equal(upper.vy, 0);
 });
 
-test('clearing the warm-start cache changes the next quantum hash', () => {
+/**
+ * The snapshot's contact section, parsed by its layout: fifteen floats per
+ * solver body, a pair count, then per pair four handle parts, a point count,
+ * and seven warm-start floats per point. Throws if the bytes are not exactly
+ * that layout.
+ * @param {Uint8Array} snap
+ * @param {number} solverBodies
+ */
+function contactSection(snap, solverBodies) {
+  assert.equal(snap.length % 8, 0, 'whole floats');
+  const view = new DataView(snap.buffer, snap.byteOffset, snap.byteLength);
+  const words = snap.length / 8;
+  /** @param {number} w */
+  const at = (w) => view.getFloat64(w * 8, true);
+  let w = solverBodies * 15;
+  const pairs = at(w);
+  assert.ok(Number.isInteger(pairs) && pairs >= 0, 'a pair count');
+  w = w + 1;
+  /** @type {Array<{ word: number, points: number }>} */
+  const out = [];
+  for (let p = 0; p < pairs; p = p + 1) {
+    const points = at(w + 4);
+    assert.ok(Number.isInteger(points) && points >= 0, 'a point count');
+    out.push({ word: w + 5, points });
+    w = w + 5 + points * 7;
+  }
+  assert.equal(w, words, 'the pairs end where the snapshot ends');
+  return out;
+}
+
+/** A two-box stack after it has settled, with its snapshot. */
+function restingStack() {
   const floor = { id: 'floor', minX: -4, maxX: 4, minY: -1, maxY: 0, minZ: -2, maxZ: 2 };
   /**
    * @param {string} id
    * @param {number} y
    */
   const box = (id, y) => ({ id, x: 0, y, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 });
-  /**
-   * @param {boolean} clear
-   */
-  function digest(clear) {
-    const world = createWorld({ bodies: [box('lower', 0.3), box('upper', 0.85)], colliders: [floor] }, 'product');
-    for (let i = 0; i < 40; i = i + 1) {
-      world.step(new Set());
-    }
-    const cleared = clear ? world.clearWarmstart() : 0;
+  const world = createWorld({ bodies: [box('lower', 0.3), box('upper', 0.85)], colliders: [floor] }, 'product');
+  for (let i = 0; i < 40; i = i + 1) {
     world.step(new Set());
-    const hasher = createHasher();
-    for (const body of world.bodies) {
-      hasher.float(body.x);
-      hasher.float(body.y);
-      hasher.float(body.z);
-      hasher.float(body.vx);
-      hasher.float(body.vy);
-      hasher.float(body.vz);
-    }
-    const snap = world.snapshot();
-    if (!snap) {
-      throw new Error('no snapshot');
-    }
-    hasher.u32(snap.length);
-    for (let i = 0; i < snap.length; i = i + 1) {
-      hasher.u32(snap[i]);
-    }
-    return { digest: hasher.digest(), cleared };
   }
-  const kept = digest(false);
-  const wiped = digest(true);
-  assert.ok(wiped.cleared > 0, 'the stack had a warm-start cache');
-  assert.notEqual(kept.digest, wiped.digest);
+  const snap = world.snapshot();
+  if (!snap) {
+    throw new Error('no snapshot');
+  }
+  return { world, snap };
+}
+
+/**
+ * The digest a frame mixes a snapshot into.
+ * @param {Uint8Array} snap
+ */
+function snapDigest(snap) {
+  const hasher = createHasher();
+  hasher.u32(snap.length);
+  for (let i = 0; i < snap.length; i = i + 1) {
+    hasher.u32(snap[i]);
+  }
+  return hasher.digest();
+}
+
+// This replaces the test that cleared the cache in place: that write went
+// through a cast from a shared reference, which is undefined behaviour
+// (docs/rust-kb-answers.md answer 1). Neither test here proves that the cache
+// steers the next quantum; that needs a sound write in a test-only build.
+test('a resting stack carries non-zero warm-start fields, and flipping them moves the hash', () => {
+  const { snap } = restingStack();
+  const pairs = contactSection(snap, 2);
+  const view = new DataView(snap.buffer, snap.byteOffset, snap.byteLength);
+  /** @type {number[]} */
+  const nonZero = [];
+  for (const pair of pairs) {
+    for (let k = 0; k < pair.points * 7; k = k + 1) {
+      if (view.getFloat64((pair.word + k) * 8, true) !== 0) {
+        nonZero.push(pair.word + k);
+      }
+    }
+  }
+  assert.ok(nonZero.length > 0, 'the stack has a warm-start cache');
+  const before = snapDigest(snap);
+  for (const word of nonZero) {
+    const copy = snap.slice();
+    const flipped = new DataView(copy.buffer);
+    flipped.setFloat64(word * 8, 0 - flipped.getFloat64(word * 8, true), true);
+    assert.notEqual(snapDigest(copy), before, 'word ' + word);
+  }
+});
+
+test('every manifold point in the snapshot carries all seven warm-start floats', () => {
+  const { snap } = restingStack();
+  const pairs = contactSection(snap, 2);
+  assert.ok(pairs.reduce((n, pair) => n + pair.points, 0) > 0, 'the stack has contact points');
+  // One float short of the layout does not parse.
+  assert.throws(() => contactSection(snap.slice(0, snap.length - 8), 2));
+  // The same holds on the product scene after the carry, with a heightfield and a rotated slab.
+  const product = createProductWorld();
+  product.mixLoad(createHasher(), new Set(['walker']));
+  for (let i = 0; i < 600; i = i + 1) {
+    product.step(applyProductAct(product, i));
+  }
+  const productSnap = product.snapshot();
+  if (!productSnap) {
+    throw new Error('no snapshot');
+  }
+  const solverBodies = product.bodies.filter((body) => !product.carriedByOf(body.id)).length;
+  assert.ok(contactSection(productSnap, solverBodies).length > 0);
 });
 
 test('signed zero mixes to one digest and NaN aborts', () => {

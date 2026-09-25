@@ -8,7 +8,7 @@
 use rapier3d_f64::control::{
     CharacterAutostep, CharacterCollision, CharacterLength, KinematicCharacterController,
 };
-use rapier3d_f64::geometry::{ContactData, ContactManifold, ContactPair};
+use rapier3d_f64::geometry::{ContactData, ContactPair};
 use rapier3d_f64::pipeline::CollisionPipeline;
 use rapier3d_f64::prelude::*;
 
@@ -672,21 +672,6 @@ fn push_contact(out: &mut Vec<u8>, data: &ContactData) {
     push_f64(out, data.warmstart_tangent_world.z);
 }
 
-fn zero_manifolds(manifolds: &mut [ContactManifold]) -> u32 {
-    let mut n = 0u32;
-    for manifold in manifolds {
-        for point in &mut manifold.points {
-            point.data.warmstart_impulse = 0.0;
-            point.data.warmstart_tangent_impulse.x = 0.0;
-            point.data.warmstart_tangent_impulse.y = 0.0;
-            point.data.warmstart_twist_impulse = 0.0;
-            point.data.warmstart_tangent_world = Vector::ZERO;
-            n += 1;
-        }
-    }
-    n
-}
-
 fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> bool {
     let Some(sig) = signature(world_id, n_bodies, n_colliders, rows, cols, cell, shape) else {
         return false;
@@ -741,32 +726,4 @@ pub extern "C" fn snapshot_ptr() -> *const u8 {
 #[no_mangle]
 pub extern "C" fn snapshot_len() -> u32 {
     unsafe { SOLVER.snapshot.len() as u32 }
-}
-
-#[no_mangle]
-pub extern "C" fn solver_clear_warmstart() -> u32 {
-    let solver = unsafe { &mut *core::ptr::addr_of_mut!(SOLVER) };
-    let Some(loaded) = solver.loaded.as_mut() else {
-        return 0;
-    };
-    // The narrow phase publishes pairs by shared reference. The world is ours
-    // alone on this thread, so the clear writes the manifold points the next
-    // step reads. Cargo.lock pins rapier3d-f64 0.35.3, where those points are
-    // the warm-start cache once contact clustering is off.
-    let mut ptrs: Vec<*mut ContactPair> = Vec::new();
-    for pair in loaded.world.narrow_phase.contact_pairs() {
-        ptrs.push(core::ptr::from_ref(pair) as *mut ContactPair);
-    }
-    let mut n = 0u32;
-    for ptr in ptrs {
-        unsafe {
-            let pair = &mut *ptr;
-            n += zero_manifolds(&mut pair.manifolds);
-            n += zero_manifolds(&mut pair.solver_clusters);
-        }
-    }
-    if !rebuild_snapshot(loaded, &mut solver.snapshot) {
-        return 0;
-    }
-    n
 }
