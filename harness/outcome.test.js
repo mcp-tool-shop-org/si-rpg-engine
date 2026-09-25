@@ -276,26 +276,30 @@ bundled('outcome 3b: a sled launched at 2.5 units per second down a 35 degree he
 // against the identity pose, reads the same in both.
 //
 // The pin asks for the same sleep quantum for every dynamic body and final
-// positions relative to the offset within 1e-6. On this law it holds for tip
-// and climber only. The rest diverge, and the list below names each with its
-// measured size and cause, so that the test goes red both on any new
-// divergence and on any listed one that stops diverging:
+// positions relative to the offset within 1e-6. On this law it holds for
+// lower, upper, tip, and climber. The rest diverge, and the list below names
+// each with its measured size and cause, so that the test goes red both on any
+// new divergence and on any listed one that stops diverging:
 // - walker, and parcel which it carries: final x off by 0.038. The walker
 //   intermittently loses almost a whole quantum of travel on flat ground
 //   (23 of its first 640 quanta at the origin); which quanta varies with the
-//   offset, first at quantum 3 here.
-// - lower and upper: off by 5.7e-5 and 1.2e-3 from quantum 261. The climber
-//   leaves the driven set at 260, the solver rebuilds its world, and the
-//   sleeping stack is re-solved cold; that first quantum differs by 1e-4
-//   between the offsets. Without the rebuild they agree within 1e-9.
+//   offset, first at quantum 3 here. F2 (docs/dispatch-f2-walker-stride.md)
+//   removes the stall and rewrites this test as an outcome.
 // - slider: tumbles down the 45 degree ramp; a 1e-9 difference at quantum 22
-//   grows to 1e-6 by 40 and lands 0.47 away, asleep at 233, not 189.
+//   grows to 1e-6 by 40 and lands 0.47 away, asleep at 204, not 189.
+// Before F1, lower and upper diverged too, by 5.7e-5 and 1.2e-3 from quantum
+// 261: the climber left the driven set at 260, the solver rebuilt its world,
+// and the sleeping stack was re-solved cold, its first quantum 1e-4 apart
+// between the offsets. That rebuild also found the offset run's slider still
+// tumbling at 201 and re-solved it cold, so it slept at 233. F1 switches the
+// climber in place: the stack stays asleep and ends within 4e-10 of itself
+// (1.9e-10 and 3.6e-10 measured), and the slider sleeps at 204.
 
 const OFFSET_X = 1e6;
 const OFFSET_Z = 1e6;
 const RELATIVE_TOLERANCE = 1e-6;
 const SLEEP_DIVERGES = ['slider'];
-const FINAL_DIVERGES = ['walker', 'lower', 'upper', 'slider', 'parcel'];
+const FINAL_DIVERGES = ['walker', 'slider', 'parcel'];
 
 /**
  * @param {number} ox
