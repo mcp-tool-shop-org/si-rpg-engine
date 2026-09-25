@@ -13,7 +13,9 @@
 // one is restored at the save tick and rerun against the replay: the stored
 // image when this binary recorded the bundle, else a fresh one taken here,
 // after the line `image skipped: recorded on <digest>, running <digest>`. It
-// prints `bundle ok`, or the T1 first-difference block and exits 1.
+// prints `bundle ok`, or the T1 first-difference block and exits 1; a run
+// that throws partway is `first difference at tick N: the run threw: <message>`
+// and exits 1. A malformed bundle is refused with the field and exits 2.
 
 import { readFileSync } from 'node:fs';
 import { chdir } from 'node:process';
@@ -36,10 +38,18 @@ if (!file) {
 // A bundle names its own path from the caller's directory; a log's path has
 // always been read from the repository root.
 const path = file.endsWith('.bundle.json') ? resolve(file) : resolve(root, file);
-const saved = JSON.parse(readFileSync(path, 'utf8'));
+const saved = file.endsWith('.bundle.json') ? { bundle: true } : JSON.parse(readFileSync(path, 'utf8'));
 chdir(root);
 if (isBundle(saved)) {
-  const bundle = readBundle(path);
+  // A malformed bundle is refused with what is wrong, before anything runs.
+  /** @type {import('../bundle.js').Bundle} */
+  let bundle;
+  try {
+    bundle = readBundle(path);
+  } catch (error) {
+    process.stderr.write(/** @type {Error} */ (error).message + '\n');
+    process.exit(2);
+  }
   const result = replayBundle(bundle);
   if (result.skipped) {
     process.stdout.write(result.skipped + '\n');

@@ -30,7 +30,10 @@
 // bytes of one binary, so it is used only on that binary. On another, it is
 // skipped with one line, `image skipped: recorded on <digest>, running
 // <digest>`, and a fresh image taken at the save tick on this binary is
-// restored and rerun instead, so a restore is exercised on every binary.
+// restored and rerun instead, so a restore is exercised on every binary. A
+// run that throws partway is a difference at that tick, `first difference at
+// tick N: the run threw: <message>`. readBundle refuses a bundle that lacks
+// what its run kind needs (bundleProblem), naming the field.
 
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -307,30 +310,104 @@ export function isBundle(value) {
 }
 
 /**
- * Reads and checks a bundle's shape; throws with the field that is wrong.
+ * Why a value is not a bundle a replay can run, or null. Each run kind is
+ * checked for what its replay reads, so a malformed bundle is refused with the
+ * field instead of run into a hang (a play bundle with no `steps` never ends)
+ * or a crash.
+ * @param {any} b
+ * @returns {string | null}
+ */
+export function bundleProblem(b) {
+  if (!b || typeof b !== 'object' || Array.isArray(b)) {
+    return 'a bundle is an object';
+  }
+  if (b.bundle !== FORMAT) {
+    return 'format ' + b.bundle + ', not ' + FORMAT;
+  }
+  for (const key of ['name', 'binary', 'commit']) {
+    if (typeof b[key] !== 'string') {
+      return key + ' is a string';
+    }
+  }
+  if (b.note !== undefined && typeof b.note !== 'string') {
+    return 'note is a string';
+  }
+  if (b.run !== 'product' && b.run !== 'play' && b.run !== 'log') {
+    return 'run is product, play, or log';
+  }
+  if (!b.world || typeof b.world !== 'object' || !Array.isArray(b.world.bodies) || !Array.isArray(b.world.colliders)) {
+    return 'the world has bodies and colliders';
+  }
+  if (!Array.isArray(b.log)) {
+    return 'log is an array';
+  }
+  if (!Number.isInteger(b.tick) || b.tick < 0) {
+    return 'the save tick is a whole number';
+  }
+  if (!Array.isArray(b.hashes) || b.hashes.length !== b.tick + 1 || !b.hashes.every((/** @type {unknown} */ h) => typeof h === 'string')) {
+    return 'the hashes run from the load to the save tick, ' + (b.tick + 1) + ' of them';
+  }
+  if (b.run === 'play') {
+    if (!Number.isInteger(b.steps) || b.steps < b.tick) {
+      return 'a play bundle has whole-number steps, at least its save tick ' + b.tick;
+    }
+    if (!Array.isArray(b.driven) || !b.driven.every((/** @type {unknown} */ id) => typeof id === 'string')) {
+      return 'a play bundle has a driven array of body ids';
+    }
+  }
+  if (b.run === 'product' && (!Number.isInteger(b.quanta) || b.quanta < b.tick)) {
+    return 'a product bundle has whole-number quanta, at least its save tick ' + b.tick;
+  }
+  if (b.run !== 'product' && (typeof b.seed !== 'number' || !Number.isFinite(b.seed))) {
+    return 'a ' + b.run + ' bundle has a seed';
+  }
+  if (b.run === 'log') {
+    if (b.law !== undefined && b.law !== 'product' && b.law !== 'reference') {
+      return 'a log bundle\'s law is product or reference';
+    }
+    if (b.retired !== undefined && typeof b.retired !== 'boolean') {
+      return 'a log bundle\'s retired is true or false';
+    }
+    let last = 0;
+    for (let i = 0; i < b.log.length; i = i + 1) {
+      const entry = b.log[i];
+      if (!entry || typeof entry !== 'object' || !Number.isInteger(entry.tick) || entry.tick < last || typeof entry.hash !== 'string' || !entry.proposal || typeof entry.proposal !== 'object') {
+        return 'log entry ' + i + ' has a tick no earlier than the entry before, a hash, and a proposal';
+      }
+      last = entry.tick;
+    }
+  }
+  if (b.image !== null) {
+    const image = b.image;
+    if (!image || typeof image !== 'object' || typeof image.worldId !== 'number' || typeof image.digest !== 'string' || typeof image.pages !== 'string' || typeof image.data !== 'string') {
+      return 'the image is null, or a world id, a digest, a page bitmap, and page data';
+    }
+  }
+  if (b.failure !== null && b.failure !== undefined && (typeof b.failure !== 'object' || typeof b.failure.test !== 'string' || typeof b.failure.block !== 'string')) {
+    return 'a failure is a test and a block';
+  }
+  return null;
+}
+
+/**
+ * Reads and checks a bundle; throws `not a bundle: <path>: <why>` naming what
+ * is wrong. The replay command prints that and exits 2.
  * @param {string} path
  * @returns {Bundle}
  */
 export function readBundle(path) {
-  const b = JSON.parse(readFileSync(path, 'utf8'));
-  /** @param {string} why */
-  const bad = (why) => new Error('not a bundle: ' + path + ': ' + why);
-  if (!isBundle(b) || b.bundle !== FORMAT) {
-    throw bad('format ' + (b && b.bundle) + ', not ' + FORMAT);
+  /** @type {unknown} */
+  let value;
+  try {
+    value = JSON.parse(readFileSync(path, 'utf8'));
+  } catch (error) {
+    throw new Error('not a bundle: ' + path + ': ' + /** @type {Error} */ (error).message);
   }
-  if (typeof b.name !== 'string' || typeof b.binary !== 'string' || typeof b.commit !== 'string') {
-    throw bad('name, commit, and binary are strings');
+  const why = bundleProblem(value);
+  if (why !== null) {
+    throw new Error('not a bundle: ' + path + ': ' + why);
   }
-  if (b.run !== 'product' && b.run !== 'play' && b.run !== 'log') {
-    throw bad('run is product, play, or log');
-  }
-  if (!b.world || !Array.isArray(b.world.bodies) || !Array.isArray(b.log)) {
-    throw bad('a world with bodies and a log array');
-  }
-  if (!Number.isInteger(b.tick) || b.tick < 0 || !Array.isArray(b.hashes) || b.hashes.length !== b.tick + 1) {
-    throw bad('the hashes run from the load to the save tick, ' + (Number(b.tick) + 1) + ' of them');
-  }
-  return b;
+  return /** @type {Bundle} */ (value);
 }
 
 // ---------------------------------------------------------------------------
@@ -346,6 +423,18 @@ export function readBundle(path) {
  */
 export function traceDifference(whole, restored) {
   return compareLines(whole.concat([endLine(whole.length)]), restored.concat([endLine(restored.length)]), 'whole.trace', 'restored.trace');
+}
+
+/**
+ * The block for a run that threw producing the frame at `tick`: after a law
+ * change a step can throw (a NaN it cannot hash) where it used to run, and
+ * that is a difference at that tick, not a crash of the replay.
+ * @param {number} tick
+ * @param {unknown} error
+ */
+export function runThrew(tick, error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return 'first difference at tick ' + tick + ': the run threw: ' + message + '\n';
 }
 
 /**
@@ -373,9 +462,10 @@ export function imageSkipped(recorded, running) {
  * must rerun to the end tracing the same as the first replay run on, or the
  * T1 block of where it does not is returned. The image is the stored one when
  * this binary recorded the bundle; otherwise `skipped` says so, and it is a
- * fresh image of the first replay at the save tick. `imageFrom` takes the
- * fresh image at another tick; the tests use it to plant a fresh image that
- * must not rerun the same.
+ * fresh image of the first replay at the save tick. A run that throws, in
+ * either replay or the rerun, is a difference at the tick it threw producing
+ * (runThrew), never a crash. `imageFrom` takes the fresh image at another
+ * tick; the tests use it to plant a fresh image that must not rerun the same.
  * @param {Bundle} bundle
  * @param {{ imageFrom?: number }} [options]
  * @returns {BundleResult}
@@ -387,10 +477,25 @@ export function replayBundle(bundle, options) {
   const spec = specOf(bundle);
   /** @type {BundleTimes} */
   const ms = { replay: 0, decode: 0, image: 0, restore: 0, rerun: 0 };
+  /**
+   * The run threw producing the frame at `tick`: a difference there, not a crash.
+   * @param {'hashes' | 'rerun'} stage
+   * @param {number} tick
+   * @param {unknown} error
+   * @returns {BundleDifferent}
+   */
+  const threw = (stage, tick, error) => ({ status: 'different', stage, skipped, block: runThrew(tick, error) });
   const t0 = performance.now();
-  const run = replayTo(spec, 0);
+  /** @type {Run} */
+  let run;
   /** @type {string[]} */
-  const lines = [run.line()];
+  const lines = [];
+  try {
+    run = replayTo(spec, 0);
+    lines.push(run.line());
+  } catch (error) {
+    return threw('hashes', 0, error);
+  }
   for (let t = 0; ; t = t + 1) {
     if (run.hash !== bundle.hashes[t]) {
       return { status: 'different', stage: 'hashes', skipped, block: 'first difference at tick ' + t + '\nhash\n' + pair('bundle', 'replay', bundle.hashes[t], run.hash) };
@@ -398,10 +503,14 @@ export function replayBundle(bundle, options) {
     if (t === bundle.tick) {
       break;
     }
-    if (!run.advance()) {
-      return { status: 'different', stage: 'hashes', skipped, block: 'first difference at tick ' + (t + 1) + '\nlength\n' + pair('bundle', 'replay', 'continues', 'ends after ' + (t + 1) + ' lines') };
+    try {
+      if (!run.advance()) {
+        return { status: 'different', stage: 'hashes', skipped, block: 'first difference at tick ' + (t + 1) + '\nlength\n' + pair('bundle', 'replay', 'continues', 'ends after ' + (t + 1) + ' lines') };
+      }
+      lines.push(run.line());
+    } catch (error) {
+      return threw('hashes', t + 1, error);
     }
-    lines.push(run.line());
   }
   ms.replay = performance.now() - t0;
   if (bundle.image === null) {
@@ -424,26 +533,49 @@ export function replayBundle(bundle, options) {
   const freshAt = stored ? -1 : options && typeof options.imageFrom === 'number' ? options.imageFrom : bundle.tick;
   /** @type {ReturnType<Run['world']['save']> | null} */
   let fresh = null;
-  if (freshAt === bundle.tick) {
+  /** @returns {string | null} why the image could not be taken, or null */
+  const takeFresh = () => {
     const i0 = performance.now();
-    fresh = run.world.save();
+    try {
+      fresh = run.world.save();
+    } catch (error) {
+      return /** @type {Error} */ (error).message;
+    }
     ms.image = performance.now() - i0;
+    return null;
+  };
+  if (freshAt === bundle.tick) {
+    const refused = takeFresh();
+    if (refused !== null) {
+      return { status: 'refused', skipped, reason: refused };
+    }
   }
   const whole = lines.slice();
-  while (run.advance()) {
-    whole.push(run.line());
+  for (;;) {
+    // The tick before the step: a session may count the quantum it threw on.
+    const before = run.tick;
+    try {
+      if (!run.advance()) {
+        break;
+      }
+      whole.push(run.line());
+    } catch (error) {
+      return threw('rerun', before + 1, error);
+    }
     if (run.tick === freshAt) {
-      const i0 = performance.now();
-      fresh = run.world.save();
-      ms.image = performance.now() - i0;
+      const refused = takeFresh();
+      if (refused !== null) {
+        return { status: 'refused', skipped, reason: refused };
+      }
     }
   }
   const end = run.tick;
   if (!stored) {
-    if (!fresh || !fresh.image) {
+    const taken = /** @type {ReturnType<Run['world']['save']> | null} */ (fresh);
+    if (!taken || !taken.image) {
       return { status: 'refused', skipped, reason: 'no fresh image at tick ' + freshAt + ': the run ends at ' + end + ' or has no solver' };
     }
-    chosen = { worldId: fresh.worldId, image: fresh.image };
+    chosen = { worldId: taken.worldId, image: taken.image };
   }
   if (!chosen) {
     return { status: 'refused', skipped, reason: 'no image' };
@@ -451,10 +583,26 @@ export function replayBundle(bundle, options) {
   // A second replay to the save tick, the image restored into it. The body
   // records and the lifted and carried sets are the replay's; only the
   // solver's memory comes from the image.
-  const again = replayTo(spec, bundle.tick);
-  const records = again.world.save();
+  /** @type {Run} */
+  let again;
+  try {
+    again = replayTo(spec, 0);
+  } catch (error) {
+    return threw('rerun', 0, error);
+  }
+  while (again.tick < bundle.tick) {
+    const before = again.tick;
+    try {
+      if (!again.advance()) {
+        return { status: 'different', stage: 'rerun', skipped, block: 'first difference at tick ' + (before + 1) + '\nlength\n' + pair('bundle', 'replay', 'continues', 'ends after ' + (before + 1) + ' lines') };
+      }
+    } catch (error) {
+      return threw('rerun', before + 1, error);
+    }
+  }
   const s0 = performance.now();
   try {
+    const records = again.world.save();
     again.world.restore({ ...records, worldId: chosen.worldId, image: chosen.image });
   } catch (error) {
     return { status: 'refused', skipped, reason: /** @type {Error} */ (error).message };
@@ -463,8 +611,16 @@ export function replayBundle(bundle, options) {
   const r0 = performance.now();
   const restored = lines.slice(0, bundle.tick);
   restored.push(again.line());
-  while (again.advance()) {
-    restored.push(again.line());
+  for (;;) {
+    const before = again.tick;
+    try {
+      if (!again.advance()) {
+        break;
+      }
+      restored.push(again.line());
+    } catch (error) {
+      return threw('rerun', before + 1, error);
+    }
   }
   ms.rerun = performance.now() - r0;
   if (restored.length !== whole.length || restored.some((line, i) => line !== whole[i])) {

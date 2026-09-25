@@ -13,7 +13,7 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { PAGE, PAGES, bundleText, denseImage, imageSkipped, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
+import { PAGE, PAGES, bundleProblem, bundleText, denseImage, imageSkipped, readBundle, replayBundle, runThrew, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
 import { binaryDigest, imageDigest, imageSolver, instantiate } from '../solver/dist/solver.mjs';
 import { makeBundle } from './bundle.mjs';
 import { CORPUS, imageCounts, runCorpus } from './corpus.mjs';
@@ -166,6 +166,69 @@ test('(c) a bundle whose trace hashes differ fails with the first-difference blo
   // A run that ends before the bundle's save tick is a length block.
   const short = replayBundle({ ...bundle, steps: 30 });
   assert.deepEqual(short, { status: 'different', stage: 'hashes', skipped: null, block: 'first difference at tick 31\nlength\n  bundle continues\n  replay ends after 31 lines\n' });
+});
+
+test('a malformed bundle is refused with what is wrong and exit 2, before anything runs: a play bundle with no steps does not hang', (t) => {
+  const bundle = makeBundle(stall, { name: 'no steps', tick: 20, image: true });
+  const noSteps = /** @type {Record<string, unknown>} */ ({ ...bundle });
+  delete noSteps.steps;
+  const path = join(dir, 'no-steps.bundle.json');
+  writeFileSync(path, JSON.stringify(noSteps));
+  const t0 = performance.now();
+  const run = spawnSync(process.execPath, ['packages/tick/bin/replay.js', path], { encoding: 'utf8', timeout: 60000 });
+  t.diagnostic('refused in ' + (performance.now() - t0).toFixed(0) + ' ms');
+  assert.equal(run.signal, null, 'not killed by the timeout');
+  assert.equal(run.status, 2, run.stdout + run.stderr);
+  assert.equal(run.stdout, '');
+  assert.equal(run.stderr, 'not a bundle: ' + path + ': a play bundle has whole-number steps, at least its save tick 20\n');
+  // Each run kind is checked for what its replay reads.
+  const product = makeBundle({ scene: 'product' }, { name: 'p', tick: 3, image: false });
+  const minds = JSON.parse(readFileSync('fixtures/behavior-minds.json', 'utf8'));
+  const log = makeBundle({ seed: minds.seed, world: minds.world, log: minds.log }, { name: 'l', tick: 2, image: false });
+  /** @type {Array<[Record<string, unknown>, RegExp]>} */
+  const cases = [
+    [{ ...bundle, steps: 10 }, /a play bundle has whole-number steps, at least its save tick 20/],
+    [{ ...bundle, driven: 'walker' }, /a play bundle has a driven array of body ids/],
+    [{ ...bundle, world: { bodies: stall.world.bodies } }, /the world has bodies and colliders/],
+    [{ ...bundle, hashes: bundle.hashes.slice(1) }, /the hashes run from the load to the save tick, 21 of them/],
+    [{ ...bundle, image: { worldId: 1, digest: 'x' } }, /the image is null, or a world id, a digest, a page bitmap, and page data/],
+    [{ ...product, quanta: undefined }, /a product bundle has whole-number quanta, at least its save tick 3/],
+    [{ ...log, seed: 'seven' }, /a log bundle has a seed/],
+    [{ ...log, log: [{ tick: 4, hash: 'x', proposal: {} }, { tick: 2, hash: 'y', proposal: {} }] }, /log entry 1 has a tick no earlier than the entry before, a hash, and a proposal/],
+    [{ ...log, law: 'box' }, /a log bundle's law is product or reference/],
+  ];
+  for (const [value, reason] of cases) {
+    assert.match(String(bundleProblem(value)), reason);
+  }
+  assert.equal(bundleProblem(bundle), null);
+  assert.equal(bundleProblem(product), null);
+  assert.equal(bundleProblem(log), null);
+  // Not JSON at all: refused the same way.
+  const garbled = join(dir, 'garbled.bundle.json');
+  writeFileSync(garbled, '{ "bundle": 1, ');
+  const bad = replayCommand(garbled);
+  assert.equal(bad.status, 2);
+  assert.match(bad.stderr, /^not a bundle: .*garbled\.bundle\.json: /);
+});
+
+test('a run that throws is a difference at the tick it threw on, exit 1, not a crash: at the load, and partway', () => {
+  // At the load: a coordinate JSON reads as Infinity, which the law refuses.
+  const infinite = join(dir, 'infinite.bundle.json');
+  const bundle = makeBundle(stall, { name: 'infinite', tick: 5, image: false });
+  writeFileSync(infinite, bundleText(bundle).replace('"x": 10,', '"x": 1e999,'));
+  const atLoad = replayCommand(infinite);
+  assert.equal(atLoad.status, 1, atLoad.stderr);
+  assert.equal(atLoad.stdout, 'first difference at tick 0: the run threw: NaN\n');
+  // Partway: the minds log's second admission, at tick 76, was recorded
+  // against another frame, so the tick's replay throws producing tick 77.
+  const minds = JSON.parse(readFileSync('fixtures/behavior-minds.json', 'utf8'));
+  const logged = makeBundle({ seed: minds.seed, world: minds.world, log: minds.log }, { name: 'minds', tick: 120, image: true });
+  const real = logged.log[1].hash;
+  const log = logged.log.map((e, i) => (i === 1 ? { ...e, hash: '0000000000000000' } : e));
+  const partway = replayCommand(writeBundle({ ...logged, log }, dir));
+  assert.equal(partway.status, 1, partway.stderr);
+  assert.equal(partway.stdout, 'first difference at tick 77: the run threw: entry 1 was admitted against ' + real + ', not 0000000000000000\n');
+  assert.equal(runThrew(77, new Error('entry 1')), 'first difference at tick 77: the run threw: entry 1\n');
 });
 
 test('every failure writes one: planted failures in a real test run write bundles, and replay reproduces the restore failure with the same first-difference block', () => {
