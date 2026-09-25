@@ -73,57 +73,51 @@
   "changes": {
     "fileCounts": {
       "added": 10,
-      "changed": 47,
+      "changed": 30,
       "moved": 0,
-      "parts": 6,
+      "parts": 7,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "CI now also runs harness/check.test.js, harness/first-difference.js, harness/trace.mjs and 1 more.",
+        "sentence": "CI now also runs harness/restore.test.js and harness/surface.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "harness/check.test.js",
-          "harness/first-difference.js",
-          "harness/trace.mjs",
-          "harness/trace.test.js"
+          "harness/restore.test.js",
+          "harness/surface.test.js"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI now also checks harness/behaviour.mjs, harness/product-run.mjs and harness/trace-line.mjs.",
+        "sentence": "CI now also checks harness/replay-to.mjs.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "harness/behaviour.mjs",
-          "harness/product-run.mjs",
-          "harness/trace-line.mjs"
+          "harness/replay-to.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/golden-behaviour.json is now written by harness/write-golden.js.",
+        "sentence": "fixtures/ is now also read by harness/restore.test.js.",
         "subjects": [
-          "fixtures/golden-behaviour.json",
-          "harness/write-golden.js"
+          "fixtures/",
+          "harness/restore.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/behavior-ramp.json is now also read by harness/trace.test.js.",
+        "sentence": "fixtures/behavior-1c.json is now also read by harness/restore.test.js.",
         "subjects": [
-          "fixtures/behavior-ramp.json",
-          "harness/trace.test.js"
+          "fixtures/behavior-1c.json",
+          "harness/restore.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/golden-behaviour.json is now read by harness/check.js, harness/check.test.js and harness/write-golden.js.",
+        "sentence": "fixtures/behavior-3d.json is now also read by harness/restore.test.js.",
         "subjects": [
-          "fixtures/golden-behaviour.json",
-          "harness/check.js",
-          "harness/check.test.js",
-          "harness/write-golden.js"
+          "fixtures/behavior-3d.json",
+          "harness/restore.test.js"
         ]
       },
       {
@@ -133,13 +127,13 @@
       },
       {
         "kind": "counts",
-        "sentence": "10 files added and 47 changed content, across 6 parts.",
+        "sentence": "10 files added and 30 changed content, across 7 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "2e82fc7f790ba0e8b6beca2d344b204c099e9a0e",
-      "generatedAt": "2026-09-25T08:54:36.141Z"
+      "commit": "cd21fe8af8e7f38585f83c97e18b61570fc0f43e",
+      "generatedAt": "2026-09-25T09:17:26.206Z"
     },
     "unchanged": false
   },
@@ -205,30 +199,30 @@
       "shared": 5
     },
     {
-      "a": "harness/product-scene.mjs",
-      "b": "harness/sim.mjs",
-      "either": 10,
+      "a": "packages/propose/prompt.js",
+      "b": "packages/propose/seat.js",
+      "either": 8,
       "partLabels": [
-        "harness",
-        "harness"
+        "propose",
+        "propose"
       ],
       "parts": [
-        "harness",
-        "harness"
+        "propose",
+        "propose"
       ],
       "relation": "inside",
-      "shared": 8
+      "shared": 6
     }
   ],
   "changesTogetherNote": [
     "1 file changed together with its own test, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
-    "Window: 180 days; a pair counts from 3 shared commits, since 5 source files reach 10 revisions; the floor rises to 10 when 25 do."
+    "Window: 180 days; a pair counts from 3 shared commits, since 6 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "cd21fe8af8e7f38585f83c97e18b61570fc0f43e",
+  "commit": "8e86882da021c62be065a647f79ec8047df0604d",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (58 files). Work enters through 8 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (61 files). Work enters through 8 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -240,6 +234,7 @@
         "harness/minds-scene.mjs",
         "harness/product-run.mjs",
         "harness/product-scene.mjs",
+        "harness/replay-to.mjs",
         "harness/solver-scene.mjs",
         "harness/trace-line.mjs",
         "harness/verbs-scene.mjs",
@@ -253,7 +248,7 @@
         "packages/tick/",
         "packages/tool/"
       ],
-      "checksCount": 20,
+      "checksCount": 21,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [],
@@ -273,7 +268,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 17
+          "files": 20
         },
         {
           "boundary": "host",
@@ -306,7 +301,9 @@
         "harness/check.test.js",
         "harness/first-difference.js",
         "harness/product.test.js",
+        "harness/restore.test.js",
         "harness/solver.test.js",
+        "harness/surface.test.js",
         "harness/trace.mjs",
         "harness/trace.test.js",
         "packages/host/host.test.js",
@@ -318,7 +315,7 @@
         "packages/tick/verbs.test.js",
         "solver/build.mjs"
       ],
-      "runsCount": 15,
+      "runsCount": 17,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -632,13 +629,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T09:17:26.206Z",
+  "generatedAt": "2026-09-25T11:02:29.302Z",
   "limits": [
-    "6 import sites could not be resolved.",
+    "7 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "6 writes and 16 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "7 commands are built at run time and not followed, 5 of them in tests.",
+    "8 commands are built at run time and not followed, 6 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -663,6 +660,40 @@
   "readers": [],
   "repo": "mcp-tool-shop-org/si-rpg-engine",
   "sequences": [
+    {
+      "entry": "rerun",
+      "file": "harness/restore.test.js",
+      "inner": [],
+      "part": "harness",
+      "partLabel": "harness",
+      "phrase": "rerun",
+      "steps": [
+        {
+          "name": "line",
+          "part": null,
+          "partLabel": null,
+          "phrase": "line"
+        },
+        {
+          "name": "advance",
+          "part": null,
+          "partLabel": null,
+          "phrase": "advance"
+        },
+        {
+          "name": "line",
+          "part": null,
+          "partLabel": null,
+          "phrase": "line"
+        },
+        {
+          "name": "endLine",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "end line"
+        }
+      ]
+    },
     {
       "entry": "fresh",
       "file": "packages/propose/propose.test.js",
@@ -855,14 +886,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 11,
+  "testFiles": 13,
   "testedBy": {
-    "frame": 8,
+    "frame": 9,
     "host": 1,
     "load": 2,
     "propose": 1,
     "solver": 0,
-    "tick": 10
+    "tick": 12
   },
   "unnamedWrites": 0,
   "unread": [],

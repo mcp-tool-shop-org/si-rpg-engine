@@ -22,10 +22,12 @@ const cargo = process.env.CARGO || 'cargo';
 // the remainder of each path, so the two hosts never produce identical bytes:
 // the pinned artifact is the Linux build, and only a Linux build may write the
 // digest. RUSTFLAGS overrides .cargo/config.toml, so the relaxed-SIMD pin is
-// repeated here.
+// repeated here. The stack pointer is exported so an image of linear memory
+// can be refused unless it is at its base (see imageSolver below).
 const cargoHome = process.env.CARGO_HOME || join(process.env.HOME || process.env.USERPROFILE || '', '.cargo');
 const rustflags = [
   '-C', 'target-feature=-relaxed-simd',
+  '-C', 'link-arg=--export=__stack_pointer',
   '--remap-path-prefix=' + cargoHome + '=/cargo',
   '--remap-path-prefix=' + solver + '=/solver',
   '--remap-path-prefix=' + root + '=/repo',
@@ -68,13 +70,25 @@ for (let i = 0; i < wasm.length; i += 24) {
 lines.push(']);');
 lines.push(`
 let cached = null;
+let compiled = null;
+let stackBase = null;
+
+function fresh() {
+  if (!compiled) {
+    compiled = new WebAssembly.Module(bytes);
+  }
+  const instance = new WebAssembly.Instance(compiled);
+  if (stackBase === null) {
+    stackBase = instance.exports.__stack_pointer.value;
+  }
+  return instance;
+}
 
 export function instantiate() {
   if (cached) {
     return cached;
   }
-  const module = new WebAssembly.Module(bytes);
-  cached = new WebAssembly.Instance(module);
+  cached = fresh();
   return cached;
 }
 
@@ -252,9 +266,212 @@ export function snapshotBytes() {
   return new Uint8Array(exp.memory.buffer, ptr, len).slice();
 }
 
-/** Zeros the warm-start cache. Returns how many contact points were cleared. */
-export function clearWarmstart() {
-  return instantiate().exports.solver_clear_warmstart();
+// Images. The instance's whole mutable state is its linear memory plus one
+// global, __stack_pointer: the module has no other global, and its one table
+// is fixed at instantiation. Between exported calls that returned, the stack
+// pointer is back at its base, so the memory is the whole state. An image is
+// therefore taken, and restored, only there: imageSolver refuses when the
+// exported stack pointer is not at its base. An instance that has trapped
+// skipped its epilogue and left the pointer lowered; it is dead. Never image
+// it; restoreImage builds a fresh instance and writes the last image into it.
+// No Rust runs during either copy.
+
+const PAGE = 65536;
+let binaryHex = null;
+let refusal = 'none';
+
+function hex32(n) {
+  let s = (n >>> 0).toString(16);
+  while (s.length < 8) {
+    s = '0' + s;
+  }
+  return s;
+}
+
+const K = new Uint32Array([
+  0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+  0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+  0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+  0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+  0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+  0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+  0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+  0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+]);
+
+/** SHA-256 of a byte array, as 64 hex digits. Integer arithmetic only. */
+export function sha256(data) {
+  const n = data.length;
+  const padded = new Uint8Array(((n + 9 + 63) >> 6) << 6);
+  padded.set(data);
+  padded[n] = 0x80;
+  const bits = n * 8;
+  const at = padded.length - 8;
+  padded[at + 3] = Math.floor(bits / 0x100000000) & 255;
+  padded[at + 4] = (bits >>> 24) & 255;
+  padded[at + 5] = (bits >>> 16) & 255;
+  padded[at + 6] = (bits >>> 8) & 255;
+  padded[at + 7] = bits & 255;
+  const H = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]);
+  const W = new Uint32Array(64);
+  for (let off = 0; off < padded.length; off += 64) {
+    for (let i = 0; i < 16; i++) {
+      const j = off + i * 4;
+      W[i] = (padded[j] << 24) | (padded[j + 1] << 16) | (padded[j + 2] << 8) | padded[j + 3];
+    }
+    for (let i = 16; i < 64; i++) {
+      const a = W[i - 15];
+      const b = W[i - 2];
+      const s0 = ((a >>> 7) | (a << 25)) ^ ((a >>> 18) | (a << 14)) ^ (a >>> 3);
+      const s1 = ((b >>> 17) | (b << 15)) ^ ((b >>> 19) | (b << 13)) ^ (b >>> 10);
+      W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0;
+    }
+    let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    for (let i = 0; i < 64; i++) {
+      const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (h + S1 + ch + K[i] + W[i]) >>> 0;
+      const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) >>> 0;
+      h = g;
+      g = f;
+      f = e;
+      e = (d + t1) >>> 0;
+      d = c;
+      c = b;
+      b = a;
+      a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0;
+    H[1] = (H[1] + b) >>> 0;
+    H[2] = (H[2] + c) >>> 0;
+    H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0;
+    H[5] = (H[5] + f) >>> 0;
+    H[6] = (H[6] + g) >>> 0;
+    H[7] = (H[7] + h) >>> 0;
+  }
+  let out = '';
+  for (let i = 0; i < 8; i++) {
+    out = out + hex32(H[i]);
+  }
+  return out;
+}
+
+/** SHA-256 of this binary's bytes: what solver/build.mjs prints and fixtures/solver.sha256 pins. */
+export function binaryDigest() {
+  if (binaryHex === null) {
+    binaryHex = sha256(bytes);
+  }
+  return binaryHex;
+}
+
+/**
+ * Two FNV-1a lanes over an image, as packages/frame/hash.js mixes words:
+ * the length first, then each 32-bit little-endian word, even words to lane
+ * 0 and odd words to lane 1.
+ */
+export function imageDigest(data) {
+  let h0 = 0x811c9dc5;
+  let h1 = 0x811c9dc5;
+  const n = data.length;
+  for (let i = 0; i < 4; i++) {
+    const b = (n >>> (i * 8)) & 255;
+    h0 = Math.imul(h0 ^ b, 0x01000193) >>> 0;
+    h1 = Math.imul(h1 ^ b, 0x01000193) >>> 0;
+  }
+  for (let i = 0; i < n; i++) {
+    if ((i & 4) === 0) {
+      h0 = Math.imul(h0 ^ data[i], 0x01000193) >>> 0;
+    } else {
+      h1 = Math.imul(h1 ^ data[i], 0x01000193) >>> 0;
+    }
+  }
+  return hex32(h0) + hex32(h1);
+}
+
+function atBase(exp) {
+  return exp.__stack_pointer.value === stackBase;
+}
+
+/**
+ * The instance's whole linear memory, with the SHA-256 of the binary that
+ * made it and the image's own digest. Null, with imageRefusal() saying why,
+ * when the stack pointer is not at its base: inside a call, or trapped.
+ * @returns {{ binary: string, digest: string, bytes: Uint8Array } | null}
+ */
+export function imageSolver() {
+  const exp = instantiate().exports;
+  if (!atBase(exp)) {
+    refusal = 'the stack pointer is not at its base: the instance is inside a call or has trapped';
+    return null;
+  }
+  const data = new Uint8Array(exp.memory.buffer).slice();
+  refusal = 'none';
+  return { binary: binaryDigest(), digest: imageDigest(data), bytes: data };
+}
+
+/**
+ * Builds a fresh instance, grows its memory to the image's length, writes the
+ * image into it, and makes it the instance every call uses. False, with the
+ * current instance unchanged and imageRefusal() saying why, when the image is
+ * from another binary, its length is not a whole number of pages at least a
+ * fresh instance's memory, its bytes do not match its digest, or the memory
+ * cannot grow to it.
+ * @param {{ binary: string, digest: string, bytes: Uint8Array }} image
+ */
+export function restoreImage(image) {
+  if (!image || !(image.bytes instanceof Uint8Array) || typeof image.binary !== 'string' || typeof image.digest !== 'string') {
+    refusal = 'not an image';
+    return false;
+  }
+  if (image.binary !== binaryDigest()) {
+    refusal = 'the image is from another binary';
+    return false;
+  }
+  const data = image.bytes;
+  if (data.length === 0 || data.length % PAGE !== 0) {
+    refusal = 'the length is not a whole number of pages';
+    return false;
+  }
+  if (imageDigest(data) !== image.digest) {
+    refusal = 'the bytes do not match the image digest';
+    return false;
+  }
+  const instance = fresh();
+  const exp = instance.exports;
+  const have = exp.memory.buffer.byteLength;
+  if (data.length < have) {
+    refusal = 'the length is less than a fresh instance memory';
+    return false;
+  }
+  if (data.length > have) {
+    try {
+      exp.memory.grow((data.length - have) / PAGE);
+    } catch {
+      refusal = 'the memory cannot grow to the image';
+      return false;
+    }
+  }
+  if (exp.memory.buffer.byteLength !== data.length || !atBase(exp)) {
+    refusal = 'the fresh instance does not match the image';
+    return false;
+  }
+  new Uint8Array(exp.memory.buffer).set(data);
+  cached = instance;
+  refusal = 'none';
+  return true;
+}
+
+/** Why the last imageSolver or restoreImage refused, or 'none'. */
+export function imageRefusal() {
+  return refusal;
+}
+
+/** The exported stack pointer and its base, for the tests. */
+export function stackPointer() {
+  return { value: instantiate().exports.__stack_pointer.value, base: stackBase };
 }
 
 /** +0 for both signed zeros. NaN stays NaN. */

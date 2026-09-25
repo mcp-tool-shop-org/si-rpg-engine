@@ -40,7 +40,7 @@
           "path": "docs/PHASE-1.md"
         },
         {
-          "hash": "4948b77043c34df8ee31372fc21bd519d82ae4f1549244544e1c2d30024888b4",
+          "hash": "9ba5145e718cfa3ad6d7bae0145e9b3e55ff3775e78b20464837f0a5f65c40d1",
           "path": "docs/PHASE-2.md"
         },
         {
@@ -128,8 +128,36 @@
           "path": "docs/dispatch-e5-minds.md"
         },
         {
+          "hash": "5d3c1012c43d15de121907063ca4d7e6b2721904de47305315923a3d503c749e",
+          "path": "docs/dispatch-s1-soundness.md"
+        },
+        {
+          "hash": "94637dc80aa9d12c802760f8610de41678d45c4758e0679194ff6ac65f983cee",
+          "path": "docs/dispatch-s2-one-surface.md"
+        },
+        {
           "hash": "7e5881a90e73ad04d87bb6846376514c1eee629acc8c5d85ea45c3d0bfcf01d3",
           "path": "docs/dispatch-t1-the-first-difference.md"
+        },
+        {
+          "hash": "4d53183c4328f948d49569d3c819e2059d27bccc4c83030f45b9d3aab77328ff",
+          "path": "docs/dispatch-t2-restore.md"
+        },
+        {
+          "hash": "a815ee13f5c9d14fb3c96feb16daa1d27ff9050bb7537b3577a501734ed272ed",
+          "path": "docs/dispatch-t3-platforms.md"
+        },
+        {
+          "hash": "b2078288991aee1fac56a0b6b079ac5193c2240aed94df95a47cb21023798c87",
+          "path": "docs/dispatch-t4-outcome-tests.md"
+        },
+        {
+          "hash": "7081f1c99037ce83b090042ead13d9b7f31c252b8162be99665ec8948b07ffa6",
+          "path": "docs/rust-kb-answers.md"
+        },
+        {
+          "hash": "d788190de7e8f492f6b6c36c49eddc4b56774a4abba654095dfe78e750c20a1b",
+          "path": "docs/rust-kb-requests.md"
         },
         {
           "hash": "64cdee834df343cff0d2651a27f22da0cb454627de5fbe182a067977f3508e17",
@@ -195,27 +223,27 @@
           "path": "fixtures/behavior-1c.json"
         },
         {
-          "hash": "cc458d92e4eb9d2cfba1c09a18e14c17ffaccdf88a4e6583c795c0cdb4411777",
+          "hash": "b849e0cd6f2e670ad417f4906268b9c836374a4e02c1d808a5ddcfa6cbeb2a9b",
           "path": "fixtures/behavior-3d.json"
         },
         {
-          "hash": "6b13a458d717819325098c3bf0a33c636ff785d7314627ba04b263e6dfca62ab",
+          "hash": "ecf15bf072ea19efb7364fc04835e7d18c55023c219a848443d6350f828bb222",
           "path": "fixtures/behavior-minds.json"
         },
         {
-          "hash": "d707fdcc516a90a0638e919e8869b980544226a93c5179ac0a6b00bc63befca8",
+          "hash": "32eddbfbad62436e7748842ed4180aec0afc0886e12c0568b49b6282f9e58961",
           "path": "fixtures/behavior-ramp.json"
         },
         {
-          "hash": "65c9f578e5b69b8d06aa30dd51f59b5d27dffdfae78383d1014a8452d003ac12",
+          "hash": "8955a3b65a154d47ee280c2fcf0a21f61ca31846c8077db216fc968c11aa9b12",
           "path": "fixtures/behavior-rotation.json"
         },
         {
-          "hash": "40a2e37d4353c682cb3db46b04ae02529a9c5bedc74ccc576af30f11e1c99bcb",
+          "hash": "a790ff4f331cfb388049951900ed74871eea9f22168024c014094cf8f37bd223",
           "path": "fixtures/behavior-solver.json"
         },
         {
-          "hash": "639d322e4b81c3a8be064a2f72dfe531252095e7412afab7a9be6dbc5624759c",
+          "hash": "e698d57eb1152d4ad6ef75e87c0b5d7b9029d0737d7a13111596efd9475e13ba",
           "path": "fixtures/behavior-verbs.json"
         },
         {
@@ -235,7 +263,7 @@
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "a8d2c800452554efd6ead6e49724ceb220f533a3d58d01725b67f1a122b9f918",
+          "hash": "736c2177f2b62a689bb55a816051a7781b519aed22a872a8203b8da04b3e410d",
           "path": "fixtures/golden-behaviour.json"
         },
         {
@@ -320,13 +348,13 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 8,
+      "testedBy": 9,
       "unresolvedSites": 0
     },
     {
       "dynamicReads": 1,
-      "dynamicSpawns": 3,
-      "dynamicSpawnsInTests": 2,
+      "dynamicSpawns": 4,
+      "dynamicSpawnsInTests": 3,
       "dynamicWrites": 0,
       "entryPoints": [
         "harness/write-golden.js"
@@ -347,7 +375,7 @@
             "productBehaviour",
             "sleepWatch"
           ],
-          "hash": "8301d23dd6a71db55cb4501acedbfc2faa1eab42f4b2603c6d36b758c5a30792",
+          "hash": "afd948bfd0a795261b0ced8f111f979d8a3b9ed990890ec8fb8f57153ac980a7",
           "importsFiles": [
             "harness/product-run.mjs",
             "harness/product-scene.mjs"
@@ -357,7 +385,7 @@
         {
           "entry": "match",
           "entryRule": 1,
-          "hash": "2ba2b7d630163ecf84e4c09f0ae2bc8a66e338bcf0ba0816c9142b2068d62602",
+          "hash": "2694eaec99c03a2bb68c5dcc5ca4aa77ed829857e88d335cef577791a2e2c707",
           "importsFiles": [
             "harness/behaviour.mjs"
           ],
@@ -367,7 +395,7 @@
         {
           "entry": "check",
           "entryRule": 1,
-          "hash": "9c538e680fd0016ea8ba06a29aa314c8505c681269b0a32d3abffdfd302b62f5",
+          "hash": "f6a48c346ae70e28e7d1979a39c2b4fdf51ddbb2d879342e3557fbbe058c56bd",
           "importsFiles": [
             "harness/behaviour.mjs"
           ],
@@ -377,7 +405,7 @@
         {
           "entry": "lineReader",
           "entryRule": 1,
-          "hash": "4d0750f61a4c35aa7170712b9175f260a2cca55b9fb2416d838fe5b7ef159eab",
+          "hash": "a1b09d8a590987570291d2acfb2f738d2ccd603daaa2b169a8aec23802982715",
           "importsFiles": [
             "packages/tool/guard.js"
           ],
@@ -390,7 +418,7 @@
             "playMinds",
             "replayMinds"
           ],
-          "hash": "07a23aa743dd4374c71df9532d3cdb0fe229efe97a4ded246d9ae349b39830ba",
+          "hash": "517c719f7f2793fe54b785921b910c6d3b8f298ee7d89487a5e00ca34ea79136",
           "importsFiles": [
             "harness/behaviour.mjs",
             "packages/tick/beliefs.js",
@@ -402,9 +430,10 @@
         },
         {
           "exports": [
+            "productSession",
             "runProduct"
           ],
-          "hash": "e8232e74eb95aff5cd6db6391d70e2ebdcb1632f9420efcff49bad0d7c4833a4",
+          "hash": "3c43ae53b1cb0fccff307097378062ed81d14d594a25da5a42884997b8e7359b",
           "importsFiles": [
             "harness/product-scene.mjs",
             "packages/frame/hash.js",
@@ -434,6 +463,262 @@
           "path": "harness/product.test.js"
         },
         {
+          "entry": "replayTo",
+          "entryRule": 4,
+          "exports": [
+            "replayTo"
+          ],
+          "hash": "9c9cd02d23230acc746d7f65fae9ae03df44afdfe86ea8c38b8f5f08b617dcf4",
+          "importsFiles": [
+            "harness/product-run.mjs",
+            "harness/solver-scene.mjs",
+            "harness/trace-line.mjs",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/replay-to.mjs",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 40,
+                  "name": "productSession",
+                  "target": {
+                    "file": "harness/product-run.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "productRun"
+            },
+            {
+              "calls": [
+                {
+                  "line": 71,
+                  "name": "playSession",
+                  "target": {
+                    "file": "harness/solver-scene.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "playRun"
+            },
+            {
+              "calls": [
+                {
+                  "line": 98,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 100,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 101,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "line": 102,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "logRun"
+            },
+            {
+              "calls": [
+                {
+                  "line": 40,
+                  "name": "productSession",
+                  "target": {
+                    "file": "harness/product-run.mjs"
+                  },
+                  "via": "productRun"
+                },
+                {
+                  "line": 98,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  },
+                  "via": "logRun"
+                },
+                {
+                  "line": 100,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  },
+                  "via": "logRun"
+                },
+                {
+                  "line": 101,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  },
+                  "via": "logRun"
+                },
+                {
+                  "line": 102,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  },
+                  "via": "logRun"
+                },
+                {
+                  "line": 71,
+                  "name": "playSession",
+                  "target": {
+                    "file": "harness/solver-scene.mjs"
+                  },
+                  "via": "playRun"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "replayTo"
+            }
+          ]
+        },
+        {
+          "entry": "rerun",
+          "entryRule": 1,
+          "hash": "3eb970671361535faaa422a307fcf20bdb117815f404a230c2aba847bfb35188",
+          "importsFiles": [
+            "harness/replay-to.mjs",
+            "harness/trace-line.mjs",
+            "harness/verbs-scene.mjs",
+            "packages/frame/hash.js",
+            "packages/tick/predicates.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/restore.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 61,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 65,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "evict"
+            },
+            {
+              "calls": [
+                {
+                  "line": 114,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "wholeRun"
+            },
+            {
+              "calls": [
+                {
+                  "line": 172,
+                  "name": "line",
+                  "target": null
+                },
+                {
+                  "line": 173,
+                  "name": "advance",
+                  "target": null
+                },
+                {
+                  "line": 174,
+                  "name": "line",
+                  "target": null
+                },
+                {
+                  "line": 176,
+                  "name": "endLine",
+                  "target": {
+                    "file": "harness/trace-line.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "rerun"
+            },
+            {
+              "calls": [
+                {
+                  "line": 187,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "savesAt"
+            },
+            {
+              "calls": [
+                {
+                  "line": 114,
+                  "name": "replayTo",
+                  "target": {
+                    "file": "harness/replay-to.mjs"
+                  },
+                  "via": "wholeRun"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "stackCase"
+            }
+          ]
+        },
+        {
           "entry": "out",
           "entryRule": 1,
           "hash": "3ee0533ecdfc5dc8a7eb257d79162ebbf76cb43cd7e3a450fc947dd53309012d",
@@ -448,9 +733,10 @@
         },
         {
           "exports": [
-            "play"
+            "play",
+            "playSession"
           ],
-          "hash": "b5779801d73b27b47a9f7512e4a56e391fa09e6a8174984ae5d29c37b0d29030",
+          "hash": "d747fc4138ba132a51c60e046f539353e6506590f2c48ea6dae452c0d62e90e0",
           "importsFiles": [
             "harness/behaviour.mjs",
             "harness/trace-line.mjs",
@@ -460,15 +746,94 @@
           "path": "harness/solver-scene.mjs"
         },
         {
-          "hash": "9ae160266e919044e69087f25b55c653e223d3c4d93e8522f74b6bf0e9116ffb",
+          "entry": "restingStack",
+          "entryRule": 1,
+          "hash": "182e0dea2cc25a1b4ea78032b1fe904af42cd6ec651ce174e374b26306603a17",
           "importsFiles": [
+            "harness/product-scene.mjs",
             "harness/solver-scene.mjs",
             "packages/frame/hash.js",
             "packages/tick/world.js"
           ],
-          "path": "harness/solver.test.js"
+          "path": "harness/solver.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 175,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "restingStack"
+            },
+            {
+              "calls": [
+                {
+                  "line": 191,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "snapDigest"
+            }
+          ]
         },
         {
+          "entry": "assertOracle",
+          "entryRule": 1,
+          "hash": "7dda438250e655c3885fe1f131d3ef38ccb9f65b9c2258181924f6d37cbfe9c5",
+          "importsFiles": [
+            "packages/tick/world.js"
+          ],
+          "path": "harness/surface.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 107,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "dropAll"
+            },
+            {
+              "calls": [
+                {
+                  "line": 107,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  },
+                  "via": "dropAll"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "assertOracle"
+            }
+          ]
+        },
+        {
+          "entry": "traceLine",
+          "entryRule": 4,
           "exports": [
             "bits",
             "endLine",
@@ -476,16 +841,97 @@
             "thrownLine",
             "traceLine"
           ],
-          "hash": "f613c59d9b70a7a1e34a24603f58aba3e0b9f683a495406a2532d8aac7fddcd5",
+          "hash": "de1cf0ea04d0c2d59e42b620ab9ce37b62c7e4f7be08cffb494c7119e568f89d",
           "importsFiles": [
             "packages/frame/hash.js"
           ],
-          "path": "harness/trace-line.mjs"
+          "path": "harness/trace-line.mjs",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 33,
+                  "name": "hex",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "bits"
+            },
+            {
+              "calls": [
+                {
+                  "line": 43,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "snapshotField"
+            },
+            {
+              "calls": [
+                {
+                  "line": 33,
+                  "name": "hex",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  },
+                  "via": "bits"
+                },
+                {
+                  "line": 71,
+                  "name": "zoneIndex",
+                  "target": null
+                },
+                {
+                  "line": 73,
+                  "name": "carryingOf",
+                  "target": null
+                },
+                {
+                  "line": 74,
+                  "name": "carriedByOf",
+                  "target": null
+                },
+                {
+                  "line": 78,
+                  "name": "snapshot",
+                  "target": null
+                },
+                {
+                  "line": 43,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  },
+                  "via": "snapshotField"
+                },
+                {
+                  "line": 86,
+                  "name": "mindBeliefs",
+                  "target": null
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "traceLine"
+            }
+          ]
         },
         {
           "entry": "out",
           "entryRule": 1,
-          "hash": "e50325569298bb1a98781a3ac6001b010a7162703aed1aedcb918a3e9ba4d3e3",
+          "hash": "a1a97667e5c84fb91bdc1238686ba62f38e82b952664a759ac17b476b13ac4d1",
           "importsFiles": [
             "harness/product-run.mjs",
             "harness/trace-line.mjs"
@@ -496,7 +942,7 @@
         {
           "entry": "trace",
           "entryRule": 1,
-          "hash": "6da170e74443ac2b7f9792622257ccd6fd5ed4401289f1f0cedd8e4ecf17d1af",
+          "hash": "24c030714e1a6f42deedd722abf6a44288b1c79d1e61e116535a9179d497d48b",
           "importsFiles": [
             "harness/solver-scene.mjs"
           ],
@@ -507,7 +953,7 @@
           "exports": [
             "playVerbs"
           ],
-          "hash": "9326cced83f71325fe17f1b9fbb59c6d8efd6ce679ba723f5ef2967456e70d83",
+          "hash": "2d2a84c94fb8c9c03868aa326c1823dce5b23862cd0af613d64fd390f937348d",
           "importsFiles": [
             "harness/behaviour.mjs",
             "packages/tick/memory.js",
@@ -517,7 +963,7 @@
           "path": "harness/verbs-scene.mjs"
         },
         {
-          "hash": "7880c07b0df4d5ff48ec2e73679eb5c08a8ce7a93d4064db75a19d75e542111f",
+          "hash": "f9171c32b9280c15bce53f807621eeb912b8192268c22183cbb0c5f1f7b4bc3d",
           "importsFiles": [
             "harness/behaviour.mjs",
             "packages/tool/guard.js"
@@ -533,8 +979,8 @@
       "origin": "authored",
       "outsideReads": 3,
       "role": "test",
-      "testedBy": 7,
-      "unresolvedSites": 3
+      "testedBy": 8,
+      "unresolvedSites": 4
     },
     {
       "dynamicReads": 0,
@@ -1459,7 +1905,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "eac8066629b46f96d5521121398d40e5dd5e43f987d739e04f94ff2695992e9c",
+          "hash": "a332870096e7772576d16f076d6878884036d5f06a60cafe49dff1380af34fd8",
           "path": "package.json"
         },
         {
@@ -1486,7 +1932,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "859f353ae6b689bce27ec61d0e2d8871da2a0e63050cc30315961871e4b5c572",
+          "hash": "033def90906e1b0c4519436b1826feaa50911a52eca4d59deb1a182cd996d931",
           "path": "solver/.cargo/config.toml"
         },
         {
@@ -1502,7 +1948,7 @@
           "path": "solver/FLAGS.md"
         },
         {
-          "hash": "cdf6dcdf5530abf067a66d6df961c7600ce7d20d03ef627810a094bcf35a5af9",
+          "hash": "2d2ecc3ec08919ce7b2ebc33601d763ff6f226d94c3ab816de7ac1039eec5302",
           "path": "solver/build.mjs"
         },
         {
@@ -1514,7 +1960,7 @@
           "path": "solver/src/lib.rs"
         },
         {
-          "hash": "787702c8ccfd8f7102d4bc83cb88e4199b9b392bf4fc72261ac0bc074d686da6",
+          "hash": "fc4d05a0cf0a1c956011069cea3569857fd271cb084893e50463dc43fb2b30df",
           "path": "solver/src/rapier_law.rs"
         }
       ],
@@ -1640,7 +2086,7 @@
         {
           "entry": "minded",
           "entryRule": 1,
-          "hash": "6ab18b3e057796d188973fedf9b825dc99dbd2f01d87f8432ba0f77f650e07c6",
+          "hash": "3bf22a957b595ca1f7c29bf242cfeb203299af3b06c50f628995bcacade8e8a7",
           "importsFiles": [
             "harness/minds-scene.mjs",
             "packages/frame/hash.js",
@@ -2279,7 +2725,7 @@
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "5b0216a3e78dadd55edac926e98ca9e7cf69365e964891f0a4ead8f50f73afb1",
+          "hash": "ebd214bca7df79063f6c89cd87404f389276126e045af79c18b3b7e4f674e1f5",
           "importsFiles": [
             "harness/behaviour.mjs",
             "packages/tick/fixture.js",
@@ -2427,7 +2873,7 @@
           ]
         },
         {
-          "hash": "8c9bc78903e71174a139189c06e70c11d57b14cd53f087de5e97752b83ae22f5",
+          "hash": "4ebf8feba69c6f2514d747eb4ce1a4428e63d4d189be60c2924e62adb8a208cc",
           "importsFiles": [
             "harness/verbs-scene.mjs",
             "packages/load/admit.js",
@@ -2445,7 +2891,7 @@
             "createWorld",
             "fixtureColliders"
           ],
-          "hash": "161fc37c4f2b6a378d7b97b949c39bf7dcf20afa2789db128031bb97638a0578",
+          "hash": "2b0ebb621e5eb565e9ba0fe5b458800ab5d0eda0a95933ac49aad93c9ccac0ef",
           "importsFiles": [
             "packages/tick/minds.js",
             "packages/tick/subject.js"
@@ -2462,7 +2908,7 @@
       "outsideReads": 9,
       "outsideWrites": 1,
       "role": "code",
-      "testedBy": 10,
+      "testedBy": 12,
       "unresolvedSites": 2
     },
     {
@@ -2474,7 +2920,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "9ad16dd24acb06187889bc7089a98a1463e80401965f8503d2e3d3ab48b0532f",
+          "hash": "6f14a316347367c1d9e31e1d4d417c635204af788cb69d4438be591739562e90",
           "path": ".github/workflows/ci.yml"
         },
         {
@@ -2524,7 +2970,7 @@
   ],
   "doors": [
     {
-      "checksCount": 20,
+      "checksCount": 21,
       "commands": [
         {
           "job": "engines",
@@ -2603,7 +3049,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 17
+          "files": 20
         },
         {
           "boundary": "host",
@@ -2698,6 +3144,18 @@
         },
         {
           "job": "engines",
+          "matched": true,
+          "path": "harness/replay-to.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "harness/restore.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "harness/sim.mjs",
           "runKind": "checks"
         },
@@ -2711,6 +3169,11 @@
         {
           "job": "engines",
           "path": "harness/solver.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "harness/surface.test.js",
           "runKind": "executes"
         },
         {
@@ -2846,7 +3309,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 35,
+      "runsCount": 38,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -3429,8 +3892,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "cd21fe8af8e7f38585f83c97e18b61570fc0f43e",
-    "tracked": 191
+    "commit": "8e86882da021c62be065a647f79ec8047df0604d",
+    "tracked": 201
   },
   "landings": [
     {
@@ -3458,6 +3921,12 @@
     {
       "readers": [
         {
+          "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/verbs.test.js",
           "call": "readFileSync",
           "confidence": "ast",
@@ -3469,6 +3938,12 @@
     },
     {
       "readers": [
+        {
+          "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
         {
           "by": "packages/tick/tick.test.js",
           "call": "readFileSync",
@@ -3482,6 +3957,12 @@
     {
       "readers": [
         {
+          "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/tick.test.js",
           "call": "readFileSync",
           "confidence": "ast",
@@ -3493,6 +3974,12 @@
     },
     {
       "readers": [
+        {
+          "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
         {
           "by": "packages/tick/minds.test.js",
           "call": "readFileSync",
@@ -3524,6 +4011,12 @@
     {
       "readers": [
         {
+          "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "harness/solver.test.js",
           "call": "readFileSync",
           "confidence": "ast",
@@ -3547,6 +4040,12 @@
     },
     {
       "readers": [
+        {
+          "by": "harness/restore.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
         {
           "by": "packages/tick/verbs.test.js",
           "call": "readFileSync",
@@ -3739,6 +4238,12 @@
     },
     {
       "readers": [
+        {
+          "by": "harness/restore.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
         {
           "by": "harness/trace.test.js",
           "call": "literal",
@@ -4155,7 +4660,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 11,
+  "testFiles": 13,
   "unassigned": [
     {
       "exports": [

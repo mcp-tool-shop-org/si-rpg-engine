@@ -3,4 +3,6 @@
 # fused multiply-add unless the relaxed-simd feature is enabled. This build
 # turns that feature off. No flag here flushes subnormals.
 [target.wasm32-unknown-unknown]
-rustflags = ["-C", "target-feature=-relaxed-simd"]
+# The stack pointer is exported so solver/build.mjs's generated module can
+# refuse to image an instance that is inside a call or has trapped.
+rustflags = ["-C", "target-feature=-relaxed-simd", "-C", "link-arg=--export=__stack_pointer"]

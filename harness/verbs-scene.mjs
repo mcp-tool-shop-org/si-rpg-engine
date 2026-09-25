@@ -46,5 +46,6 @@ export function playVerbs(spec, rules) {
       settle(tick);
     }
   }
-  return { ok: true, frames, episodes: memory.episodes.map((item) => item.detail), bodies: world.bodies, behaviour: { sleep: watch.sleep(), final: finalPositions(world.bodies) } };
+  const log = tick.log().map((entry) => ({ tick: entry.tick, hash: entry.hash, proposal: entry.proposal }));
+  return { ok: true, frames, episodes: memory.episodes.map((item) => item.detail), bodies: world.bodies, behaviour: { sleep: watch.sleep(), final: finalPositions(world.bodies) }, log };
 }
