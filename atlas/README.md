@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit 0d0580b.
+Mapped at 2026-09-25 from commit 10bdeff.
 
 ## What this is
 
@@ -8,15 +8,13 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 15 parts, mostly JavaScript (83 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (132706d)
+## What changed since 2026-09-25 (0d0580b)
 
-- CI now also runs tools/verdicts.test.js.
-- CI now also checks tools/verdicts.js.
-- tools/verdicts.js is now also read by tsconfig.json.
-- tools/verdicts.test.js is now read by tsconfig.json.
-- tools/verdicts.js is new and belongs to no part, so atlas check fails on it against the previous map.
-- tools/verdicts.test.js is new and belongs to no part, so atlas check fails on it against the previous map.
-- 2 files added.
+- In harness/corpus.mjs, run corpus gained a step, ended block, before make bundle.
+- In harness/corpus.mjs, run corpus lost a step, pair.
+- In packages/tick/bundle.js, replay bundle lost a step, pair.
+- And 1 more change to the order of work.
+- 6 files changed content, across 2 parts.
 
 ## What comes in
 

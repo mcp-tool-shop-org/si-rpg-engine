@@ -91,68 +91,48 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 2,
-      "changed": 0,
+      "added": 0,
+      "changed": 6,
       "moved": 0,
-      "parts": 0,
+      "parts": 2,
       "removed": 0
     },
     "items": [
       {
-        "kind": "door",
-        "sentence": "CI now also runs tools/verdicts.test.js.",
+        "kind": "sequence",
+        "sentence": "In harness/corpus.mjs, run corpus gained a step, ended block, before make bundle.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "tools/verdicts.test.js"
+          "harness/corpus.mjs"
         ]
       },
       {
-        "kind": "door",
-        "sentence": "CI now also checks tools/verdicts.js.",
+        "kind": "sequence",
+        "sentence": "In harness/corpus.mjs, run corpus lost a step, pair.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "tools/verdicts.js"
+          "harness/corpus.mjs"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "tools/verdicts.js is now also read by tsconfig.json.",
+        "kind": "sequence",
+        "sentence": "In packages/tick/bundle.js, replay bundle lost a step, pair.",
         "subjects": [
-          "tools/verdicts.js",
-          "tsconfig.json"
+          "packages/tick/bundle.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "tools/verdicts.test.js is now read by tsconfig.json.",
-        "subjects": [
-          "tools/verdicts.test.js",
-          "tsconfig.json"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/verdicts.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/verdicts.js"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/verdicts.test.js is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/verdicts.test.js"
-        ]
+        "kind": "sequence",
+        "sentence": "And 1 more change to the order of work.",
+        "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "2 files added.",
+        "sentence": "6 files changed content, across 2 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "132706dbe6a4a71410a9f79c1c23b5e2eaf75ec4",
-      "generatedAt": "2026-09-25T14:36:00.811Z"
+      "commit": "0d0580b47ec0c2cb304161e6b7aec984862e3f0f",
+      "generatedAt": "2026-09-25T14:42:24.738Z"
     },
     "unchanged": false
   },
@@ -239,7 +219,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "0d0580b47ec0c2cb304161e6b7aec984862e3f0f",
+  "commit": "10bdeff928be822378d52fc6e4edbd27185802e1",
   "defaultBranch": "main",
   "derived": "15 parts, mostly JavaScript (83 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -717,7 +697,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T14:42:24.738Z",
+  "generatedAt": "2026-09-25T14:49:10.347Z",
   "limits": [
     "13 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",

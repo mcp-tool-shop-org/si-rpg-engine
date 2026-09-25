@@ -7,6 +7,7 @@
  * @typedef {{ items: Item[], defects?: Defect[], verdict: 'MERGE' | 'BLOCK', block_reason?: string }} Verdict
  * @typedef {{ family: string, parsed: Verdict }} Counted
  * @typedef {'NO VALID VERDICTS' | 'MERGE' | 'BLOCK' | 'CHECK'} Decision
+ * @typedef {{ completion_tokens?: number, max_tokens?: number, finish_reason?: string, done_reason?: string, thinking_chars?: number, completion_tokens_details?: { reasoning_tokens?: number } }} Usage
  */
 
 /**
@@ -27,6 +28,28 @@ export function parseVerdict(text) {
     } catch {}
   }
   return null;
+}
+
+/**
+ * Why an answer without a verdict was not counted, from the answer and the transport's usage.
+ * An answer that ended because it reached its output budget says so, with the tokens it used,
+ * the budget, and how much of it went to reasoning, so a truncated answer is never read as a
+ * reviewer that declined to decide.
+ * @param {string} text
+ * @param {Usage | null | undefined} usage
+ * @returns {string}
+ */
+export function whyNotCounted(text, usage) {
+  const u = usage || {};
+  const answer = text.trim().length === 0 ? 'no answer' : 'the answer stopped before its verdict';
+  if (u.finish_reason === 'length' || u.done_reason === 'length') {
+    const used = typeof u.completion_tokens === 'number' ? u.completion_tokens + (typeof u.max_tokens === 'number' ? ' of ' + u.max_tokens : '') + ' tokens' : 'the budget';
+    const reasoning = u.completion_tokens_details && typeof u.completion_tokens_details.reasoning_tokens === 'number'
+      ? ', ' + u.completion_tokens_details.reasoning_tokens + ' of them reasoning'
+      : typeof u.thinking_chars === 'number' && u.thinking_chars > 0 ? ', with ' + u.thinking_chars + ' characters of thinking' : '';
+    return 'output budget spent: ' + used + reasoning + '; ' + answer;
+  }
+  return text.trim().length === 0 ? 'no answer' : 'answer did not contain the verdict JSON';
 }
 
 /**

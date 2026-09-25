@@ -37,11 +37,12 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { parseVerdict, combine } from './verdicts.js';
+import { parseVerdict, combine, whyNotCounted } from './verdicts.js';
 
 const PANEL = [
-  { via: 'openrouter', model: 'x-ai/grok-4.7', family: 'xAI' },
-  { via: 'openrouter', model: 'google/gemini-3.1-pro-preview', family: 'Google' },
+  { via: 'openrouter', model: 'x-ai/grok-4.7', family: 'xAI', maxTokens: 32000 },
+  // Gemini spent 30,717 of 32,000 output tokens reasoning on PR #68 and stopped before its verdict.
+  { via: 'openrouter', model: 'google/gemini-3.1-pro-preview', family: 'Google', maxTokens: 64000 },
   { via: 'ollama', model: 'kimi-k3:cloud', family: 'Moonshot' },
   { via: 'ollama', model: 'glm-5.3:cloud', family: 'Z.ai' },
   // Standby seats, used only when named with --seats. deepseek-v4-pro thought past its output
@@ -151,16 +152,18 @@ function buildPrompt(g, checklist, evidence) {
   return text;
 }
 
-async function callOpenRouter(model, prompt) {
+async function callOpenRouter(model, prompt, maxTokens) {
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + process.env.OPENROUTER_API_KEY },
-    body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: prompt }], max_tokens: 32000, usage: { include: true } }),
+    body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: prompt }], max_tokens: maxTokens, usage: { include: true } }),
     signal: AbortSignal.timeout(900000),
   });
   const j = await res.json();
   if (!res.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + res.status));
-  return { text: j.choices[0].message.content || '', served: j.model, provider: j.provider, usage: j.usage, cost: j.usage && j.usage.cost };
+  const choice = j.choices[0];
+  const usage = { ...j.usage, max_tokens: maxTokens, finish_reason: choice.finish_reason, native_finish_reason: choice.native_finish_reason };
+  return { text: choice.message.content || '', served: j.model, provider: j.provider, usage, cost: j.usage && j.usage.cost };
 }
 
 // Streamed: Ollama sends no headers until a non-streamed answer is complete, and Node's
@@ -191,7 +194,7 @@ async function callOllama(model, prompt) {
       if (j.model) served = j.model;
       if (j.message && j.message.content) text += j.message.content;
       if (j.message && j.message.thinking) thinking += j.message.thinking.length;
-      if (j.done) usage = { prompt_tokens: j.prompt_eval_count, completion_tokens: j.eval_count, thinking_chars: thinking, done_reason: j.done_reason };
+      if (j.done) usage = { prompt_tokens: j.prompt_eval_count, completion_tokens: j.eval_count, max_tokens: 131072, thinking_chars: thinking, done_reason: j.done_reason };
     }
   }
   return { text, served, provider: 'Ollama Cloud', usage };
@@ -203,7 +206,7 @@ async function review(seat, prompt) {
     const r = seat.via === 'openrouter' ? await callOpenRouter(seat.model, prompt) : await callOllama(seat.model, prompt);
     const servedOk = r.served === seat.model || (r.served || '').replace(/[-:]cloud$/, '') === seat.model.replace(/[-:]cloud$/, '');
     const parsed = parseVerdict(r.text);
-    const why = parsed ? null : r.text.length === 0 ? 'no answer (output budget spent' + (r.usage && r.usage.thinking_chars ? ' on ' + r.usage.thinking_chars + ' characters of thinking' : '') + ')' : 'answer did not contain the verdict JSON';
+    const why = parsed ? null : whyNotCounted(r.text, r.usage);
     return { ...seat, served: r.served, servedOk, provider: r.provider, ms: Date.now() - t0, usage: r.usage, cost: r.cost, parsed, unparsed: why, raw: r.text };
   } catch (e) {
     return { ...seat, error: String(e.message || e), ms: Date.now() - t0 };

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseVerdict, combine } from './verdicts.js';
+import { parseVerdict, combine, whyNotCounted } from './verdicts.js';
 
 /** @typedef {import('./verdicts.js').Item} Item */
 
@@ -88,4 +88,20 @@ test('combine does not let a MERGE reviewer corroborate a BLOCK', () => {
 test('combine treats a BLOCK that fails no item as a CHECK', () => {
   const r = combine([seat('xAI', 'BLOCK', [holding(1)]), seat('Google', 'BLOCK', [holding(1)])]);
   assert.equal(r.decision, 'CHECK');
+});
+
+test('whyNotCounted names an answer cut off by its output budget, with the reasoning share', () => {
+  const usage = { completion_tokens: 31996, max_tokens: 32000, finish_reason: 'length', completion_tokens_details: { reasoning_tokens: 30717 } };
+  assert.equal(whyNotCounted('1. HOLDS ... ```json\n{"items": [', usage), 'output budget spent: 31996 of 32000 tokens, 30717 of them reasoning; the answer stopped before its verdict');
+});
+
+test('whyNotCounted names a streamed answer that spent its budget thinking', () => {
+  const usage = { completion_tokens: 131072, max_tokens: 131072, done_reason: 'length', thinking_chars: 250000 };
+  assert.equal(whyNotCounted('', usage), 'output budget spent: 131072 of 131072 tokens, with 250000 characters of thinking; no answer');
+});
+
+test('whyNotCounted keeps the plain reasons when the budget was not reached', () => {
+  assert.equal(whyNotCounted('', { finish_reason: 'stop' }), 'no answer');
+  assert.equal(whyNotCounted('I approve.', { done_reason: 'stop' }), 'answer did not contain the verdict JSON');
+  assert.equal(whyNotCounted('I approve.', undefined), 'answer did not contain the verdict JSON');
 });
