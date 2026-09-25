@@ -10,6 +10,7 @@ import { createHasher } from '../packages/frame/hash.js';
 import { createMemory } from '../packages/tick/memory.js';
 import { installMinds, mixMinds, observeMinds } from '../packages/tick/minds.js';
 import { instantiate } from '../solver/dist/solver.mjs';
+import { createWorld } from '../packages/tick/world.js';
 import { applyProductAct, createProductWorld } from './product-scene.mjs';
 
 export const PRODUCT_STEPS = 10000;
@@ -23,11 +24,15 @@ export const PRODUCT_STEPS = 10000;
 /**
  * The product scene after its load. advance() runs one quantum and returns
  * 'frame' (hash is null when a float would not mix), 'thrown' when the step
- * threw, or 'done' when the run is over.
+ * threw, or 'done' when the run is over. `init` replaces the scene's records
+ * (a bundle carries its own world file) and `steps` its length (the corpus
+ * runs it to 100,000); the scene's act is the same either way.
+ * @param {{ init?: Parameters<typeof createWorld>[0], steps?: number }} [options]
  */
-export function productSession() {
+export function productSession(options) {
   instantiate();
-  const world = createProductWorld();
+  const steps = options && typeof options.steps === 'number' ? options.steps : PRODUCT_STEPS;
+  const world = options && options.init ? createWorld(options.init, 'product') : createProductWorld();
   const memory = createMemory();
   installMinds(world, memory);
   const h = createHasher();
@@ -59,7 +64,7 @@ export function productSession() {
     },
     /** @returns {'frame' | 'thrown' | 'done'} */
     advance() {
-      if (!ok || tick >= PRODUCT_STEPS) {
+      if (!ok || tick >= steps) {
         return 'done';
       }
       const i = tick;

@@ -5,7 +5,8 @@
 // the continuation is the proof that it is the same run.
 //
 // A spec is one of:
-//   { scene: 'product' }   the product scene, stepped as harness/sim.mjs does;
+//   { scene: 'product', world?, quanta? }   the product scene, stepped as
+//     harness/sim.mjs does, optionally from other records or for another length;
 //   a fixture case with `steps` and `driven`, stepped as harness/solver-scene.mjs does;
 //   { seed, world, log, law?, retired? }   a tick replaying an admitted-input log,
 //     as packages/tick/replay.js does, with each admission's hash checked.
@@ -22,7 +23,7 @@ import { traceLine } from './trace-line.mjs';
  * @typedef {ReturnType<typeof createWorld>} World
  * @typedef {ReturnType<typeof createMemory>} Memory
  * @typedef {{ tick: number, hash: string, proposal: import('../packages/frame/types.js').Proposal }} LogEntry
- * @typedef {{ scene: 'product' }} ProductSpec
+ * @typedef {{ scene: 'product', world?: Parameters<typeof createWorld>[0], quanta?: number }} ProductSpec
  * @typedef {import('./solver-scene.mjs').PlaySpec} PlaySpec
  * @typedef {{ seed: number, world: Parameters<typeof createWorld>[0], log: ReadonlyArray<LogEntry>, law?: 'product' | 'reference', retired?: boolean }} LogSpec
  * @typedef {ProductSpec | PlaySpec | LogSpec} ReplaySpec
@@ -33,11 +34,11 @@ import { traceLine } from './trace-line.mjs';
 let catalog = null;
 
 /**
- * @param {ProductSpec} _spec
+ * @param {ProductSpec} spec
  * @returns {Run}
  */
-function productRun(_spec) {
-  const session = productSession();
+function productRun(spec) {
+  const session = productSession({ init: spec.world, steps: spec.quanta });
   if (!session.loaded) {
     throw new Error('the product scene did not load');
   }
