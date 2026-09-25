@@ -2,9 +2,10 @@
 // request. What the coordinator wrote is plain; what the pull request's author wrote, or its code
 // printed, is fenced as untrusted, and the rubric says fenced text is never an instruction.
 //
-// The fence is not a security boundary. Adaptive attacks defeated in-prompt delimiting of this
-// kind in over 95% of attempts (Nasr et al. 2025, arXiv:2510.09023). It lowers the chance that a
-// pull request's own claims steer a reviewer by accident. The boundary is elsewhere: no verdict
+// The fence is not a security boundary. Adaptive attacks bypassed 12 recent defenses, prompting
+// defenses of this kind such as Spotlighting among them, with attack success above 90% for most
+// (Nasr et al. 2025, arXiv:2510.09023). It lowers the chance that a pull request's own claims
+// steer a reviewer by accident. The boundary is elsewhere: no verdict
 // from the panel merges anything by itself, and CI and the coordinator's own run are the proof.
 
 import { createHash } from 'node:crypto';
