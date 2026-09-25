@@ -1,32 +1,41 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit ae13928.
+Mapped at 2026-09-25 from commit 2e82fc7.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-15 parts, mostly JavaScript (49 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+15 parts, mostly JavaScript (51 files). Work enters through 8 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (7122b6c)
+## What changed since 2026-09-25 (ae13928)
 
-- CI's pull request trigger now also names `worlds/**`.
-- CI's push trigger now also names `worlds/**`.
-- 28 files changed content, across 10 parts.
+- CI now also checks packages/tool/.
+- Deploy site to GitHub Pages (.github/workflows/pages.yml) is a new door. It starts on a push to main touching 2 paths; or by hand. It runs site/astro.config.mjs and site/src/.
+- docs/study-swarm/product-alignment.dispatch.md is now read by docs/study-swarm/product-alignment.dispatch.citation-receipt.json.
+- docs/study-swarm/testing-3d.dispatch.md is now read by docs/study-swarm/testing-3d.dispatch.citation-receipt.json.
+- harness/sim.mjs is now also read by site/src/content/docs/handbook/getting-started.md.
+- And 3 more new writers and readers of places.
+- packages/tool/guard.js is new and belongs to no part, so atlas check fails on it against the previous map.
+- site/astro.config.mjs is new and belongs to no part, so atlas check fails on it against the previous map.
+- site/package-lock.json is new and belongs to no part, so atlas check fails on it against the previous map.
+- And 16 more new files that belong to no part.
+- 35 files added and 1 changed content, across 3 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 11 paths; on a push to main touching 11 paths; or by hand. Runs harness/product.test.js, harness/solver.test.js, packages/host/host.test.js and 7 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 14 more.
-2. **host** (a command people run). Runs packages/host/bin/host.js.
-3. **load** (a command people run). Runs packages/load/bin/load.js.
-4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
-5. **write-golden** (a command people run). Runs harness/sim.mjs and harness/write-golden.js.
-6. **play** (a command people run). Runs packages/tick/bin/play.js.
-7. **replay** (a command people run). Runs packages/tick/bin/replay.js.
+1. **CI.** On a pull request touching 11 paths; on a push to main touching 11 paths; or by hand. Runs harness/product.test.js, harness/solver.test.js, packages/host/host.test.js and 7 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 15 more.
+2. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
+3. **host** (a command people run). Runs packages/host/bin/host.js.
+4. **load** (a command people run). Runs packages/load/bin/load.js.
+5. **propose** (a command people run). Runs packages/propose/bin/propose.js.
+6. **write-golden** (a command people run). Runs harness/sim.mjs and harness/write-golden.js.
+7. **play** (a command people run). Runs packages/tick/bin/play.js.
+8. **replay** (a command people run). Runs packages/tick/bin/replay.js.
 
 ## What happens through CI
 
-1. The workflow runs harness/product.test.js and harness/solver.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, solver/build.mjs in solver, and 4 files in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 8 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 26 files in 2 more parts.
+1. The workflow runs harness/product.test.js and harness/solver.test.js in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, solver/build.mjs in solver, and 4 files in tick; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 8 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 27 files in 3 more places.
    1. Inside packages/propose/propose.test.js, fresh does, in order: load intent rules (tick), fixture world, create world, create memory and create tick.
    2. **Create tick** (tick) runs, in order: create hasher (frame), install minds, mix load, mix minds, snapshot, u 32 and commit frame.
    3. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
@@ -37,6 +46,8 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 CI writes nothing this map can see.
 
 ## The other doors
+
+**Deploy site to GitHub Pages** runs site/astro.config.mjs and site/src/, and deploys the site.
 
 **host** (a command people run) runs packages/host/bin/host.js and reaches frame and tick.
 
@@ -61,17 +72,17 @@ CI writes nothing this map can see.
 
 ## What tends to change together
 
-- **packages/propose/bin/propose.js** and **packages/propose/propose.test.js** changed together in 5 of 5 commits, inside the propose part.
-- **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 7 of 8 commits, and the tick part imports the frame part.
-- **packages/propose/bin/propose.js** and **packages/propose/prompt.js** changed together in 5 of 6 commits, inside the propose part.
-- **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 5 of 6 commits, inside the propose part.
-- **packages/propose/prompt.js** and **packages/propose/propose.test.js** changed together in 5 of 6 commits, inside the propose part.
+- **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 8 of 9 commits, and the tick part imports the frame part.
+- **packages/propose/prompt.js** and **packages/propose/propose.test.js** changed together in 6 of 7 commits, inside the propose part.
+- **packages/propose/propose.test.js** and **packages/propose/seat.js** changed together in 6 of 7 commits, inside the propose part.
+- **packages/propose/bin/propose.js** and **packages/propose/propose.test.js** changed together in 5 of 6 commits, inside the propose part.
+- **harness/product-scene.mjs** and **harness/sim.mjs** changed together in 7 of 9 commits, inside the harness part.
 
-1 file changed together with its own test, as expected.
+2 files changed together with their own tests, as expected.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
-Window: 180 days; a pair counts from 3 shared commits, since 1 source file reaches 10 revisions; the floor rises to 10 when 25 do.
+Window: 180 days; a pair counts from 3 shared commits, since 3 source files reach 10 revisions; the floor rises to 10 when 25 do.
 
 ## What no test touches
 
@@ -98,13 +109,13 @@ People write .github/, docs/, predicates/beliefs/, predicates/hazards/, predicat
 
 ## Where to start
 
-.github/workflows/ci.yml → packages/tick/bin/play.js
+.github/workflows/ci.yml → packages/tick/bin/play.js → packages/tool/guard.js
 
 Read those in order to follow one pull request end to end.
 
 ## What this map cannot see
 
-- 11 import sites could not be resolved.
+- 5 import sites could not be resolved.
 - 2 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 6 writes and 14 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
