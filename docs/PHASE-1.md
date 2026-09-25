@@ -22,6 +22,10 @@ Each slice is one pull request, built by the builder seat, reviewed by a differe
 | **E4. Verbs beyond sideways** | E2, E3 | A verb table for 3D traversal and interaction: move to a point on the ground, climb or step where the inventory allows it, use, pick up and drop, push. Each is a hand-authored predicate with hazard scenarios, admitted through `load admit` like any draft. The debug view exposes each for a person to try, and nothing more. | Every verb has a predicate, hazards, and a test that exercises it on the real tick. |
 | **E5. NPC records in the world** | E3 | A body that carries the belief records and standing goals Phase 0 designed. Beliefs about zones and bodies, cited to episodes, with supersession. This is what creates the slot vocabulary the spoken-line gate needs; the gate itself stays parked until the labeled pair set has an owner. | An NPC's record survives replay and is covered by the hash. A stale belief is refused the way Phase 0 says. |
 
+## The world is three-dimensional
+
+This engine's law is fully 3D and stays that way. "2.5D" describes how the studio's games are presented; it is never a description of this law, its bodies, its colliders, or its verbs, and it does not appear in a slice contract. E2 locks rotation for one slice so the frame contract and the fixtures keep their shape while the solver lands; orientation and angular velocity for dynamic bodies, and the box-or-capsule question for the character, are the first work after E2 and carry their own fixture. Any research prompt or brief for this engine describes a 3D world. The E2 research prompts did not, and that framing is recorded as a drift in the studio memory so it is not repeated.
+
 ## What stays, renamed
 
 The window is a **debug view of the tick**. It says so on the page. It draws whatever the tick holds, in 3D as a projection after E1, with boxes and no art. It is never presented as the product's picture and no slice is closed by looking at it. The Director's play log from the crate room is `fixtures/first-scene-played.json`, kept as the proof that a person's input reaches the law through the host boundary, and nothing more is claimed for it.
