@@ -2,7 +2,7 @@
 
 2026-09-25. Coordinator: Claude. Builder: a seat named at dispatch time. Reviewer: a different family, before merge. Depends on nothing beyond `main`; runs beside T6 and F2, and touches neither the law nor the sweep. The plan row is T7 in `docs/PHASE-2.md`, which this dispatch splits into T7a, the rails, and T7b, the test instrument. The research is `docs/study-swarm/seat-instrument.dispatch.md`; numbers in parentheses are its findings.
 
-**Revised after an external design review.** Four model families reviewed the first version on #72 and blocked it on the same points, each confirmed against the design. A model's proposal is slow, so an exact-frame freshness rule would have refused all of them. Trust labels lived only in the log, so a belief formed from player text would be read back as trusted. The Rule of Two rested on flags the author declared. No one enforced the budgets. Nothing bound a recorded output to the proposal in the log. And "own body" could not be checked with two characters. This version answers each of these in its pins.
+**Revised after an external design review.** Four model families reviewed the first version on #72 and blocked it on the same points, each confirmed against the design. A model's proposal is slow, so an exact-frame freshness rule would have refused all of them. Trust labels lived only in the log, so a belief formed from player text would be read back as trusted. The Rule of Two rested on flags the author declared. No one enforced the budgets. Nothing bound a recorded output to the proposal in the log. And "own body" could not be checked with two characters. This version answers each of these in its pins. Round 2 found five more points, answered the same way: a scratch world defined strictly, trust labels derived from the manifest and never raised by passing content through a role, no class declared without rails behind it, a thaw counted as a widening, and records bound to the manifest they were made under.
 
 ## What it is
 
@@ -22,7 +22,7 @@ The first role, the test instrument, is declared thawed here and built in T7b. A
 1. **A role is a manifest.** `predicates/roles/<role>.json`, listed in `predicates/roles/index.json`. A manifest holds these fields:
    - `role`, and `purpose` in one sentence.
    - `status`, either `frozen` or `thawed`. A thawed role names the decision in `thawedBy` and `thawedOn` and pins a model by digest (28).
-   - `world`, either `scratch` or `live`: where the role's proposals act.
+   - `world`, either `scratch` or `live`: where the role's proposals act. A scratch world is built only from the repository's own files (fixtures, test worlds, and the product scene), never from a live session, a player's save, or anything a player typed. The loader refuses a scratch role with a `player-text` or `other-minds` source.
    - `inputs`, each `{ name, source }`. The source comes from a closed list in code. Each source carries a trust and a privacy class that the manifest cannot set:
      - `dispatch`, `access` (the engine's map of which admitted verbs reach each changed function, for T7b), `catalog`, and `feedback` (the engine's own results): trusted and public.
      - `frame-in-sight`: trusted and public.
@@ -30,7 +30,7 @@ The first role, the test instrument, is declared thawed here and built in T7b. A
      - `mind`: the role instance's own mind. Its beliefs carry their own trust (pin 5), so reading a mind counts as reading untrusted input.
      - `world` (the whole world, including what no character can see) and `other-minds`: trusted and private.
    - `outputs`, `{ classes, verbs, actors }`:
-     - `classes` is drawn from `intent`, `belief`, `body`, and `verb`. No class writes quest state, prices, items, or any other consequence; those are the engine's to compute (34, 37).
+     - `classes` is drawn from `intent` and `belief`, the two classes these rails check. The engine's body and verb drafts stay on their own reviewed path, `load admit`, and a manifest that declares them is refused until a slice gives them rails. No class writes quest state, prices, items, or any other consequence; those are the engine's to compute (34, 37).
      - `verbs` is a list, or `catalog` for every admitted verb.
      - `actors` is `world` or `own-body`.
    - `model`, `{ name, digest, quantization, options }`. A frozen role may leave it null.
@@ -45,11 +45,18 @@ The first role, the test instrument, is declared thawed here and built in T7b. A
 
    The loader refuses each of the following, and each refusal has a test:
    - an unknown field, or a source outside the list;
+   - a class other than `intent` and `belief`;
+   - a scratch role with a `player-text` or `other-minds` source;
    - a template whose hash does not match;
    - a thawed role without `thawedBy`, `thawedOn`, and a model digest;
    - a role that holds A, B, and C together.
 
-   A narrowing or a freeze takes effect when merged. A widening is a new source, class, verb, actor range, a `live` world, or a looser budget. It is reviewed like the law, and its pull request names the Director's approval and the adversarial run it rests on (17). (15, 17, 23)
+   Changes fall into three kinds:
+   - **A narrowing or a freeze** takes effect when merged.
+   - **A widening** is a thaw, a new source, class, verb, or actor range, a `live` world, or a looser budget. It is reviewed like the law, and its pull request names the Director's approval and the adversarial run it rests on (17).
+   - **A new model, prompt, or schema** changes behaviour within the same capability. It is reviewed like the law, and the role's evaluation runs again, without needing the Director.
+
+   (15, 17, 23)
 
 2. **Two roles, declared now.**
    - **`test-instrument` is thawed.** It is marked `thawedBy: "the Director"` and `thawedOn: "2026-09-25"`.
@@ -87,14 +94,21 @@ The first role, the test instrument, is declared thawed here and built in T7b. A
 
    A log file with any such entry carries, at its top level, the manifests its entries cite, keyed by hash. Replay re-applies the gate against the manifest as it was when the log was recorded, never against today's catalog, and never calls a model. A test records a log under the thawed role, freezes the role in the catalog, and replays the log to the same hashes. Logs without provenance keep their current form byte for byte, and no frame hash changes. (16, 19, 20)
 
-5. **A belief keeps the trust of what formed it.** An admitted belief records a trust label:
+5. **A belief keeps the trust of what formed it.** An admitted belief records a trust label. From most trusted to least:
    - `authored`, for the world file;
    - `observed`, for the tick's own sight;
-   - `role`, from a role whose inputs are all trusted;
-   - `untrusted`, from a role with any untrusted input;
-   - `hearsay`, from a role that read player text, naming the source.
+   - `role`, from a role whose sources are all trusted;
+   - `untrusted`, from a role with any untrusted source;
+   - `hearsay`, from a role that reads player text, naming the source.
 
-   The gate sets the label from provenance, and the model cannot set it: the belief schema has no such field, and a proposal carrying one is refused as an unknown field. The label is fixed at admission and travels with the belief in the mind. It enters the log, and replay rebuilds it. A test with a test-only role shows a belief formed from player text read back as hearsay by a later call. Belief contents are not in the frame hash today, and neither is the label, so no golden moves. (16, 19, 33, 34)
+   The gate derives the label from the role's manifest, never from what the caller says it read. A role that reads `mind` or `other-minds` produces beliefs no more trusted than the least trusted belief in those minds at `builtAt`. That is the join of labels finding 19 rests on, so trust cannot be raised by passing content through a role. The model cannot set a label: the belief schema has no such field, and a proposal carrying one is refused as an unknown field. The label is fixed at admission and travels with the belief in the mind. It enters the log, and replay rebuilds it.
+
+   Tests use test-only roles:
+   - a belief formed from player text is read back as hearsay by a later call;
+   - a role with only trusted sources that reads a mind holding hearsay produces a hearsay belief;
+   - the mind's accessor returns every belief with its label.
+
+   No predicate acts on a belief's content today. The first slice that adds one makes it read the label, and tests that a hearsay belief alone cannot satisfy a goal or cause an effect. Belief contents are not in the frame hash today, and neither is the label, so no golden moves. (16, 19, 33, 34)
 
 6. **Every model call is recorded, and the record is the truth.** `packages/propose/record.js` defines one record per call. A record holds:
    - the rendered messages;
@@ -105,13 +119,13 @@ The first role, the test instrument, is declared thawed here and built in T7b. A
    - the GPU's name and count;
    - the raw output bytes, the output's SHA-256, and the timing.
 
-   Its key is the SHA-256 of the canonical JSON of everything except the output, its hash, and the timing, so a changed model can never match an old record (29, 30). Batching on the server is not visible to the client, which is why regenerating an output is not evidence and the record is (24, 26). The seat pins the model by digest, fixes the seed, sets temperature 0, and asks for one parallel slot. These settings are recorded, not relied on (24 to 28). A session's records are stored in a directory the session names.
+   Its key is the SHA-256 of the canonical JSON of everything except the output, its hash, and the timing, so a changed model can never match an old record (29, 30). The key identifies the request and everything the client can observe of the model and the server. It does not promise that the same key gives the same output: batching on the server is invisible to the client and changes outputs (24, 26). So CI never regenerates an output; it replays records. Each record also carries the hash of the manifest it was made under, and the session stores those manifests beside its records, as a log carries the manifests it cites. The seat pins the model by digest, fixes the seed, sets temperature 0, and asks for one parallel slot. These settings are recorded, not relied on (24 to 28). A session's records are stored in a directory the session names.
 
 7. **CI checks the records without a GPU.** A test over the committed recorded sessions checks seven things:
    - It recomputes every key.
-   - It checks each record's digest against its role's pin.
+   - It checks each record's digest against the pin in the manifest the record cites, so a later re-pin does not break an old session.
    - It checks each record's output against the output hash in the record and in the log entry that cites it.
-   - It parses each output again with the seat's parser and requires the result to equal the proposal the log admitted, which binds the output to the log (31).
+   - It parses each output again with the seat's own parser, which does not trust the decoder's constraint, and requires the result to equal the proposal the log admitted. That binds the output to the log (31).
    - It checks each record against its role's budgets (pin 10).
    - It replays the session's admitted log to the same step hashes.
    - It fails on a missing record instead of calling a model.
@@ -159,7 +173,7 @@ The first role, the test instrument, is declared thawed here and built in T7b. A
   - an instance over budget.
 
   A host's proposal is admitted exactly as before.
-- A belief formed from untrusted or player text keeps its label when read back.
+- A belief formed from untrusted or player text keeps its label when read back, and no role raises a label by reading a mind.
 - The committed recorded sessions verify in CI with no GPU, and every planted-record failure goes red.
 - A log recorded under the thawed role replays to the same hashes after the role is frozen.
 - The typecheck is clean, and tests are at or above the count on `main`. The goldens and the Linux digest are unchanged, and the Atlas check is green.
