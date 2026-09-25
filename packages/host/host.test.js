@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { blendBody, canvasToWorld, fit, groundTarget, projectionAxes, projectedSpan, worldToCanvas } from './view.js';
+import { blendBody, canvasToWorld, fit, groundTarget, projectionAxes, projectedOutline, projectedSpan, worldToCanvas } from './view.js';
 import { createSession, startPump } from './session.js';
 import { loadScene } from '../tick/scene.js';
 import { createHostServer } from './server.js';
@@ -28,6 +28,10 @@ test('a key names the axis the debug view looks along', () => {
   assert.equal(side.v0, 1.5);
   const top = projectedSpan('y', body, true);
   assert.equal(top.v0, 2.9);
+  const yaw = Math.SQRT1_2;
+  const turned = projectedOutline('y', { x: 0, y: 0, z: 0, hx: 0.4, hy: 0.2, hz: 0.1, qx: 0, qy: yaw, qz: 0, qw: yaw });
+  const width = Math.max(...turned.map((point) => point.h)) - Math.min(...turned.map((point) => point.h));
+  assert.ok(Math.abs(width - 0.2) < 1e-9, 'a quarter turn about y swaps the ground extents');
   const actor = { x: 1, z: 0 };
   assert.deepEqual(groundTarget('z', 2.5, 4, actor), { x: 2.5, z: 0 });
   assert.deepEqual(groundTarget('y', 2.5, 1.25, actor), { x: 2.5, z: 1.25 });
@@ -35,6 +39,7 @@ test('a key names the axis the debug view looks along', () => {
   const page = readFileSync(new URL('./page.html', import.meta.url), 'utf8');
   assert.match(page, /projection: x-y, looking along z/);
   assert.match(page, /event\.key === 'x'/);
+  assert.match(page, /projectedOutline/);
 });
 
 test('canvas coordinates round-trip inside the room', () => {

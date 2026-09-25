@@ -62,9 +62,11 @@ export function createProductWorld() {
       { id: 'walker', x: 10, y: 0.26, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
       { id: 'lower', x: 6, y: 0.3, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
       { id: 'upper', x: 6, y: 0.85, z: 3, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'tip', x: 8.15, y: 0.7, z: -1.5, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
     ],
     colliders: [
       { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 },
+      { id: 'rail', minX: 7.7, maxX: 8, minY: 0, maxY: 0.4, minZ: -1.8, maxZ: -1.2 },
     ],
     heightfield: {
       rows: 2,

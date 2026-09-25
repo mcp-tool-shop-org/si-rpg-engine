@@ -27,7 +27,7 @@
   <p id="door"></p>
   <div id="stage"><canvas id="room"></canvas></div>
   <script type="module">
-    import { fit, worldToCanvas, canvasToWorld, blendBody, projectionAxes, projectedSpan, groundTarget } from '/view.js';
+    import { fit, worldToCanvas, canvasToWorld, blendBody, projectionAxes, projectedSpan, projectedOutline, groundTarget } from '/view.js';
 
     const canvas = document.getElementById('room');
     const ctx = canvas.getContext('2d');
@@ -110,11 +110,23 @@
           const prev = previous ? previous.bodies.find((item) => item.id === body.id) : null;
           const at = blendBody(prev || null, body, alpha, world ? world.dt : 1);
           const color = body.id === 'walker' ? '#e7e1d5' : '#8fb9a8';
-          const span = projectedSpan(along, {
+          const outline = projectedOutline(along, {
             x: at.x, y: at.y, z: at.z,
             hx: body.hx, hy: body.hy, hz: body.hz,
-          }, true);
-          rect(view, span.h0, span.v0, span.h1, span.v1, color);
+            qx: body.qx, qy: body.qy, qz: body.qz, qw: body.qw,
+          });
+          if (outline.length > 0) {
+            ctx.beginPath();
+            const first = worldToCanvas(view, outline[0].h, outline[0].v);
+            ctx.moveTo(first.x, first.y);
+            for (let i = 1; i < outline.length; i = i + 1) {
+              const point = worldToCanvas(view, outline[i].h, outline[i].v);
+              ctx.lineTo(point.x, point.y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+          }
         }
         status.textContent = 'tick ' + newest.tick + '  ' + newest.hash;
         if (newest.door !== null && newest.door !== undefined && door.textContent === '') {

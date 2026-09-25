@@ -2,7 +2,7 @@
 // plus the proposal classes phase 0 names. Runtime code is JavaScript checked
 // against this file by `tsc --noEmit`; nothing here is built or emitted.
 
-/** A rigid body: an axis-aligned box with a pose and a velocity. */
+/** A rigid body: a box with a pose, a linear velocity, a unit quaternion, and an angular velocity. */
 export interface Body {
   id: string;
   x: number;
@@ -11,6 +11,15 @@ export interface Body {
   vx: number;
   vy: number;
   vz: number;
+  /** unit quaternion, w last, w non-negative */
+  qx: number;
+  qy: number;
+  qz: number;
+  qw: number;
+  /** angular velocity */
+  wx: number;
+  wy: number;
+  wz: number;
   /** half extent on x */
   hx: number;
   /** half extent on y, the up axis */

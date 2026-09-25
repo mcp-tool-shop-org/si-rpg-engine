@@ -7,12 +7,72 @@ import { canonZero } from '../solver/dist/solver.mjs';
 import { play } from './solver-scene.mjs';
 
 const saved = JSON.parse(readFileSync('fixtures/behavior-solver.json', 'utf8'));
+const rotation = JSON.parse(readFileSync('fixtures/behavior-rotation.json', 'utf8'));
+const shapes = JSON.parse(readFileSync('fixtures/shape-traversal.json', 'utf8'));
 
-test('the solver fixture replays frame for frame under the binary', () => {
+test('the E2 solver fixture first differs at tick 0', () => {
   for (const spec of saved.cases) {
+    const played = play(spec);
+    let first = null;
+    for (let i = 0; i < spec.frames.length; i = i + 1) {
+      if (played.frames[i].hash !== spec.frames[i].hash) {
+        first = spec.frames[i].tick;
+        break;
+      }
+    }
+    assert.equal(first, 0, spec.name);
+  }
+});
+
+test('the rotation fixture replays frame for frame', () => {
+  for (const spec of rotation.cases) {
     const played = play(spec);
     assert.deepEqual(played.frames, spec.frames, spec.name);
   }
+  const tip = play(rotation.cases.find((/** @type {{ name: string }} */ item) => item.name === 'tip')).bodies[0];
+  assert.ok(tip.qw < 0.95, 'a box dropped on an edge tips');
+  assert.ok(Math.abs(tip.wz) > 1, 'the tip has angular velocity');
+  const tumbled = play(rotation.cases.find((/** @type {{ name: string }} */ item) => item.name === 'tumble')).bodies;
+  const crate = tumbled.find((body) => body.id === 'crate');
+  if (!crate) {
+    throw new Error('crate');
+  }
+  assert.ok(crate.y < 0, 'the pushed box leaves the ledge');
+  assert.ok(crate.qw < 0.95, 'the pushed box tumbles');
+  const stack = play(rotation.cases.find((/** @type {{ name: string }} */ item) => item.name === 'stack')).bodies;
+  assert.ok(stack[1].y > stack[0].y + 0.4, 'the stack still rests');
+  assert.equal(stack[0].vy, 0);
+  assert.equal(stack[1].vy, 0);
+  assert.ok(stack[0].qw > 0.999 && stack[1].qw > 0.999, 'the stack has not tipped');
+  assert.ok(Math.abs(stack[0].wx) + Math.abs(stack[0].wy) + Math.abs(stack[0].wz) < 1e-8);
+  assert.ok(Math.abs(stack[1].wx) + Math.abs(stack[1].wy) + Math.abs(stack[1].wz) < 1e-8);
+});
+
+test('the traversal frames keep the box', () => {
+  /** @param {string} name */
+  const endOf = (name) => {
+    const spec = shapes.cases.find((/** @type {{ name: string }} */ item) => item.name === name);
+    if (!spec) {
+      throw new Error(name);
+    }
+    const played = play(spec);
+    assert.deepEqual(played.frames, spec.frames, name);
+    return played.bodies[0];
+  };
+  const stepBox = endOf('step-box');
+  const stepCapsule = endOf('step-capsule');
+  assert.ok(stepBox.y > 0.5, 'the box climbs a step of the maximum height');
+  assert.ok(stepCapsule.y < 0.35, 'the capsule does not climb that step');
+  const slopeBox = endOf('slope-box');
+  const slopeCapsule = endOf('slope-capsule');
+  assert.ok(slopeBox.y < 0.5, 'the box does not climb a slope exactly at the limit');
+  assert.ok(slopeCapsule.y > 0.6, 'the capsule does climb that slope');
+  const ledgeBox = endOf('ledge-box');
+  const ledgeCapsule = endOf('ledge-capsule');
+  assert.ok(ledgeBox.y > 0.25 && ledgeBox.y < 0.27, 'the box is still standing at the ledge');
+  assert.ok(ledgeCapsule.y < ledgeBox.y, 'the capsule drops at the ledge while the box is still standing');
+  const gapBox = endOf('gap-box');
+  assert.ok(gapBox.y > 0.25, 'the box crosses the narrow gap at standing height');
 });
 
 test('the solver fixture shows the six cases', () => {
@@ -125,6 +185,34 @@ test('signed zero mixes to one digest and NaN aborts', () => {
   assert.equal(digest(-0), digest(0));
   const poisoned = createWorld({
     bodies: [{ id: 'a', x: 0, y: 1, z: 0, vx: NaN, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }],
+    colliders: [floor],
+  }, 'product');
+  assert.throws(() => poisoned.step(new Set()), /NaN/);
+});
+
+test('a quaternion and its negation hash to one digest, and a NaN angular field aborts', () => {
+  const floor = { id: 'floor', minX: -2, maxX: 2, minY: -1, maxY: 0, minZ: -2, maxZ: 2 };
+  /**
+   * @param {number} qw
+   */
+  function digest(qw) {
+    const world = createWorld({
+      bodies: [{ id: 'a', x: 0, y: 1, z: 0, vx: 0, vy: 0, vz: 0, qx: 0, qy: 0, qz: 0, qw, wx: 0, wy: 0, wz: 0, hx: 0.25, hy: 0.25, hz: 0.25 }],
+      colliders: [floor],
+    }, 'product');
+    world.step(new Set());
+    const hasher = createHasher();
+    const body = world.bodies[0];
+    hasher.float(body.qx);
+    hasher.float(body.qy);
+    hasher.float(body.qz);
+    hasher.float(body.qw);
+    assert.equal(body.qw, 1);
+    return hasher.digest();
+  }
+  assert.equal(digest(1), digest(-1));
+  const poisoned = createWorld({
+    bodies: [{ id: 'a', x: 0, y: 1, z: 0, vx: 0, vy: 0, vz: 0, wx: NaN, hx: 0.25, hy: 0.25, hz: 0.25 }],
     colliders: [floor],
   }, 'product');
   assert.throws(() => poisoned.step(new Set()), /NaN/);

@@ -46,6 +46,10 @@ for (let i = 0; ok && i < STEPS; i = i + 1) {
       ok = false;
       break;
     }
+    if (!h.float(body.qx) || !h.float(body.qy) || !h.float(body.qz) || !h.float(body.qw) || !h.float(body.wx) || !h.float(body.wy) || !h.float(body.wz)) {
+      ok = false;
+      break;
+    }
   }
   const snap = world.snapshot();
   if (snap) {

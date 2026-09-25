@@ -26,12 +26,12 @@ test('the crate-and-door scene loads, and each malformed scene is refused', () =
   assert.equal(reachedGoal(loaded.scene, {
     tick: 0,
     hash: '0',
-    bodies: [{ id: 'crate', x: 3.65, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 }],
+    bodies: [{ id: 'crate', x: 3.65, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, qx: 0, qy: 0, qz: 0, qw: 1, wx: 0, wy: 0, wz: 0, hx: 0.3, hy: 0.3, hz: 0.3 }],
   }), true);
   assert.equal(reachedGoal(loaded.scene, {
     tick: 0,
     hash: '0',
-    bodies: [{ id: 'crate', x: 2.4, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 }],
+    bodies: [{ id: 'crate', x: 2.4, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, qx: 0, qy: 0, qz: 0, qw: 1, wx: 0, wy: 0, wz: 0, hx: 0.3, hy: 0.3, hz: 0.3 }],
   }), false);
   assert.match(/** @type {{ reason: string }} */ (broken({ extra: true })).reason, /unknown field/);
   const overlapBody = structuredClone(scene);

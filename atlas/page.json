@@ -67,24 +67,40 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 0,
-      "changed": 99,
+      "added": 3,
+      "changed": 44,
       "moved": 0,
-      "parts": 14,
+      "parts": 9,
       "removed": 0
     },
     "items": [
       {
+        "kind": "landing",
+        "sentence": "fixtures/behavior-rotation.json is now read by harness/solver.test.js.",
+        "subjects": [
+          "fixtures/behavior-rotation.json",
+          "harness/solver.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/shape-traversal.json is now read by harness/solver.test.js.",
+        "subjects": [
+          "fixtures/shape-traversal.json",
+          "harness/solver.test.js"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-25; 99 files changed content.",
+        "sentence": "3 files added and 44 changed content, across 9 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "6f197414f4161f90fc26ae54570af0d404fd90d3",
-      "generatedAt": "2026-09-25T01:33:58.143Z"
+      "commit": "a6479da4940c6deb480f50b7e92e9da7b907d219",
+      "generatedAt": "2026-09-25T01:37:45.669Z"
     },
-    "unchanged": true
+    "unchanged": false
   },
   "changesTogether": [
     {
@@ -168,7 +184,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 0 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 0,
-  "commit": "a6479da4940c6deb480f50b7e92e9da7b907d219",
+  "commit": "aad8a8c03d654dd14ead908b84ccc0af8776a1e0",
   "defaultBranch": "main",
   "derived": "14 parts, mostly JavaScript (41 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -521,7 +537,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-25T01:37:45.669Z",
+  "generatedAt": "2026-09-25T05:49:48.401Z",
   "limits": [
     "4 import sites could not be resolved.",
     "2 reads use paths built at run time and are not named here.",

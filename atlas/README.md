@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit a6479da.
+Mapped at 2026-09-25 from commit aad8a8c.
 
 ## What this is
 
@@ -8,9 +8,11 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 14 parts, mostly JavaScript (41 files). Work enters through 7 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (6f19741)
+## What changed since 2026-09-25 (a6479da)
 
-Nothing structural changed since 2026-09-25; 99 files changed content.
+- fixtures/behavior-rotation.json is now read by harness/solver.test.js.
+- fixtures/shape-traversal.json is now read by harness/solver.test.js.
+- 3 files added and 44 changed content, across 9 parts.
 
 ## What comes in
 
