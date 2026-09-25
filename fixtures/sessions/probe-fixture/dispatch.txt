@@ -1,0 +1,3 @@
+A rehearsal for the rails, made by the T7a builder with the test-only role probe. The change below is not applied to the engine; it gives the role something to aim at.
+
+The change: when push checks for a clear path from the pusher to the near face of the body it pushes, the path starts at the pusher's centre lifted by the character controller's skin, so a push from a body resting on the floor is not refused as crossing the floor. Move and the other verbs are unchanged.

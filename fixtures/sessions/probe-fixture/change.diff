@@ -1,0 +1,12 @@
+--- a/packages/tick/predicates.js
++++ b/packages/tick/predicates.js
+@@ -378,7 +378,8 @@ export function admitIntent(intent, world, rules, retired, scheduled) {
+       return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
+     }
+     if (rule.requiresClearPath) {
+-      const hit = world.segmentHits(actor.x, actor.y, actor.z, face.x, face.y, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
++      const lift = actor.y + SKIN;
++      const hit = world.segmentHits(actor.x, lift, actor.z, face.x, lift, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
+       if (hit !== null) {
+         return { ok: false, reason: 'path crosses collider ' + hit };
+       }

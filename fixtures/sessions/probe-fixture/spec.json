@@ -1,0 +1,16 @@
+{
+  "session": "probe-fixture",
+  "role": "probe",
+  "world": "worlds/crate-and-door.json",
+  "instance": "probe-fixture",
+  "calls": 3,
+  "startQuanta": 64,
+  "lateQuanta": 8,
+  "law": "reference",
+  "dispatch": "dispatch.txt",
+  "diff": "change.diff",
+  "access": {
+    "admitIntent in packages/tick/predicates.js, where a verb targets a body": ["push"],
+    "admitIntent in packages/tick/predicates.js, where a verb targets a point": ["move"]
+  }
+}
