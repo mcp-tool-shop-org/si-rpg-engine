@@ -11,13 +11,22 @@
 //     records, stepped and hashed as harness/sim.mjs does, for `quanta`
 //     (10000 when omitted);
 //   a fixture case with `steps` and `driven`, as harness/solver-scene.mjs plays it;
-//   { seed, world, log, law?, retired? }   a tick replaying an admitted-input log,
-//     as packages/tick/replay.js does, with each admission's hash checked.
+//   { seed, world, log, law?, retired?, quanta? }   a tick replaying an
+//     admitted-input log, as packages/tick/replay.js does, with each
+//     admission's hash checked. It ends when nothing is scheduled after the
+//     last entry, or, with `quanta`, at that tick: the world keeps stepping
+//     while nothing is scheduled, which is how a sweep's witness reaches the
+//     settled state it names and a finding's bundle reaches the quantum a
+//     body left the world (T6).
+//
+// Every run saves and restores its whole state without replay (T6 pin 1):
+// save() takes it, and restore(saved) puts it back into the same run, or into
+// another run of the same spec, wherever that run has got to.
 
 import { createMemory } from './memory.js';
 import { loadIntentRules } from './predicates.js';
 import { playSession, productSession } from './sessions.js';
-import { createTick } from './tick.js';
+import { createRestorableTick } from './tick.js';
 import { traceLine } from './trace-line.js';
 import { createWorld } from './world.js';
 
@@ -28,9 +37,10 @@ import { createWorld } from './world.js';
  * @typedef {{ tick: number, hash: string, proposal: import('../frame/types.js').Proposal }} LogEntry
  * @typedef {{ scene: 'product', world: WorldInit, quanta?: number }} ProductSpec
  * @typedef {import('./sessions.js').PlaySpec} PlaySpec
- * @typedef {{ seed: number, world: WorldInit, log: ReadonlyArray<LogEntry>, law?: 'product' | 'reference', retired?: boolean }} LogSpec
+ * @typedef {{ seed: number, world: WorldInit, log: ReadonlyArray<LogEntry>, law?: 'product' | 'reference', retired?: boolean, quanta?: number }} LogSpec
  * @typedef {ProductSpec | PlaySpec | LogSpec} RunSpec
- * @typedef {{ world: World, memory: Memory | null, readonly tick: number, readonly hash: string, advance: () => boolean, line: () => string }} Run
+ * @typedef {{ world: World, memory: Memory | null, readonly tick: number, readonly hash: string, advance: () => boolean, line: () => string, save: () => RunSave, restore: (saved: RunSave) => void }} Run
+ * @typedef {import('./sessions.js').ProductSave | import('./sessions.js').PlaySave | { next: number, tick: import('./tick.js').TickSave }} RunSave
  */
 
 /** @type {ReturnType<typeof loadIntentRules> | null} */
@@ -67,6 +77,12 @@ function productRun(spec) {
     line() {
       return traceLine(session.tick, session.hash === null ? 'NAN' : session.hash, session.world, session.memory);
     },
+    save() {
+      return session.save();
+    },
+    restore(saved) {
+      session.restore(/** @type {import('./sessions.js').ProductSave} */ (saved));
+    },
   };
 }
 
@@ -91,12 +107,19 @@ function playRun(spec) {
     line() {
       return traceLine(session.tick, session.hash, session.world, null);
     },
+    save() {
+      return session.save();
+    },
+    restore(saved) {
+      session.restore(/** @type {import('./sessions.js').PlaySave} */ (saved));
+    },
   };
 }
 
 /**
  * The tick advances to each entry's tick, submits it, and after the last one
- * runs until nothing is scheduled, as `replay` and settle do.
+ * runs until nothing is scheduled, as `replay` and settle do, or to the
+ * spec's `quanta` when it names one.
  * @param {LogSpec} spec
  * @returns {Run}
  */
@@ -106,7 +129,7 @@ function logRun(spec) {
   }
   const world = createWorld(spec.world, spec.law || 'product');
   const memory = createMemory();
-  const tick = createTick({ seed: spec.seed, world, rules: catalog.rules, retired: spec.retired ? catalog.retired : undefined, memory });
+  const tick = createRestorableTick({ seed: spec.seed, world, rules: catalog.rules, retired: spec.retired ? catalog.retired : undefined, memory });
   let next = 0;
   function submitDue() {
     while (next < spec.log.length && spec.log[next].tick === tick.frame().tick) {
@@ -135,7 +158,7 @@ function logRun(spec) {
     },
     advance() {
       submitDue();
-      if (next < spec.log.length || !tick.idle()) {
+      if (next < spec.log.length || !tick.idle() || (typeof spec.quanta === 'number' && tick.frame().tick < spec.quanta)) {
         tick.advance();
         return true;
       }
@@ -143,6 +166,18 @@ function logRun(spec) {
     },
     line() {
       return traceLine(tick.frame().tick, tick.frame().hash, world, memory);
+    },
+    /** The tick's save and how far into the log the run has submitted. */
+    save() {
+      return { next, tick: tick.save() };
+    },
+    restore(saved) {
+      const kept = /** @type {{ next: number, tick: import('./tick.js').TickSave }} */ (saved);
+      if (!kept || !Number.isInteger(kept.next) || kept.next < 0 || kept.next > spec.log.length || !kept.tick) {
+        throw new Error('restore refused: a log run saves its place in the log beside the save of its tick');
+      }
+      tick.restore(kept.tick);
+      next = kept.next;
     },
   };
 }

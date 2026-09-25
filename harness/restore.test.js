@@ -26,6 +26,15 @@
 // 401) and in every fixture run that has one (the carry cases at each of
 // their four switches, the climb, and the minds fixture), each point by
 // replay and by image (F1 pin 6).
+//
+// T6 pin 1 adds a third way to restore, beside replay and the image, that
+// replays nothing at all: the run's own save()
+// (the tick's for a log, the session's for a fixture case or the product
+// scene) is taken at each point of one uninterrupted run, which then runs on
+// to its end; each save is restored into that same run, now past the point,
+// with the solver evicted, and the rest is rerun, twice in a row. A save that
+// leaves out one field is planted for the hasher's lanes, an action in
+// flight, a mind's memory, and the minds' sight, and each is caught by the diff.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -311,6 +320,173 @@ test('restores straddle every switch: replay and image restores on both sides of
   t.diagnostic(switches + ' switches straddled in ' + runs.join(', '));
   for (const name of ['the product scene', 'behavior-verbs carry', 'behavior-verbs carry-capsule', 'behavior-minds']) {
     assert.ok(runs.includes(name), name + ' has no switch to straddle');
+  }
+});
+
+/**
+ * One uninterrupted run that saves itself at each point with its own save(),
+ * then runs on to its end. The run is returned there, past every point.
+ * @param {ReplaySpec} spec
+ * @param {number[]} points
+ * @param {string[]} lines the whole run's trace, which this run must match
+ */
+function ownSaves(spec, points, lines) {
+  const run = replayTo(spec, 0);
+  /** @type {Map<number, ReturnType<Run['save']>>} */
+  const saves = new Map();
+  const again = [run.line()];
+  for (;;) {
+    if (points.includes(run.tick)) {
+      saves.set(run.tick, run.save());
+    }
+    if (!run.advance()) {
+      break;
+    }
+    again.push(run.line());
+  }
+  assert.deepEqual(again, lines, 'a run that saves itself traces the same as one that does not');
+  return { run, saves };
+}
+
+for (const item of cases) {
+  const product = 'scene' in item.spec;
+  test(item.name + ': its own save restores without replay into a run that has gone on, twice, at every chosen point', (t) => {
+    const whole = wholeRun(item.spec);
+    const points = choosePoints(whole, product);
+    const { run, saves } = ownSaves(item.spec, points, whole.lines);
+    t.diagnostic(item.name + ': saved at ' + points.join(', ') + ', restored from tick ' + run.tick);
+    for (const point of points) {
+      const saved = saves.get(point);
+      if (!saved) {
+        throw new Error('no save at ' + point);
+      }
+      for (let again = 0; again < 2; again = again + 1) {
+        evict();
+        const from = run.tick;
+        run.restore(saved);
+        assert.equal(run.tick, point, 'the restore puts the run back at ' + point + ' from ' + from);
+        expectIdentical(item.name + ' own save at ' + point + ' restore ' + (again + 1), whole.lines, rerunLines(whole.lines, run), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point) }]);
+      }
+    }
+  });
+}
+
+/**
+ * rerun, but a step that throws ends the lines with the trace's mark for a
+ * thrown step. A planted save can make a log's next entry name a frame the
+ * run no longer has, and the replay refuses it; the diff then still names
+ * the first quantum that differed, which comes before the refusal.
+ * @param {string[]} whole
+ * @param {Run} run
+ */
+function rerunCaught(whole, run) {
+  const lines = whole.slice(0, run.tick);
+  lines.push(run.line());
+  for (;;) {
+    const before = run.tick;
+    try {
+      if (!run.advance()) {
+        break;
+      }
+    } catch {
+      lines.push((before + 1) + ' NAN');
+      break;
+    }
+    lines.push(run.line());
+  }
+  lines.push(endLine(lines.length));
+  return lines;
+}
+
+/**
+ * The first-difference block of a run restored from a planted save and rerun
+ * to its end, against the whole run. The run is at its end when restored.
+ * @param {ReplaySpec} spec
+ * @param {number} point
+ * @param {(saved: any, end: any) => any} plant makes the planted save from the true one and the run's save at its end
+ */
+function plantedRerun(spec, point, plant) {
+  const whole = wholeRun(spec);
+  const { run, saves } = ownSaves(spec, [point], whole.lines);
+  const saved = saves.get(point);
+  const end = run.save();
+  // Unplanted, the save reruns identically from the run's end.
+  evict();
+  run.restore(/** @type {any} */ (saved));
+  assert.equal(diff(whole.lines.concat([endLine(whole.lines.length)]), rerunCaught(whole.lines, run)), 'identical\n');
+  evict();
+  run.restore(plant(saved, end));
+  return { saved: /** @type {any} */ (saved), block: diff(whole.lines.concat([endLine(whole.lines.length)]), rerunCaught(whole.lines, run)).split('\n') };
+}
+
+/** The carry script of behavior-verbs as a log, and a tick inside its move, with the move in flight. */
+function carryCase() {
+  const spec = JSON.parse(readFileSync('fixtures/behavior-verbs.json', 'utf8')).cases.find((/** @type {{ name: string }} */ c) => c.name === 'carry');
+  const played = playVerbs(spec, rules);
+  if (!played.ok || !played.log) {
+    throw new Error('carry did not play');
+  }
+  const move = played.log.find((entry) => entry.proposal.kind === 'intent' && entry.proposal.verb === 'move');
+  if (!move) {
+    throw new Error('carry has no move');
+  }
+  return { spec: { seed: spec.seed, world: spec.world, log: played.log }, point: move.tick + 5 };
+}
+
+test('a save planted without the hasher lanes is caught at the next quantum, by its hash', () => {
+  const { spec, point } = carryCase();
+  const { block } = plantedRerun(spec, point, (saved, end) => ({ ...saved, tick: { ...saved.tick, lanes: end.tick.lanes } }));
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.equal(block[1], 'hash');
+});
+
+test('a save planted without the action in flight is caught: the actor stops where it should walk on', () => {
+  const { spec, point } = carryCase();
+  const { saved, block } = plantedRerun(spec, point, (kept, end) => ({ ...kept, tick: { ...kept.tick, actions: end.tick.actions } }));
+  assert.equal(saved.tick.actions.length, 1, 'the save carries the move in flight');
+  assert.equal(saved.tick.actions[0][0], 'walker');
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.match(block[1], /^body walker field /);
+});
+
+test('a save planted without a mind memory is caught at the mind, by its newest belief', () => {
+  const spec = { seed: minds.seed, world: minds.world, log: minds.log };
+  const whole = wholeRun(spec);
+  const point = Math.floor((whole.lines.length - 1) / 3);
+  const { saved, block } = plantedRerun(spec, point, (kept, end) => ({ ...kept, tick: { ...kept.tick, memory: end.tick.memory } }));
+  assert.ok(saved.tick.memory.minds.length > 0, 'the save carries a mind with beliefs');
+  assert.equal(block[0], 'first difference at tick ' + point, block.join('\n'));
+  assert.match(block[1], /^mind /);
+});
+
+test('a save planted without the minds sight is caught at the next quantum, where the mind sees everything anew', () => {
+  const spec = { seed: minds.seed, world: minds.world, log: minds.log };
+  const whole = wholeRun(spec);
+  const point = Math.floor((whole.lines.length - 1) / 3);
+  // What a run that has seen nothing holds. The run's own end remembers the
+  // same sight as the point here, so leaving the end's in place would pass.
+  const { saved, block } = plantedRerun(spec, point, (kept) => ({ ...kept, tick: { ...kept.tick, minds: { ...kept.tick.minds, sight: [] } } }));
+  assert.ok(saved.tick.minds.sight.length > 0, 'the save carries what the mind has seen');
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.match(block[1], /^mind /);
+});
+
+test('a save of another tick, or one with a field out of shape, is refused and changes nothing', () => {
+  const { spec, point } = carryCase();
+  const whole = wholeRun(spec);
+  const { run, saves } = ownSaves(spec, [point], whole.lines);
+  const saved = /** @type {any} */ (saves.get(point));
+  const before = run.line();
+  for (const [planted, reason] of /** @type {Array<[any, RegExp]>} */ ([
+    [{ ...saved, tick: { ...saved.tick, seed: saved.tick.seed + 1 } }, /restore refused: the save is of a tick seeded/],
+    [{ ...saved, tick: { ...saved.tick, lanes: [1] } }, /restore refused: the lanes are two whole numbers/],
+    [{ ...saved, tick: { ...saved.tick, frame: { ...saved.tick.frame, tick: saved.tick.tick + 1 } } }, /restore refused: the frame is the committed frame at the saved tick/],
+    [{ ...saved, tick: { ...saved.tick, actions: [['walker', { effect: 'drive', remaining: 0 }]] } }, /restore refused: the actions are actor ids/],
+    [{ ...saved, tick: { ...saved.tick, memory: undefined } }, /restore refused: the memory is/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, bodies: [] } } }, /restore refused: the save does not have the 2 bodies of this world/],
+  ])) {
+    assert.throws(() => run.restore(planted), reason);
+    assert.equal(run.line(), before, 'a refused restore changes nothing');
   }
 });
 

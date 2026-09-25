@@ -158,5 +158,61 @@ export function createMemory() {
     return { ok: true, belief: b };
   }
 
-  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite, mindBeliefs, admitMindBelief };
+  /**
+   * A copy of every record, for a tick's save (T6 pin 1). Each belief is
+   * copied, not shared, because a supersession writes into the belief it
+   * withdraws; a save that shared them would change when the run goes on.
+   * @returns {MemorySave}
+   */
+  function save() {
+    return {
+      beliefs: beliefs.map((item) => ({ ...item })),
+      episodes: episodes.map((item) => ({ ...item })),
+      minds: Array.from(byMind, ([mind, list]) => /** @type {[string, Belief[]]} */ ([mind, list.map((item) => ({ ...item }))])),
+    };
+  }
+
+  /**
+   * Puts a save back. The two exposed arrays keep their identity, so a
+   * holder of `beliefs` or `episodes` sees the restored records, and every
+   * record is copied again, so one save can be restored any number of times.
+   * @param {MemorySave} saved
+   */
+  function restore(saved) {
+    beliefs.length = 0;
+    for (const item of saved.beliefs) {
+      beliefs.push({ ...item });
+    }
+    episodes.length = 0;
+    for (const item of saved.episodes) {
+      episodes.push({ ...item });
+    }
+    byMind.clear();
+    for (const [mind, list] of saved.minds) {
+      byMind.set(mind, list.map((item) => ({ ...item })));
+    }
+  }
+
+  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite, mindBeliefs, admitMindBelief, save, restore };
+}
+
+/**
+ * @typedef {{ beliefs: Belief[], episodes: Episode[], minds: Array<[string, Belief[]]> }} MemorySave
+ */
+
+/**
+ * Why a value is not a memory save, or null.
+ * @param {any} saved
+ * @returns {string | null}
+ */
+export function memorySaveProblem(saved) {
+  if (!saved || typeof saved !== 'object' || !Array.isArray(saved.beliefs) || !Array.isArray(saved.episodes) || !Array.isArray(saved.minds)) {
+    return 'the memory is beliefs, episodes, and each mind\'s beliefs';
+  }
+  for (const entry of saved.minds) {
+    if (!Array.isArray(entry) || entry.length !== 2 || typeof entry[0] !== 'string' || !Array.isArray(entry[1])) {
+      return 'each mind\'s beliefs are a body id and a list';
+    }
+  }
+  return null;
 }

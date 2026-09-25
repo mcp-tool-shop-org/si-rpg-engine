@@ -10,7 +10,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createTick, settle } from './tick.js';
+import { createRestorableTick, createTick, settle } from './tick.js';
 import { createWorld } from './world.js';
 import { createMemory } from './memory.js';
 import { loadIntentRules } from './predicates.js';
@@ -212,6 +212,12 @@ test('the host boundary: frames are frozen, carry no proposal, and a host has no
     /** @type {any} */ (seen[1].bodies[0]).x = 99;
   });
   assert.deepEqual(Object.keys(t).sort(), ['advance', 'attach', 'frame', 'idle', 'log', 'submit'], 'no method reads a proposal or writes geometry');
+});
+
+test('save and restore are on the tick its maker asks for, never on the one a host is handed', () => {
+  const restorable = createRestorableTick({ seed: FIXTURE_SEED, world: createWorld(fixtureWorld()), rules: loadIntentRules().rules, memory: createMemory() });
+  assert.deepEqual(Object.keys(restorable).sort(), ['advance', 'attach', 'frame', 'idle', 'log', 'restore', 'save', 'submit']);
+  assert.equal('restore' in fresh(), false, 'the tick a host is handed has no restore');
 });
 
 test('the draw guard: a host that throws is detached, the quantum completes, and other hosts still draw', () => {

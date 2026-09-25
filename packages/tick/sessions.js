@@ -13,12 +13,18 @@
 //     harness/product-scene.mjs, which re-exports the act beside them; a
 //     bundle carries the records it ran.
 //
+// Each session also saves and restores its whole state without replay, as
+// the tick does (T6 pin 1): the hasher's lanes, the quantum, the world's save,
+// and for the product scene the minds and their memory. The act is a function
+// of the quantum, so it needs no state of its own. harness/restore.test.js
+// restores every fixture case and the product scene this way.
+//
 // Runs under node and the three shells: no console, process, or fs here.
 
 import { createHasher } from '../frame/hash.js';
 import { instantiate } from '../../solver/dist/solver.mjs';
-import { createMemory } from './memory.js';
-import { installMinds, mixMinds, observeMinds } from './minds.js';
+import { createMemory, memorySaveProblem } from './memory.js';
+import { installMinds, mindsSaveProblem, mixMinds, observeMinds, restoreMinds, saveMinds } from './minds.js';
 import { createWorld } from './world.js';
 
 /** The product scene's length: fixtures/golden.txt is its last hash. */
@@ -32,7 +38,31 @@ export const productDriven = ['walker'];
  * @typedef {ReturnType<typeof createMemory>} Memory
  * @typedef {Parameters<typeof createWorld>[0]} WorldInit
  * @typedef {{ seed: number, steps: number, driven: string[], world: { bodies: unknown[], colliders: unknown[], heightfield?: unknown } }} PlaySpec
+ * @typedef {ReturnType<World['save']>} WorldSave
+ * @typedef {{ tick: number, hash: string, lanes: [number, number], world: WorldSave }} PlaySave
+ * @typedef {{ tick: number, hash: string | null, ok: boolean, lanes: [number, number], world: WorldSave, minds: import('./minds.js').MindsSave, memory: import('./memory.js').MemorySave }} ProductSave
  */
+
+/**
+ * Why a value is not a session save, or null: the quantum, the hash, and the lanes.
+ * @param {any} saved
+ * @returns {string | null}
+ */
+function sessionSaveProblem(saved) {
+  if (!saved || typeof saved !== 'object') {
+    return 'a save is an object';
+  }
+  if (!Number.isInteger(saved.tick) || saved.tick < 0) {
+    return 'the tick is a whole number';
+  }
+  if (!Array.isArray(saved.lanes) || saved.lanes.length !== 2 || !saved.lanes.every((/** @type {unknown} */ lane) => Number.isInteger(lane) && /** @type {number} */ (lane) >= 0 && /** @type {number} */ (lane) <= 0xffffffff)) {
+    return 'the lanes are two whole numbers from 0 through 2^32 - 1';
+  }
+  if (!saved.world || typeof saved.world !== 'object') {
+    return 'the save has no world';
+  }
+  return null;
+}
 
 /**
  * A short lift, then the walker carries the parcel. Both enter the product hash.
@@ -113,6 +143,27 @@ export function playSession(spec) {
       tick = tick + 1;
       hash = hasher.digest();
       return true;
+    },
+    /**
+     * The quantum, its hash, the hasher's lanes, and the world's save.
+     * @returns {PlaySave}
+     */
+    save() {
+      return { tick, hash, lanes: hasher.lanes(), world: world.save() };
+    },
+    /**
+     * Puts back a save; the world refuses first, and then nothing has changed.
+     * @param {PlaySave} saved
+     */
+    restore(saved) {
+      const why = sessionSaveProblem(saved);
+      if (why !== null || typeof saved.hash !== 'string' || saved.tick > spec.steps) {
+        throw new Error('restore refused: ' + (why || 'the save is not a quantum of this case'));
+      }
+      world.restore(saved.world);
+      tick = saved.tick;
+      hash = saved.hash;
+      hasher.resume(saved.lanes);
     },
   };
 }
@@ -208,6 +259,31 @@ export function productSession(options) {
     /** The final digest, or NAN. */
     final() {
       return ok ? h.digest() : 'NAN';
+    },
+    /**
+     * The quantum, its hash, whether the run is still whole, the hasher's
+     * lanes, the world's save, and the minds' state and memory.
+     * @returns {ProductSave}
+     */
+    save() {
+      return { tick, hash, ok, lanes: h.lanes(), world: world.save(), minds: saveMinds(world), memory: memory.save() };
+    },
+    /**
+     * Puts back a save; the world refuses first, and then nothing has changed.
+     * @param {ProductSave} saved
+     */
+    restore(saved) {
+      const why = sessionSaveProblem(saved) || mindsSaveProblem(world, saved.minds) || memorySaveProblem(saved.memory);
+      if (why !== null || typeof saved.ok !== 'boolean' || saved.tick > steps) {
+        throw new Error('restore refused: ' + (why || 'the save is not a quantum of this run'));
+      }
+      world.restore(saved.world);
+      tick = saved.tick;
+      hash = saved.hash;
+      ok = saved.ok;
+      h.resume(saved.lanes);
+      restoreMinds(world, saved.minds);
+      memory.restore(saved.memory);
     },
   };
 }
