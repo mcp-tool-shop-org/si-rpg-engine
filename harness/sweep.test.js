@@ -6,7 +6,10 @@
 // every zone witness of every world swept is replayed through the ordinary
 // replay path and compared hash for hash (pin 8). A sweep whose restore omits
 // the hasher's lanes has witnesses that do not replay, so the replay is the
-// check that exploring by restore explores the real world.
+// check that exploring by restore explores the real world. The last two tests
+// hold existing content to what the sweep says of it: everything that loads
+// today still loads but for two open rooms, pinned here, and the scheduled
+// job's record of every world it sweeps fails on any verdict that moves.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -20,6 +23,7 @@ import { settles } from '../packages/tick/admit-world.js';
 import { loadScene, validateScene } from '../packages/tick/scene.js';
 import { costLine, replayWitness, sceneInput, sweep, sweepVerdict } from '../packages/load/sweep.js';
 import { LOAD_BUDGET, considerWorld } from '../packages/load/world.js';
+import { SWEEP_BUDGET, readSweepRecord, sweepCorpus, sweepWorlds } from './corpus.mjs';
 
 const dir = mkdtempSync(join(tmpdir(), 'si-rpg-sweep-'));
 
@@ -294,4 +298,51 @@ test('load world refuses a zone nothing reaches and a body leaving the world, na
   const deferred = considerWorld(loaded.scene, { budget: { quanta: 2000, restores: 20 }, bundles: null });
   assert.equal(deferred.ok, true);
   assert.ok(deferred.lines.some((line) => /^sweep: sweep deferred: the budget of 2000 quanta and 20 restores ran out with \d+ cells archived and \d+ left in the frontier/.test(line)), deferred.lines.join('\n'));
+});
+
+test('the scheduled sweep holds each world to its record: the recorded verdict passes, and a record planted with a finding gone, a zone moved, or no entry fails naming the difference, with the findings bundled', () => {
+  const record = readSweepRecord();
+  const names = sweepWorlds().map((world) => world.name).sort();
+  assert.deepEqual(Object.keys(record.worlds).sort(), names, 'the record holds exactly the worlds the job sweeps');
+  assert.deepEqual(record.budget, SWEEP_BUDGET, 'the record was written under the job\'s budget');
+  const name = 'fixture shape-traversal ledge-box';
+  const wanted = (/** @type {string} */ each) => each === 'sweep ' + name;
+  const was = process.env.SI_RPG_BUNDLES;
+  process.env.SI_RPG_BUNDLES = dir;
+  try {
+    const green = sweepCorpus({ budget: SWEEP_BUDGET, record, wanted, say: () => {} });
+    assert.equal(green.results.length, 1);
+    assert.equal(green.results[0].status, 'ok', green.results[0].detail);
+    const entry = record.worlds[name];
+    assert.deepEqual(entry.findings, ['leaves walker by walker']);
+    /** @type {Array<[Record<string, unknown> | undefined, RegExp]>} */
+    const planted = [
+      [{ ...entry, findings: [] }, /^new finding: leaves walker by walker$/m],
+      [{ ...entry, findings: ['leaves walker by walker', 'throws - by walker'] }, /^recorded finding gone: throws - by walker$/m],
+      [{ ...entry, zones: { ledge: true } }, /^zone ledge: recorded reached, swept absent$/m],
+      [{ ...entry, complete: false }, /^complete: recorded false, swept true$/m],
+      [undefined, /^no record of this world; the sweep says /],
+    ];
+    for (const [moved, reason] of planted) {
+      const worlds = { ...record.worlds };
+      if (moved) {
+        worlds[name] = /** @type {any} */ (moved);
+      } else {
+        delete worlds[name];
+      }
+      const red = sweepCorpus({ budget: SWEEP_BUDGET, record: { ...record, worlds }, wanted, say: () => {} });
+      const result = red.results[0];
+      assert.equal(result.status, 'different');
+      assert.match(String(result.block), reason);
+      assert.ok(result.bundle, 'the findings are bundled');
+      const replayed = spawnSync(process.execPath, ['packages/tick/bin/replay.js', /** @type {string} */ (result.bundle)], { encoding: 'utf8' });
+      assert.equal(replayed.status, 0, replayed.stdout + replayed.stderr);
+    }
+  } finally {
+    if (was === undefined) {
+      delete process.env.SI_RPG_BUNDLES;
+    } else {
+      process.env.SI_RPG_BUNDLES = was;
+    }
+  }
 });

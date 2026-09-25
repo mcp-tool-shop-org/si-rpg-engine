@@ -4,6 +4,7 @@
 //
 //   node harness/corpus.mjs [--quanta N] [--points N] [--only text] [--summary file.md] [--title file]
 //   node harness/corpus.mjs --write <dir>
+//   node harness/corpus.mjs --record-sweep
 //
 // It replays, against this build and with the T1 trace hashes:
 //   1. every bundle in fixtures/corpus/, with an image restored and rerun: its
@@ -16,10 +17,23 @@
 //   3. the product scene for 100,000 quanta (--quanta), twice, with the solver
 //      imaged at ten ticks (--points) chosen from its events, each just before
 //      one, and each image restored into a fresh replay and rerun to the end
-//      against the traced run, a difference printed as the T1 block.
+//      against the traced run, a difference printed as the T1 block;
+//   4. the reachability sweep (T6 pin 10, packages/load/sweep.js) of every
+//      world in worlds/index.json, every fixture world that runs on the
+//      product law, and the product scene, each under SWEEP_BUDGET. Each
+//      sweep's verdict (admitted or refused, finished or deferred, each zone
+//      reached or not, and each kind of finding with its body and actor) is
+//      compared with fixtures/sweep/verdicts.json, and any difference, in
+//      either direction, is a failure with the bundles of that sweep's
+//      findings. The record starts with the worlds T6 found refused, each
+//      named in its pull request as a finding for the coordinator: a sweep
+//      that refuses a world is not failed again every week for a finding
+//      already on record, and a world whose content is fixed changes its
+//      record in the same commit. --record-sweep rewrites the record from
+//      this build and prints what moved.
 // It prints the wall time of each, the replay cost per quantum, the sparse
-// image sizes, and the restore times. A failure writes a bundle into
-// $SI_RPG_BUNDLES (harness/bundle.mjs) and exits 1; --summary and --title
+// image sizes, the restore times, and each sweep's costs. A failure writes a
+// bundle into $SI_RPG_BUNDLES (harness/bundle.mjs) and exits 1; --summary and --title
 // write the issue the job opens, titled with the first failing bundle and
 // its first-difference block.
 //
@@ -32,13 +46,16 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { costLine, findingBundle, sceneInput, sweep, sweepVerdict } from '../packages/load/sweep.js';
+import { loadHash } from '../packages/tick/admit-world.js';
 import { PAGE, bundleFrom, bundleText, denseImage, endedBlock, readBundle, replayBundle, sparseImage, sparsePages, writeBundle } from '../packages/tick/bundle.js';
 import { pair } from '../packages/tick/difference.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
-import { validateScene } from '../packages/tick/scene.js';
+import { loadScene, validateScene } from '../packages/tick/scene.js';
 import { binaryDigest } from '../solver/dist/solver.mjs';
 import { bundleDir, makeBundle, traceDifference } from './bundle.mjs';
 import { asleep, contacts } from './events.mjs';
+import { productInit } from './product-scene.mjs';
 import { replayTo, withRecords } from './replay-to.mjs';
 import { play } from './solver-scene.mjs';
 import { playVerbs } from './verbs-scene.mjs';
@@ -605,10 +622,218 @@ function productLong(quanta, count, say, plantSplit, plantStop) {
 }
 
 // ---------------------------------------------------------------------------
+// The sweep (T6 pin 10).
+
+/**
+ * One world's sweep budget in the scheduled job, and so the budget each world
+ * was recorded under: one and a half times load world's. It cuts short the
+ * product scene, where lower and the walker each spend their share of the
+ * quanta, half a million, while the climber finishes, and the minds fixture;
+ * every other world finishes inside it, the largest in 616,000 quanta. All 25
+ * sweeps took six and a half minutes on the builder's machine, which runs a
+ * product quantum in 54 us to CI's 95 us, so about 12 minutes in CI, beside
+ * the replay's 3, inside the step's 25.
+ */
+export const SWEEP_BUDGET = { quanta: 1500000, restores: 15000 };
+
+/** The record the job compares each sweep's verdict with. */
+export const SWEEP_RECORD = join(root, 'fixtures', 'sweep', 'verdicts.json');
+
+/**
+ * @typedef {import('../packages/load/sweep.js').SweepInput} SweepInput
+ * @typedef {import('../packages/load/sweep.js').SweepReport} SweepReport
+ * @typedef {{ actors: string[], complete: boolean, admitted: boolean, zones: Record<string, boolean>, findings: string[] }} SweepSummary
+ */
+
+/**
+ * The actors a fixture drives, each once, in the order it names them.
+ * @param {string[]} ids
+ */
+function once(ids) {
+  return ids.filter((id, i) => ids.indexOf(id) === i);
+}
+
+/**
+ * The worlds the scheduled job sweeps: every world in worlds/index.json, whose
+ * file must still hash to its entry; every fixture world that runs on the
+ * product law, with the bodies its fixture drives as actors (a play case's
+ * driven bodies, a verb script's actors, and a mind's body and its log's
+ * actors); and the product scene's records, with the body that has a mind and
+ * the two its act drives.
+ * @returns {Array<{ name: string, input: SweepInput | null, problem: string | null }>}
+ */
+export function sweepWorlds() {
+  /** @type {Array<{ name: string, input: SweepInput | null, problem: string | null }>} */
+  const worlds = [];
+  const index = JSON.parse(readFileSync(join(root, 'worlds', 'index.json'), 'utf8'));
+  for (const [name, hash] of Object.entries(/** @type {Record<string, string>} */ (index.worlds || {}))) {
+    const loaded = loadScene(join(root, 'worlds', name + '.json'));
+    if (!loaded.ok) {
+      worlds.push({ name, input: null, problem: 'worlds/' + name + '.json does not load: ' + loaded.reason });
+    } else if (loadHash(loaded.scene) !== hash) {
+      worlds.push({ name, input: null, problem: 'worlds/' + name + '.json does not match its index entry ' + hash });
+    } else {
+      worlds.push({ name, input: sceneInput(loaded.scene), problem: null });
+    }
+  }
+  /** @param {string} file */
+  const read = (file) => JSON.parse(readFileSync(join(root, 'fixtures', file), 'utf8'));
+  for (const file of ['behavior-solver', 'behavior-rotation', 'behavior-ramp', 'shape-traversal']) {
+    for (const spec of read(file + '.json').cases) {
+      const name = 'fixture ' + file + ' ' + spec.name;
+      worlds.push({ name, input: { name, seed: spec.seed, world: spec.world, actors: once(spec.driven) }, problem: null });
+    }
+  }
+  for (const spec of read('behavior-verbs.json').cases) {
+    const name = 'fixture behavior-verbs ' + spec.name;
+    worlds.push({ name, input: { name, seed: spec.seed, world: spec.world, actors: once(spec.script.map((/** @type {{ actor: string }} */ step) => step.actor)) }, problem: null });
+  }
+  const minds = read('behavior-minds.json');
+  const mindActors = (minds.world.minds || []).map((/** @type {{ body: string }} */ mind) => mind.body)
+    .concat(minds.log.filter((/** @type {{ proposal: { kind: string } }} */ entry) => entry.proposal.kind === 'intent').map((/** @type {{ proposal: { actor: string } }} */ entry) => entry.proposal.actor));
+  worlds.push({ name: 'fixture behavior-minds', input: { name: 'fixture behavior-minds', seed: minds.seed, world: minds.world, actors: once(mindActors) }, problem: null });
+  worlds.push({ name: 'product scene', input: { name: 'product scene', seed: 0, world: productInit(), actors: ['lower', 'walker', 'climber'] }, problem: null });
+  return worlds;
+}
+
+/**
+ * What the record holds of a sweep: its actors, whether it finished, whether
+ * load world would admit it, each zone reached or not, and each kind of
+ * finding with its body and actor. Costs and ticks are left out: they are the
+ * law's to move, and the record is of verdicts.
+ * @param {SweepInput} input
+ * @param {SweepReport | null} report null when the world has no actor
+ * @returns {SweepSummary}
+ */
+export function sweepSummary(input, report) {
+  if (!report) {
+    return { actors: [], complete: true, admitted: true, zones: {}, findings: [] };
+  }
+  return {
+    actors: input.actors.slice(),
+    complete: report.complete,
+    admitted: sweepVerdict(report).admitted,
+    zones: Object.fromEntries(report.zones.map((zone) => [zone.id, zone.reached])),
+    findings: report.findings.map((finding) => finding.kind + ' ' + (finding.body || '-') + ' by ' + finding.actor).sort(),
+  };
+}
+
+/**
+ * The differences between a recorded summary and a swept one, one line each.
+ * @param {SweepSummary | undefined} recorded
+ * @param {SweepSummary} swept
+ */
+export function summaryDifferences(recorded, swept) {
+  if (!recorded) {
+    return ['no record of this world; the sweep says ' + JSON.stringify(swept)];
+  }
+  /** @type {string[]} */
+  const lines = [];
+  for (const key of /** @type {Array<'actors' | 'complete' | 'admitted'>} */ (['actors', 'complete', 'admitted'])) {
+    if (JSON.stringify(recorded[key]) !== JSON.stringify(swept[key])) {
+      lines.push(key + ': recorded ' + JSON.stringify(recorded[key]) + ', swept ' + JSON.stringify(swept[key]));
+    }
+  }
+  for (const zone of Array.from(new Set(Object.keys(recorded.zones).concat(Object.keys(swept.zones))))) {
+    const a = recorded.zones[zone];
+    const b = swept.zones[zone];
+    if (a !== b) {
+      lines.push('zone ' + zone + ': recorded ' + (a === undefined ? 'absent' : a ? 'reached' : 'not reached') + ', swept ' + (b === undefined ? 'absent' : b ? 'reached' : 'not reached'));
+    }
+  }
+  for (const finding of swept.findings) {
+    if (!recorded.findings.includes(finding)) {
+      lines.push('new finding: ' + finding);
+    }
+  }
+  for (const finding of recorded.findings) {
+    if (!swept.findings.includes(finding)) {
+      lines.push('recorded finding gone: ' + finding);
+    }
+  }
+  return lines;
+}
+
+/** @returns {{ note?: string, budget?: { quanta: number, restores: number }, worlds: Record<string, SweepSummary> }} */
+export function readSweepRecord() {
+  if (!existsSync(SWEEP_RECORD)) {
+    return { worlds: {} };
+  }
+  return JSON.parse(readFileSync(SWEEP_RECORD, 'utf8'));
+}
+
+/**
+ * Sweeps every world the job sweeps and compares each verdict with the record.
+ * @param {{ budget: { quanta: number, restores: number }, record: ReturnType<typeof readSweepRecord>, wanted: (name: string) => boolean, say: (line: string) => void }} options
+ * @returns {{ results: Result[], summaries: Record<string, SweepSummary> }}
+ */
+export function sweepCorpus(options) {
+  /** @type {Result[]} */
+  const results = [];
+  /** @type {Record<string, SweepSummary>} */
+  const summaries = {};
+  for (const world of sweepWorlds()) {
+    const name = 'sweep ' + world.name;
+    if (!options.wanted(name)) {
+      continue;
+    }
+    const t0 = performance.now();
+    if (!world.input) {
+      results.push({ name, kind: 'sweep', status: 'different', ms: 0, detail: /** @type {string} */ (world.problem), block: /** @type {string} */ (world.problem) + '\n' });
+      options.say('FAIL  ' + name + ': ' + world.problem);
+      continue;
+    }
+    const input = world.input;
+    /** @type {SweepReport | null} */
+    let report = null;
+    try {
+      report = input.actors.length === 0 ? null : sweep(input, { budget: options.budget, bundles: null });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      results.push({ name, kind: 'sweep', status: 'error', ms: performance.now() - t0, detail: 'the sweep threw: ' + message });
+      options.say('FAIL  ' + name + ': the sweep threw: ' + message);
+      continue;
+    }
+    const summary = sweepSummary(input, report);
+    summaries[world.name] = summary;
+    const differences = summaryDifferences(options.record.worlds[world.name], summary);
+    const ms = performance.now() - t0;
+    const verdict = report ? sweepVerdict(report) : null;
+    const detail = report
+      ? costLine(report) + '; ' + (summary.admitted ? 'admitted' : 'refused') + (summary.complete ? '' : ', deferred') + '; zones ' + (Object.entries(summary.zones).map(([id, reached]) => id + (reached ? ' reached' : ' not reached')).join(', ') || 'none') + '; findings ' + (summary.findings.join(', ') || 'none')
+      : 'no actor: nothing to sweep';
+    if (differences.length === 0) {
+      results.push({ name, kind: 'sweep', status: 'ok', ms, detail });
+      options.say('ok    ' + name + ': ' + detail);
+      continue;
+    }
+    // A verdict that moved writes the bundles of that sweep's findings.
+    /** @type {string[]} */
+    const paths = [];
+    for (const finding of report ? report.findings : []) {
+      try {
+        paths.push(findingBundle(input, finding, bundleDir()));
+      } catch (error) {
+        differences.push('no bundle for ' + finding.kind + ' ' + finding.body + ': ' + (error instanceof Error ? error.message : String(error)));
+      }
+    }
+    const block = differences.join('\n') + '\n' + (verdict ? verdict.reasons.concat(verdict.notes).map((line) => '  ' + line + '\n').join('') : '');
+    /** @type {Result} */
+    const result = { name, kind: 'sweep', status: 'different', ms, detail: 'the verdict differs from fixtures/sweep/verdicts.json; ' + detail, block };
+    if (paths.length > 0) {
+      result.bundle = paths[0];
+    }
+    results.push(result);
+    options.say('FAIL  ' + name + ': ' + result.detail + '\n' + block + paths.map((path) => 'bundle: ' + path + '\n').join(''));
+  }
+  return { results, summaries };
+}
+
+// ---------------------------------------------------------------------------
 // The job.
 
 /**
- * @param {{ quanta: number, points: number, only: string | null, say: (line: string) => void, plantSplit?: number, plantStop?: number }} options plantSplit: the tests plant a traced product run that parts from the untraced one after this tick; plantStop: a product scene whose own length is this, so both runs stop short of quanta
+ * @param {{ quanta: number, points: number, only: string | null, say: (line: string) => void, plantSplit?: number, plantStop?: number, sweepBudget?: { quanta: number, restores: number } | null, sweepRecord?: ReturnType<typeof readSweepRecord> }} options plantSplit: the tests plant a traced product run that parts from the untraced one after this tick; plantStop: a product scene whose own length is this, so both runs stop short of quanta; sweepBudget: each sweep's budget, SWEEP_BUDGET when omitted, and null sweeps nothing; sweepRecord: the record to compare with, fixtures/sweep/verdicts.json when omitted
  * @returns {Result[]}
  */
 export function runCorpus(options) {
@@ -754,6 +979,16 @@ export function runCorpus(options) {
     }
     say('product scene: ' + (performance.now() - t0).toFixed(0) + ' ms in all');
   }
+
+  // 4. The sweep.
+  if (options.sweepBudget !== null) {
+    const t0 = performance.now();
+    const swept = sweepCorpus({ budget: options.sweepBudget || SWEEP_BUDGET, record: options.sweepRecord || readSweepRecord(), wanted, say });
+    for (const result of swept.results) {
+      results.push(result);
+    }
+    say('sweep: ' + swept.results.length + ' worlds in ' + ((performance.now() - t0) / 1000).toFixed(1) + ' s');
+  }
   return results;
 }
 
@@ -804,7 +1039,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     return at >= 0 && args[at + 1] ? args[at + 1] : null;
   };
   if (args.includes('--help')) {
-    process.stdout.write('usage: node harness/corpus.mjs [--quanta N] [--points N] [--only text] [--summary file.md] [--title file] | --write <dir>\n');
+    process.stdout.write('usage: node harness/corpus.mjs [--quanta N] [--points N] [--only text] [--summary file.md] [--title file] | --write <dir> | --record-sweep\n');
     process.exit(0);
   }
   const outside = (/** @type {string | null} */ p) => (p === null ? null : resolve(p));
@@ -816,6 +1051,20 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     for (const path of writeCorpus(writeDir)) {
       process.stdout.write('wrote ' + path + '\n');
     }
+    process.exit(0);
+  }
+  if (args.includes('--record-sweep')) {
+    // Rewrites the sweep's record from this build, and says what moved.
+    const before = readSweepRecord();
+    const swept = sweepCorpus({ budget: SWEEP_BUDGET, record: before, wanted: () => true, say: (line) => process.stdout.write(line + '\n') });
+    const record = {
+      note: 'The reachability sweep verdicts the scheduled job holds each world to (T6 pin 10), written by node harness/corpus.mjs --record-sweep under the budget below. Each refused world is a finding named in the pull request that recorded it.',
+      budget: SWEEP_BUDGET,
+      worlds: swept.summaries,
+    };
+    writeFileSync(SWEEP_RECORD, JSON.stringify(record, null, 2) + '\n');
+    const moved = swept.results.filter((result) => result.status !== 'ok');
+    process.stdout.write('wrote ' + SWEEP_RECORD + ': ' + Object.keys(swept.summaries).length + ' worlds, ' + moved.length + ' moved' + (moved.length > 0 ? ': ' + moved.map((result) => result.name).join(', ') : '') + '\n');
     process.exit(0);
   }
   const started = performance.now();
