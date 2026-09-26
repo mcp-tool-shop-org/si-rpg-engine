@@ -4,7 +4,7 @@
 /**
  * @typedef {{ n: number | string, result: string, evidence?: string }} Item
  * @typedef {{ file: string, severity: string, what: string }} Defect
- * @typedef {{ items: Item[], defects?: Defect[], verdict: 'MERGE' | 'BLOCK', block_reason?: string }} Verdict
+ * @typedef {{ items: Item[], defects?: Defect[], verdict: 'MERGE' | 'BLOCK', block_reason?: string, trailingCommas?: boolean }} Verdict
  * @typedef {{ family: string, parsed: Verdict }} Counted
  * @typedef {'NO VALID VERDICTS' | 'MERGE' | 'BLOCK' | 'CHECK'} Decision
  * @typedef {{ completion_tokens?: number, max_tokens?: number, finish_reason?: string, done_reason?: string, thinking_chars?: number, completion_tokens_details?: { reasoning_tokens?: number } }} Usage
@@ -50,7 +50,9 @@ function objectSpans(text) {
  * a verdict of MERGE or BLOCK, it is the one that ends last in the answer, the outermost when two
  * end together. The candidates are every fenced json block and every balanced {...} span that
  * mentions both keys, so the verdict is found whatever order its keys are in and whatever prose
- * comes before or after it. Entries of `items` and `defects` that are not objects are dropped, so a
+ * comes before or after it. A candidate that is JSON but for a comma before a closing bracket or
+ * brace is read without that comma, as Z.ai's MERGE on PR #95 had to be, and the verdict says so
+ * with `trailingCommas`. Entries of `items` and `defects` that are not objects are dropped, so a
  * malformed entry cannot crash what reads them. Null when there is none.
  * @param {string} text
  * @returns {Verdict | null}
@@ -69,18 +71,67 @@ export function parseVerdict(text) {
   }
   candidates.sort((a, b) => b.end - a.end || b.length - a.length);
   for (const c of candidates) {
-    try {
-      const j = JSON.parse(c.body.trim());
+    const body = c.body.trim();
+    const loose = withoutTrailingCommas(body);
+    for (const [source, trailingCommas] of /** @type {Array<[string, boolean]>} */ ([[body, false], [loose, true]])) {
+      if (trailingCommas && loose === body) {
+        continue;
+      }
+      /** @type {any} */
+      let j;
+      try {
+        j = JSON.parse(source);
+      } catch {
+        continue;
+      }
       if (j && Array.isArray(j.items) && (j.verdict === 'MERGE' || j.verdict === 'BLOCK')) {
         return {
           ...j,
+          ...(trailingCommas ? { trailingCommas: true } : {}),
           items: j.items.filter((/** @type {unknown} */ i) => i !== null && typeof i === 'object'),
           defects: Array.isArray(j.defects) ? j.defects.filter((/** @type {unknown} */ d) => d !== null && typeof d === 'object') : [],
         };
       }
-    } catch {}
+    }
   }
   return null;
+}
+
+/**
+ * The text with every comma dropped that stands, outside a string, before a closing bracket or
+ * brace with only whitespace between. Commas inside strings are kept.
+ * @param {string} text
+ * @returns {string}
+ */
+function withoutTrailingCommas(text) {
+  let out = '';
+  let inString = false;
+  for (let i = 0; i < text.length; i = i + 1) {
+    const c = text[i];
+    if (inString) {
+      out = out + c;
+      if (c === '\\' && i + 1 < text.length) {
+        i = i + 1;
+        out = out + text[i];
+      } else if (c === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (c === '"') {
+      inString = true;
+    } else if (c === ',') {
+      let k = i + 1;
+      while (k < text.length && /\s/.test(text[k])) {
+        k = k + 1;
+      }
+      if (text[k] === ']' || text[k] === '}') {
+        continue;
+      }
+    }
+    out = out + c;
+  }
+  return out;
 }
 
 /**

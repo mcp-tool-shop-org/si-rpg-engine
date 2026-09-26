@@ -133,3 +133,20 @@ test('whyNotCounted keeps the plain reasons when the budget was not reached', ()
   assert.equal(whyNotCounted('I approve.', { done_reason: 'stop' }), 'answer did not contain the verdict JSON');
   assert.equal(whyNotCounted('I approve.', undefined), 'answer did not contain the verdict JSON');
 });
+
+test('parseVerdict reads a verdict whose JSON has a comma before a closing bracket, and says so', () => {
+  // Z.ai's MERGE on PR #95 ended its items array with "},\n  ],".
+  const text = 'Items hold.\n```json\n{\n  "items": [\n    {"n": 1, "result": "HOLDS", "evidence": "a, ] stays"},\n  ],\n  "defects": [],\n  "verdict": "MERGE",\n  "block_reason": "",\n}\n```';
+  const v = parseVerdict(text);
+  assert.ok(v, 'the verdict is read');
+  assert.equal(v.verdict, 'MERGE');
+  assert.equal(v.trailingCommas, true);
+  assert.equal(v.items.length, 1);
+  assert.equal(v.items[0].evidence, 'a, ] stays', 'a comma inside a string is kept');
+});
+
+test('parseVerdict marks nothing when the JSON is strict', () => {
+  const v = parseVerdict('```json\n{"items": [{"n": 1, "result": "HOLDS"}], "verdict": "MERGE"}\n```');
+  assert.ok(v);
+  assert.equal(v.trailingCommas, undefined);
+});
