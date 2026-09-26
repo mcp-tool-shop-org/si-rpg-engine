@@ -5,6 +5,33 @@ import { createHasher } from '../frame/hash.js';
 import { createWorld } from './world.js';
 
 /**
+ * The load hash of a world file: what `load world` writes to
+ * worlds/index.json, and what indexReason compares a file with before the
+ * host's first frame. It covers everything a world file holds but its name,
+ * which is the key the index files the hash under, so a file edited after
+ * admission no longer matches its entry, even by a wall nothing touches, and
+ * is refused until it is admitted again (#76). In this order:
+ *
+ * 1. The seed as the tick mixes it, one 32-bit word (seed >>> 0).
+ * 2. What world.mixLoad mixes into a tick's first frame: the zones, the
+ *    minds, and the heightfield's rows, columns, cell, and every sample.
+ *    mixLoad then loads the solver.
+ * 3. The solver's snapshot after load: each body's pose, velocity,
+ *    rotation, spin, and sleep state as the law holds them, and a contact
+ *    pair for each two colliders, one of them a body's, within the
+ *    prediction distance of each other.
+ * 4. The records as the file holds them, which the snapshot does not hold in
+ *    full: it has no ids or half-extents, it holds a body's rotation
+ *    normalized, and it reaches a static collider only through a contact at
+ *    load. In file order: the seed; every body, its id and its sixteen
+ *    numbers; every static collider, its id, six bounds, and rotation; and
+ *    the goal's actor and zone, or that there is none.
+ *
+ * A number in 4 is mixed as its exact bits, but a -0.0 as +0.0: the law
+ * builds one world from either (canon in solver/src/rapier_law.rs), and S1
+ * pin 4 holds them to one load hash. world.mixLoad is the tick's as it was,
+ * and 4 is mixed here alone, so no frame hash, golden, or fixture's frames
+ * move with the load hash.
  * @param {import('./scene.js').Scene} scene
  */
 export function loadHash(scene) {
@@ -13,6 +40,7 @@ export function loadHash(scene) {
     colliders: scene.colliders,
     zones: scene.zones,
     heightfield: scene.heightfield,
+    minds: scene.minds,
   }, 'product');
   const hasher = createHasher();
   hasher.u32(scene.seed);
@@ -24,7 +52,59 @@ export function loadHash(scene) {
       hasher.u32(snap[i]);
     }
   }
+  mixRecords(hasher, scene);
   return hasher.digest();
+}
+
+/**
+ * Part 4 of the load hash: the seed, the bodies, the static colliders, and
+ * the goal, as the file holds them. A body's rotation and spin are optional
+ * in a file and read as createWorld reads them.
+ * @param {import('../frame/types.js').Hasher} hasher
+ * @param {import('./scene.js').Scene} scene
+ */
+function mixRecords(hasher, scene) {
+  mixBits(hasher, scene.seed);
+  hasher.u32(scene.bodies.length);
+  for (const body of scene.bodies) {
+    hasher.text(body.id);
+    for (const value of [
+      body.x, body.y, body.z, body.vx, body.vy, body.vz,
+      body.qx ?? 0, body.qy ?? 0, body.qz ?? 0, body.qw ?? 1,
+      body.wx ?? 0, body.wy ?? 0, body.wz ?? 0,
+      body.hx, body.hy, body.hz,
+    ]) {
+      mixBits(hasher, value);
+    }
+  }
+  hasher.u32(scene.colliders.length);
+  for (const box of scene.colliders) {
+    hasher.text(box.id);
+    for (const value of [
+      box.minX, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ,
+      box.qx ?? 0, box.qy ?? 0, box.qz ?? 0, box.qw ?? 1,
+    ]) {
+      mixBits(hasher, value);
+    }
+  }
+  if (scene.goal) {
+    hasher.u32(1);
+    hasher.text(scene.goal.actor);
+    hasher.text(scene.goal.zone);
+  } else {
+    hasher.u32(0);
+  }
+}
+
+/**
+ * A number as its bits, a -0.0 as +0.0.
+ * @param {import('../frame/types.js').Hasher} hasher
+ * @param {number} value
+ */
+function mixBits(hasher, value) {
+  if (!hasher.float(value === 0 ? 0 : value)) {
+    throw new Error('NaN');
+  }
 }
 
 /**

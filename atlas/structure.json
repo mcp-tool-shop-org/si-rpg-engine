@@ -40,7 +40,7 @@
           "path": "docs/PHASE-1.md"
         },
         {
-          "hash": "826fd9796063dd1e594c82035e568c1cbeb9390dde59635fe16bbb57781dcb2d",
+          "hash": "dfdb2a886cc62860747934c1e58f7ca4ee1e3ecf7b774ade30f67b028bed6df0",
           "path": "docs/PHASE-2.md"
         },
         {
@@ -104,6 +104,10 @@
           "path": "docs/dispatch-1d-the-scene-played.md"
         },
         {
+          "hash": "922fe5caaa0f7fbfd8820f7a5d034ff1ed170be9be1ad5ca3aeaf05faf2c7a8e",
+          "path": "docs/dispatch-76-load-hash.md"
+        },
+        {
           "hash": "65cb5a3e3d638d8f6dce6d40c5d1826749fb9151a2dc57ccbc421ffd2203ff30",
           "path": "docs/dispatch-e1-three-dimensions.md"
         },
@@ -138,6 +142,10 @@
         {
           "hash": "3dab6f933009966c67e553d08dc3842009f41491a0af1a04fa0ec87d535fea6b",
           "path": "docs/dispatch-f3-character-push.md"
+        },
+        {
+          "hash": "02baba2c4085a9d12a39da41e49215784a7c54bf5f8f2a6950735cf1cae5ec46",
+          "path": "docs/dispatch-f5-push-mass.md"
         },
         {
           "hash": "e598dbb1a3748c5beb74bd2179a7312a30de9c63e888702e5f9da0881918844b",
@@ -484,7 +492,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 14,
+      "testedBy": 15,
       "unresolvedSites": 0
     },
     {
@@ -3226,7 +3234,7 @@
             "roleSessionRun",
             "roleSessionTo"
           ],
-          "hash": "8aaf5f1b8626a58be2c75bd64ac9c1e48a2107734b1934ebc2ff47b1ff36fc5b",
+          "hash": "757bf30c067c94ac7f4b3ec318ec4614e2693c0691b5380d147f65660473ab2a",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
@@ -5671,7 +5679,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "fe7e50559c4794111e20d63802984815c26b4cc6faf5ac49493d39a9a23c47d3",
+          "hash": "61d6fa46d021c853df51ce8dd07de7bac04bb4cccefdddba09125f7f6ce3a6e6",
           "path": "package.json"
         },
         {
@@ -6352,8 +6360,8 @@
     },
     {
       "dynamicReads": 1,
-      "dynamicSpawns": 5,
-      "dynamicSpawnsInTests": 5,
+      "dynamicSpawns": 6,
+      "dynamicSpawnsInTests": 6,
       "dynamicWrites": 0,
       "entryPoints": [
         "packages/tick/bin/play.js",
@@ -6371,7 +6379,7 @@
             "settles",
             "worldFloor"
           ],
-          "hash": "bcf7a0431782ba0746ad581ea27bb7d03598551dcbd03d16035686b861a0f852",
+          "hash": "87bd325bc0329509b50dbcd4bf2bb333b9e42da5be04643dc44671cb6dcece83",
           "importsFiles": [
             "packages/frame/hash.js",
             "packages/tick/world.js"
@@ -6381,18 +6389,66 @@
             {
               "calls": [
                 {
-                  "line": 11,
+                  "line": 38,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 17,
+                  "line": 45,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   }
+                },
+                {
+                  "line": 105,
+                  "name": "float",
+                  "target": null,
+                  "via": "mixBits"
+                },
+                {
+                  "line": 68,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 70,
+                  "name": "text",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 80,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 82,
+                  "name": "text",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 91,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 92,
+                  "name": "text",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 95,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
                 }
               ],
               "exported": true,
@@ -6403,7 +6459,69 @@
             {
               "calls": [
                 {
-                  "line": 11,
+                  "line": 105,
+                  "name": "float",
+                  "target": null,
+                  "via": "mixBits"
+                },
+                {
+                  "line": 68,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 70,
+                  "name": "text",
+                  "target": null
+                },
+                {
+                  "line": 80,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 82,
+                  "name": "text",
+                  "target": null
+                },
+                {
+                  "line": 91,
+                  "name": "u32",
+                  "target": null
+                },
+                {
+                  "line": 92,
+                  "name": "text",
+                  "target": null
+                },
+                {
+                  "line": 95,
+                  "name": "u32",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "mixRecords"
+            },
+            {
+              "calls": [
+                {
+                  "line": 105,
+                  "name": "float",
+                  "target": null
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "mixBits"
+            },
+            {
+              "calls": [
+                {
+                  "line": 38,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -6411,12 +6529,60 @@
                   "via": "loadHash"
                 },
                 {
-                  "line": 17,
+                  "line": 45,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   },
                   "via": "loadHash"
+                },
+                {
+                  "line": 105,
+                  "name": "float",
+                  "target": null,
+                  "via": "mixBits"
+                },
+                {
+                  "line": 68,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 70,
+                  "name": "text",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 80,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 82,
+                  "name": "text",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 91,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 92,
+                  "name": "text",
+                  "target": null,
+                  "via": "mixRecords"
+                },
+                {
+                  "line": 95,
+                  "name": "u32",
+                  "target": null,
+                  "via": "mixRecords"
                 }
               ],
               "exported": true,
@@ -6427,7 +6593,7 @@
             {
               "calls": [
                 {
-                  "line": 106,
+                  "line": 186,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -6861,6 +7027,57 @@
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
               "name": "roleTick"
+            }
+          ]
+        },
+        {
+          "entry": "snapshotAtLoad",
+          "entryRule": 1,
+          "hash": "f490c75cb3943c802281b5572f69e250140bd37988d32fec69b0db55930343c8",
+          "importsFiles": [
+            "packages/frame/hash.js",
+            "packages/tick/admit-world.js",
+            "packages/tick/scene.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/load-hash.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 48,
+                  "name": "validateScene",
+                  "target": {
+                    "file": "packages/tick/scene.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "sceneOf"
+            },
+            {
+              "calls": [
+                {
+                  "line": 61,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 62,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "snapshotAtLoad"
             }
           ]
         },
@@ -8171,7 +8388,7 @@
       "outsideReads": 19,
       "outsideWrites": 3,
       "role": "code",
-      "testedBy": 24,
+      "testedBy": 25,
       "unresolvedSites": 4
     },
     {
@@ -8220,7 +8437,7 @@
           "path": "worlds/crate-and-door.json"
         },
         {
-          "hash": "a7ef7c4e51da43a44d1b6cfaf632fb91ae8d0f2ecbfc29449e657716314a61f8",
+          "hash": "6213d717c4c408e224e53fe161a39129c92b0639c784b436b1ea5560d77539e7",
           "path": "worlds/index.json"
         }
       ],
@@ -8406,7 +8623,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 29
+          "files": 30
         }
       ],
       "readers": [
@@ -8720,6 +8937,11 @@
         },
         {
           "job": "engines",
+          "path": "packages/tick/load-hash.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "packages/tick/minds.test.js",
           "runKind": "executes"
         },
@@ -8825,7 +9047,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 66,
+      "runsCount": 67,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -9601,8 +9823,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "8d78f1e127fe4566355293724eb7baceefed49e0",
-    "tracked": 284
+    "commit": "83d9caf114b467717e89f3a9a203d0e52eec6a1c",
+    "tracked": 287
   },
   "landings": [
     {
@@ -10264,6 +10486,18 @@
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "fixtures/sweep/walled-open.json",
@@ -10280,6 +10514,18 @@
         {
           "by": "harness/sweep.test.js",
           "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
         }
@@ -10467,6 +10713,18 @@
         }
       ],
       "target": "harness/write-golden.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/host/bin/host.js",
       "writers": []
     },
     {
@@ -11188,6 +11446,12 @@
           "fromTests": true
         },
         {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/scene.js",
           "call": "readFileSync",
           "confidence": "ast"
@@ -11275,6 +11539,18 @@
           "fromTests": true
         },
         {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/minds.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -11337,6 +11613,18 @@
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/load-hash.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "worlds/index.json",
@@ -11346,7 +11634,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 31,
+  "testFiles": 32,
   "unassigned": [
     {
       "exports": [

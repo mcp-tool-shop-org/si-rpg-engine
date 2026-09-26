@@ -96,108 +96,59 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 31,
-      "changed": 19,
+      "added": 3,
+      "changed": 5,
       "moved": 0,
-      "parts": 7,
-      "removed": 3
+      "parts": 5,
+      "removed": 0
     },
     "items": [
       {
-        "kind": "import-added",
-        "sentence": "propose now imports harness.",
-        "subjects": [
-          "propose",
-          "harness"
-        ]
-      },
-      {
         "kind": "door",
-        "sentence": "CI now also runs packages/propose/record.test.js, packages/tick/gate.test.js and packages/tick/roles.test.js.",
+        "sentence": "CI now also runs packages/tick/load-hash.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "packages/propose/record.test.js",
-          "packages/tick/gate.test.js",
-          "packages/tick/roles.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks harness/role-session.mjs.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/role-session.mjs"
+          "packages/tick/load-hash.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/behavior-minds.json is now also read by packages/propose/propose.test.js.",
+        "sentence": "fixtures/sweep/walled-open.json is now also read by packages/tick/load-hash.test.js.",
         "subjects": [
-          "fixtures/behavior-minds.json",
-          "packages/propose/propose.test.js"
+          "fixtures/sweep/walled-open.json",
+          "packages/tick/load-hash.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/golden.txt is now also read by packages/propose/propose.test.js.",
+        "sentence": "fixtures/sweep/walled.json is now also read by packages/tick/load-hash.test.js.",
         "subjects": [
-          "fixtures/golden.txt",
-          "packages/propose/propose.test.js"
+          "fixtures/sweep/walled.json",
+          "packages/tick/load-hash.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/roles/ is now read by harness/restore.test.js, packages/propose/propose.test.js, packages/propose/record.test.js and packages/tick/roles.test.js.",
+        "sentence": "packages/host/bin/host.js is now read by packages/tick/load-hash.test.js.",
         "subjects": [
-          "fixtures/roles/",
-          "harness/restore.test.js",
-          "packages/propose/propose.test.js",
-          "packages/propose/record.test.js",
-          "packages/tick/roles.test.js"
+          "packages/host/bin/host.js",
+          "packages/tick/load-hash.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "And 18 more new writers and readers of places.",
+        "sentence": "And 3 more new writers and readers of places.",
         "subjects": []
       },
       {
-        "kind": "sequence",
-        "sentence": "packages/propose/propose.test.js now starts at probe session; it started at fresh.",
-        "subjects": [
-          "packages/propose/propose.test.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/tick.js, create tick gained a step, least label, after commit frame.",
-        "subjects": [
-          "packages/tick/tick.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/tick.js, create tick gained a step, least label, after commit frame.",
-        "subjects": [
-          "packages/tick/tick.js"
-        ]
-      },
-      {
-        "kind": "part",
-        "sentence": "roles is a new part, drawn from `predicates/roles/**`.",
-        "subjects": [
-          "roles"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "31 files added, 3 removed and 19 changed content, across 7 parts.",
+        "sentence": "3 files added and 5 changed content, across 5 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "d25073e4ca0fb29e439787f95b5e86cd35334f4e",
-      "generatedAt": "2026-09-26T05:31:34.606Z"
+      "commit": "8d78f1e127fe4566355293724eb7baceefed49e0",
+      "generatedAt": "2026-09-26T06:50:17.517Z"
     },
     "unchanged": false
   },
@@ -284,9 +235,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "8d78f1e127fe4566355293724eb7baceefed49e0",
+  "commit": "83d9caf114b467717e89f3a9a203d0e52eec6a1c",
   "defaultBranch": "main",
-  "derived": "16 parts, mostly JavaScript (99 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "16 parts, mostly JavaScript (100 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -370,7 +321,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 29
+          "files": 30
         }
       ],
       "runs": [
@@ -398,6 +349,7 @@
         "packages/propose/propose.test.js",
         "packages/propose/record.test.js",
         "packages/tick/gate.test.js",
+        "packages/tick/load-hash.test.js",
         "packages/tick/minds.test.js",
         "packages/tick/order.test.js",
         "packages/tick/roles.test.js",
@@ -412,7 +364,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 37,
+      "runsCount": 38,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -792,13 +744,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T06:50:17.517Z",
+  "generatedAt": "2026-09-26T07:35:08.171Z",
   "limits": [
     "14 import sites could not be resolved.",
     "2 writes and 3 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "31 commands are built at run time and not followed, 28 of them in tests.",
+    "32 commands are built at run time and not followed, 29 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -1455,6 +1407,28 @@
       ]
     },
     {
+      "entry": "snapshotAtLoad",
+      "file": "packages/tick/load-hash.test.js",
+      "inner": [],
+      "part": "tick",
+      "partLabel": "tick",
+      "phrase": "snapshot at load",
+      "steps": [
+        {
+          "name": "createWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create world"
+        },
+        {
+          "name": "createHasher",
+          "part": "frame",
+          "partLabel": "frame",
+          "phrase": "create hasher"
+        }
+      ]
+    },
+    {
       "entry": "firstHashes",
       "file": "packages/tick/order.test.js",
       "inner": [
@@ -1783,14 +1757,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 31,
+  "testFiles": 32,
   "testedBy": {
-    "frame": 14,
+    "frame": 15,
     "host": 1,
     "load": 4,
     "propose": 2,
     "solver": 1,
-    "tick": 24
+    "tick": 25
   },
   "unnamedWrites": 2,
   "unread": [],
