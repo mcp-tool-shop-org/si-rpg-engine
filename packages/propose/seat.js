@@ -5,24 +5,29 @@
 // catalog holds it thawed: the propose command refuses a frozen role before
 // any model call, and the tick's gate refuses a frozen role's proposal. A
 // scratch world is built only from the repository's own files. Every call is
-// recorded (record.js), and the tick never waits for a model: while a call is
-// outstanding, the session advances the tick by the quanta it names, and the
-// proposal is checked against the world as it is when it arrives (pin 8).
-// The seat enforces the call budgets: at most callsPerSession calls,
-// outputTokens as each call's num_predict, and secondsPerCall as its timeout.
-// That timeout is the seat's own deadline, the call's only one (askWithin):
-// what the client can observe of the model, the server, and the GPU is read
-// before the call, and a call still out at the budget is cut off and recorded
-// with what was read, no output, and the budget as its time.
+// recorded (record.js), however it ends, and the tick never waits for a
+// model: while a call is outstanding, the session advances the tick by the
+// quanta it names, and the proposal is checked against the world as it is
+// when it arrives (pin 8). The seat enforces the call budgets: at most
+// callsPerSession calls, outputTokens as each call's num_predict, and
+// secondsPerCall as its timeout. That timeout is the seat's own deadline, the
+// call's only one (askWithin): what the client can observe of the model, the
+// server, and the GPU is read before the call, and a call still out at the
+// budget is cut off and recorded with what was read, no output, and the
+// budget as its time. A call whose reads or ask throw is recorded with what
+// was read before the throw, no output, and the throw as its failure, and the
+// session stops after it (#87). The loaded model is read again after every
+// call, however it ends, so a model swapped while a call is out reads
+// model-changed, and nothing it said is submitted.
 
 import { readFileSync, realpathSync } from 'node:fs';
 import { basename, isAbsolute, join, relative } from 'node:path';
 import { beliefKeys } from '../tick/beliefs.js';
 import { validateScene } from '../tick/scene.js';
 import { settle } from '../tick/tick.js';
-import { readRoleOutput, stampProposal } from './parse.js';
+import { stampProposal } from './parse.js';
 import { accessText, catalogText, feedbackText, renderTemplate, templateSlots, worldText } from './prompt.js';
-import { cutOffTiming, outputHash, promptHash, recordKey, schemaHash } from './record.js';
+import { callRead, cutOffTiming, digestOf, failedTiming, outputHash, promptHash, recordKey, schemaHash } from './record.js';
 import { buildSchema } from './schema.js';
 
 /**
@@ -36,13 +41,20 @@ import { buildSchema } from './schema.js';
  * @typedef {import('./ollama.js').ChatRequest} ChatRequest
  * @typedef {import('./ollama.js').Observed} Observed
  * @typedef {import('./ollama.js').Reply} Reply
+ * @typedef {import('./ollama.js').ModelSeen} ModelSeen
+ * @typedef {import('./ollama.js').GpuSeen} GpuSeen
+ * @typedef {import('./ollama.js').Loaded} Loaded
+ * @typedef {import('./record.js').Unread} Unread
+ * @typedef {import('./record.js').Readings} Readings
  * @typedef {import('./record.js').CallRecord} CallRecord
+ * @typedef {import('./record.js').CallRecord2} CallRecord2
  * @typedef {import('./record.js').CallLine} CallLine
  * @typedef {import('./prompt.js').Feedback} Feedback
  * @typedef {{
  *   observe: (name: string, pin: string) => Promise<Observed>,
  *   ask: (request: ChatRequest, signal: AbortSignal) => Promise<Reply>,
- * }} Client the model's client: a read before each call, and the call under the seat's signal
+ *   loaded: (name: string) => Promise<Loaded>,
+ * }} Client the model's client: the reads before each call, which may throw carrying what they read before the throw as `seen`; the call under the seat's signal; and the loaded model read again once the call has ended
  * @typedef {Parameters<typeof import('../tick/world.js').createWorld>[0]} WorldInit
  */
 
@@ -241,21 +253,22 @@ function schemaContext(init) {
 }
 
 /**
- * Resolves with the call's reply, or with null once the seat's deadline
+ * Resolves with what the call came to, or with null once the seat's deadline
  * passes first.
- * @param {Promise<Reply>} asked
+ * @template T
+ * @param {Promise<T>} ended
  * @param {number} ms
  * @param {((ms: number) => Promise<void>) | undefined} timer
- * @returns {Promise<Reply | null>}
+ * @returns {Promise<T | null>}
  */
-async function within(asked, ms, timer) {
+async function within(ended, ms, timer) {
   /** @type {ReturnType<typeof setTimeout> | undefined} */
   let handle;
   const clock = timer ? timer(ms) : new Promise((resolve) => {
     handle = setTimeout(resolve, ms);
   });
   try {
-    return await Promise.race([asked, clock.then(() => null)]);
+    return await Promise.race([ended, clock.then(() => null)]);
   } finally {
     if (handle !== undefined) {
       clearTimeout(handle);
@@ -263,41 +276,168 @@ async function within(asked, ms, timer) {
   }
 }
 
+/** @param {unknown} value */
+function isObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+/**
+ * What a read or a call threw, as a record keeps it.
+ * @param {unknown} error
+ */
+function failureOf(error) {
+  const text = error instanceof Error ? error.message : String(error);
+  return text.length > 0 ? text : 'a throw with no message';
+}
+
+/**
+ * A reading of the loaded model: the model as the server holds it, null when
+ * it is not loaded, and unread for anything else.
+ * @param {unknown} value
+ * @returns {Loaded | Unread}
+ */
+function loadedReading(value) {
+  return value === null || isObject(value) ? /** @type {Loaded} */ (value) : 'unread';
+}
+
+/**
+ * What the client read before a call, as the record holds it: each reading it
+ * made, and unread for each it did not. The one call at once is the seat's
+ * own promise, kept by never having a second call out.
+ * @param {unknown} seen
+ * @returns {Readings}
+ */
+function readingsOf(seen) {
+  const s = isObject(seen) ? /** @type {Record<string, unknown>} */ (seen) : {};
+  const server = isObject(s.server) ? /** @type {Record<string, unknown>} */ (s.server) : {};
+  const client = isObject(s.client) ? /** @type {Record<string, unknown>} */ (s.client) : {};
+  return {
+    model: isObject(s.model) ? /** @type {ModelSeen} */ (s.model) : 'unread',
+    server: {
+      version: typeof server.version === 'string' ? server.version : 'unread',
+      loadedBefore: loadedReading(server.loadedBefore),
+      loaded: 'unread',
+    },
+    client: {
+      environment: isObject(client.environment) ? /** @type {Record<string, string | null>} */ (client.environment) : 'unread',
+      callsAtOnce: 1,
+    },
+    gpu: isObject(s.gpu) ? /** @type {GpuSeen} */ (s.gpu) : 'unread',
+  };
+}
+
+/**
+ * The reads before a call. A throw is the call's failure, with what the
+ * client read before it, which its throw carries as `seen`.
+ * @param {Client} client
+ * @param {string} name
+ * @param {string} pin
+ * @returns {Promise<{ readings: Readings, failure: string | null }>}
+ */
+async function readBefore(client, name, pin) {
+  try {
+    return { readings: readingsOf(await client.observe(name, pin)), failure: null };
+  } catch (error) {
+    return { readings: readingsOf(isObject(error) ? /** @type {{ seen?: unknown }} */ (error).seen : undefined), failure: failureOf(error) };
+  }
+}
+
+/**
+ * The call, made under the signal, as a promise that never rejects: its
+ * reply, or what it threw and how long after it was made. The handler is
+ * attached as the call is made, so a call the seat leaves, at its deadline or
+ * because something threw while it was out, has nothing left unhandled when
+ * it rejects later. A client that throws instead of returning a promise is
+ * read the same way.
+ * @param {Client} client
+ * @param {ChatRequest} request
+ * @param {AbortSignal} signal
+ * @returns {Promise<{ reply: Reply } | { error: unknown, ms: number }>}
+ */
+function asked(client, request, signal) {
+  const started = performance.now();
+  try {
+    return Promise.resolve(client.ask(request, signal)).then((reply) => ({ reply }), (error) => ({ error, ms: performance.now() - started }));
+  } catch (error) {
+    return Promise.resolve({ error, ms: performance.now() - started });
+  }
+}
+
+/**
+ * The loaded model read again once the call has ended: unread when the read
+ * fails or times out, and the call keeps its own ending.
+ * @param {Client} client
+ * @param {string} name
+ * @returns {Promise<Loaded | Unread>}
+ */
+async function loadedAfter(client, name) {
+  try {
+    return loadedReading(await client.loaded(name));
+  } catch {
+    return 'unread';
+  }
+}
+
 /**
  * One call under the seat's deadline, which is the call's only one. What the
- * client can observe of the model, the server, and the GPU is read first. The
+ * client can observe of the model, the server, and the GPU is read first; a
+ * read that throws is the call's failure, and the call is never asked. The
  * call is then given the seat's signal, `whileOut` runs while it is out, and
  * the seat waits at most `timeoutMs`. A reply within the budget is taken. A
- * call still out at the budget, or a reply that took longer than it, is cut
- * off: the signal is aborted and no reply is taken. So a call that times out
- * ends the same way whichever clock would have fired first.
+ * call still out at the budget, or one that came back after it, is cut off:
+ * the signal is aborted and nothing it came to is taken. So a call that times
+ * out ends the same way whichever clock would have fired first. A call that
+ * rejects within its budget is the call's failure, with the time from its
+ * making to its rejection. The call's promise is handled from the moment it
+ * is made, and a call the seat leaves, at its deadline or because `whileOut`
+ * or the timer threw, is aborted, so nothing it rejects with is left
+ * unhandled. A throw from `whileOut` or the timer is the tick's, not the
+ * call's, and it propagates. However the call ends, the loaded model is read
+ * again after it.
  * @param {Client} client
  * @param {ChatRequest} request
  * @param {string} pin the model digest the role pins
  * @param {number} timeoutMs
  * @param {{ timer?: (ms: number) => Promise<void>, whileOut?: () => void }} [options]
- * @returns {Promise<{ seen: Observed, reply: Reply | null }>}
+ * @returns {Promise<{ readings: Readings, reply: Reply | null, failure: string | null, ms: number }>} what was read before and after the call, the reply taken or null, and the failure with the time from the ask's making to its rejection, 0 when it was never asked, or null and 0
  */
 export async function askWithin(client, request, pin, timeoutMs, options) {
-  const seen = await client.observe(request.model, pin);
-  const deadline = new AbortController();
-  const asked = client.ask(request, deadline.signal);
-  if (options && options.whileOut) {
-    options.whileOut();
+  const before = await readBefore(client, request.model, pin);
+  /** @type {Reply | null} */
+  let reply = null;
+  let failure = before.failure;
+  let ms = 0;
+  if (failure === null) {
+    const deadline = new AbortController();
+    const ended = asked(client, request, deadline.signal);
+    try {
+      if (options && options.whileOut) {
+        options.whileOut();
+      }
+      const came = await within(ended, timeoutMs, options ? options.timer : undefined);
+      if (came !== null && 'reply' in came && came.reply.timing.ms <= timeoutMs) {
+        reply = came.reply;
+      } else if (came !== null && 'error' in came && came.ms <= timeoutMs) {
+        failure = failureOf(came.error);
+        ms = came.ms;
+      }
+    } finally {
+      if (reply === null) {
+        deadline.abort();
+      }
+    }
   }
-  const reply = await within(asked, timeoutMs, options ? options.timer : undefined);
-  if (reply === null || reply.timing.ms > timeoutMs) {
-    deadline.abort();
-    return { seen, reply: null };
-  }
-  return { seen, reply };
+  const loaded = await loadedAfter(client, request.model);
+  return { readings: { ...before.readings, server: { ...before.readings.server, loaded } }, reply, failure, ms };
 }
 
 /**
  * Runs a thawed scratch role for the session's calls. Each call: the frame it
  * is built from, a prompt rendered fresh from the role's declared inputs, the
- * schema its builder makes, the call, its record, the seat's own parse, and,
- * if it reads, the stamped proposal submitted with its provenance. A role the
+ * schema its builder makes, the call, its record, how the call reads from its
+ * record (callRead), and, if it reads, the stamped proposal submitted with its
+ * provenance. A call that failed is recorded, and the session stops after it
+ * with its reason, so the caller writes what the session reached. A role the
  * seat cannot run is refused with its reason, before any call.
  * @param {SessionInit} init
  * @returns {Promise<{ records: CallRecord[], calls: CallLine[], refused: string | null }>}
@@ -349,7 +489,7 @@ export async function runSession(init) {
       stream: false,
     };
     const timeoutMs = budget.secondsPerCall * 1000;
-    const { seen, reply } = await askWithin(init.client, request, model.digest, timeoutMs, {
+    const { readings, reply, failure, ms } = await askWithin(init.client, request, model.digest, timeoutMs, {
       timer: init.timer,
       // The tick never waits for a model: it runs on while the call is out.
       whileOut: () => {
@@ -358,9 +498,9 @@ export async function runSession(init) {
         }
       },
     });
-    /** @type {CallRecord} */
+    /** @type {CallRecord2} */
     const record = {
-      record: 1,
+      record: 2,
       session: init.session,
       call,
       role: manifest.role,
@@ -369,61 +509,53 @@ export async function runSession(init) {
       prompt: promptHash(messages),
       schema: schemaHash(format),
       timeoutMs,
-      model: seen.model,
-      server: seen.server,
-      gpu: seen.gpu,
+      model: readings.model,
+      server: readings.server,
+      client: readings.client,
+      gpu: readings.gpu,
+      failure,
       output: reply === null ? null : reply.output,
       outputSha256: outputHash(reply === null ? null : reply.output),
-      // The seat, not the client, says whether a call was cut off.
-      timing: reply === null ? cutOffTiming(timeoutMs) : { ...reply.timing, timedOut: false },
+      // The seat, not the client, says whether a call failed or was cut off.
+      timing: failure !== null ? failedTiming(ms) : reply === null ? cutOffTiming(timeoutMs) : { ...reply.timing, timedOut: false },
     };
     const key = recordKey(/** @type {Record<string, unknown>} */ (/** @type {unknown} */ (record)));
     records.push(record);
+    // How the call reads from its record, by the one set of rules for it (record.js callRead).
+    const read = callRead(record, manifest);
     /** @type {CallLine} */
-    const line = { call, record: key, builtAt, read: 'ok', reason: null, admitted: false, at: null };
-    const loaded = record.server.loaded;
-    if (record.timing.timedOut) {
-      line.read = 'timed-out';
-      line.reason = 'no output within ' + budget.secondsPerCall + ' s';
-      feedback.push({ call, proposal: null, read: line.read, admitted: false, reason: line.reason, at: null });
-    } else if (record.output === null) {
-      line.read = 'no-output';
-      line.reason = 'the reply held no output';
-      feedback.push({ call, proposal: null, read: line.read, admitted: false, reason: line.reason, at: null });
-    } else if (loaded && typeof loaded.digest === 'string' && loaded.digest !== model.digest) {
-      line.read = 'model-changed';
-      line.reason = 'the server held ' + loaded.digest + ' loaded, not the pin';
-      feedback.push({ call, proposal: null, read: line.read, admitted: false, reason: line.reason, at: null });
-    } else {
-      const read = readRoleOutput(record.output, manifest);
-      if (read.verdict !== 'ok') {
-        line.read = read.verdict;
-        line.reason = read.reason;
-        feedback.push({ call, proposal: null, read: read.verdict, admitted: false, reason: read.reason, at: null });
-      } else {
-        /** @type {Provenance} */
-        const provenance = {
-          role: manifest.role,
-          instance: init.instance,
-          manifest: entry.hash,
-          model: record.model.digest,
-          prompt: record.prompt,
-          schema: record.schema,
-          record: key,
-          output: /** @type {string} */ (record.outputSha256),
-          builtAt,
-          inputs: entry.derived.inputs.map((input) => ({ source: input.source, trust: input.trust })),
-        };
-        const at = tick.frame().tick;
-        const admission = submitAsRole(tick, stampProposal(read.proposal, builtAt), provenance);
-        line.admitted = admission.admitted;
-        line.reason = admission.admitted ? null : admission.reason;
-        line.at = admission.admitted ? at : null;
-        feedback.push({ call, proposal: read.proposal, read: 'ok', admitted: admission.admitted, reason: line.reason, at: line.at });
-        settle(tick);
-      }
-    }
+    const line = { call, record: key, builtAt, read: read.read, reason: null, admitted: false, at: null };
     calls.push(line);
+    if (!('proposal' in read)) {
+      line.reason = read.reason;
+      if (read.read === 'call-failed') {
+        refused = 'the session stops at call ' + call + ', which failed: ' + read.reason;
+        break;
+      }
+      feedback.push({ call, proposal: null, read: read.read, admitted: false, reason: read.reason, at: null });
+      continue;
+    }
+    /** @type {Provenance} */
+    const provenance = {
+      role: manifest.role,
+      instance: init.instance,
+      manifest: entry.hash,
+      // The digest the client read; a client that read none names none, and the gate refuses what is not the pin.
+      model: digestOf(record) ?? 'unread',
+      prompt: record.prompt,
+      schema: record.schema,
+      record: key,
+      output: /** @type {string} */ (record.outputSha256),
+      builtAt,
+      inputs: entry.derived.inputs.map((input) => ({ source: input.source, trust: input.trust })),
+    };
+    const at = tick.frame().tick;
+    const admission = submitAsRole(tick, stampProposal(read.proposal, builtAt), provenance);
+    line.admitted = admission.admitted;
+    line.reason = admission.admitted ? null : admission.reason;
+    line.at = admission.admitted ? at : null;
+    feedback.push({ call, proposal: read.proposal, read: 'ok', admitted: admission.admitted, reason: line.reason, at: line.at });
+    settle(tick);
   }
   return { records, calls, refused };
 }

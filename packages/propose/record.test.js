@@ -127,6 +127,7 @@ test('every committed session verifies without a GPU, and at least one admitted 
     admitted = admitted + result.entries;
     const { session, records } = readSession(join(SESSIONS, name));
     for (const record of records.values()) {
+      assert.ok(record.record === 1, 'made at version 1, and verified under the rules it was made under');
       assert.equal(record.model.digest, '845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e', 'recorded with the pinned model');
       assert.equal(record.request.options.temperature, 0);
       assert.equal(record.server.version, '0.34.0');
