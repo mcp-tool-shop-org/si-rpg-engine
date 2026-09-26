@@ -96,59 +96,67 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 3,
-      "changed": 5,
+      "added": 22,
+      "changed": 8,
       "moved": 0,
-      "parts": 5,
+      "parts": 4,
       "removed": 0
     },
     "items": [
       {
         "kind": "door",
-        "sentence": "CI now also runs packages/tick/load-hash.test.js.",
+        "sentence": "CI now also runs harness/push.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "packages/tick/load-hash.test.js"
+          "harness/push.test.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "fixtures/sweep/walled-open.json is now also read by packages/tick/load-hash.test.js.",
+        "kind": "door",
+        "sentence": "CI now also checks harness/law-runs.mjs.",
         "subjects": [
-          "fixtures/sweep/walled-open.json",
-          "packages/tick/load-hash.test.js"
+          ".github/workflows/ci.yml",
+          "harness/law-runs.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/sweep/walled.json is now also read by packages/tick/load-hash.test.js.",
+        "sentence": "fixtures/law-runs/ is now written by harness/law-runs.mjs.",
         "subjects": [
-          "fixtures/sweep/walled.json",
-          "packages/tick/load-hash.test.js"
+          "fixtures/law-runs/",
+          "harness/law-runs.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "packages/host/bin/host.js is now read by packages/tick/load-hash.test.js.",
+        "sentence": "fixtures/law-runs/ is now read by harness/law-runs.mjs.",
         "subjects": [
-          "packages/host/bin/host.js",
-          "packages/tick/load-hash.test.js"
+          "fixtures/law-runs/",
+          "harness/law-runs.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "And 3 more new writers and readers of places.",
+        "sentence": "fixtures/push/ is now read by harness/law-runs.mjs.",
+        "subjects": [
+          "fixtures/push/",
+          "harness/law-runs.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "And 1 more new writer or reader of a place.",
         "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "3 files added and 5 changed content, across 5 parts.",
+        "sentence": "22 files added and 8 changed content, across 4 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "8d78f1e127fe4566355293724eb7baceefed49e0",
-      "generatedAt": "2026-09-26T06:50:17.517Z"
+      "commit": "83d9caf114b467717e89f3a9a203d0e52eec6a1c",
+      "generatedAt": "2026-09-26T07:35:08.171Z"
     },
     "unchanged": false
   },
@@ -235,9 +243,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "83d9caf114b467717e89f3a9a203d0e52eec6a1c",
+  "commit": "33052f13c0cdce03db798d86f21278e7fe3e01d1",
   "defaultBranch": "main",
-  "derived": "16 parts, mostly JavaScript (100 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "16 parts, mostly JavaScript (102 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -248,6 +256,7 @@
         "harness/behaviour.mjs",
         "harness/corpus.mjs",
         "harness/events.mjs",
+        "harness/law-runs.mjs",
         "harness/minds-scene.mjs",
         "harness/plant-throw.mjs",
         "harness/product-run.mjs",
@@ -271,10 +280,11 @@
         "tools/review.mjs",
         "tools/verdicts.js"
       ],
-      "checksCount": 29,
+      "checksCount": 30,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [
+        "fixtures/law-runs/",
         "fixtures/sweep/verdicts.json"
       ],
       "name": "CI",
@@ -296,7 +306,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 34
+          "files": 36
         },
         {
           "boundary": "host",
@@ -335,6 +345,7 @@
         "harness/golden-gate.test.js",
         "harness/outcome.test.js",
         "harness/product.test.js",
+        "harness/push.test.js",
         "harness/restore.test.js",
         "harness/solver.test.js",
         "harness/soundness.test.js",
@@ -364,7 +375,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 38,
+      "runsCount": 39,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -730,6 +741,12 @@
       ]
     },
     {
+      "place": "fixtures/law-runs/",
+      "writers": [
+        "harness/law-runs.mjs"
+      ]
+    },
+    {
       "block": true,
       "place": "fixtures/solver.sha256",
       "writers": [
@@ -744,9 +761,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T07:35:08.171Z",
+  "generatedAt": "2026-09-26T08:16:09.574Z",
   "limits": [
-    "14 import sites could not be resolved.",
+    "15 import sites could not be resolved.",
     "2 writes and 3 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
@@ -1757,20 +1774,27 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 32,
+  "testFiles": 33,
   "testedBy": {
-    "frame": 15,
+    "frame": 16,
     "host": 1,
     "load": 4,
     "propose": 2,
     "solver": 1,
-    "tick": 25
+    "tick": 26
   },
   "unnamedWrites": 2,
-  "unread": [],
+  "unread": [
+    {
+      "place": "fixtures/law-runs/",
+      "writers": [
+        "harness/law-runs.mjs"
+      ]
+    }
+  ],
   "unreadFiles": 0,
   "unreadNote": [],
   "untested": [],
   "untestedNote": [],
-  "written": 4
+  "written": 5
 }
