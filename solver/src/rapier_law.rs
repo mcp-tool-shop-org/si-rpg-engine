@@ -116,7 +116,8 @@ enum Load {
     /// The loaded world is the same world with the same modes, and stays.
     Kept,
     /// The loaded world is the same world and only the modes changed: its
-    /// bodies switched in place, in record order (F1 pin 2).
+    /// bodies switched in place, in record order with the drops before the
+    /// pick-ups (F1 pin 2, #71).
     Switched,
     /// A new world was built.
     Built,
@@ -418,7 +419,8 @@ fn warm_broadphase(world: &mut PhysicsWorld) {
     // instead of hiding it (F1 pin 3): the character's queries run before the
     // step, so in the quantum of a switch a removed body is gone from them at
     // once, and a dropped body is not in them until that step's broad phase
-    // takes it in. harness/switch.test.js holds both.
+    // takes it in, whatever the record order of a pick-up in the same quantum
+    // (#71, switch_in_place). harness/switch.test.js holds both.
     for (_, body) in world.bodies.iter_mut() {
         if !body.is_fixed() {
             body.wake_up(true);
@@ -554,16 +556,18 @@ fn held(loaded: &Loaded, i: usize) -> Result<(RigidBodyHandle, ColliderHandle), 
 
 /// Applies a change of the driven and carried masks to the running world, in
 /// place (F1 pin 2). It walks the bodies in record order, never a map's
-/// order. Every lookup and every value that can refuse is taken first, and
-/// nothing moves until all of them have, so a refusal leaves the world as it
-/// was. Modes 1 and 2 are both in the driven mask, so lifted to driving and
-/// back is no switch. A pick-up is `remove_body`; a drop inserts
+/// order, and applies what it planned in that order with every drop before
+/// every pick-up (#71). Every lookup and every value that can refuse is taken
+/// first, and nothing moves until all of them have, so a refusal leaves the
+/// world as it was. Modes 1 and 2 are both in the driven mask, so lifted to
+/// driving and back is no switch. A pick-up is `remove_body`; a drop inserts
 /// build_world's body for the record, which takes the most recently freed
-/// slot at the arena's next generation, so handle generations follow the
-/// carry history and reach the hash through the snapshot's pair keys (S1 pin
-/// 9). In a capsule world a driven body's collider becomes the capsule and a
-/// dynamic body's the box, as build_world would make them. The load pass is
-/// never run here (S1 pin 12); see warm_broadphase for what that costs.
+/// slot at the arena's next generation, never one freed in its own quantum,
+/// so handle generations follow the carry history and reach the hash through
+/// the snapshot's pair keys (S1 pin 9). In a capsule world a driven body's
+/// collider becomes the capsule and a dynamic body's the box, as build_world
+/// would make them. The load pass is never run here (S1 pin 12); see
+/// warm_broadphase for what that costs.
 fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(), Refusal> {
     let shape = loaded.signature.shape;
     let mut plan: Vec<(usize, Transition)> = Vec::new();
@@ -594,6 +598,23 @@ fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(),
         };
         plan.push((i, transition));
     }
+    // Drops before pick-ups (#71). Rapier's collider arena gives an insert
+    // the slot the latest removal freed, and until this quantum's step the
+    // broad phase keeps a removed collider's leaf, with its old box, under
+    // that slot; the queries turn a leaf into a collider by slot alone. So a
+    // drop applied after a pick-up took the picked-up body's slot, and until
+    // the step every query over the picked-up body's old footprint found the
+    // dropped body. It was tested at its real shape and pose, so nothing was
+    // ever hit where the picked-up body had been, but a cast crossing both
+    // places met the dropped body a quantum before any other drop is met, and
+    // only when a body with a lower record index was picked up in the same
+    // quantum. Applied first, a drop takes no slot freed this quantum, so a
+    // dropped body enters the queries at the step whatever the record order.
+    // The sort is stable: the other transitions keep their record order, and
+    // so do the pick-ups among themselves. The Rust knowledge base measured
+    // the alias and this order (readouts, rust-knowledge wave 3,
+    // requests/slot-alias.md).
+    plan.sort_by_key(|(_, transition)| matches!(transition, Transition::PickUp(_)));
     for (i, transition) in plan {
         match transition {
             Transition::ToDriven(handle, collider) => {
