@@ -261,12 +261,14 @@
         "walker"
       ],
       "complete": false,
-      "admitted": true,
+      "admitted": false,
       "zones": {
         "west": true,
         "east": true
       },
-      "findings": []
+      "findings": [
+        "leaves crate by watcher"
+      ]
     },
     "product scene": {
       "actors": [
@@ -282,15 +284,11 @@
       },
       "findings": [
         "leaves climber by climber",
-        "leaves climber by lower",
         "leaves lower by lower",
-        "leaves lower by walker",
         "leaves parcel by walker",
         "leaves tip by lower",
         "leaves tip by walker",
-        "leaves upper by lower",
         "leaves upper by walker",
-        "leaves walker by lower",
         "leaves walker by walker"
       ]
     }
