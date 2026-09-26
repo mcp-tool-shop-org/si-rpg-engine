@@ -591,6 +591,24 @@ test('the tick advances while a slow call is outstanding, and the proposal is ch
   assert.equal(result.calls[0].at, 20);
 });
 
+test('a session whose last call is refused verifies: its frames start at tick 0, and replay steps on past its last admission to its end', async () => {
+  const { result, dir } = await probeSession({
+    calls: 2,
+    client: fakeClient([
+      JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, z: 0 } } }),
+      JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 50, z: 0 } } }),
+    ]),
+  });
+  assert.deepEqual(result.calls.map((line) => [line.admitted, line.at]), [[true, 8], [false, null]]);
+  assert.match(String(result.calls[1].reason), /^target is beyond move range \d+$/);
+  const session = JSON.parse(readFileSync(join(dir, 'session.json'), 'utf8'));
+  assert.equal(session.log.length, 1);
+  assert.equal(session.frames.length - 1, session.end.tick, 'the frames start at tick 0, which attach draws');
+  assert.equal(session.end.tick, result.calls[1].builtAt.tick + 8, 'the session stepped on while the refused call was out');
+  assert.ok(session.end.tick > session.log[0].tick + 8, 'its end is past its only admission');
+  assert.deepEqual(verifySession(dir).failures, []);
+});
+
 test('the seat keeps its call budgets: callsPerSession, outputTokens, and secondsPerCall', async () => {
   let asks = 0;
   const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
