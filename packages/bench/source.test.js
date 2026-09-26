@@ -92,9 +92,15 @@ test('the law\'s one change is the coverage build\'s shim: one static under --cf
     const text = readFileSync(join(root, 'solver', 'src', name), 'utf8');
     assert.equal((text.match(/law_coverage/g) || []).length, name === 'lib.rs' ? 2 : 0, name);
   }
-  // Nothing the product build reads names the cfg: its build script, its
-  // manifest, its cargo config, and the script that sets its flags.
-  for (const file of ['solver/build.rs', 'solver/Cargo.toml', 'solver/.cargo/config.toml', 'solver/build.mjs']) {
+  // The build script's one line names the cfg, so a build that sets it and a
+  // build that does not both expect it. Nothing else the product build reads
+  // names the cfg: its manifest, its cargo config, and the script that sets
+  // its flags.
+  const buildRs = readFileSync(join(root, 'solver', 'build.rs'), 'utf8').replace(/\r\n/g, '\n');
+  const checkCfg = 'println!("cargo::rustc-check-cfg=cfg(law_coverage)");\n';
+  assert.equal(buildRs.split(checkCfg).length, 2, 'solver/build.rs');
+  assert.equal((buildRs.match(/law_coverage/g) || []).length, 1, 'solver/build.rs');
+  for (const file of ['solver/Cargo.toml', 'solver/.cargo/config.toml', 'solver/build.mjs']) {
     assert.ok(!readFileSync(join(root, file), 'utf8').includes('law_coverage'), file);
   }
   assert.deepEqual(COVERAGE_FLAGS, ['-C', 'instrument-coverage', '-Z', 'no-profiler-runtime', '--cfg', 'law_coverage', '-C', 'link-arg=--no-gc-sections']);

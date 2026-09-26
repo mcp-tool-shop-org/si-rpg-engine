@@ -9,6 +9,7 @@ const MEMORY_BYTES: u64 = 512 * 65536;
 
 fn main() {
     println!("cargo::rerun-if-changed=build.rs");
+    println!("cargo::rustc-check-cfg=cfg(law_coverage)");
     if std::env::var("CARGO_CFG_TARGET_ARCH").as_deref() == Ok("wasm32") {
         println!("cargo::rustc-link-arg-cdylib=--initial-memory={}", MEMORY_BYTES);
         println!("cargo::rustc-link-arg-cdylib=--no-growable-memory");

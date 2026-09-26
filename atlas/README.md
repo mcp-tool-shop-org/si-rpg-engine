@@ -1,20 +1,22 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit e179497.
+Mapped at 2026-09-26 from commit 450e262.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
+17 parts, mostly JavaScript (132 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (63e6d78)
+## What changed since 2026-09-26 (ed05b61)
 
-Nothing structural changed since 2026-09-26; 1 file changed content.
+- CI now also runs packages/bench/coverage.test.js.
+- solver/Cargo.lock is now also read by packages/bench/coverage.test.js.
+- 1 file added and 17 changed content, across 4 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 45 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 46 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -27,7 +29,7 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
 
 ## What happens through CI
 
-1. The workflow runs 8 files in bench, 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
+1. The workflow runs 9 files in bench, 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
@@ -59,11 +61,13 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
       10. open
       11. refused
       12. admitted
-   10. Inside packages/bench/finding.test.js, run does, in order: copy checkout, plants (3 steps) and run bench.
-   11. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
-   12. Inside packages/bench/rungs.test.js, run does, in order: copy checkout, apply and run bench.
+   10. Inside packages/bench/coverage.test.js, ensure glue does, in order: product glue and product glue.
+   11. Or, when `existsSync(productGlue(root))`, ensure glue does copy product instead.
+   12. Inside packages/bench/finding.test.js, run does, in order: copy checkout, plants (3 steps) and run bench.
    13. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
-   14. Inside packages/propose/propose.test.js, probe session does, in order:
+   14. Inside packages/bench/rungs.test.js, run does, in order: copy checkout, apply and run bench.
+   15. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
+   16. Inside packages/propose/propose.test.js, probe session does, in order:
       1. load roles (tick)
       2. scratch world
       3. load intent rules
@@ -74,7 +78,7 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
       8. run session
       9. settle
       10. write session
-   15. **Create tick** (tick) runs, in order:
+   17. **Create tick** (tick) runs, in order:
       1. create hasher (frame)
       2. install minds
       3. mix load
@@ -83,7 +87,7 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
       6. u 32
       7. commit frame
       8. least label
-   16. **Run session** runs, in order:
+   18. **Run session** runs, in order:
       1. template slots
       2. frame
       3. render template
@@ -94,9 +98,9 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
       8. while out
       9. loaded
       10. record (3 steps)
-   17. **Settle** (tick) runs, in order: idle and advance.
-   18. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
-   19. **Create tick** runs, in order:
+   19. **Settle** (tick) runs, in order: idle and advance.
+   20. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
+   21. **Create tick** runs, in order:
       1. create hasher (frame)
       2. install minds
       3. mix load
@@ -105,18 +109,8 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
       6. u 32
       7. commit frame
       8. least label
-   20. Inside packages/tick/load-hash.test.js, snapshot at load does, in order: create world and create hasher (frame).
-   21. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
-   22. **Create tick** runs, in order:
-      1. create hasher (frame)
-      2. install minds
-      3. mix load
-      4. mix minds
-      5. snapshot
-      6. u 32
-      7. commit frame
-      8. least label
-   23. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
+   22. Inside packages/tick/load-hash.test.js, snapshot at load does, in order: create world and create hasher (frame).
+   23. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
    24. **Create tick** runs, in order:
       1. create hasher (frame)
       2. install minds
@@ -126,7 +120,17 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
       6. u 32
       7. commit frame
       8. least label
-   25. Inside solver/lint.mjs, lint wasm does, in order:
+   25. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
+   26. **Create tick** runs, in order:
+      1. create hasher (frame)
+      2. install minds
+      3. mix load
+      4. mix minds
+      5. snapshot
+      6. u 32
+      7. commit frame
+      8. least label
+   27. Inside solver/lint.mjs, lint wasm does, in order:
       1. byte
       2. signed
       3. byte
@@ -226,7 +230,7 @@ Read those in order to follow one pull request end to end.
 - 18 import sites could not be resolved.
 - 3 writes and 8 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
-- 49 writes and 99 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 49 writes and 101 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
 - 38 commands are built at run time and not followed, 32 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 

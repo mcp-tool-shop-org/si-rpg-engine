@@ -423,7 +423,7 @@
             "seedCoverage",
             "sha256"
           ],
-          "hash": "78b6c5a48cf81996e3f3ce1d9357ef6aa546ae6be23a14381039065610beb5f4",
+          "hash": "9b75ead159acb4ea6803c6d27d0121fe33ee3ab48b46d0c2dc8fcea9645b6106",
           "path": "packages/bench/build.js"
         },
         {
@@ -434,6 +434,64 @@
             "packages/bench/plants.js"
           ],
           "path": "packages/bench/costs.js"
+        },
+        {
+          "entry": "ensureGlue",
+          "entryRule": 1,
+          "hash": "a3c270a6268c919994797437e278b7996af87c4414b1fc3d146b4d61bf58a495",
+          "importsFiles": [
+            "packages/bench/build.js",
+            "packages/bench/plant.js",
+            "packages/bench/trees.js"
+          ],
+          "path": "packages/bench/coverage.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 62,
+                  "name": "productGlue",
+                  "target": {
+                    "file": "packages/bench/build.js"
+                  }
+                },
+                {
+                  "branch": "existsSync(productGlue(root))",
+                  "line": 66,
+                  "name": "copyProduct",
+                  "target": {
+                    "file": "packages/bench/build.js"
+                  }
+                },
+                {
+                  "line": 70,
+                  "name": "productGlue",
+                  "target": {
+                    "file": "packages/bench/build.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "ensureGlue"
+            },
+            {
+              "calls": [
+                {
+                  "line": 77,
+                  "name": "makeWorktree",
+                  "target": {
+                    "file": "packages/bench/trees.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "checkout"
+            }
+          ]
         },
         {
           "exports": [
@@ -1174,7 +1232,7 @@
         {
           "entry": "importsOf",
           "entryRule": 1,
-          "hash": "f8bd871c8d4aec57086db58f310b79c43bcd4555324b3c7a2803090592f22725",
+          "hash": "f1c6f1bb66f8c5534b8d81837e7328df48a1989069e7cdf728e57dcc5c77be2d",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/build.js",
@@ -1210,10 +1268,10 @@
       "importConfidence": "full",
       "name": "bench",
       "origin": "authored",
-      "outsideReads": 58,
+      "outsideReads": 60,
       "outsideWrites": 35,
       "role": "code",
-      "testedBy": 8,
+      "testedBy": 9,
       "unresolvedSites": 3
     },
     {
@@ -1245,7 +1303,7 @@
           "path": "docs/atlas-design.md"
         },
         {
-          "hash": "bc5c806559ac3cfb470c05f4ba0695baa5bd0f31a895c465cc0b698ddfdd7020",
+          "hash": "6ec99c346bef861e3735a319d5b3f99ff5e71a6972aced30bd88d0c4d08d92dd",
           "path": "docs/consult-brief-01.md"
         },
         {
@@ -1261,15 +1319,15 @@
           "path": "docs/consult-brief-physics-01.md"
         },
         {
-          "hash": "bd0357e0bd3fad3655bd61b8955d98b57aa5124451469627b95b27f32aa3ae1d",
+          "hash": "193abea1cde4709cffb65219a08b01dfb71b7b4ff547f7f490f078fdb2341d59",
           "path": "docs/consult-reply-claude-01.md"
         },
         {
-          "hash": "6d9be18b2e3f1d5869621e04f1889eeeb787728c9e07b6a2b6bdecad4871f42e",
+          "hash": "cc408de92e37c7d4c2413f82925031531220ff33d46a493b4b8dfdd3b2c0bc46",
           "path": "docs/consult-reply-claude-02.md"
         },
         {
-          "hash": "a60b3f3f413b3178c4b24ca35a7a78b12819e2b4a228ac1ae6f4144cb106a14d",
+          "hash": "ee0969f2d3f083d63ad99cd94224d403a5d46ac42f1f1dd3c0a3244158108d36",
           "path": "docs/consult-reply-claude-atlas-01.md"
         },
         {
@@ -1285,7 +1343,7 @@
           "path": "docs/consult-reply-fable-t7b-01.md"
         },
         {
-          "hash": "2c7dacb2ac7ba27ed2e4622ef341e8b382130b60ee755f493d00dc2952132291",
+          "hash": "7578181994b72d50723e9517c20eb22ac7aa10be33b2c46ff2e3cca920a82459",
           "path": "docs/consult-reply-gemini-01.md"
         },
         {
@@ -1297,11 +1355,11 @@
           "path": "docs/consult-reply-grok-e2-solver.md"
         },
         {
-          "hash": "2cb24c312915421c80d52260f782f1d3757404fd6be9be3bf01cd23152dcd9b7",
+          "hash": "26601b07acb18b2074717ec340cf874d6be8f484dc6b1b56dbfa5bc2ae1709b4",
           "path": "docs/dispatch-113-ci-trees.md"
         },
         {
-          "hash": "b7dfe2c7e7bcdbd2304a1aaf6744668f66c8017274bf9bc4004c45fe95bbbc12",
+          "hash": "14b0a036a7ded12af6a8d8e06e2eecf5e68b2512a8debb2857280c9196e21822",
           "path": "docs/dispatch-114-drop-clearance.md"
         },
         {
@@ -1413,7 +1471,7 @@
           "path": "docs/dispatch-t7b-instrument-bench.md"
         },
         {
-          "hash": "97057b788806e5d61967223ded91a1df81fe9eb1624b440e36ac6f36a66cede5",
+          "hash": "f992f273f10cc144f89bdbbf38aee1f3749a9d873071b9ac860f5d1d01dfa455",
           "path": "docs/dispatch-t7c-model.md"
         },
         {
@@ -1425,11 +1483,11 @@
           "path": "docs/rust-kb-requests.md"
         },
         {
-          "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
+          "hash": "64cdee834df343cff0d2651a27f22da0cb454627de5fbe182a067977f3508e17",
           "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
         },
         {
-          "hash": "e3ea920ad0685f5dda0aa0445b7b6347c58a14b7d50583738d4678d3dd6f01b2",
+          "hash": "a95ff0183284c0ad677631be54a361d7cde9f6e33e416b425a506dc8ac3634c3",
           "path": "docs/study-swarm/consult-02.dispatch.md"
         },
         {
@@ -1461,11 +1519,11 @@
           "path": "docs/study-swarm/seat-instrument.fulltext-check.json"
         },
         {
-          "hash": "b3e11ed1473ef4af6ddee0ef2bc12c7a3b39fdba5f2fcec514c10e47792889ae",
+          "hash": "0331203b7505a9047ac3c95263a0c0f808a3e16b99e65dd2b90c3f3ee876157d",
           "path": "docs/study-swarm/si-rpg-engine.citation-receipt.json"
         },
         {
-          "hash": "6355daacbebd3488b217af7d17446ece88e36c233cf77219633cf892ef353ce8",
+          "hash": "6e1c8f0346eb348486400d201ca0029341beaf52a78a635b4110b3d8ec9e3f4c",
           "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
         },
         {
@@ -7265,7 +7323,7 @@
           "path": "CHANGELOG.md"
         },
         {
-          "hash": "367e5141e4f5884e5791c4021f33a9faa958840a5decf44e1b273a87aad1c459",
+          "hash": "5ae6b3c8f446f0a7cb95176e4dadb91b68aaffb16b3be09f64f5de248b6a973a",
           "path": "LICENSE"
         },
         {
@@ -7317,7 +7375,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "9f5a893517ad83cfedc73e15f3d45dde4c55985637456f364592dfcfa8f907ef",
+          "hash": "ff0f368ebe1a3650bd204d0adb05926d99c70708e4224f4a7be9609123bf9ea3",
           "path": "package.json"
         },
         {
@@ -7375,7 +7433,7 @@
           "path": "solver/build.mjs"
         },
         {
-          "hash": "bc119bab7dd0f4267518895ba587b6fa4ccf6c749ab0dbe3184f02e354ee6fb6",
+          "hash": "144aabc549f0627bb06a43e025f3187926d910d8ebea7f3d290fda80b798e6ea",
           "path": "solver/build.rs"
         },
         {
@@ -10231,7 +10289,7 @@
         {
           "boundary": "bench",
           "depth": 0,
-          "files": 27
+          "files": 28
         },
         {
           "boundary": "fixtures",
@@ -10545,6 +10603,11 @@
         },
         {
           "job": "engines",
+          "path": "packages/bench/coverage.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "packages/bench/finding.test.js",
           "runKind": "executes"
         },
@@ -10778,7 +10841,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 79,
+      "runsCount": 80,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -11653,8 +11716,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "e1794973bd329966f03f9953bdc43498544b50a5",
-    "tracked": 358
+    "commit": "450e2622cb4aa3fc6ca2c235c8eb18b8ec15dc6a",
+    "tracked": 359
   },
   "landings": [
     {
@@ -12883,17 +12946,6 @@
     {
       "readers": [
         {
-          "by": "docs/dispatch-113-ci-trees.md",
-          "call": "--test",
-          "confidence": "text"
-        }
-      ],
-      "target": "packages/bench/law.test.js",
-      "writers": []
-    },
-    {
-      "readers": [
-        {
           "by": "packages/bench/source.test.js",
           "call": "readFileSync",
           "confidence": "ast",
@@ -13856,6 +13908,12 @@
           "confidence": "ast"
         },
         {
+          "by": "packages/bench/coverage.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/bench/law.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -13931,6 +13989,12 @@
         {
           "by": "packages/bench/source.test.js",
           "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/bench/source.test.js",
+          "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
         }
@@ -14463,7 +14527,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 42,
+  "testFiles": 43,
   "unassigned": [
     {
       "exports": [
@@ -14609,7 +14673,7 @@
       "sequences": []
     },
     {
-      "hash": "9d6887f9aef66c4fe3d79a33264d15020171c32fd4f3ad60a2e867b80da84cfd",
+      "hash": "6580bbdc3b8057dac64a24040f08711c17433da1c37f6542536900ab293ed1d1",
       "importsFiles": [
         "packages/tool/guard.js",
         "tools/panel.js",
