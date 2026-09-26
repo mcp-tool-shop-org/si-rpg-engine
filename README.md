@@ -28,17 +28,19 @@ What it aims to be is the simulation core inside a host: a browser, Godot, or Un
 | The physics law in Rust on `rapier3d-f64` with `enhanced-determinism`, one WebAssembly binary with its Linux digest pinned; one running physics world, rebuilt only when the geometry changes, with a body switched in place when an action starts or ends | `solver/` | `fixtures/solver.sha256`, which CI rebuilds and compares; `harness/switch.test.js` |
 | Bodies with position, velocity, a canonical quaternion, angular velocity, and half-extents; dynamic boxes rotate; a kinematic character with a 0.3 autostep, a 45° climb, and a 0.2 snap; sleep counted in steps | `solver/src/rapier_law.rs`, `packages/tick/world.js` | `fixtures/behavior-3d.json`, `behavior-rotation.json`, `behavior-ramp.json`, `shape-traversal.json` |
 | World files: bodies, oriented static colliders, heightfields, zones as a partition, twelve load refusals, hazards at load, and an index the host trusts; actions stand on the same two-triangle terrain surface the physics collides with | `packages/tick/scene.js`, `packages/tick/admit-world.js`, `worlds/` | `packages/tick/scene.test.js`, `harness/surface.test.js` |
+| A reachability sweep when a world is admitted: its reachable states explored with the admitted actions, through the checker, from the tick's own saves. A zone nothing reaches, a body carried out of the world, or a throw refuses the world, with a witness that `replay` reproduces | `packages/load/sweep.js` | `harness/sweep.test.js`, the closed test rooms in `fixtures/sweep/` |
 | Actions admitted at load with the effects `drive`, `climb`, `carry`, `release`, and `episode`, each with hazard scenarios | `predicates/`, `packages/load` | `fixtures/behavior-verbs.json` |
 | Minds: sight with line of sight, typed beliefs citing the episode they came from, supersession by tombstone, stale writes refused, and standing goals with a met flag | `packages/tick/memory.js`, `predicates/beliefs/keys.json` | `fixtures/behavior-minds.json` |
 | A trace of every step in exact bits, and a tool that names the first step, body, and field where two runs part | `harness/trace.mjs`, `harness/first-difference.js` | `harness/trace.test.js`; CI prints the first difference when an engine leaves the golden |
 | Behaviour numbers beside the golden: every body's sleep step and final position, the walker's zone, and the snapshot's length and digest | `fixtures/golden-behaviour.json`, `harness/check.js` | `harness/check.test.js` |
-| Save and restore two ways, by replaying the inputs to a step or by copying the physics module's memory, each proven to continue exactly | `packages/tick/runs.js`, `solver/build.mjs` | `harness/restore.test.js` |
+| Save and restore three ways: by replaying the inputs to a step, by copying the physics module's memory, or by the tick's own save of its whole state, which restores without replay; each proven to continue exactly | `packages/tick/runs.js`, `packages/tick/tick.js`, `solver/build.mjs` | `harness/restore.test.js` |
 | Bundles: a failing test writes its seed, world, accepted inputs, and hashes, which `replay` reproduces in one command; a weekly job replays every bundle, fixture, and log far longer than a pull request can | `packages/tick/bundle.js`, `.github/workflows/corpus.yml` | `harness/bundle.test.js` |
 | One binary on two CPU architectures, with memory fixed at 32 MiB and a lint that refuses host-chosen instructions, memory growth, and state kept outside memory | `solver/build.rs`, `solver/src/arena.rs`, `solver/lint.mjs` | CI's ARM64 job; `solver/lint.test.js`, `harness/caps.test.js` |
 | Tests of what the world did: a character course at the controller's measured limits, a full stride on every step of a long flat walk, a thin fast body against a thin wall, terrain seams, and the whole scene moved a million units | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuses to write while any of them fails |
+| Roles for model seats: a manifest per role, the Rule of Two derived from what the role reads, a role gate in the checker, provenance on every admission, trust labels that stay with a belief, and every model call recorded and checked without a GPU; both declared roles frozen | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` over the sessions in `fixtures/sessions/` |
 | Replay from a seed and a log, and a debug view of the tick on localhost | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` is a person's play through the host boundary |
 
-243 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
+352 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
 
 ## Install
 
@@ -61,7 +63,7 @@ Every command runs from any directory, answers `--help`, exits 0 on success, 1 w
 npx play proposals.json --seed 7 --log out.json    # run proposals through the tick and print every committed frame
 npx replay out.json                                 # rerun a log; fails on the first hash that differs
 npx replay fixtures/corpus/product-rebuild-261.bundle.json   # rerun a bundle to its save tick, compare every hash, and restore its memory image
-npx load world worlds/crate-and-door.json           # validate a world, run its hazards, and write its load hash to the index
+npx load world worlds/crate-and-door.json           # validate a world, run its hazards, sweep its reachable states, and write its load hash to the index
 npx load admit fixtures/climb-draft.json            # compile an action draft, run the hazards for its effect, and add it to the catalog
 npx load retire climb                               # take an action out of the catalog
 npx host --world worlds/crate-and-door.json         # serve the debug view at http://127.0.0.1:4173
@@ -76,7 +78,7 @@ node harness/first-difference.js a.trace b.trace    # identical, or the first st
 node solver/lint.mjs                                # refuse a binary that could grow memory or let the host choose a result
 ```
 
-A world restores two ways, and neither writes into the physics engine's internal state, which is why both are exact: replay its accepted inputs to a step, or copy the physics module's whole memory with `imageSolver()` and put it back with `restoreImage()`. An image from another binary, of the wrong length, or with a changed byte is refused.
+A world restores three ways, and none writes into the physics engine's internal state, which is why each is exact. You can replay its accepted inputs to a step. You can copy the physics module's whole memory with `imageSolver()` and put it back with `restoreImage()`. Or you can save the whole tick with `save()` and put it back with `restore(saved)`, which needs no replay and is how the sweep returns to a state thousands of times. An image from another binary, of the wrong length, or with a changed byte is refused, and a save that does not check out whole changes nothing.
 
 The debug view is a debug view. It draws committed frames as projected boxes along the axis chosen with `x`, `y`, or `z`; a click is a ground-plane target; `M`, `C`, `G`, `D`, and `U` choose move, climb, pick up, drop, and use; the walker's zone and each mind's beliefs sit beside the tick and the hash. It never draws anything the tick does not hold.
 
@@ -88,7 +90,7 @@ A seeded tick is the law. One step, a quantum, is 1/64 s; every step is hashed, 
 
 ## Trust model
 
-The engine runs locally and touches only files inside its own checkout: worlds, action drafts, fixtures, and any log you ask a command to write. `host` binds `127.0.0.1` only. No command opens any other socket; the frozen `propose` instrument, once a person unfreezes it, talks to a local Ollama server and nowhere else. No credentials are read, stored, or sent. No telemetry is collected. Authored content is untrusted and is validated at load; a refused file changes nothing. The WebAssembly binary is built from source in CI and pinned by its SHA-256, never committed as bytes. Its memory is fixed at 32 MiB and cannot grow, so a world too dense for it stops the same way on every host instead of diverging. See [SECURITY.md](SECURITY.md).
+The engine runs locally and touches only files inside its own checkout: worlds, action drafts, fixtures, and any log you ask a command to write. `host` binds `127.0.0.1` only. No command opens any other socket but `propose`, which talks to a local Ollama server and nowhere else, and only for a role whose manifest is thawed to act in a scratch world; both roles the engine declares are frozen, so it refuses before any model client loads. A model's proposal enters the world only through the role gate, which holds it to its role's manifest. No credentials are read, stored, or sent. No telemetry is collected. Authored content is untrusted and is validated at load; a refused file changes nothing. The WebAssembly binary is built from source in CI and pinned by its SHA-256, never committed as bytes. Its memory is fixed at 32 MiB and cannot grow, so a world too dense for it stops the same way on every host instead of diverging. See [SECURITY.md](SECURITY.md).
 
 ## Support status
 

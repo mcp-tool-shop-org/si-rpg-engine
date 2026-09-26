@@ -64,7 +64,28 @@ The reference law, which is the JavaScript kernel the first solver commit had to
 
 ## Hazards
 
-After validation, `load world` runs the world on the product law. It must settle: every body asleep or at rest within 512 quanta, no NaN, no body below the lowest collider. Loading the file twice must give one load hash. The load hash covers the seed, the bodies, the colliders, the heightfield, the zone table, the minds, and the solver's snapshot after load.
+After validation, `load world` runs the world on the product law. It must settle: every body asleep or at rest within 512 quanta, no NaN, no body below the lowest collider. Loading the file twice must give one load hash. The load hash covers everything the file holds but its name:
+- the seed's bits;
+- every body, with its id and numbers;
+- every collider, with its id, bounds, and rotation;
+- the heightfield, the zones, the minds, and the goal;
+- the solver's snapshot after load.
+
+The name is left out because the index is keyed by it. A collider nothing touches at load still moves the hash.
+
+## The sweep
+
+Then `load world` explores the world's reachable states with the admitted actions, as its actors could reach them one action at a time.
+- **The actors** are the goal's actor and every body with a mind.
+- **The states.** From each settled state it has not seen, it returns by the tick's own save and tries every admitted verb, aimed at the neighbouring grid points and at the bodies. Each action goes through the checker, so a refusal costs nothing.
+- **What it refuses:**
+  - a zone no explored state reached, with the zone, the actors, and the cells explored;
+  - an action after which a body leaves the world, with its bundle;
+  - an action after which the tick throws, with its bundle.
+- **What it only reports:** an action after which the world does not settle within 512 quanta.
+- **Every witness** is a log of intents from the load that `replay` reproduces, hash for hash.
+- **The budget.** The sweep runs under a budget of quanta and restores. When the budget runs out first, the world is admitted and the sweep is reported as deferred. The weekly corpus job then sweeps every indexed world, every fixture world, and the product scene under a larger budget, and fails when a verdict differs from its record, `fixtures/sweep/verdicts.json`.
+- **The action set.** A route that needs two actors at once is not explored, so a refusal reads as "not reached by these actions", never as a proof of the impossible.
 
 ## The index
 

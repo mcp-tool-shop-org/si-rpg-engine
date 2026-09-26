@@ -33,8 +33,9 @@ export const config: SiteConfig = {
         { title: 'Exact replay', desc: 'A run is its starting seed plus the inputs that were accepted. Replaying them rebuilds every step, and when two runs differ, the tools name the first step, body, and value where they part. A failing check saves one file that reproduces the failure with a single command.' },
         { title: 'Save and restore', desc: 'Restore a world by replaying its inputs, or by copying the physics module\'s memory and putting it back. Both are tested to continue exactly as the original run did.' },
         { title: 'Real 3D physics', desc: 'Boxes fall, slide, stack, tip, and tumble; a character climbs steps and slopes and walks over terrain. The physics is the Rapier engine in its deterministic mode, compiled to one WebAssembly file with a pinned checksum.' },
+        { title: 'Worlds explored before they run', desc: 'Before a world is admitted, the engine explores every state its characters can reach with the actions it allows. A zone nothing can reach, or a body pushed out of the world, is refused with a recording that reproduces it.' },
         { title: 'Content checked before it runs', desc: 'World files and new character actions are validated when they load. A file that fails is rejected with the reason, and the running world does not change.' },
-        { title: 'AI suggests, rules decide', desc: 'A language model can suggest what a character does or comes to believe. Hand-written rules accept or reject each suggestion, so the model never changes the world on its own.' },
+        { title: 'AI suggests, rules decide', desc: 'A language model can suggest what a character does or comes to believe, only through a role the engine declares. Hand-written rules hold each suggestion to what its role allows and check it against the world as it is when it arrives, and every call to the model is recorded, so a run replays without it.' },
       ],
     },
     {

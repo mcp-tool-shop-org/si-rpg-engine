@@ -39,7 +39,7 @@ npx replay out.json
 npx load world worlds/crate-and-door.json
 ```
 
-The loader validates the file (see [World files](../world-files/)), then runs its hazards on the product law: every body must come to rest within 512 quanta with no NaN and nothing below the lowest collider, and loading twice must give one load hash. On admission the name and load hash are written to `worlds/index.json` and printed. On refusal the reason is printed and the exit code is 1.
+The loader validates the file (see [World files](../world-files/)), then runs its hazards on the product law: every body must come to rest within 512 quanta with no NaN and nothing below the lowest collider, and loading twice must give one load hash. Then it sweeps the world's reachable states with the admitted actions, and refuses a zone nothing reaches, a body carried out of the world, or a throw, each with a witness or a bundle. The sweep's report goes to stderr, and stdout is the load hash alone. On admission the name and load hash are written to `worlds/index.json` and printed. On refusal the reason is printed and the exit code is 1.
 
 ## Admit a verb
 
@@ -79,10 +79,17 @@ node harness/first-difference.js a.trace b.trace
 
 ## Save and restore
 
-A world restores two ways, and neither writes into the physics engine's internal state, which is why both are exact.
+A world restores three ways, and none writes into the physics engine's internal state, which is why each is exact.
 
 - **By replay.** `replayTo(spec, tick)` in `harness/replay-to.mjs` rebuilds a world from its seed and replays its accepted inputs up to a step, ready to continue.
 - **By image.** The generated solver module's `imageSolver()` copies the WebAssembly module's whole linear memory, 32 MiB, and `restoreImage(image)` puts it back. An image carries the binary's SHA-256 and a digest of its own bytes; a restore refuses an image from another binary, one of the wrong length, one with a changed byte, or one taken while a call was still running. `world.save()` and `world.restore(saved)` pair the image with the world's records.
+- **By the tick's own save.** A tick made with `createRestorableTick` has `save()` and `restore(saved)`. The save holds:
+  - the solver's memory, as only the pages in use;
+  - the hasher's lanes, the frame, the scheduled actions, and the quanta owed;
+  - the minds' memory and the input log;
+  - a role gate's window of frames and its admission ticks.
+
+  A restore checks the whole save before it writes anything, and needs no replay.
 
 ## Replay a bundle
 
