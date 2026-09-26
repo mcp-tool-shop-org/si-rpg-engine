@@ -24,13 +24,14 @@ The sweep already has a kind named `throws`: a sweep whose run threw an exceptio
    - The red: the `refusals` fixture's walker is recorded as `thrown walker by walker`. On `main` it is `leaves walker by walker`.
    - A planted fall, a body pushed off an unwalled edge, stays `leaves`.
 
-4. **Exactly one verdict moves.** Re-recording `fixtures/sweep/verdicts.json` reclassifies `leaves walker by walker` in `fixture behavior-verbs refusals` to `thrown walker by walker`, and nothing else. The pull request lists every `leaves` finding in the record with its rise and its largest upward jump, so the margin is visible. If any other verdict moves, the pull request names it with those numbers and does not re-record it.
+4. **What the record gains, named.** A record key stands for every finding of that kind, body, and actor in a world. `leaves walker by walker` in `fixture behavior-verbs refusals` stands for 550 walker exits on `main`: the throw, and 549 falls off the unwalled floor (rise 0.765, largest jump 0.007). So re-recording `fixtures/sweep/verdicts.json` keeps that key and adds `thrown walker by walker`. It also adds `thrown crate by walker` in the same world: rise 0.000, largest upward jump 2.518 at t1462, the walker pressing sideways into the resting crate after its climb has risen. That is the family dispatch 128 addresses, and its slice is expected to remove it. The committed record is exactly what `node harness/corpus.mjs --record-sweep` writes. The pull request lists every `leaves` and `thrown` finding in the record with its rise and its largest upward jump, so the margin is visible, and names every verdict that moves. Any verdict that moves beyond these two additions is named with those numbers and not re-recorded.
+   - Amended 2026-09-26 by the overseer's decision on #139, after the first build showed the key stands for many exits and found the crate.
 
 5. **Nothing else.** The checker, the tick, the law, the goldens, the Linux digest, and the behaviour fixtures do not change. `load world` refuses a world with a `thrown` finding, as it does a `leaves` one, with a bundle `replay` reproduces. The builder does not edit `README.md`, its translations, `site/`, or `CHANGELOG.md`. The Atlas map is regenerated on Linux with `@dogfood-lab/atlas@1.17.0` if a file is added.
 
 ## Acceptance
 
 - The `refusals` walker is `thrown`. A planted fall stays `leaves`.
-- `fixtures/sweep/verdicts.json` moves by exactly that one finding, and the pull request lists every `leaves` finding's rise and jump.
+- `fixtures/sweep/verdicts.json` is what `--record-sweep` writes. The refusals entry keeps `leaves walker by walker` and gains `thrown walker by walker` and `thrown crate by walker`, and nothing else moves. The pull request lists every `leaves` and `thrown` finding's rise and jump.
 - A re-record names each `thrown` finding. The weekly comparison names a `leaves` that became `thrown`.
 - The typecheck is clean, the test count is at or above `main`, and the Atlas check is green.
