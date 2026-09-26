@@ -42,7 +42,7 @@ Chrome、Firefox、Safariで使用されているJavaScriptエンジン（V8、S
 | モデルシートの役割：役割ごとのマニフェスト、役割が読み取る内容から派生した「二律の法則」、チェッカー内の役割ゲート、すべての承認におけるプロビナンス、信念に付随する信頼ラベル、およびすべてのモデル呼び出しが記録され、GPUなしでチェックされます。両方の宣言された役割は固定されています。 | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`、`packages/propose/record.test.js`、セッション全体で`fixtures/sessions/` |
 | シードとログからのリプレイ、およびlocalhostでのティックのデバッグビュー | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json`は、ホスト境界を介した個人のプレイです。 |
 
-476個のテスト、ステップごとにリプレイする7つの動作フィクスチャ、およびx64の3つのエンジンとARM64のノードによって、すべてのコミットで出力される2つのゴールデンハッシュ。
+479個のテスト、ステップごとにリプレイする7つの動作フィクスチャ、およびx64の3つのエンジンとARM64のノードによって、すべてのコミットで出力される2つのゴールデンハッシュ。
 
 ## インストール
 

@@ -42,7 +42,7 @@ Ciò che si prefigge di essere è il motore di simulazione all'interno di un hos
 | Ruoli per le "sedute" del modello: un manifesto per ogni ruolo, la "Regola dei Due" derivata da ciò che legge il ruolo, un "gate" di ruolo nel checker, la provenienza per ogni ammissione, etichette di fiducia che rimangono associate a una credenza e ogni chiamata al modello registrata e verificata senza una GPU; entrambi i ruoli dichiarati sono bloccati. | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` durante le sessioni in `fixtures/sessions/` |
 | Riproduzione da un seme e un log, e una visualizzazione di debug del "tick" su localhost. | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` è l'interazione di una persona attraverso il confine dell'host. |
 
-476 test, sette "fixture" comportamentali che riproducono passo dopo passo, e due hash "golden" stampati da tre motori su x64 e da node su ARM64, per ogni commit.
+479 test, sette "fixture" comportamentali che riproducono passo dopo passo, e due hash "golden" stampati da tre motori su x64 e da node su ARM64, per ogni commit.
 
 ## Installazione
 

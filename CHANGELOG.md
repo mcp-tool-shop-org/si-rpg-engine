@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - A drop stops short of its target and sets the carried body down clear of the actor. A placement that overlaps another body or a collider is refused, and the body stays carried.
+- A coverage seed keeps file times and compiles only si-solver. A build that compiles nothing fails the gate.
 
 ## [0.2.0] - 2026-09-26
 
