@@ -2,13 +2,13 @@
 
 2026-09-26. Coordinator: Claude. Builder: a seat named at dispatch time. Reviewer: a different family, before merge. Depends on T6 (the sweep, and the tick's save and restore) and T7a (the rails), both merged first. The plan row is T7 in `docs/PHASE-2.md`. The research is `docs/study-swarm/seat-instrument.dispatch.md`; numbers in parentheses are its findings.
 
-**How this version was reached.** A read-only design consult (`docs/consult-reply-fable-t7b-01.md`) reviewed the first draft. Four model families then reviewed eight versions on #81. Each round's findings were answered in the text; the sixth version was rewritten whole so that none of the earlier versions' wording survives, and each version since answers the review before it. What the reviews changed:
-- One process per tree, loading only that tree's modules and dependencies.
+**How this version was reached.** A read-only design consult (`docs/consult-reply-fable-t7b-01.md`) reviewed the first draft. Four model families then reviewed nine versions on #81. Each round's findings were answered in the text; the sixth version was rewritten whole so that none of the earlier versions' wording survives, and each version since answers the review before it. What the reviews changed:
+- One tree per process: a process loads only its own tree's modules.
 - Every candidate that passes rung 0 runs on every tree, and a witness is submitted by tick on each, never carried across as a save image.
 - Every kind of anchor has a stated reach, a stated mutant rule, or a stated reason it is not aimed.
 - Budgets are counted in quanta and restores, and nothing the bench decides depends on the time a run takes.
 - One sweep, run once, is the aimed proposer, and the access map starts from its reach.
-- The law's reach is read from a coverage build, whose trace of the product scene is checked equal, frame for frame, to the product build's in every run.
+- The law's reach is read from a coverage build, whose trace is checked equal, frame for frame, to the product build's: first in the product scene, then for every candidate it runs.
 - Reach is one union of named sources: the candidate's window, rung 0's restore check, module load, and the hazard suite. Each entry in the access map names its source, so no anchor the bench ran is reported unreached.
 - Every promise in pins 1 to 8 has a test that goes red. The pull request tables each promise with its test, and a promise with no test fails the acceptance.
 
@@ -60,7 +60,7 @@ The bench's own tests are different: they check the bench against changes plante
    The bench works on directory trees, so a test can plant a change in a copy without a commit. A helper makes the trees from revisions as git worktrees. The report records each tree's commit, and a digest of its files, tracked and untracked but not ignored.
 
 2. **Where the builds run.** The checker reads its rules relative to the working directory (`packages/tick/predicates.js`, `packages/tick/beliefs.js`). Node resolves a module by its importer's path and by the nearest `node_modules` above it. The solver is one instance per module, and it rebuilds its world, waking every body, whenever a run's world changes. So:
-   - **One process per tree.** Each of these runs in a fresh process of its own:
+   - **One tree per process.** Each of these runs in a fresh process of its own:
      - the head;
      - the base;
      - the head's coverage build (pin 3);
@@ -70,10 +70,10 @@ The bench's own tests are different: they check the bench against changes plante
      Its working directory is its tree's root, and it imports that tree's packages by absolute paths into that tree. No process loads two trees' modules, and a working-directory change is never used to switch trees. The bench refuses a setup that would.
    - **Its own modules.** The engine has no runtime dependency, and the bench adds none, so no process imports anything from `node_modules`, and no tree installs one for the bench. The bench checks that every module a process loads lies inside that process's tree or is one of Node's own, and refuses otherwise.
    - **One live world at a time.** Each process finishes or restores one run before it begins another. A run interleaved with another in one process is refused.
-   - **Every tree takes the same inputs, in the same order.** On every tree, a candidate's witness is submitted from the load, each intent citing that tree's own newest frame (pin 4). The first time a tree reaches a witness's state, it stores the trace of that prefix and a save of that state. It may later start another candidate from the same witness by restoring that save and prepending the stored prefix trace, so the compared trace always runs from the load. Every save is tagged with the tree that took it, and the bench refuses to restore a save in any other tree's process, before any restore is attempted. This holds even when every tree runs one binary file and the image's own check would accept the image.
+   - **Every tree takes the same inputs, in the same order.** On every tree, a candidate's witness is submitted from the load, each intent citing that tree's own newest frame (pin 4). The first time a process reaches a witness's state, it stores the trace of that prefix and a save of that state. It may later start another candidate from the same witness by restoring that save and prepending the stored prefix trace, so the compared trace always runs from the load. Every save is tagged with the process that took it, which names its tree and its build, and the bench refuses to restore a save in any other process, before any restore is attempted. This holds even when two processes run one binary file and the image's own check would accept the image.
    - **The trace from the committed frame.** A tick's trace line is built from that tick's committed frame, never from the live bodies after a submission, since `submit` sets the actor's velocity at once.
    - **Worlds from the head.** Worlds and fixtures come from the head tree, and reach every tree's process as data. The proposers run only in the sweep's own process, on the head tree, and every other process receives candidates as data. A world or fixture file that differs in the base is reported as "world differs, not run", and is never run from the base.
-   - **Binaries.** When `solver/` has no diff, every tree runs the head's product binary file, copied byte for byte, and the report says so; with no law anchor, no coverage build is made. When `solver/` differs, each tree builds its own binary from its own source, in a cargo target directory inside that tree, with `CARGO_TARGET_DIR` cleared for the build, so two trees' artifacts never mix. Digest equality is never taken as "the same law", since a build's digest can carry its host and path.
+   - **Binaries.** When `solver/` has no diff, every tree runs the head's product binary file, copied byte for byte, and the report says so; with no law anchor, no coverage build is made. When `solver/` differs, each tree builds its own binary from its own source, in a cargo target directory inside that tree, with `CARGO_TARGET_DIR` cleared for the build, so two trees' artifacts never mix. A tree whose own build fails stops the bench with the reason, as a coverage build that fails does (pin 3). Digest equality is never taken as "the same law", since a build's digest can carry its host and path.
    - **The environment block.** Paths, digests, the host, and times go in the report's environment block. Pin 8's same-seed promise covers everything outside it.
 
 3. **Reaching the change.**
@@ -84,21 +84,21 @@ The bench's own tests are different: they check the bench against changes plante
    - **Rules.** As pin 1 says for each kind.
    - **The law.** A law anchor's reach comes from a coverage build of the law. The recipe below is normative, and the knowledge base's answer [`requests/law-coverage.md`](https://github.com/mcp-tool-shop-org/readouts/blob/main/rust-knowledge/waves/wave-03-si-rpg-engine/requests/law-coverage.md) is its evidence.
      - **The build.** The pinned rustc, with `-C instrument-coverage -Z no-profiler-runtime` under `RUSTC_BOOTSTRAP=1`, `--cfg law_coverage`, and `-C link-arg=--no-gc-sections`, into a target directory of its own. A three-line shim in `solver/src/lib.rs`, compiled only under `--cfg law_coverage`, defines `__llvm_profile_runtime`, the one symbol the instrumented code references. The product binary's bytes, digest, pin, and lint are untouched, and a test holds the digest unchanged with the shim in the source.
-     - **Its frames are the product build's.** Before the coverage build is used, it runs the product scene, and its trace must equal the head's product build's trace, frame for frame, both computed in this run. That its frames equal the product build's in other worlds too rests on the knowledge base's measurement: every fixture replay, the course, the outcome tests, and the golden trace pass on it. A law mutant is compared only with the head's coverage build, like with like (pin 7). If the flags fail, or the traces differ at any frame, the bench refuses with the reason and never guesses reach. `RUSTC_BOOTSTRAP` and `-Z no-profiler-runtime` are not supported by the Rust project, which is why this check is a refusal.
-     - **The counters.** They live in the module's linear memory, and an image carries them. For each candidate on the coverage build the order is: reach the witness's state (by restoring the tree's own save, or on the witness's first run by submitting it from the load), zero, run the candidate's intent and the quanta after it, read. The counters are always read before any further restore. So a candidate's law reach covers its intent and after, as its JS reach does, and a witness's own reach was taken when the witness was itself a candidate. No rung-0 replay runs inside that window.
+     - **Its frames are the product build's.** Before the coverage build is used, it runs the product scene, and its trace must equal the head's product build's trace, frame for frame, both computed in this run. After that, the trace of every candidate it runs is checked the same way against the head's product build's trace of that candidate, so the check covers every world the run uses. The knowledge base measured the same before this design: every fixture replay, the course, the outcome tests, and the golden trace pass on it. A law mutant is compared only with the head's coverage build, like with like (pin 7). If the flags fail, or the traces differ at any frame, the bench refuses with the reason and never guesses reach. `RUSTC_BOOTSTRAP` and `-Z no-profiler-runtime` are not supported by the Rust project, which is why this check is a refusal.
+     - **The counters.** They live in the module's linear memory, and an image carries them. For each candidate on the coverage build the order is: reach the witness's state (by restoring the process's own save, or on the witness's first run by submitting it from the load), zero, run the candidate's intent and the quanta after it, read. A candidate's counters are always read before any further restore. So a candidate's law reach covers its intent and after, as its JS reach does, and a witness's own reach was taken when the witness was itself a candidate. No rung-0 replay runs inside that window.
      - **The mapping.** Counters map to lines through `llvm-profdata` and `llvm-cov export`, from the `llvm-tools` component of the pinned toolchain. A law anchor is reached when its function's region ran. Its changed executable lines are a finer column, and a changed line in no region, such as a comment or an attribute, is "no executable change".
-     - **The canary.** After mapping, the execution count of the law's exported step function must stand in its measured relation to the quanta the run took. The builder measures that relation on the product scene first, and pins it with a test; equality is expected, since `llvm-cov show` rounds but `export` does not. Otherwise the bench refuses with the reason: a zero means the counters were read after a restore or at the wrong address, and a larger count means they were not zeroed.
+     - **The canary.** After mapping, the execution count of the law's exported step function must stand in its measured relation to the quanta the window ran: for a candidate's window, the quanta from its intent on; for the restore check's, the quanta of one run from the load, since the restore at the midpoint rewinds the counters with everything else the image holds, and the second half then runs again. The builder measures the relation on the product scene first, and pins it with a test; equality is expected, since `llvm-cov show` rounds but `export` does not. Otherwise the bench refuses with the reason: a lower count means the counters were read at the wrong address, or rewound by a restore the window does not account for, and a higher count means they were not zeroed, or not rewound.
      - **The cover.** The build covers everything linked: the engine's files, Rapier, parry, and their dependencies. So an anchor in a copied routine such as `kcc.rs` is measured like any other.
-     - **Known shape differences.** The coverage build fails three of the product's tests, all about the binary's shape rather than its results: the image's non-zero page count, since the counters live in memory, and the one exported global, since the shim adds a static. The bench does not run the product's tests on it.
+     - **Known shape differences.** The coverage build fails three of the product's tests, all about the binary's shape rather than its results: the image's non-zero page count, since the counters live in memory, and the one exported global, since the shim adds a static. So the bench checks it by its frames, as above, and never by the product's tests.
    - **Where reach comes from.** An anchor is reached when any of these sources ran it, and the report and the access map name which, by the name given here:
      - **`window`, the candidate's window:** its intent and the quanta after it, as above;
-     - **`restore`, the restore check:** rung 0's second run and its save and restore at the midpoint (pin 6), measured in a window of its own, apart from the candidate's, on the coverage build for the law;
+     - **`restore`, the restore check:** rung 0's second run, from the load, with its save and restore at the midpoint (pin 6), in a window of its own apart from the candidate's: V8's delta for the JS, and the coverage build's counters for the law, zeroed at the window's start and read at its end;
      - **`load`, module load:** each process's coverage of its own module loading, before any candidate;
      - **`suite`, the hazard suite:** its run when a hazard changes (pin 4), measured in a window of its own, by V8 for the JS and by the coverage build for the law, whose process then runs the suite too. Any anchor the suite runs is reached by it, whatever the anchor's kind.
 
      A control input has no witness, so its window is its whole run from the load.
    - **Approximate reach is named.** A top-level or deletion anchor that no run is seen to reach is reported "not seen reached (approximate)", never plainly "not reached", in the report and in the access map.
-   - **Observable or not.** The report marks each anchor "observable", "not observable", or "observability unknown".
+   - **Observable or not.** The report marks each anchor `observable`, `not observable`, or `unknown`, the values the access map uses.
      - An anchor whose function writes only state that neither the trace nor the hash reads is not observable: episode text, belief text, refusal reasons, hosts, the log's bookkeeping.
      - The mark is per function, so a function that writes any hashed state is observable, even if its changed line writes only what the trace cannot see.
      - A verdict of no difference is therefore always worded "no trace difference", never "no behaviour change". A reached anchor that is not observable is reported as reached and not observable, never as "no difference".
@@ -119,10 +119,10 @@ The bench's own tests are different: they check the bench against changes plante
        ```
        { "anchors": [ { "id", "kind", "file", "name", "lines", "approximate",
                         "observable": "observable" | "not observable" | "unknown",
-                        "reachedBy": [ { "source": "window" | "restore" | "load" | "suite",
-                                         "candidate": { "proposer", "verb", "world", "cell", "witness" },
-                                         "control": { "kind", "file" },
-                                         "hazard": { "id", "world" } } ] } ],
+                        "reachedBy": [ { "source": "window" | "restore", "candidate": { "proposer", "verb", "world", "cell", "witness" } }
+                                     | { "source": "window" | "restore", "control": { "kind", "file" } }
+                                     | { "source": "suite", "hazard": { "id", "world" } }
+                                     | { "source": "load" } ] } ],
          "notReached": [ "<anchor id>" ], "notSeenApproximate": [ "<anchor id>" ],
          "runsAtLoad": [ "<anchor id>" ], "notAimed": [ { "id", "reason" } ] }
        ```
@@ -134,11 +134,11 @@ The bench's own tests are different: they check the bench against changes plante
    - **The grammar.** Seeded sequences of intents from the states the sweep archived, drawn from the verb table, the world's bodies, zones, and points on a grid finer than the sweep's. The pitch is a measured default like the share below: half the sweep's pitch, unless the measurement finds a better one. Each step's candidate takes as its witness the path to the state it starts from: the archived cell's, then its own earlier steps.
      - A share of draws takes a verb that reached an anchor, and the rest a verb that did not, so an anchor the sweep missed can still be hit. When either set is empty, every draw comes from the other.
      - The share is a measured default. The builder runs the planted changes of pin 9 at shares of one half, three quarters, and all, and at pitches of one half and one quarter of the sweep's. The builder sets the defaults to the pair that finds the planted differences at the lowest budget, with the measurement in the pull request.
-   - **The stall.** A difference is new when its (anchor reached, body, field) has not been seen. The grammar stalls after n admitted candidates with no new changed line and no new difference. The bench runs on past the stall to the budget, and reports what came after it for each n of 8, 16, 32, 64, and 128. These are a reporting grid, not a setting. T7c calls the model at the n the grid's numbers justify (4).
+   - **The stall.** A difference is new when its key has not been seen: (anchor reached, body, field) for a trace difference; (anchor reached, verb, the refusing tree) for an admission difference, which has no body or field; and (anchor reached, the failure's kind) for a rung-3 failure on one tree alone. The grammar stalls after n admitted candidates with no new changed line and no new difference. The bench runs on past the stall to the budget, and reports what came after it for each n of 8, 16, 32, 64, and 128. These are a reporting grid, not a setting. T7c calls the model at the n the grid's numbers justify (4).
    - **Control inputs.** The bench also accepts T5's three run kinds, `play`, `product`, and `log` bundles, as inputs it runs on every tree, and proposes nothing from them. A `log` bundle's intents are submitted by tick on every tree, each citing that tree's own frame. Its recorded hashes are compared only with the head's run, as a check that the bundle belongs to this head; a mismatch is reported. Rung 2 compares the trees' runs with each other, never with the recording. Control inputs climb the same ladder candidates climb, and their records are marked as control inputs.
 
 6. **The ladder.**
-   - **Rung 0, sound: a gate.** On every build it runs on, the candidate runs twice to the same hashes, and a save and restore at its midpoint (T6) traces identically. It runs outside the candidate's counter window, before or after it and never inside it, on every coverage build, a law mutant's included. Its own reach is measured in a window of its own (pin 3). A failure on the head means the candidate is not counted as a test input; it is reported as a finding of the tick or the restore (1). A failure on the base is reported as a finding of the base, not as a difference. That candidate's rung 1 is still recorded; its rungs 2 and 3 are not, since the base's run is no sound reference for it, and the record says so. On a mutant tree, a candidate that passes on the head and fails on the mutant separates the two (pin 7).
+   - **Rung 0, sound: a gate.** On every build it runs on, the candidate runs twice to the same hashes, and a save and restore at its midpoint (T6) traces identically. It runs outside the candidate's counter window, before or after it and never inside it, on every coverage build, a law mutant's included. Its own reach is measured in a window of its own (pin 3). A failure on the head means the candidate is not counted as a test input: none of its rungs 1 to 3 is recorded, and it is reported as a finding of the tick or the restore (1). A failure on the base is reported as a finding of the base, not as a difference. That candidate's rung 1 is still recorded; its rungs 2 and 3 are not, since the base's run is no sound reference for it, and the record says so. On a mutant tree, a candidate that passes on the head and fails on the mutant separates the two (pin 7).
    - Rungs 1 to 3 are then recorded for every candidate that passes rung 0 on both trees it is compared on:
      - **Rung 1, reaches** (pin 3).
      - **Rung 2, differs** (pin 4).
@@ -157,19 +157,19 @@ The bench's own tests are different: they check the bench against changes plante
      - an early `return` dropped;
      - a numeric constant, as four mutants: one unit in its last place up, one down, times 1.1, and times 0.9.
    - **Other kinds.** A changed top-level constant, or a rule's number, takes the same four constant mutants. A rule change that is not a number, such as a flag or an effect's name, takes none, and is listed with that reason.
-   - **No mutants:** deletion anchors, since nothing is left to mutate; "no executable change" anchors; and the kinds pin 1 does not aim at. Each is listed with its reason.
+   - **No mutants:** deletion anchors, since nothing is left to mutate; "no executable change" anchors; a changed executable line that no operator applies to; and the kinds pin 1 does not aim at. Each is listed with its reason.
    - **Trees and binaries.** A JS mutant has a tree of its own, a copy of the head with the mutant applied, and runs the head's product binary file byte for byte. Law mutants share one law tree of their own, a copy of the head with its own cargo target directory:
-     - the law tree first builds the head's coverage build there, as its reference;
+     - the law tree first builds its reference: the head's law, built as the coverage build is, in the law tree's own target directory;
      - then, for each mutant in turn, it applies the mutant, rebuilds incrementally (about 3.2 s each on the knowledge base's host, since only the law crate recompiles), runs the mutant in a fresh process, and restores the line.
 
-     Each law mutant's runs are compared with the head's coverage build, whose frames equal the head's.
+     Each law mutant's runs are compared with the head's coverage build, the one in the head's tree (pin 3), whose frames equal the head's.
    - **Order and cap.** Mutants are made in a fixed order, the same on every run and every machine: by the anchor's file path, then its first line, then the changed line, then the operator in the order above. They are capped at a number the code states, set so that every planted change of pin 9 falls under it, with its basis in the pull request. A run that reaches the cap lists the mutants left out, by anchor and operator, and nothing about the cap depends on time.
-   - **Verdicts:**
+   - **Verdicts.** Each mutant takes the first of these that applies, in this order:
+     - **Not scored:** it does not load, it fails before any candidate acts, or it is a law mutant whose rebuilt binary equals the law tree's reference byte for byte, so the rebuild changed nothing. Both are built in the one tree, so no path differs between them.
+     - **Marked:** its text equals the base's at that line, so a difference it shows is the base's own, and is not counted twice.
      - **Caught:** a candidate or a control input separates the head and the mutant, by a trace difference, by a rung-3 failure on one and not the other, or by a rung-0 failure.
      - **Survived:** a source of pin 3 reached the range the mutant was made from, and nothing separated them.
      - **Not reached:** no source of pin 3 reached that range, and nothing separated them.
-     - **Not scored:** it does not load, it fails before any candidate acts, or it is a law mutant whose rebuilt binary equals the law tree's reference byte for byte, so the rebuild changed nothing. Both are built in the one tree, so no path differs between them.
-     - **Marked:** its text equals the base's at that line, so a difference is not counted twice.
    - **Lists, not ratios.** Mutants are reported as lists with operator and line. The bench never judges a mutant equivalent (2), so a ratio would mean nothing. T7c compares proposers on the same list.
 
    Mutating the changed lines measures whether the candidates are sensitive at the change. It does not measure the aim, which is the access map's job, and the report says so.
@@ -191,35 +191,39 @@ The bench's own tests are different: they check the bench against changes plante
      - anchors that run at load;
      - "no executable change" anchors;
      - removed identifiers;
+     - candidates the budget left unrun, counted by proposer and group;
      - mutants not reached and not scored.
 
 9. **Tests.** Each planted case below has a known, measured effect; each assertion checks what the bench reports about it.
    - **Anchors and reach.**
      - A verb's `maxDistance` is narrowed in a copy of the head. The bench names the rule anchor and the verb, and finds an intent the base admits and the head refuses while the frames agree. `bench replay` shows the refusal on the head and the admission on the base.
-     - A comparison in a predicate is flipped from `<` to `<=` at a boundary the sweep can land on. The bench names the JS anchor and the verbs and cells that reach it in the access map, a rung-2 difference with its bundle, and the mutant lists over that anchor.
+     - A comparison in a predicate is flipped from `<` to `<=` at a boundary the sweep can land on. The bench names the JS anchor and the verbs and cells that reach it in the access map, a rung-2 difference with its bundle, the mutant lists over that anchor, and the mark `observable`.
      - A one-operator change in `solver/src/rapier_law.rs`, on a line the product scene runs. The bench names the law anchor, reads its reach from the coverage build, shows the coverage build's product-scene trace equal to the head's product build's, frame for frame, and finds the difference.
      - A `const` in `solver/src/rapier_law.rs` is changed. It is anchored through the functions that name it, and its reach is read from the coverage build.
-     - A comment in a law function is rewritten. It is marked "no executable change".
+     - A comment in a law function is rewritten. It is marked "no executable change", and listed with no mutants, with that reason.
      - `STEP_HEIGHT`'s value is changed. The top-level anchor exists, is reached through the climb's admission, and differs.
      - An exported constant is changed, and a function in another file that imports it runs. The anchor is reached through that function, and the `export` line is marked as running at load.
      - A line inside a multi-line top-level declaration is changed. The anchor takes the declaration's identifier.
      - A function that runs only while its module loads is changed. It is marked as running at load, and is in neither `notReached` nor `notSeenApproximate`.
      - A line in the tick's restore is changed. It is reached by the restore check, and the access map names that source.
      - A rule's flag is changed, not a number. It is listed with no mutants, with that reason.
-     - A function whose writes the rule cannot classify is changed. It is marked observability unknown.
+     - A function whose writes the rule cannot classify is changed. It is marked `unknown`.
      - A line in a law function is deleted. The deletion anchor's region is read from the coverage build.
      - A top-level constant is changed that only an unreached function names. It is reported "not seen reached (approximate)", in the report and in the access map.
      - A top-level expression with no identifier is added. It is reported as running at load.
      - A top-level constant is deleted with every use. It is reported as removed, with its reach not measurable.
      - A line is deleted from a predicate. The deletion anchor's block is reached, and the report lists it with no mutants.
-     - A comment inside a JS function is rewritten. The anchor is reached, marked "no executable change", and shows no trace difference.
+     - A comment inside a JS function is rewritten. The anchor is reached, marked "no executable change", shows no trace difference, and is listed with no mutants, with that reason.
      - A function is renamed with every caller. The anchors are reached, and there is no trace difference.
      - A hazard's rule is changed. The suite's verdicts are compared between the trees, and a verdict whose reason text alone differs is not a difference. The anchor is reached by the suite, carries a `suite` entry that names the hazard and its world, and is not in `notReached`.
      - A verb is retired in the intent catalog. The catalog anchor is reached when that verb is submitted.
      - A refusal's reason text alone is changed in a predicate. There is no difference.
      - The text of the `use` episode is changed. The bench reports it reached and not observable.
-     - Each kind pin 1 does not aim at is changed: a belief key's `maxLength`, a role manifest, a line in `packages/load/`, a line in `solver/Cargo.toml`, one in `package.json`, a test, a doc, the Atlas map, and a tool. Each is reported not aimed with its reason, and the candidates still run on both trees.
+     - Each kind pin 1 does not aim at is changed: a belief key's `maxLength`, a role manifest, a line in `packages/load/`, a line in `solver/Cargo.toml`, one in `solver/Cargo.lock`, one in `package.json`, one in `package-lock.json`, a test, a doc, the Atlas map, and a tool. Each is reported not aimed with its reason, and the candidates still run on both trees.
      - A candidate that reaches no anchor still runs on both trees, in the second group of pin 5's order, and a difference it shows is reported.
+     - Two lines of one function are changed, one of them under a branch no candidate takes. The anchor is reached, and its finer column shows one of its two changed lines reached.
+     - An imported binding is renamed on its `import` line and in every use. The functions that name it reach the anchor, and the `import` line is marked as running at load.
+     - A changed line that no operator applies to, such as a call's two arguments swapped, is listed with no mutants, with that reason.
    - **The process model.**
      - The rule plant, run as two trees in one process, is refused, and so is a setup that switches trees by changing the working directory.
      - Two trees with `CARGO_TARGET_DIR` set to one directory still build into their own trees, and their binaries come from their own sources.
@@ -229,22 +233,28 @@ The bench's own tests are different: they check the bench against changes plante
      - With `solver/` unchanged, every tree runs the head's product binary file, the report says so, and no coverage build is made.
      - A fixture edited in the base alone is reported as "world differs".
      - A runner planted to read the trace line from the live bodies after a submission gives a line that disagrees with the committed frame, and the bench's check on it goes red.
-     - A planted restore of the head's save in the base's process is refused by the tree tag, with `solver/` unchanged so both trees run one binary.
-     - Two candidates from one witness: the second starts from the tree's own stored save, and its compared trace, prefix prepended, equals a run from the load.
+     - A planted restore of the head's save in the base's process is refused by the process tag, with `solver/` unchanged so both trees run one binary. So is a save of the head's product process restored in the head's coverage process, on the same tree.
+     - A base whose `solver/` does not compile stops the bench with the reason.
+     - Two candidates from one witness: the second starts from the process's own stored save, and its compared trace, prefix prepended, equals a run from the load.
      - A change that a witness's path meets gives a first difference inside the witness, reported as a difference and never as a finding of the base.
      - A candidate whose intent the base refuses is followed by one that needs the solver to hold its world. The second candidate's admissions agree on both trees.
    - **The coverage build.**
      - A test holds the product binary's digest unchanged with the shim in the source.
      - A coverage build made to fail, by a flag the compiler refuses, stops the bench with the reason.
      - A coverage build planted to compute differently from the product build is refused by its frame-for-frame check, including a difference that later frames undo.
+     - A coverage build planted to compute differently only in a fixture world, never in the product scene, is refused at that world's first candidate.
+     - The canary's relation, pinned from the product scene, holds in a fixture world, in a candidate's window and in the restore check's.
      - A planted read of the counters after a restore trips the step-count canary, and the bench refuses with the reason.
      - A run whose law mutants reach the cap reports those left out, and so does a run whose JS mutants reach it.
      - A law mutant whose rebuild changes no byte is marked not scored, against the reference the law tree built.
-     - A law mutant's runs are compared with the head's coverage build, and its record names that build by digest.
+     - A law mutant's runs are compared with the head's coverage build, and its record names that build; its digest is in the environment block.
    - **The report.**
      - A change to the hasher makes every candidate differ at tick 0, and the report shows one flood line. A narrowed rule that refuses throughout shows the admission flood as one line too.
      - The refusal tally counts a planted rule's refusals by reason.
      - The late gain is reported for each n of 8, 16, 32, 64, and 128.
+     - Two admission differences on one verb, refused on the same tree, count as one new difference for the stall, and one on another verb as a second.
+     - A run whose budget ends inside the sweep's second group names the candidates left unrun.
+     - The report's mutant section says the mutants measure the candidates' sensitivity at the change, not the aim.
      - A run of known length is reported with its exact quanta and restores.
      - A `log` control input runs on both trees, and its recorded hashes match the head's run. One from another build is reported as a mismatch.
      - A finding on a control input is written as the input's own bundle, with the bench's first-difference block in its `failure` block.
@@ -259,14 +269,14 @@ The bench's own tests are different: they check the bench against changes plante
      - Every planted change's mutants fall under the cap.
      - A planted copy's tree digest differs from its commit's, for an edited file and for a new untracked one.
      - Two runs with one seed from worktrees at different paths give equal reports outside the environment block, and the report names the seed.
-   - **Mutants.** A JS mutant tree runs the head's product binary file byte for byte, and law mutants are built in turn in the one law tree. Each of these is planted and reported by its verdict:
+   - **Mutants.** A JS mutant tree runs the head's product binary file byte for byte, and law mutants are built in turn in the one law tree. Each operator of pin 7 makes its mutant on a planted line of its form, and a numeric constant makes its four. Each of these is planted and reported by its verdict:
      - one caught by a trace difference, one by a rung-3 failure, and one at rung 0;
      - one that survives;
      - one that no source reached;
      - one that does not load, and one that fails before any candidate acts;
-     - one whose text equals the base's.
+     - one whose text equals the base's, and one of those that separates the trees, which is reported as marked, not caught.
    - **Each rung goes red.**
-     - A planted restore that drops one saved field, in the head, fails rung 0 on the head.
+     - A planted restore that drops one saved field, in the head, fails rung 0 on the head, and none of that candidate's rungs 1 to 3 is recorded.
      - The same planted in the base fails rung 0 on the base, and is reported as a finding of the base, not as a difference. Its rung 1 is recorded, and its rungs 2 and 3 are not, with the reason.
      - A predicate that admits on every other call, by a counter kept outside the tick, fails rung 0's second run.
      - A candidate whose body leaves a test world through a gap in the floor fails rung 3 on the head; if the base has the gap too, it is not a catch.
@@ -303,6 +313,7 @@ The bench's own tests are different: they check the bench against changes plante
 
 - Every planted case in pin 9 is reported as it says.
 - The pull request tables every promise in pins 1 to 8 with the test that holds it, and no promise lacks one.
+- The pull request states pin 10's costs, the mutant cap's basis, and the grammar's share and pitch, each with its measurement.
 - The process model refuses what pin 2 refuses.
 - F2's law change, planted, is found by hand on its control inputs at quantum 98, walker, with the report linked.
 - The access map is JSON in pin 5's shape, names each reach's source, and names every anchor no source reached.
