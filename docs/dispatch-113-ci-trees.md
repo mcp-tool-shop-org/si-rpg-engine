@@ -1,33 +1,41 @@
-# Dispatch 113 — the engines job's law trees start warm
+# Dispatch 113 — coverage targets keep their file times
 
-2026-09-26. Coordinator: Grok. Builder: a seat named at dispatch time. Reviewer: a different family, before merge. Depends on T7b, merged. Issue #113. It lands before T7c adds any test that builds the law, and T7c's dispatch (`docs/dispatch-t7c-model.md`) adds none.
+2026-09-26. Coordinator: Grok. Builder: a seat named at dispatch time. Reviewer: a different family, before merge. Depends on T7b, merged. Issue #113. It lands before T7c. T7c's dispatch adds no law build.
+
+Rewritten after measurement on 4 cores with the pinned toolchain, rustc 1.98.1, the product law `fd4b46bb45f299894d31e8745a3649f986c08b95ad3acba7ec20d70bfef2fde2`. Seeding product targets does not shorten a build. Fixing `seedCoverage` does.
 
 ## What it is
 
-T7b took CI's engines job from about 7 minutes to 14 minutes 14 seconds. `npm test` on that job went from about 4 minutes to 12 minutes 2 seconds. The job's timeout is 20 minutes. The time is `packages/bench/law.test.js`, which builds five trees from scratch on the runner's four cores: the product and coverage builds of the law head, the product and coverage builds of its base, and the product build of the checkout without its shim. `Swatinem/rust-cache` caches `solver/target` only, so none of those trees starts warm.
+`seedCoverage` in `packages/bench/build.js` copies a coverage target with `cpSync` and does not keep file times (`build.js:126`). The dependencies look newer than the copy and Cargo rebuilds them. Measured: 59.0 s and 30 units, including nalgebra, parry, and rapier. The same copy with `preserveTimestamps: true` takes 4.7 s and compiles 1 unit, `si-solver`. The law tree's reference build is effectively cold today. That is the slice's gain.
 
-`seedCoverage` in `packages/bench/build.js` already starts one law tree's coverage target as a copy of the head's, and the caller refuses a reference build that comes out as the head's bytes. This slice starts each tree's product target and coverage target from a copy of the cached `solver/target` the same way. Pin 2 of T7b stands: each tree keeps its own target directory. The copy is not a shared directory.
+Seeding a product target gains nothing. `solver/build.mjs:50-52` puts each tree's absolute path in the rustflags (`--remap-path-prefix=<tree>=/solver`), so a tree at another path rebuilds every wasm unit (`RustflagsChanged`). Cold 46.0 s, seeded 46.2 s. This slice does not seed product targets.
 
-One smaller item rides along. Every build of the law warns `unexpected cfg condition name: law_coverage`. A `check-cfg` entry silences it. T7b left it, because its pin 12 allowed one change to the law's build. This slice is that later change. The product binary's bytes do not move.
+A coverage build passes its flags to every crate through `CARGO_ENCODED_RUSTFLAGS` (`packages/bench/build.js:150-158`). A product cache gives it nothing. Cold 59.7 s, seeded from a product target 59.1 s.
+
+One smaller item rides along. Every build of the law warns `unexpected cfg condition name: law_coverage` once. `solver/build.rs` prints `cargo::rustc-check-cfg=cfg(law_coverage)`. The warning count goes from 1 to 0, and `node solver/build.mjs --check` keeps `fd4b46bb45f299894d31e8745a3649f986c08b95ad3acba7ec20d70bfef2fde2`. A `Cargo.toml` change would change rust-cache's key and cold-start the cache in the slice that measures time, so the entry is in `build.rs` and not there. Without `--check`, `build.mjs` rewrites the pin file. The builder uses `--check`.
+
+T7b pin 12 names the coverage shim as T7b's one Rust change. It did not leave a later change to the law's build for this warning. `packages/bench/source.test.js:96-99` refuses `law_coverage` in `solver/build.rs`. This slice changes that test to allow exactly the one `check-cfg` line, and no other occurrence.
 
 ## Pins
 
-1. **The tests first.** The tests below fail on `main` and pass here, and the pull request shows both. No test is deleted, and no assertion in `law.test.js` is weakened.
+1. **The tests first.** The tests below fail on `main` and pass here, and the pull request shows both. No test in `law.test.js` is deleted or weakened.
 
-2. **A tree's targets start from the cache.** Before `buildProduct` and before a coverage build, the tree's `solver/target` is a copy of the cached `solver/target` when that cache exists, minus the law crate's own artifacts, as `seedCoverage` already leaves them out. `CARGO_TARGET_DIR` stays cleared for the build, and the build writes into the tree's own target directory.
-   - A test times a second tree's product build and its coverage build with the cache seeded and with it empty, in one process, and records both times in the test's output. The seeded build is the one the slice keeps. The pull request quotes those two times.
-   - A seeded build whose sources differ from the tree the cache was made for does not reuse the law crate's wasm. The existing refusal, that a reference build must not come out as the head's bytes, still fires. A test plants a one-line change in the seeded tree and reads a different digest.
+2. **Coverage targets only, with file times kept.** `seedCoverage` copies a coverage target built with the same flags, the head's, and passes `preserveTimestamps: true`. It leaves out every `Cargo.lock` package with no source, and it refuses if any path package other than `si-solver` is in the copy. Product targets are not seeded.
+   - The gate is deterministic. A seeded coverage build compiles only `si-solver`, counted from cargo's `Compiling` lines. The control is a planted law change under an unfiltered seed, which fails that check. Both are tests, red on `main` for the unfiltered case: today's `seedCoverage` rebuilds the dependencies.
+   - There is no permanent test that times a cold build. A cold product build and a cold coverage build are about 46 s and 60 s, and a test that repeats them puts that time back into the job this slice shortens. Seeded against empty is measured once, in the pull request, not in CI.
 
-3. **The cfg warning is named.** `solver` declares `law_coverage` to rustc with a `check-cfg` entry, so a build that passes `--cfg law_coverage` does not warn, and a build that does not pass it does not warn either. The product wasm's bytes are unchanged: a local `node solver/build.mjs` before the entry and after it prints the same digest. `fixtures/solver.sha256` does not move. The Linux digest is CI's, and the pull request says whether the engines job's digest check stayed green.
-   - The warning is the red on `main`: `cargo build` of `solver` prints `unexpected cfg condition name: law_coverage`. Here it does not.
+3. **The cfg warning is one line in `build.rs`.** The line is `println!("cargo::rustc-check-cfg=cfg(law_coverage)");`. A build that passes `--cfg law_coverage` does not warn, and a build that does not pass it does not warn either. `node solver/build.mjs --check` prints the digest already in `fixtures/solver.sha256`. The file is not edited.
+   - `packages/bench/source.test.js` allows that one line in `solver/build.rs` and still refuses every other `law_coverage` outside `solver/src/lib.rs`'s shim. The test is red on `main` once the line exists and the allowance does not.
 
-4. **The job is measured.** The pull request quotes the engines job's time on `main` at the release, 14 minutes 14 seconds, and the time of the job on this head. Closing #113 waits on the head being shorter. A head that is not shorter still merges, the pull request names both times, and it leaves #113 open.
+4. **The job is measured, and the number is not a gate.** The same engine code ran the engines job in 14:08 at T7b's merge, 13:22 at the release (`npm test` 11:09), and 11:29 on #120, which changed docs only. 14:14 is T7b's pull-request run, not the release. "Shorter than 14:14" would close #113 on noise.
+   - One `workflow_dispatch` run executes `node --test packages/bench/law.test.js` three times on `main` and three times on the head. The pull request quotes the two medians and the cache status of each run.
+   - #113 closes on those medians together with pin 2's gate: the head's median is shorter, and a seeded coverage build compiles only `si-solver`. A head whose median is not shorter still merges the mechanism and the warning fix, and the pull request leaves #113 open with the six times named.
 
 5. **Nothing else moves.** The goldens and the behaviour numbers do not move. The builder does not edit `README.md`, its translations, `site/`, or `CHANGELOG.md`. The Atlas map is regenerated on Linux with the published `@dogfood-lab/atlas@1.17.0` if a file is added.
 
 ## Acceptance
 
-- A seeded tree builds in its own target directory, and a changed law crate does not reuse the cached wasm.
-- The `law_coverage` warning is gone. A local build before the `check-cfg` entry and after it prints the same digest. `fixtures/solver.sha256` is not edited. The pull request says whether CI's digest check stayed green.
-- The pull request quotes the engines job's time on `main` at the release, 14 minutes 14 seconds, and the time on this head. Closing #113 waits on the head being shorter. A head that is not shorter still merges, and the pull request leaves #113 open with both times named.
-- No test is deleted or weakened. The typecheck is clean, the test count is at or above `main`, and the Atlas check is green.
+- A seeded coverage build compiles only `si-solver`. An unfiltered seed of a changed law crate fails that check. Product targets are not seeded.
+- `solver/build.rs` carries the one `check-cfg` line. The warning count is 0. `node solver/build.mjs --check` keeps the digest in `fixtures/solver.sha256`. The source test allows that line and no other new occurrence.
+- The pull request quotes three `law.test.js` runs on `main` and three on the head, their medians, and the cache status. Closing #113 waits on the head's median being shorter and on pin 2's gate. A head that is not shorter still merges, and #113 stays open.
+- No `law.test.js` assertion is weakened. The typecheck is clean, the test count is at or above `main`, and the Atlas check is green.

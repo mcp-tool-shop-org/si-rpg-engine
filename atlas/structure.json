@@ -1225,7 +1225,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "251b7b0d11a63b8e78304783744ed262475713f1f4e78ff9fafb513db071868e",
+          "hash": "194eb67761edb7f801afaf4ff45b37100f82e890e596570f264cbe8fc7044cb6",
           "path": "docs/HANDOFF.md"
         },
         {
@@ -1297,8 +1297,12 @@
           "path": "docs/consult-reply-grok-e2-solver.md"
         },
         {
-          "hash": "f493828ce28cbf2e657e425c7313733e73bad64389f0acb1337e81926f1ce57e",
+          "hash": "2cb24c312915421c80d52260f782f1d3757404fd6be9be3bf01cd23152dcd9b7",
           "path": "docs/dispatch-113-ci-trees.md"
+        },
+        {
+          "hash": "b7dfe2c7e7bcdbd2304a1aaf6744668f66c8017274bf9bc4004c45fe95bbbc12",
+          "path": "docs/dispatch-114-drop-clearance.md"
         },
         {
           "hash": "8f4261d163efdf172538e63a2dccb02dc2a6565e33133ebf6400a8344474fdf9",
@@ -11649,8 +11653,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "19cf8c89a04c8d972168e91a5a8c82e3ba8e2a23",
-    "tracked": 357
+    "commit": "ed05b617b2d006af7d9e350582f3d589554c234e",
+    "tracked": 358
   },
   "landings": [
     {
@@ -12874,6 +12878,17 @@
         }
       ],
       "target": "packages/bench/bin/bench.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "docs/dispatch-113-ci-trees.md",
+          "call": "--test",
+          "confidence": "text"
+        }
+      ],
+      "target": "packages/bench/law.test.js",
       "writers": []
     },
     {
@@ -14564,11 +14579,11 @@
         "choose",
         "panelProblems"
       ],
-      "hash": "dafb2363560bc528cb6fc40ce8f9b119c33d9b1cca1cfbcd77fdc54a950ad4f9",
+      "hash": "f7fea088467c0271ee59d64e479631bdc05a64d28314716d13623d6fd6b107d0",
       "path": "tools/panel.js"
     },
     {
-      "hash": "8a50068ef9ccd70eae3f9c0ee89d9cce2c9f5c410bbb53514495fc797fd94275",
+      "hash": "f16a9a746d9ea6f79bab6c6e741c8dae1233558d93370cb5d7be9d7ea6ab57e1",
       "importsFiles": [
         "tools/panel.js"
       ],
@@ -14594,7 +14609,7 @@
       "sequences": []
     },
     {
-      "hash": "ccdbcb4a9de31d41a8dc3119bbecca0a0d7aea00e7936506211140eecfe20711",
+      "hash": "9d6887f9aef66c4fe3d79a33264d15020171c32fd4f3ad60a2e867b80da84cfd",
       "importsFiles": [
         "packages/tool/guard.js",
         "tools/panel.js",

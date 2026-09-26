@@ -100,24 +100,32 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 2,
-      "changed": 12,
+      "added": 1,
+      "changed": 5,
       "moved": 0,
-      "parts": 2,
+      "parts": 1,
       "removed": 0
     },
     "items": [
       {
+        "kind": "landing",
+        "sentence": "packages/bench/law.test.js is now read by docs/dispatch-113-ci-trees.md.",
+        "subjects": [
+          "packages/bench/law.test.js",
+          "docs/dispatch-113-ci-trees.md"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-26; 2 files added and 12 changed content.",
+        "sentence": "1 file added and 5 changed content, across 1 part.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "c5d702911af4b72e32a230b56e285818783115cb",
-      "generatedAt": "2026-09-26T15:15:33.848Z"
+      "commit": "19cf8c89a04c8d972168e91a5a8c82e3ba8e2a23",
+      "generatedAt": "2026-09-26T16:59:15.821Z"
     },
-    "unchanged": true
+    "unchanged": false
   },
   "changesTogether": [
     {
@@ -202,7 +210,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 13 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "19cf8c89a04c8d972168e91a5a8c82e3ba8e2a23",
+  "commit": "ed05b617b2d006af7d9e350582f3d589554c234e",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -769,7 +777,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T16:59:15.821Z",
+  "generatedAt": "2026-09-26T17:47:28.266Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 8 reads use paths built at run time and are not named here.",
