@@ -75,7 +75,7 @@ The other outcome tests: a small box launched at 20 units per second at a thin w
 
 `npx write-golden` runs the course and the outcome tests first and refuses to write while any fails.
 
-A counter in the physics module counts every world it builds. In the product scene and every fixture it reads one after load and stays there, and the bodies nothing touches stay asleep, with their contacts' warm starts unchanged bit for bit, through every action's start and end.
+A native test puts one body down as another is picked up in the same step, in both orders of their records. Before the step, no query finds the dropped body; after it, every query finds it where it is, and none finds anything where the picked-up body was. A counter in the physics module counts every world it builds. In the product scene and every fixture it reads one after load and stays there, and the bodies nothing touches stay asleep, with their contacts' warm starts unchanged bit for bit, through every action's start and end.
 
 ## The compiled physics
 
