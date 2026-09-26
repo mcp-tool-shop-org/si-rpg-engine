@@ -4,7 +4,7 @@
 // Each plant names the exact text it replaces and refuses when the text is not
 // there, so a change to the engine fails the test instead of planting nothing.
 
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { isAbsolute, join, resolve } from 'node:path';
 import { copyProduct } from './build.js';
@@ -41,6 +41,16 @@ export function removeScratch(dir) {
 export async function teardown(dir) {
   await stopAll();
   removeScratch(dir);
+  // A handle a process let go of a moment ago can keep a directory standing
+  // on Windows after the removal returns: once more after a pause, and a red
+  // teardown that names it if it still stands, never a scratch left behind.
+  if (existsSync(dir)) {
+    await new Promise((done) => setTimeout(done, 1000));
+    removeScratch(dir);
+    if (existsSync(dir)) {
+      throw new Error('the scratch directory ' + dir + ' still stands after its teardown');
+    }
+  }
 }
 
 /**
