@@ -100,58 +100,24 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 1,
-      "changed": 37,
+      "added": 2,
+      "changed": 12,
       "moved": 0,
-      "parts": 3,
+      "parts": 2,
       "removed": 0
     },
     "items": [
       {
-        "kind": "landing",
-        "sentence": "solver/src/lib.rs is now also read by tools/prompt.test.js.",
-        "subjects": [
-          "solver/src/lib.rs",
-          "tools/prompt.test.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/bench/bench.js, run bench gained a step, same path, before one tree per process.",
-        "subjects": [
-          "packages/bench/bench.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/bench/bench.js, run bench lost a step, product glue.",
-        "subjects": [
-          "packages/bench/bench.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/bench/bench.js, run bench gained a step, same path, before one tree per process.",
-        "subjects": [
-          "packages/bench/bench.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "And 3 more changes to the order of work.",
-        "subjects": []
-      },
-      {
         "kind": "counts",
-        "sentence": "1 file added and 37 changed content, across 3 parts.",
+        "sentence": "Nothing structural changed since 2026-09-26; 2 files added and 12 changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "1d2952be2b700ead34bcd8a9bca5bb6e2b205d09",
-      "generatedAt": "2026-09-26T13:04:08.434Z"
+      "commit": "c5d702911af4b72e32a230b56e285818783115cb",
+      "generatedAt": "2026-09-26T15:15:33.848Z"
     },
-    "unchanged": false
+    "unchanged": true
   },
   "changesTogether": [
     {
@@ -236,7 +202,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 13 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "c5d702911af4b72e32a230b56e285818783115cb",
+  "commit": "19cf8c89a04c8d972168e91a5a8c82e3ba8e2a23",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -803,7 +769,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T15:15:33.848Z",
+  "generatedAt": "2026-09-26T16:59:15.821Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 8 reads use paths built at run time and are not named here.",

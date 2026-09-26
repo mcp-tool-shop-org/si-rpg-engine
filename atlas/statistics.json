@@ -333,8 +333,8 @@
         "path": ".gitignore"
       },
       {
-        "commits": 25,
-        "lines": 216,
+        "commits": 27,
+        "lines": 246,
         "path": "CHANGELOG.md"
       },
       {
@@ -383,8 +383,8 @@
         "path": "README.zh.md"
       },
       {
-        "commits": 2,
-        "lines": 58,
+        "commits": 4,
+        "lines": 88,
         "path": "SCORECARD.md"
       },
       {
@@ -398,8 +398,8 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 93,
-        "lines": 3747,
+        "commits": 95,
+        "lines": 3815,
         "path": "atlas/README.md"
       },
       {
@@ -408,19 +408,24 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 93,
-        "lines": 14468,
+        "commits": 95,
+        "lines": 14770,
         "path": "atlas/page.json"
       },
       {
-        "commits": 93,
-        "lines": 22859,
+        "commits": 95,
+        "lines": 24043,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 93,
-        "lines": 54235,
+        "commits": 95,
+        "lines": 54951,
         "path": "atlas/structure.json"
+      },
+      {
+        "commits": 4,
+        "lines": 288,
+        "path": "docs/HANDOFF.md"
       },
       {
         "commits": 10,
@@ -1268,8 +1273,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 69,
-        "lines": 253,
+        "commits": 71,
+        "lines": 261,
         "path": "package.json"
       },
       {
@@ -1953,8 +1958,8 @@
         "path": "site/src/pages/index.astro"
       },
       {
-        "commits": 15,
-        "lines": 252,
+        "commits": 17,
+        "lines": 256,
         "path": "site/src/site-config.ts"
       },
       {
@@ -2143,80 +2148,80 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-26T15:15:33.848Z",
+  "generatedAt": "2026-09-26T16:59:15.821Z",
   "generatedFrom": {
-    "commit": "c5d702911af4b72e32a230b56e285818783115cb"
+    "commit": "19cf8c89a04c8d972168e91a5a8c82e3ba8e2a23"
   },
   "pairs": [
     {
       "a": "CHANGELOG.md",
       "b": "README.es.md",
-      "either": 14,
+      "either": 15,
       "shared": 9,
-      "strength": 0.642857
+      "strength": 0.6
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.fr.md",
-      "either": 14,
+      "either": 15,
       "shared": 9,
-      "strength": 0.642857
+      "strength": 0.6
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.hi.md",
-      "either": 14,
+      "either": 15,
       "shared": 9,
-      "strength": 0.642857
+      "strength": 0.6
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.it.md",
-      "either": 14,
+      "either": 15,
       "shared": 9,
-      "strength": 0.642857
+      "strength": 0.6
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.ja.md",
-      "either": 14,
+      "either": 15,
       "shared": 9,
-      "strength": 0.642857
+      "strength": 0.6
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.pt-BR.md",
-      "either": 14,
+      "either": 15,
       "shared": 9,
-      "strength": 0.642857
+      "strength": 0.6
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.zh.md",
-      "either": 14,
+      "either": 15,
       "shared": 9,
-      "strength": 0.642857
+      "strength": 0.6
     },
     {
       "a": "CHANGELOG.md",
       "b": "site/src/content/docs/handbook/architecture.md",
-      "either": 12,
+      "either": 13,
       "shared": 10,
-      "strength": 0.833333
-    },
-    {
-      "a": "CHANGELOG.md",
-      "b": "site/src/content/docs/handbook/reference.md",
-      "either": 12,
-      "shared": 6,
-      "strength": 0.5
+      "strength": 0.769231
     },
     {
       "a": "CHANGELOG.md",
       "b": "site/src/content/docs/handbook/testing.md",
-      "either": 13,
+      "either": 14,
       "shared": 11,
-      "strength": 0.846154
+      "strength": 0.785714
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "site/src/site-config.ts",
+      "either": 14,
+      "shared": 7,
+      "strength": 0.5
     },
     {
       "a": "README.es.md",
@@ -2466,43 +2471,43 @@
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 53,
-      "shared": 53,
+      "either": 54,
+      "shared": 54,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 53,
-      "shared": 53,
+      "either": 54,
+      "shared": 54,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 53,
-      "shared": 53,
+      "either": 54,
+      "shared": 54,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 53,
-      "shared": 53,
+      "either": 54,
+      "shared": 54,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 53,
-      "shared": 53,
+      "either": 54,
+      "shared": 54,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 53,
-      "shared": 53,
+      "either": 54,
+      "shared": 54,
       "strength": 1
     },
     {
@@ -2732,15 +2737,8 @@
     {
       "a": "site/src/content/docs/handbook/architecture.md",
       "b": "site/src/site-config.ts",
-      "either": 11,
+      "either": 12,
       "shared": 6,
-      "strength": 0.545455
-    },
-    {
-      "a": "site/src/content/docs/handbook/getting-started.md",
-      "b": "site/src/site-config.ts",
-      "either": 8,
-      "shared": 4,
       "strength": 0.5
     },
     {
@@ -2760,9 +2758,9 @@
     {
       "a": "site/src/content/docs/handbook/reference.md",
       "b": "site/src/site-config.ts",
-      "either": 8,
+      "either": 9,
       "shared": 5,
-      "strength": 0.625
+      "strength": 0.555556
     },
     {
       "a": "site/src/content/docs/handbook/security.md",
@@ -2774,16 +2772,16 @@
     {
       "a": "site/src/content/docs/handbook/security.md",
       "b": "site/src/site-config.ts",
-      "either": 7,
+      "either": 8,
       "shared": 5,
-      "strength": 0.714286
+      "strength": 0.625
     },
     {
       "a": "site/src/content/docs/handbook/usage.md",
       "b": "site/src/site-config.ts",
-      "either": 7,
+      "either": 8,
       "shared": 5,
-      "strength": 0.714286
+      "strength": 0.625
     },
     {
       "a": "tools/review.mjs",
@@ -2817,16 +2815,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-26T08:13:26-07:00",
-    "inScopeFiles": 360,
+    "headDate": "2026-09-26T08:35:56-07:00",
+    "inScopeFiles": 362,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 288,
+    "qualifyingCommits": 290,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-30T15:13:26.000Z",
+    "since": "2026-03-30T15:35:56.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
