@@ -18,6 +18,15 @@ mod impulses;
 mod kcc;
 mod rapier_law;
 
+// The coverage build's one symbol (T7b pin 3). The bench builds the law with
+// `-C instrument-coverage -Z no-profiler-runtime --cfg law_coverage`, and the
+// instrumented code still references `__llvm_profile_runtime`, which the
+// dropped runtime would have defined. Nothing else sets the cfg, so the
+// product binary never holds this static and its bytes do not move.
+#[cfg(law_coverage)]
+#[unsafe(no_mangle)]
+pub static __llvm_profile_runtime: i32 = 0;
+
 /// Why the law refused a quantum. Every export turns a refusal into 0. Inside
 /// the law each check returns `Result<_, Refusal>`, so a refusal cannot be
 /// dropped without the build failing.

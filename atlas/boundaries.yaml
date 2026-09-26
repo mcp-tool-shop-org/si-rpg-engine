@@ -18,6 +18,9 @@ boundaries:
   - name: propose
     globs: [packages/propose/**]
     role: code
+  - name: bench
+    globs: [packages/bench/**]
+    role: code
   - name: host
     globs: [packages/host/**]
     role: code

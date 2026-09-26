@@ -11,8 +11,9 @@
   ],
   "breaks": [
     {
-      "doors": 8,
+      "doors": 9,
       "importedBy": [
+        "bench",
         "harness",
         "host",
         "load",
@@ -59,28 +60,31 @@
       "partLabel": "load"
     },
     {
+      "doors": 3,
+      "importedBy": [],
+      "importedByTests": [],
+      "kind": "part",
+      "name": "solver",
+      "partLabel": "solver",
+      "spawnedBy": [
+        "bench"
+      ]
+    },
+    {
+      "doors": 2,
+      "importedBy": [],
+      "importedByTests": [],
+      "kind": "part",
+      "name": "bench",
+      "partLabel": "bench"
+    },
+    {
       "doors": 2,
       "importedBy": [],
       "importedByTests": [],
       "kind": "part",
       "name": "host",
       "partLabel": "host"
-    },
-    {
-      "doors": 2,
-      "importedBy": [],
-      "importedByTests": [],
-      "kind": "part",
-      "name": "propose",
-      "partLabel": "propose"
-    },
-    {
-      "doors": 2,
-      "importedBy": [],
-      "importedByTests": [],
-      "kind": "part",
-      "name": "solver",
-      "partLabel": "solver"
     },
     {
       "kind": "place",
@@ -96,64 +100,123 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 6,
-      "changed": 15,
+      "added": 31,
+      "changed": 5,
       "moved": 0,
-      "parts": 2,
+      "parts": 7,
       "removed": 0
     },
     "items": [
       {
+        "kind": "import-added",
+        "sentence": "bench now imports tick.",
+        "subjects": [
+          "bench",
+          "tick"
+        ]
+      },
+      {
         "kind": "door",
-        "sentence": "CI now also runs tools/coordinator/check-translations.test.js.",
+        "sentence": "CI now also runs packages/bench/finding.test.js, packages/bench/law.test.js, packages/bench/mutants.test.js and 5 more.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "tools/coordinator/check-translations.test.js"
+          "packages/bench/finding.test.js",
+          "packages/bench/law.test.js",
+          "packages/bench/mutants.test.js",
+          "packages/bench/neutral.test.js",
+          "packages/bench/process.test.js",
+          "packages/bench/report.test.js",
+          "packages/bench/rungs.test.js",
+          "packages/bench/source.test.js"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also checks packages/bench/.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "packages/bench/"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "bench (package.json) is a new command. It runs packages/bench/bin/bench.js.",
+        "subjects": [
+          "package.json",
+          "packages/bench/bin/bench.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "solver/build.mjs is now read by tools/coordinator/verify-pr.sh.",
+        "sentence": ".github/ is now read by packages/bench/anchors.js.",
         "subjects": [
-          "solver/build.mjs",
-          "tools/coordinator/verify-pr.sh"
+          ".github/",
+          "packages/bench/anchors.js"
         ]
       },
       {
-        "kind": "unassigned",
-        "sentence": "tools/coordinator/README.md is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "kind": "landing",
+        "sentence": "docs/ is now read by packages/bench/anchors.js.",
         "subjects": [
-          "tools/coordinator/README.md"
+          "docs/",
+          "packages/bench/anchors.js"
         ]
       },
       {
-        "kind": "unassigned",
-        "sentence": "tools/coordinator/atlas-linux.sh is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "kind": "landing",
+        "sentence": "docs/PHASE-2.md is now read by packages/bench/plants.js.",
         "subjects": [
-          "tools/coordinator/atlas-linux.sh"
+          "docs/PHASE-2.md",
+          "packages/bench/plants.js"
         ]
       },
       {
-        "kind": "unassigned",
-        "sentence": "tools/coordinator/check-translations.mjs is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/coordinator/check-translations.mjs"
-        ]
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "And 2 more new files that belong to no part.",
+        "kind": "landing",
+        "sentence": "And 68 more new writers and readers of places.",
         "subjects": []
       },
       {
+        "kind": "sequence",
+        "sentence": "In packages/load/sweep.js, sweep gained a step, open, before refused.",
+        "subjects": [
+          "packages/load/sweep.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/load/sweep.js, sweep gained a step, refused, before admitted.",
+        "subjects": [
+          "packages/load/sweep.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/load/sweep.js, sweep gained a step, admitted, after refused.",
+        "subjects": [
+          "packages/load/sweep.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "And 3 more changes to the order of work.",
+        "subjects": []
+      },
+      {
+        "kind": "part",
+        "sentence": "bench is a new part, drawn from `packages/bench/**`.",
+        "subjects": [
+          "bench"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "6 files added and 15 changed content, across 2 parts.",
+        "sentence": "31 files added and 5 changed content, across 7 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "282e65eb7368ac61393800adabebc4fddc823ba1",
-      "generatedAt": "2026-09-26T11:27:02.565Z"
+      "commit": "386f0d9c9514e0d293fa9f7a5d71acf35a737b65",
+      "generatedAt": "2026-09-26T12:13:24.565Z"
     },
     "unchanged": false
   },
@@ -240,9 +303,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "386f0d9c9514e0d293fa9f7a5d71acf35a737b65",
+  "commit": "1d2952be2b700ead34bcd8a9bca5bb6e2b205d09",
   "defaultBranch": "main",
-  "derived": "16 parts, mostly JavaScript (104 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -264,6 +327,7 @@
         "harness/trace-line.mjs",
         "harness/verbs-scene.mjs",
         "harness/write-golden.js",
+        "packages/bench/",
         "packages/frame/frame.js",
         "packages/frame/hash.js",
         "packages/frame/types.d.ts",
@@ -277,7 +341,7 @@
         "tools/review.mjs",
         "tools/verdicts.js"
       ],
-      "checksCount": 30,
+      "checksCount": 31,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [
@@ -290,6 +354,11 @@
       ],
       "pushes": false,
       "reach": [
+        {
+          "boundary": "bench",
+          "depth": 0,
+          "files": 27
+        },
         {
           "boundary": "fixtures",
           "depth": 0,
@@ -352,6 +421,14 @@
         "harness/switch.test.js",
         "harness/trace.mjs",
         "harness/trace.test.js",
+        "packages/bench/finding.test.js",
+        "packages/bench/law.test.js",
+        "packages/bench/mutants.test.js",
+        "packages/bench/neutral.test.js",
+        "packages/bench/process.test.js",
+        "packages/bench/report.test.js",
+        "packages/bench/rungs.test.js",
+        "packages/bench/source.test.js",
         "packages/host/host.test.js",
         "packages/load/load.test.js",
         "packages/propose/propose.test.js",
@@ -373,7 +450,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 40,
+      "runsCount": 48,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -492,6 +569,45 @@
       ],
       "runs": [
         "packages/propose/bin/propose.js"
+      ],
+      "runsCount": 1,
+      "sends": [],
+      "stages": [],
+      "triggers": []
+    },
+    {
+      "checks": [],
+      "checksCount": 0,
+      "file": "package.json",
+      "id": "package.json#bench",
+      "kind": "command",
+      "landings": [
+        "fixtures/solver.sha256"
+      ],
+      "name": "bench",
+      "programs": [
+        "git"
+      ],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "bench",
+          "depth": 0,
+          "files": 13
+        },
+        {
+          "boundary": "solver",
+          "depth": 2,
+          "files": 2
+        },
+        {
+          "boundary": "tick",
+          "depth": 2,
+          "files": 1
+        }
+      ],
+      "runs": [
+        "packages/bench/bin/bench.js"
       ],
       "runsCount": 1,
       "sends": [],
@@ -674,6 +790,11 @@
   "duplicatesNote": [],
   "edges": [
     {
+      "from": "bench",
+      "fromTests": false,
+      "to": "tick"
+    },
+    {
       "from": "harness",
       "fromTests": false,
       "to": "frame"
@@ -695,16 +816,6 @@
     },
     {
       "from": "load",
-      "fromTests": false,
-      "to": "tick"
-    },
-    {
-      "from": "propose",
-      "fromTests": false,
-      "to": "harness"
-    },
-    {
-      "from": "propose",
       "fromTests": false,
       "to": "tick"
     },
@@ -759,18 +870,19 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T12:13:24.565Z",
+  "generatedAt": "2026-09-26T13:04:08.434Z",
   "limits": [
-    "15 import sites could not be resolved.",
-    "2 writes and 3 reads use paths built at run time and are not named here.",
+    "18 import sites could not be resolved.",
+    "3 writes and 8 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "33 commands are built at run time and not followed, 30 of them in tests.",
+    "49 writes and 95 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "38 commands are built at run time and not followed, 32 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
   "partLabels": {
     "beliefs": "beliefs",
+    "bench": "bench",
     "docs": "docs",
     "fixtures": "fixtures",
     "frame": "frame",
@@ -787,7 +899,7 @@
     "workflows": "workflows",
     "worlds": "worlds"
   },
-  "parts": 16,
+  "parts": 17,
   "readers": [],
   "repo": "mcp-tool-shop-org/si-rpg-engine",
   "sequences": [
@@ -1081,6 +1193,24 @@
               "part": null,
               "partLabel": null,
               "phrase": "zone index"
+            },
+            {
+              "name": "open",
+              "part": null,
+              "partLabel": null,
+              "phrase": "open"
+            },
+            {
+              "name": "refused",
+              "part": null,
+              "partLabel": null,
+              "phrase": "refused"
+            },
+            {
+              "name": "admitted",
+              "part": null,
+              "partLabel": null,
+              "phrase": "admitted"
             }
           ]
         }
@@ -1101,6 +1231,147 @@
           "part": "load",
           "partLabel": "load",
           "phrase": "sweep"
+        }
+      ]
+    },
+    {
+      "entry": "run",
+      "file": "packages/bench/finding.test.js",
+      "inner": [
+        {
+          "file": "packages/bench/bench.js",
+          "name": "runBench",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "run bench",
+          "steps": [
+            {
+              "name": "oneTreePerProcess",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "one tree per process"
+            },
+            {
+              "name": "listFiles",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "list files"
+            },
+            {
+              "name": "readAnchors",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "read anchors"
+            },
+            {
+              "count": 4,
+              "name": null,
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "trees"
+            },
+            {
+              "count": 5,
+              "name": null,
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "build"
+            }
+          ]
+        }
+      ],
+      "part": "bench",
+      "partLabel": "bench",
+      "phrase": "run",
+      "steps": [
+        {
+          "name": "copyCheckout",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "copy checkout"
+        },
+        {
+          "count": 3,
+          "name": null,
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "plants"
+        },
+        {
+          "name": "runBench",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "run bench"
+        }
+      ]
+    },
+    {
+      "entry": "run",
+      "file": "packages/bench/rungs.test.js",
+      "inner": [
+        {
+          "file": "packages/bench/bench.js",
+          "name": "runBench",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "run bench",
+          "steps": [
+            {
+              "name": "oneTreePerProcess",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "one tree per process"
+            },
+            {
+              "name": "listFiles",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "list files"
+            },
+            {
+              "name": "readAnchors",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "read anchors"
+            },
+            {
+              "count": 4,
+              "name": null,
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "trees"
+            },
+            {
+              "count": 5,
+              "name": null,
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "build"
+            }
+          ]
+        }
+      ],
+      "part": "bench",
+      "partLabel": "bench",
+      "phrase": "run",
+      "steps": [
+        {
+          "name": "copyCheckout",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "copy checkout"
+        },
+        {
+          "name": "apply",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "apply"
+        },
+        {
+          "name": "runBench",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "run bench"
         }
       ]
     },
@@ -1778,16 +2049,17 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 34,
+  "testFiles": 42,
   "testedBy": {
+    "bench": 8,
     "frame": 16,
     "host": 1,
     "load": 4,
     "propose": 2,
-    "solver": 1,
-    "tick": 26
+    "solver": 2,
+    "tick": 34
   },
-  "unnamedWrites": 2,
+  "unnamedWrites": 3,
   "unread": [
     {
       "place": "fixtures/law-runs/",
