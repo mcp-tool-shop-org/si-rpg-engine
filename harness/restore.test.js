@@ -34,7 +34,8 @@
 // to its end; each save is restored into that same run, now past the point,
 // with the solver evicted, and the rest is rerun, twice in a row. A save that
 // leaves out one field is planted for the hasher's lanes, an action in
-// flight, a mind's memory, and the minds' sight, and each is caught by the diff.
+// flight, a mind's memory, the minds' sight, and the quanta owed to a body
+// draft and a belief admitted at one tick, and each is caught by the diff.
 // Those saves hold the solver's image in the sparse in-process form (pin 2),
 // so the same tests prove its restore traces identically; the digest it is
 // checked by is held to the byte loop it replaced, and the sparse restore
@@ -47,7 +48,9 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHasher } from '../packages/frame/hash.js';
+import { createMemory } from '../packages/tick/memory.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
+import { createTick, settle } from '../packages/tick/tick.js';
 import { createWorld } from '../packages/tick/world.js';
 import { bytes as binary, imageDigest, imageRefusal, imageSolver, imageSparse, instantiate, restoreImage, restoreSparse, snapshotBytes, sparseDigest, stackPointer } from '../solver/dist/solver.mjs';
 import { expectIdentical } from './bundle.mjs';
@@ -474,6 +477,45 @@ test('a save planted without the minds sight is caught at the next quantum, wher
   assert.ok(saved.tick.minds.sight.length > 0, 'the save carries what the mind has seen');
   assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
   assert.match(block[1], /^mind /);
+});
+
+/**
+ * A log that owes a quantum at a save point (pin 1: the quanta owed to
+ * admissions that are not actions). In crate-and-door, once the load has
+ * settled, a body draft and a belief citing the draft's episode are admitted
+ * at one tick. Each is owed one quantum, so the run is not idle for two, and
+ * a save taken one quantum after the admissions still owes one. The log is
+ * the play's admitted log, so replaying it is the same run.
+ */
+function owedCase() {
+  const file = JSON.parse(readFileSync('worlds/crate-and-door.json', 'utf8'));
+  const world = createWorld(file, 'product');
+  const memory = createMemory();
+  const tick = createTick({ seed: file.seed, world, rules, memory });
+  for (let i = 0; i < 64; i = i + 1) {
+    tick.advance();
+  }
+  const draft = tick.submit({ kind: 'body', id: 'parcel', x: 1.5, y: 0.5, z: 1, hx: 0.2, hy: 0.2, hz: 0.2 });
+  assert.ok(draft.admitted, draft.admitted ? '' : draft.reason);
+  const source = memory.episodes[memory.episodes.length - 1].id;
+  const belief = tick.submit({ kind: 'belief', subject: 'parcel', key: 'placed', value: 'by hand', confidence: 1, source });
+  assert.ok(belief.admitted, belief.admitted ? '' : belief.reason);
+  const admitted = tick.frame().tick;
+  assert.equal(settle(tick), 2, 'a body draft and a belief admitted at one tick owe two quanta');
+  const log = tick.log().map((entry) => ({ tick: entry.tick, hash: entry.hash, proposal: entry.proposal }));
+  return { spec: { seed: file.seed, world: file, log }, point: admitted + 1 };
+}
+
+test('a save taken while a quantum is owed restores it into a run that has gone on, and one planted without it ends a quantum early', () => {
+  const { spec, point } = owedCase();
+  // The run's own end owes nothing, so leaving the end's count in place is
+  // what a restore that omits the quanta owed does.
+  const { saved, block } = plantedRerun(spec, point, (kept, end) => ({ ...kept, tick: { ...kept.tick, pending: end.tick.pending } }));
+  assert.equal(saved.tick.pending, 1, 'the save owes a quantum');
+  assert.equal(saved.next, spec.log.length, 'and the log is spent: only the quantum owed runs the run on');
+  assert.deepEqual(saved.tick.actions, [], 'nothing is scheduled');
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.equal(block[1], 'length', block.join('\n'));
 });
 
 test('a save of another tick, or one with a field out of shape, is refused and changes nothing', () => {
