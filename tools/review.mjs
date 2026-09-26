@@ -19,7 +19,8 @@
 //   named defect against the code; a reviewer whose served model differs from the one asked for
 //   is discarded, never counted.
 // - NAMED_COMPENSATORS 2: the runner's only irreversible act is spending model tokens (bounded:
-//   four calls, a size cap on the prompt, an owner-accepted cost recorded per call). Posting the
+//   one call per seat, seven seats, a size cap on the prompt, an owner-accepted cost recorded per
+//   call). Posting the
 //   summary to the pull request is undone by deleting the comment (owner: coordinator).
 // - DECOMPOSE_BY_SECRETS 3: the panel (panel.js), the rubric and message (prompt.js), and the
 //   verdict rules (verdicts.js) are modules apart from gathering and transport here, and each is
@@ -28,8 +29,9 @@
 //   lone BLOCK is checked against the code by the coordinator; a corroborated BLOCK, or a BLOCK
 //   the coordinator cannot refute, goes back to the builder, and a disagreement about design goes
 //   to the Director, framed contrastively.
-// - EXTERNAL_VERIFIER 3: the panel is four families other than the author's (xAI, Google,
-//   Moonshot, Z.ai), none sees the author's reasoning, and the served-model check is enforced.
+// - EXTERNAL_VERIFIER 3: the panel is seven families other than the author's (xAI, Google,
+//   Moonshot, Z.ai, DeepSeek, NVIDIA, MiniMax), none sees the author's reasoning, and the
+//   served-model check is enforced.
 //
 // Text the pull request's author wrote, or its code printed, is fenced in the message as untrusted
 // data (prompt.js), and the dispatch comes from the base branch, so a pull request cannot rewrite
@@ -43,7 +45,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { PANEL, panelProblems, choose } from './panel.js';
+import { PANEL, OLLAMA_CONCURRENCY, panelProblems, choose } from './panel.js';
 import { SYSTEM, buildPrompt } from './prompt.js';
 import { parseVerdict, combine, whyNotCounted } from './verdicts.js';
 import { guard } from '../packages/tool/guard.js';
@@ -203,11 +205,11 @@ async function callOpenRouter(seat, prompt) {
  * @returns {Promise<Answer>}
  */
 async function callOllama(seat, prompt) {
-  const { model, maxTokens } = seat;
+  const { model, maxTokens, think } = seat;
   const res = await fetch('http://127.0.0.1:11434/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: prompt }], stream: true, options: { num_predict: maxTokens } }),
+    body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: prompt }], stream: true, ...(think === undefined ? {} : { think }), options: { num_predict: maxTokens } }),
     signal: AbortSignal.timeout(1800000),
   });
   if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + (await res.text()).slice(0, 200));
@@ -264,21 +266,34 @@ const prompt = built.text;
 if (process.argv.includes('--dry-run')) {
   // Everything up to the first model call, and no call: the message's size and fence, where the
   // dispatch came from, and the seats that would be asked.
-  process.stdout.write(JSON.stringify({ pr: Number(pr), head: g.meta.headRefOid, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, promptChars: prompt.length, promptSha256: sha(prompt), notSent: g.omitted.length, seats: panel.map((seat) => seat.family + ' ' + seat.model + ' ' + seat.maxTokens) }, null, 2) + '\n');
+  process.stdout.write(JSON.stringify({ pr: Number(pr), head: g.meta.headRefOid, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, promptChars: prompt.length, promptSha256: sha(prompt), notSent: g.omitted.length, seats: panel.map((seat) => seat.family + ' ' + seat.model + ' ' + seat.maxTokens + (seat.think === undefined ? '' : ' think=' + seat.think)) }, null, 2) + '\n');
   process.exit(0);
 }
 process.stderr.write(`prompt ${prompt.length} characters; ${g.omitted.length} files not sent; calling ${panel.length} reviewers\n`);
-// Ollama Cloud serves this account one request at a time: on #74 both Ollama seats waited on each
-// other for 300 s and failed with HTTP 429. So the Ollama seats take turns, beside the OpenRouter
-// seats. review() never throws, so one seat's failure does not stop the next one's turn.
-/** @type {Promise<unknown>} */
-let ollamaTurn = Promise.resolve();
-const results = await Promise.all(panel.map((seat) => {
-  if (seat.via !== 'ollama') return review(seat, prompt);
-  const turn = ollamaTurn.then(() => review(seat, prompt));
-  ollamaTurn = turn;
-  return turn;
-}));
+// Ollama Cloud serves this account OLLAMA_CONCURRENCY requests at once (panel.js). Under the
+// earlier plan it served one: on #74 two seats at once failed with HTTP 429, and the seats took
+// turns. The Ollama seats now run together, up to that number, beside the OpenRouter seats.
+// review() never throws, so one seat's failure frees its slot for the next.
+let ollamaRunning = 0;
+/** @type {Array<() => void>} */
+const ollamaWaiting = [];
+/**
+ * @param {Seat} seat
+ */
+async function ollamaSlot(seat) {
+  if (ollamaRunning >= OLLAMA_CONCURRENCY) {
+    await new Promise((resolve) => ollamaWaiting.push(() => resolve(undefined)));
+  }
+  ollamaRunning = ollamaRunning + 1;
+  try {
+    return await review(seat, prompt);
+  } finally {
+    ollamaRunning = ollamaRunning - 1;
+    const next = ollamaWaiting.shift();
+    if (next) next();
+  }
+}
+const results = await Promise.all(panel.map((seat) => (seat.via === 'ollama' ? ollamaSlot(seat) : review(seat, prompt))));
 
 const counted = /** @type {Array<Result & { parsed: Verdict }>} */ (results.filter((r) => !r.error && r.servedOk && r.parsed));
 const aggregate = combine(counted).text;

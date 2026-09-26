@@ -3,7 +3,7 @@
 // checked before any call, so a seat without a budget stops the run instead of spending tokens.
 
 /**
- * @typedef {{ via: 'openrouter' | 'ollama', model: string, family: string, maxTokens: number, standby?: boolean }} Seat
+ * @typedef {{ via: 'openrouter' | 'ollama', model: string, family: string, maxTokens: number, think?: boolean | 'high' | 'medium' | 'low', standby?: boolean }} Seat
  */
 
 /** @type {Seat[]} */
@@ -11,15 +11,28 @@ export const PANEL = [
   { via: 'openrouter', model: 'x-ai/grok-4.7', family: 'xAI', maxTokens: 32000 },
   // Gemini spent 30,717 of 32,000 output tokens reasoning on PR #68 and stopped before its verdict.
   { via: 'openrouter', model: 'google/gemini-3.1-pro-preview', family: 'Google', maxTokens: 64000 },
-  { via: 'ollama', model: 'kimi-k3:cloud', family: 'Moonshot', maxTokens: 131072 },
-  { via: 'ollama', model: 'glm-5.3:cloud', family: 'Z.ai', maxTokens: 131072 },
-  // Standby seats, used only when named with --seats. deepseek-v4-pro thought past its output
-  // budget on PR #59 (65,536 tokens of thought, no answer) and is standby until a run shows it
-  // answering a pull request of this size. Ollama Cloud serves both with at most 65,536 output
-  // tokens, and refused a larger budget with HTTP 400 on PR #95, so that is what they ask for.
-  { via: 'ollama', model: 'deepseek-v4-pro:cloud', family: 'DeepSeek', maxTokens: 65536, standby: true },
-  { via: 'ollama', model: 'nemotron-3-ultra:cloud', family: 'NVIDIA', maxTokens: 65536, standby: true },
+  // Kimi K3 and GLM-5.3 accept 262,144 output tokens on Ollama Cloud (measured 2026-09-26).
+  { via: 'ollama', model: 'kimi-k3:cloud', family: 'Moonshot', maxTokens: 262144 },
+  { via: 'ollama', model: 'glm-5.3:cloud', family: 'Z.ai', maxTokens: 262144 },
+  // DeepSeek and NVIDIA sat on standby until they answered pull requests of this size: both gave
+  // verdicts on #95 and #96. Ollama Cloud serves both with at most 65,536 output tokens, and
+  // refused a larger budget with HTTP 400. NVIDIA thinks with `think: 'high'`: on four measured
+  // problems it reasoned about half again as long with it, while Kimi and GLM reasoned less and
+  // DeepSeek and MiniMax no differently, so the others keep their own default.
+  { via: 'ollama', model: 'deepseek-v4-pro:cloud', family: 'DeepSeek', maxTokens: 65536 },
+  { via: 'ollama', model: 'nemotron-3-ultra:cloud', family: 'NVIDIA', maxTokens: 65536, think: 'high' },
+  // MiniMax M3 joined on 2026-09-26, the strongest family on Ollama Cloud the panel did not yet
+  // seat; its maximum output is 131,072 tokens. Its first run, a trial on #96 after that pull
+  // request merged, returned a BLOCK on two findings that the code refutes. A lone BLOCK is a
+  // CHECK the coordinator verifies against the code, so it sits with the others.
+  { via: 'ollama', model: 'minimax-m3:cloud', family: 'MiniMax', maxTokens: 131072 },
 ];
+
+/**
+ * How many requests Ollama Cloud serves this account at once. The Max plan serves 10 (from
+ * 2026-09-26); the earlier plan served one, and two at once failed with HTTP 429 on #74.
+ */
+export const OLLAMA_CONCURRENCY = 10;
 
 /** The largest output budget the runner will ask for, per transport. */
 export const BUDGET_LIMIT = { openrouter: 128000, ollama: 262144 };
@@ -50,6 +63,12 @@ export function panelProblems(panel) {
       problems.push(name + ': the family ' + seat.family + ' already has a seat');
     } else {
       families.add(seat.family.toLowerCase());
+    }
+    if (seat.think !== undefined && ![true, false, 'high', 'medium', 'low'].includes(/** @type {any} */ (seat.think))) {
+      problems.push(name + ': think must be true, false, high, medium, or low');
+    }
+    if (seat.think !== undefined && seat.via !== 'ollama') {
+      problems.push(name + ': think is an Ollama setting');
     }
     const limit = seat.via === 'openrouter' || seat.via === 'ollama' ? BUDGET_LIMIT[seat.via] : 0;
     if (typeof seat.maxTokens !== 'number' || !Number.isInteger(seat.maxTokens) || seat.maxTokens <= 0) {
