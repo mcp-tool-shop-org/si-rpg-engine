@@ -28,8 +28,9 @@ The launch at 15.94 m/s is a separate issue, not this slice. F5's guard does not
 
 2. **The actor stops at reach.** A drop's drive ends with the actor short of the target by enough that the carried body's placement at the target does not overlap the actor. The red is the room's bundle: `load world fixtures/bench/room.json` on `main` exits 1 with the crate leaving; here it exits 0 and both zones are reached.
 
-3. **The effect checks clearance again.** `world.release` refuses a placement whose box overlaps another body, and the carried body stays carried. The carry case's crate is inside the walker on `main`. Here the recorded end of `carry` and `carry-capsule` has the crate clear of the walker.
+3. **The effect checks clearance again, and the drop completes.** The actor has stopped at reach, so the target is clear of the walker. `world.release` checks that clearance and sets the body down. A refuse-only change, which leaves the crate carried, is not this slice. In `carry` and `carry-capsule` the drop completes. The crate ends released, not carried, at the target within 0.05, resting on the floor, with its box clear of the walker's.
    - `fixtures/behavior-verbs.json` is re-recorded for `carry` and `carry-capsule`, and for no other case. The pull request names every frame that moved and why.
+   - `fixtures/sweep/verdicts.json` records `leaves crate by walker` for `behavior-verbs` `carry` and `carry-capsule`. The weekly job holds every world to that record and does not run on pull requests. The builder re-runs `node harness/corpus.mjs --record-sweep` and names every verdict that moves.
    - The product golden does not move. The product scene has no drop. The Linux digest does not move. No Rust source changes.
 
 4. **A sweep invariant, considered.** The pull request says whether the sweep refuses an effect that places a body overlapping another, as its own check, and if it does not, why. Today an overlap is invisible to the sweep, and only a launch shows it. Adding the invariant is part of this slice when the room's own sweep can express it without a new world. It is not a reason to change the law.
@@ -38,7 +39,8 @@ The launch at 15.94 m/s is a separate issue, not this slice. F5's guard does not
 
 ## Acceptance
 
-- The room's sweep exits 0 and both zones are reached.
-- `carry` and `carry-capsule` end with the crate outside the walker, and those two cases are the only behaviour records that move.
+- The room's sweep exits 0 and both zones are reached. The pull request quotes the room's sweep on `main` and here: cells, actions tried, and admitted. `main` is 114 cells, 4426 actions tried, and 968 admitted. A refuse-only probe fell to 75 cells, which is the sign that drops are refused instead of set down.
+- In `carry` and `carry-capsule` the drop completes. The crate ends released, not carried, at the target within 0.05, resting on the floor, with its box clear of the walker's.
+- Those two cases, and `fixtures/sweep/verdicts.json`, are the behaviour records that move. The builder re-runs `node harness/corpus.mjs --record-sweep` and names every verdict that moves.
 - The product golden and `fixtures/solver.sha256` are unchanged.
 - The typecheck is clean, the test count is at or above `main`, and the Atlas check is green.
