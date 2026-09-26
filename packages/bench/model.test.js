@@ -11,14 +11,17 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { runBench } from './bench.js';
-import { copyCheckout, leaks, scratch, teardown } from './plant.js';
-import { cutReport, lateGain, newFindings, stallIndex, withinCost } from './report.js';
+import { copyCheckout, leaks, plant, scratch, teardown } from './plant.js';
+import { FINDING, apply } from './plants.js';
+import { cutReport, differenceKeys, lateGain, newFindings, stallIndex, withinCost } from './report.js';
 
 const dir = scratch('model');
 const ROOM = [{ file: 'fixtures/bench/room.json' }];
 const DIGEST = '845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e';
 const STEER = JSON.stringify({ notes: 'steer', proposal: { kind: 'intent', verb: 'teleport', actor: 'walker', target: { x: 1, z: 0 }, hash: 'ab'.repeat(32) } });
 const MOVE = JSON.stringify({ notes: 'step', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.25, z: 0.75 } } });
+const PUSH = JSON.stringify({ notes: 'shove', proposal: { kind: 'intent', verb: 'push', actor: 'walker', target: { body: 'crate' } } });
+const NORTH = JSON.stringify({ notes: 'step', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 0.75, z: 1.25 } } });
 
 /** @type {string} */
 let head;
@@ -94,14 +97,22 @@ test('the model starts after eight admitted candidates with nothing new, and arm
   assert.equal(stallIndex(records), 7, 'the eighth admitted candidate, n of 8');
   assert.equal(stallIndex(records.slice(0, 7)), null);
   const taken = withinCost(records, 7, 2);
-  assert.ok(taken.length >= 2);
-  assert.ok(taken.reduce((sum, record) => sum + record.cost.quanta, 0) >= 7);
-  assert.ok(taken.reduce((sum, record) => sum + record.cost.restores, 0) >= 2);
+  assert.equal(taken.length, 2, 'the restores are reached at the second candidate, before the quanta');
+  assert.ok(taken.reduce((sum, record) => sum + record.cost.quanta, 0) >= 7 || taken.reduce((sum, record) => sum + record.cost.restores, 0) >= 2);
   const stopped = taken[taken.length - 1];
   const before = taken.slice(0, -1).reduce((sum, record) => sum + record.cost.quanta, 0);
-  assert.ok(before < 7 || taken.slice(0, -1).reduce((sum, record) => sum + record.cost.restores, 0) < 2, 'the candidate that crosses is included');
+  assert.ok(before < 7 && taken.slice(0, -1).reduce((sum, record) => sum + record.cost.restores, 0) < 2, 'the candidate that crosses is included');
   assert.equal(stopped.cost.quanta, 3);
   assert.deepEqual(withinCost(records, 0, 0), []);
+});
+
+test('arm G stops at whichever of arm M\'s limits it reaches first, keeps the candidate that crosses, and ignores a limit arm M spent nothing on', () => {
+  /** @param {string} id */
+  const candidate = (id) => ({ id, admittedOnHead: true, lines: {}, anchors: [], rungs: { 2: null, 3: null }, cost: { quanta: 500, restores: 1 } });
+  const grammar = /** @type {any[]} */ (Array.from({ length: 20 }, (_, i) => candidate('g' + i)));
+  assert.deepEqual(withinCost(grammar, 1000, 10).map((record) => record.id), ['g0', 'g1'], 'the quanta are reached at the second candidate, not the restores at the tenth');
+  assert.deepEqual(withinCost(grammar, 1200, 0).map((record) => record.id), ['g0', 'g1', 'g2'], 'no restore spent: the quanta alone stop it, at the candidate that crosses');
+  assert.deepEqual(withinCost(grammar, 0, 3).map((record) => record.id), ['g0', 'g1', 'g2'], 'no quanta spent: the restores alone stop it');
 });
 
 test('an arm\'s new findings are the lines and difference keys its admitted candidates reached that nothing before the start point did, each counted once', () => {
@@ -301,6 +312,97 @@ test('arm G is the grammar extended by exactly what arm M spent, and a timeout i
     assert.equal(left.summary, right.summary);
     assert.equal(left.summary.includes('timedOut'), false);
   }
+});
+
+test('on a planted push speed with mutants on, each arm\'s new lines, differences, and mutants come from its own candidates\' records, and arm G overshoots arm M by at most one candidate in each limit', async () => {
+  const pushHead = copyCheckout(dir, 'push-head');
+  apply(plant, pushHead, FINDING.push);
+  const pushDiff = join(dir, 'push.diff');
+  writeFileSync(pushDiff, '--- a/predicates/intents/push.json\n+++ b/predicates/intents/push.json\n');
+  const ran = await bench('arms', {
+    base, head: pushHead, seed: 3, worlds: ROOM, proposers: { sweep: false },
+    budgets: { sweep: { quanta: 1000, restores: 20 }, ladder: { quanta: 1000, restores: 2 } },
+    grammar: { share: 0.5, pitch: 0.5 },
+    mutants: { enabled: true, cap: 2 },
+    model: model({ calls: 2, outputs: [PUSH, NORTH], diff: pushDiff }),
+  });
+  assert.equal(ran.report.refused, null, ran.report.refused);
+  const arm = ran.report.arms[0];
+  const anchor = 'rule:predicates/intents/push.json:push';
+  const before = ran.records.filter((record) => record.proposer === 'grammar' && !record.notes.includes('arm G'));
+  const mRecords = ran.records.filter((record) => record.proposer === 'model');
+  const gRecords = ran.records.filter((record) => record.notes.includes('arm G'));
+  assert.equal(arm.start.index, before.length);
+  assert.equal(arm.G.extended, true);
+  assert.equal(arm.M.calls, 2);
+  assert.equal(mRecords.length, 2);
+  assert.ok(mRecords.every((record) => record.admittedOnHead), JSON.stringify(ran.report.proposers.model.refusals));
+  assert.ok(gRecords.length > 0);
+  /**
+   * @param {any[]} records
+   * @param {'quanta' | 'restores'} limit
+   */
+  const spent = (records, limit) => records.reduce((sum, record) => sum + record.cost[limit], 0);
+  for (const limit of /** @type {Array<'quanta' | 'restores'>} */ (['quanta', 'restores'])) {
+    assert.equal(arm.M[limit], spent(mRecords, limit), 'arm M\'s ' + limit);
+    assert.equal(arm.G[limit], spent(gRecords, limit), 'arm G\'s ' + limit);
+    assert.ok(arm.M[limit] > 0);
+    assert.ok(spent(gRecords.slice(0, -1), limit) < arm.M[limit], 'arm G\'s ' + limit + ' overshoot arm M\'s by at most its last candidate: ' + JSON.stringify(gRecords.map((record) => record.cost)) + ' against ' + JSON.stringify([arm.M.quanta, arm.M.restores]));
+  }
+  assert.ok(arm.G.quanta >= arm.M.quanta || arm.G.restores >= arm.M.restores, 'arm G reaches one of arm M\'s limits');
+
+  const push = mRecords.find((record) => record.intent.proposal.verb === 'push');
+  assert.ok(push && push.anchors.includes(anchor), 'the model\'s push reaches the change');
+  assert.ok(before.every((record) => !record.anchors.includes(anchor)), 'nothing before the start point reached it');
+  /**
+   * The changed lines and difference keys a proposer's records reached, in
+   * order and each once; from admitted records alone when asked.
+   * @param {any[]} records
+   * @param {boolean} admittedOnly
+   */
+  const reached = (records, admittedOnly) => {
+    /** @type {Set<string>} */
+    const lines = new Set();
+    /** @type {Set<string>} */
+    const keys = new Set();
+    for (const record of records.filter((r) => !admittedOnly || r.admittedOnHead)) {
+      for (const [id, list] of Object.entries(record.lines)) {
+        for (const line of /** @type {number[]} */ (list)) {
+          lines.add(id + ':' + line);
+        }
+      }
+      for (const key of differenceKeys(record)) {
+        keys.add(key);
+      }
+    }
+    return { lines: Array.from(lines), keys: Array.from(keys) };
+  };
+  const old = reached(before, false);
+  for (const [side, records] of /** @type {Array<['M' | 'G', any[]]>} */ ([['M', mRecords], ['G', gRecords]])) {
+    const own = reached(records, true);
+    assert.deepEqual(arm[side].findings.lines, own.lines.filter((line) => !old.lines.includes(line)), 'arm ' + side + '\'s new lines');
+    assert.deepEqual(arm[side].findings.differences, own.keys.filter((key) => !old.keys.includes(key)), 'arm ' + side + '\'s new differences');
+  }
+  assert.ok(arm.M.findings.lines.includes(anchor + ':' + push.lines[anchor][0]));
+  assert.ok(differenceKeys(push).length > 0 && differenceKeys(push).every((key) => arm.M.findings.differences.includes(key)));
+
+  // The main mutant pass runs only the inputs before the start point, in the
+  // order the arm pass runs them first: a mutant it leaves unseparated is
+  // first separated, in an arm's pass, by one of that arm's candidates.
+  const list = ran.report.mutants.list;
+  const beforeIds = new Set(before.map((record) => record.id));
+  assert.ok(list.length > 0);
+  assert.ok(list.every((/** @type {any} */ m) => m.separatedBy === null || beforeIds.has(m.separatedBy.input)));
+  for (const [side, records] of /** @type {Array<['M' | 'G', any[]]>} */ ([['M', mRecords], ['G', gRecords]])) {
+    for (const id of arm[side].findings.mutants) {
+      const m = list.find((/** @type {any} */ x) => x.id === id);
+      assert.ok(m, id);
+      assert.equal(m.separatedBy, null, id + ' is separated by no input before the start point');
+      assert.ok(records.some((record) => (record.lines[m.anchor] || []).includes(m.line)), id + ' is on a line arm ' + side + '\'s candidates reached');
+    }
+  }
+  assert.deepEqual(arm.M.findings.mutants, list.filter((/** @type {any} */ m) => m.anchor === anchor && push.lines[anchor].includes(m.line)).map((/** @type {any} */ m) => m.id), 'the push separates every mutant on the line it reached');
+  assert.ok(arm.G.findings.mutants.length > 0);
 });
 
 test('a control path outside the four roots is not written into the record', async () => {

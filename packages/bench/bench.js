@@ -924,7 +924,7 @@ export async function runBench(options) {
           let r = 0;
           let steps = 0;
           if (archiveCells.length > 0) {
-            while (!(q >= mQuanta && r >= mRestores)) {
+            while (!((mQuanta > 0 && q >= mQuanta) || (mRestores > 0 && r >= mRestores))) {
               const made = await sweepProc.call('grammar-next', {});
               if (made === null) {
                 break;

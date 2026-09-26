@@ -162,8 +162,9 @@ export function stallIndex(records, n = MODEL_STALL_N) {
 }
 
 /**
- * Candidates in order until their cost reaches the quanta and restores named,
- * including the candidate that crosses. Nothing is taken when both are zero.
+ * Candidates in order until their cost reaches either the quanta or the
+ * restores named, including the candidate that crosses. A limit of zero is
+ * ignored, and nothing is taken when both are zero.
  * @param {CandidateRecord[]} records
  * @param {number} quanta
  * @param {number} restores
@@ -177,7 +178,7 @@ export function withinCost(records, quanta, restores) {
   let q = 0;
   let r = 0;
   for (const record of records) {
-    if (q >= quanta && r >= restores) {
+    if ((quanta > 0 && q >= quanta) || (restores > 0 && r >= restores)) {
       break;
     }
     out.push(record);
