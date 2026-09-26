@@ -39,26 +39,25 @@ v0.2.0 is Phase 2 so far: the suite that measures the engine, and the fixes to t
 - the product golden, `69a671f962665563`;
 - the arithmetic golden, `0d38671370d12d1e`;
 - the Linux digest, `fd4b46bb45f299894d31e8745a3649f986c08b95ad3acba7ec20d70bfef2fde2`;
-- 479 node tests and 36 native tests.
+- 494 node tests and 36 native tests.
 
 **Open issues.**
 - **#97:** two leftovers from #83.
 - **#109:** tightening F4's tests.
-- **#100:** three corners of the model-calling path, to close before T7c records real calls.
 - **#101:** a doc comment in `warm_broadphase`, for the next slice that re-pins the digest.
-- **#115:** T7b's round-2 review findings. The grammar's saves are keyed without the world, which matters once the bench runs over more than one world. Three small items go with it. T7c's dispatch takes the first of them.
 - **#127:** a sweep finding that leaves the world by rising more than the climb allows, or by a vertical speed with no lift, is recorded as thrown, and a re-record names each one.
 - **#128:** a walker thrown to y 8.9 in the refusals fixture, recorded as an ordinary walk-off. A law slice after the Archivist's answer, with a control test.
 - **#129:** a drop started with the actor exactly on the target clears the back-out velocity, and the release is refused. It waits behind #127.
 - **#131:** the coverage build's `law_coverage` warning count is not asserted. It waits behind #127.
+- **#132:** the bench's arms have no CI test with a change that reaches anchors or with mutants on. It lands before T7c's hand runs.
 
 The handbook's testing page lists what is known and not yet proven.
 
 ## What comes next, in order
 
-1. **T7c, the model in the bench.** Pull request #130 is rebased onto main after #125 and #126. It does not merge until it is reviewed. The hand runs follow that merge. #126 has merged, so those runs are no longer waiting on the drop. The research is `docs/study-swarm/seat-instrument.dispatch.md`.
+1. **T7c's hand runs.** The model bench merged as #130 and closed #100 and #115. `test-instrument` stays frozen until both bars pass. #132 lands first, so the value bar's arm findings and mutants have run in CI. Then the coordinator runs the safety bar, five steering changes of 16 calls each, and the value bar, T7b's six plants and F2, with the pinned `qwen2.5:7b` through `fixtures/roles/instrument-copy.json`. The records are committed and checked in CI. The research is `docs/study-swarm/seat-instrument.dispatch.md`.
 2. **#114 is closed** by #126. A drop stops short of its target and sets the body down clear of the actor. #129 is the edge that remains, and it waits behind #127.
-3. **#113 is closed** by #125. The head's median `law.test.js` time is shorter, and a seeded coverage build compiles exactly `si-solver`. #127, the sweep's thrown kind, is next, beside T7c's review. #128 is a law slice and waits on the Archivist. #131 waits behind #127.
+3. **#113 is closed** by #125. The head's median `law.test.js` time is shorter, and a seeded coverage build compiles exactly `si-solver`. #127, the sweep's thrown kind, is next, beside #132. #128 is a law slice and waits on the Archivist. #131 waits behind #127.
 4. **#97 and #109,** small hardening slices that can share a builder.
 5. **The Rapier 0.36.0 bump,** as its own slice, measured by T7b's bench. `solver/FLAGS.md` says a bump reruns the copies' control tests first.
    - 0.36.0 carries #1004, so `impulses.rs`'s first change becomes Rapier's own.

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - A drop stops short of its target and sets the carried body down clear of the actor. A placement that overlaps another body or a collider is refused, and the body stays carried.
 - A coverage seed keeps file times and compiles only si-solver. A build that compiles nothing fails the gate.
 
+### Added
+
+- **A model proposer in the bench.** `bench run --model --diff <file>` runs one seat session per world beside the grammar, starting where the grammar goes eight admitted candidates with nothing new or runs out of budget. The report lists what the model's arm and an equal-cost grammar arm each newly find. It is off unless named, the role it runs must be thawed, and `test-instrument` stays frozen. A thawed test-only copy lives in `fixtures/roles/`.
+
 ## [0.2.0] - 2026-09-26
 
 Phase 2 so far: the suite that measures the engine, the fixes to the law it found, and the bench that measures a change against its parent. Every change below merged from a written dispatch in `docs/`, was verified on a fresh checkout, and was reviewed by other model families before it merged. `docs/HANDOFF.md` says where the work stands and what comes next.
