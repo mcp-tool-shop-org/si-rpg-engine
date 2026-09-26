@@ -14,10 +14,15 @@
 //
 // The controller's constants are solver/src/rapier_law.rs: STEP_HEIGHT 0.3,
 // CLIMB_ANGLE 45 degrees, SNAP 0.2, SKIN 0.01. At 0.35.3 autostep's limit is
-// max_height + offset, 0.3101 measured, and the snap threshold at 0.4 units
-// per second is 0.2105. Any bump of the toolchain or of rapier3d-f64 reruns
-// this course before a golden may move (solver/FLAGS.md; write-golden runs
-// it first).
+// max_height + offset: 0.31 is climbed and 0.3101 stops the walker. The drop
+// between snapped and fallen depends on the geometry and on the exact bits,
+// not on the speed alone: in this course's geometry the walker snaps 0.200
+// and falls from 0.205, and between 0.200 and 0.2105 the outcome can turn on
+// one bit, so 5.5 and 5.6 stay at 0.19 and 0.22, either side of that band
+// (the Rust knowledge base, requests/walker-stall.md; the 0.2105 T4 gave
+// holds for one other geometry). F2 moved neither limit. Any bump of the
+// toolchain or of rapier3d-f64 reruns this course before a golden may move
+// (solver/FLAGS.md; write-golden runs it first).
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -277,7 +282,13 @@ bundled('course 5.9: two walkers driven at each other at 1 unit per second stay 
   assert.equal(r.passed, false);
 });
 
-bundled('course 5.10: two walkers driven at each other at 8 units per second, recorded: the law lets them overlap there, so separation is not asserted', (t) => {
+// At 8 units per second each walker moves 0.125 a quantum toward a pose the
+// other is leaving, so nothing in the law keeps them 0.49 apart, and where
+// they meet turns on the last bits. On main at 48da598 they came within
+// 0.387; with F2's controller copy this run's closest approach is 0.5, and
+// the Rust knowledge base saw it move with every change to the controller
+// it measured (requests/walker-stall.md). So it is recorded, not asserted.
+bundled('course 5.10: two walkers driven at each other at 8 units per second, recorded: each plans against the other\'s last pose, so the law does not guarantee their separation there and it is not asserted', (t) => {
   const r = meetRun(8);
   t.diagnostic('closest ' + r.closest + ', final ' + r.final + ' (west ' + r.west + ', east ' + r.east + '), passed ' + r.passed);
   assert.ok(Number.isFinite(r.closest) && Number.isFinite(r.final));

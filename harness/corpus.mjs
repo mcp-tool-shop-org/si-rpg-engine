@@ -52,9 +52,10 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
  */
 
 // ---------------------------------------------------------------------------
-// The corpus's own bundles (pin 6). Each replays green today: the engine
-// reproduces the defect exactly. They are here so the slice that fixes one is
-// measured against the same run, and rewrites the bundle when it does.
+// The corpus's own bundles (pin 6). T5 captured each to record a defect, with
+// the engine reproducing it exactly, so the slice that fixed it was measured
+// against the same run and rewrote the bundle: F1 the rebuild at a verb
+// boundary, F2 the walker's stall. Each replays green on the law with its fix.
 
 /** The product walker: a 0.25 box driven at 0.4 units per second. */
 const WALKER = { id: 'walker', x: 10, y: 0.26, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 };
@@ -65,16 +66,21 @@ const STRIDE = 0.4 / 64;
 /** @type {Array<{ name: string, spec: ReplaySpec, tick: number, note: (spec: ReplaySpec) => string }>} */
 export const CORPUS = [
   {
+    // Named for the stall T5 captured it to record, which F2 removed with the
+    // engine's copy of the character controller and recaptured it for.
     name: 'walker-stall-flat-ground',
     spec: { seed: 0, steps: 640, driven: ['walker'], world: { bodies: [WALKER], colliders: [FLOOR] } },
     tick: 97,
     note(spec) {
       const found = stalls(spec);
       return 'The product walker, a 0.25 box driven at 0.4 units per second (' + STRIDE + ' a quantum), alone on the product floor: on '
-        + found.length + ' of its 640 quanta it moves less than half a stride, first at ' + (found.length > 0 ? found[0].tick + ' (' + found[0].dx.toExponential(2) + ')' : 'none')
-        + '. The quanta: ' + found.map((s) => s.tick).join(' ') + '. T4 recorded it in the product scene (harness/outcome.test.js, outcome 4). '
-        + 'Saved at 97, before the first, with the solver image; the replay and the rerun from the image cross every stall. '
-        + 'It replays green because the engine reproduces the stall exactly; the slice that fixes it changes these hashes and rewrites this bundle.';
+        + found.length + ' of its 640 quanta it moves less than half a stride'
+        + (found.length > 0 ? ', first at ' + found[0].tick + ' (' + found[0].dx.toExponential(2) + '). The quanta: ' + found.map((s) => s.tick).join(' ') : '') + '. '
+        + 'Until F2 it stalled on 23, first at 98 (3.20e-4): 98 107 124 125 128 137 181 230 267 278 318 319 352 367 392 431 436 467 503 534 549 552 568. '
+        + 'On each the floor contact\'s normal came out vertical but for its last bit, and Rapier\'s controller filed the horizontal travel as vertical and kept none of it '
+        + '(https://github.com/dimforge/rapier/issues/1019). T4 recorded it in the product scene (harness/outcome.test.js, outcome 4). '
+        + 'F2 moves the character through the engine\'s copy of the controller, solver/src/kcc.rs, whose one added branch keeps that travel, and rewrote this bundle. '
+        + 'Saved at 97, before the first quantum that stalled, with the solver image; the replay and the rerun from the image cross every one of them.';
     },
   },
   {

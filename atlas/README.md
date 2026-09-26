@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-25 from commit 39ba1fe.
+Mapped at 2026-09-25 from commit de71607.
 
 ## What this is
 
@@ -8,25 +8,9 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 15 parts, mostly JavaScript (88 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (ab579ad)
+## What changed since 2026-09-25 (39ba1fe)
 
-- CI's pull request trigger now also names `tools/**`.
-- CI's push trigger now also names `tools/**`.
-- CI now also runs tools/panel.test.js, tools/prompt.test.js and tools/verdicts.test.js.
-- And 1 more change to a door.
-- tools/panel.js is now read by tools/review.mjs and tsconfig.json.
-- tools/panel.test.js is now read by tsconfig.json.
-- tools/prompt.js is now read by tools/review.mjs and tsconfig.json.
-- And 4 more new writers and readers of places.
-- In harness/corpus.mjs, run corpus gained a step, ended block, before make bundle.
-- In harness/corpus.mjs, run corpus lost a step, pair.
-- In packages/tick/bundle.js, replay bundle lost a step, pair.
-- And 1 more change to the order of work.
-- tools/panel.js is new and belongs to no part, so atlas check fails on it against the previous map.
-- tools/panel.test.js is new and belongs to no part, so atlas check fails on it against the previous map.
-- tools/prompt.js is new and belongs to no part, so atlas check fails on it against the previous map.
-- And 4 more new files that belong to no part.
-- 8 files added and 8 changed content, across 7 parts.
+Nothing structural changed since 2026-09-25; 3 files added and 19 changed content.
 
 ## What comes in
 
@@ -116,11 +100,11 @@ CI writes nothing this map can see.
 
 ## What tends to change together
 
+- **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 6 of 7 commits, inside the harness part.
 - **packages/propose/prompt.js** and **packages/propose/propose.test.js** changed together in 6 of 7 commits, inside the propose part.
 - **packages/propose/propose.test.js** and **packages/propose/seat.js** changed together in 6 of 7 commits, inside the propose part.
 - **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 9 of 11 commits, and the tick part imports the frame part.
 - **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 6 of 8 commits, inside the propose part.
-- **packages/load/load.test.js** and **packages/tick/predicates.js** changed together in 5 of 7 commits, and the load part and the tick part import each other.
 
 1 file changed together with its own test, as expected.
 

@@ -393,7 +393,7 @@ test('the corpus: the walker stall and the product scene\'s verb-boundary switch
       t.diagnostic(item.name + ': recorded on ' + bundle.binary + ', running ' + here + ': ' + result.image + ' image of ' + result.pages + ' pages, rerun to ' + result.end + ' identically');
     }
   }
-  assert.match(readBundle('fixtures/corpus/walker-stall-flat-ground.bundle.json').note, /on 23 of its 640 quanta .* first at 98/);
+  assert.match(readBundle('fixtures/corpus/walker-stall-flat-ground.bundle.json').note, /on 0 of its 640 quanta it moves less than half a stride\. Until F2 it stalled on 23, first at 98 /);
   assert.match(readBundle('fixtures/corpus/product-rebuild-261.bundle.json').note, /switches bodies in place.*201 .*261 .*401 .*cross all three switches/);
   // What the job prints: how many stored images it used and how many it skipped.
   const results = runCorpus({ quanta: 0, points: 10, only: 'walker-stall', say: () => {} });

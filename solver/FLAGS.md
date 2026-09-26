@@ -27,7 +27,19 @@ The relaxed-SIMD flag sets the default feature set only. On 1.98.1, `rustc --pri
 
 The product step links `rapier3d-f64` 0.35.3 with `enhanced-determinism`. The crate's default features stay on (`dim3`, `f64`, `std`, `block-solver`). `parallel` is off. This version has no `simd-stable` or `simd-nightly` feature; `wide` is still a transitive crate and no SIMD target feature is enabled. Integration `dt` is `1/64`. Dynamic sleep uses `time_until_sleep = 32 * dt`. Contact clustering is off, so the warm-start cache in the snapshot is the manifold points. `max_ccd_substeps` is written as 1: at this version every fast dynamic body is swept against fixed colliders whatever its `ccd_enabled`, 0 turns that off, and above 1 a restore would need crate-private state. Heightfields carry `HeightFieldFlags::FIX_INTERNAL_EDGES`.
 
-Any bump of the toolchain or of `rapier3d-f64` reruns the character course (`harness/course.test.js`) and the outcome tests (`harness/outcome.test.js`) before a golden may move; `write-golden` runs both first and refuses to write when either fails.
+Any bump of the toolchain or of `rapier3d-f64` reruns the character course (`harness/course.test.js`) and the outcome tests (`harness/outcome.test.js`) before a golden may move; `write-golden` runs both first and refuses to write when either fails. A bump of `rapier3d-f64` reruns the controller's control test before either (below).
+
+## The character controller is the engine's copy
+
+The law moves every character through `solver/src/kcc.rs`, the engine's copy of Rapier's `KinematicCharacterController::move_shape` and the private functions it calls, from rapier3d-f64 0.35.3 (F2). It adds one branch to `decompose_hit`: when the hit normal crossed with `up` has no direction, the tangent's part along `up` is vertical and the rest horizontal, where Rapier files all of it as vertical. With a floor normal vertical but for its last bit, which GJK returns on about one flat-ground quantum in 30 at the product walker's speed, Rapier's routine keeps none of the horizontal travel (https://github.com/dimforge/rapier/issues/1019); the product walker lost 332 of 10,000 quanta that way at the origin and 323 at an offset of a million. The routine is unchanged at rapier 0.36.0. The file is under the Apache License 2.0 (`solver/LICENSE-APACHE-2.0`, `solver/NOTICE`); the rest of the repository is MIT.
+
+The copy is part of the law, and a bump of `rapier3d-f64` is a change to it:
+
+1. Re-sync `kcc.rs` from the new version's `src/control/character_controller.rs`, applying upstream's changes to the copied functions. The file's header lists what was copied, with line numbers, and every place the copy differs from the source.
+2. Run the control test first: `cargo test --release --locked` in `solver/`, test `the_copy_with_its_branch_off_moves_the_character_as_rapiers_controller_does_bit_for_bit`. It calls Rapier's own controller and the copy with the branch off with the same inputs at every quantum of the flat walk at the origin and at 1e6, the ten course cases, the 0.29 step from 20 starts in four directions, and the verb fixture's capsule carry, and at zero desired translation, and requires every movement to match bit for bit. A copy that parts from Rapier fails it with the run, the quantum, and both movements.
+3. Then the course and the outcome tests, and only then may a golden move.
+
+If upstream has fixed the degenerate case, the branch and the copy can go together, and the law calls Rapier's routine again.
 
 ## The toolchain is part of the law
 
