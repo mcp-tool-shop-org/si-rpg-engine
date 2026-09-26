@@ -153,64 +153,180 @@ test('the seat reaches the tick only through submitAsRole, which refuses to subm
   assert.equal(calls, 1, 'with provenance it reaches the tick, whose gate checks it');
 });
 
+/** Keywords after which an expression begins, so a slash there begins a regex literal. */
+const BEFORE_EXPRESSION = new Set(['return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete', 'void', 'throw', 'case', 'do', 'else', 'yield', 'await', 'extends']);
+
+/** Keywords whose parenthesized head a statement follows, so a slash after its `)` begins a regex literal. */
+const HEADS = new Set(['if', 'while', 'for', 'with']);
+
+/** A character of a word: an identifier, a private name, a keyword, or a number. */
+const WORD = /[\w$#\\\u0080-￿]/;
+
 /**
- * The source with comments blanked out, line and column kept, strings kept.
+ * The source with comments blanked out, line and column kept. Strings,
+ * template literals with their substitutions, and regex literals are read as
+ * the language reads them and kept as they are, so a `//`, a `/*`, or a quote
+ * inside one opens nothing. A slash begins a regex literal where an
+ * expression may begin: at the start, after an operator or an opening
+ * bracket, after a keyword that takes an expression, after a block's closing
+ * brace, and after the parenthesis that closes an if, while, for, or with
+ * head. Anywhere else it divides.
  * @param {string} source
  */
 function withoutComments(source) {
   let out = '';
-  /** @type {'code' | 'line' | 'block' | "'" | '"' | '`'} */
-  let state = 'code';
-  for (let i = 0; i < source.length; i = i + 1) {
+  let i = 0;
+  /** Whether a slash here begins a regex literal. */
+  let regexNext = true;
+  /** The word just read, when the last token was a word that is not a property name. */
+  let word = '';
+  /** Whether the last token was a member dot, so a word after it is a property name. */
+  let dotted = false;
+  /** @type {boolean[]} for each open parenthesis, whether it opened an if, while, for, or with head */
+  const parens = [];
+  /** @type {boolean[]} for each open brace, whether it opened a template literal's substitution */
+  const braces = [];
+
+  /** @param {number} to copies the source up to `to` as it is */
+  const keep = (to) => {
+    out = out + source.slice(i, to);
+    i = Math.min(to, source.length);
+  };
+  /** @param {number} to blanks the source up to `to`, keeping its line breaks */
+  const blank = (to) => {
+    out = out + source.slice(i, to).replace(/[^\n]/g, ' ');
+    i = Math.min(to, source.length);
+  };
+  /** Past a backslash and what it escapes, a CRLF line continuation whole. */
+  const escaped = () => keep(i + (source[i + 1] === '\r' && source[i + 2] === '\n' ? 3 : 2));
+  /** A template literal's text, up to its closing backtick or its next substitution. */
+  const templateText = () => {
+    while (i < source.length) {
+      const c = source[i];
+      if (c === '\\') {
+        escaped();
+      } else if (c === '`') {
+        keep(i + 1);
+        regexNext = false;
+        return;
+      } else if (c === '$' && source[i + 1] === '{') {
+        keep(i + 2);
+        braces.push(true);
+        regexNext = true;
+        return;
+      } else {
+        keep(i + 1);
+      }
+    }
+  };
+
+  if (source.startsWith('#!')) {
+    const end = source.indexOf('\n');
+    blank(end < 0 ? source.length : end);
+  }
+  while (i < source.length) {
     const c = source[i];
     const next = source[i + 1];
-    if (state === 'code') {
-      if (c === '/' && next === '/') {
-        state = 'line';
-        out = out + '  ';
-        i = i + 1;
-        continue;
-      }
-      if (c === '/' && next === '*') {
-        state = 'block';
-        out = out + '  ';
-        i = i + 1;
-        continue;
-      }
-      if (c === '\'' || c === '"' || c === '`') {
-        state = c;
-      }
-      out = out + c;
+    if (c === '/' && next === '/') {
+      const end = source.indexOf('\n', i);
+      blank(end < 0 ? source.length : end);
       continue;
     }
-    if (state === 'line') {
-      if (c === '\n') {
-        state = 'code';
-        out = out + c;
+    if (c === '/' && next === '*') {
+      const end = source.indexOf('*/', i + 2);
+      blank(end < 0 ? source.length : end + 2);
+      continue;
+    }
+    if (/\s/.test(c)) {
+      keep(i + 1);
+      continue;
+    }
+    const before = word;
+    const property = dotted;
+    word = '';
+    dotted = false;
+    if (c === '\'' || c === '"') {
+      keep(i + 1);
+      while (i < source.length && source[i] !== c && source[i] !== '\n') {
+        if (source[i] === '\\') {
+          escaped();
+        } else {
+          keep(i + 1);
+        }
+      }
+      if (source[i] === c) {
+        keep(i + 1);
+      }
+      regexNext = false;
+    } else if (c === '`') {
+      keep(i + 1);
+      templateText();
+    } else if (c === '/' && regexNext) {
+      keep(i + 1);
+      let inClass = false;
+      while (i < source.length && source[i] !== '\n' && source[i] !== '\r') {
+        const r = source[i];
+        if (r === '\\') {
+          escaped();
+          continue;
+        }
+        keep(i + 1);
+        if (inClass) {
+          inClass = r !== ']';
+        } else if (r === '[') {
+          inClass = true;
+        } else if (r === '/') {
+          break;
+        }
+      }
+      while (i < source.length && /[\w$]/.test(source[i])) {
+        keep(i + 1);
+      }
+      regexNext = false;
+    } else if (WORD.test(c)) {
+      let end = i + 1;
+      while (end < source.length && WORD.test(source[end])) {
+        end = end + 1;
+      }
+      const text = source.slice(i, end);
+      keep(end);
+      word = property ? '' : text;
+      regexNext = !property && BEFORE_EXPRESSION.has(text);
+    } else if (c === '(') {
+      keep(i + 1);
+      parens.push(HEADS.has(before));
+      regexNext = true;
+    } else if (c === ')') {
+      keep(i + 1);
+      regexNext = parens.pop() === true;
+    } else if (c === '{') {
+      keep(i + 1);
+      braces.push(false);
+      regexNext = true;
+    } else if (c === '}') {
+      keep(i + 1);
+      if (braces.pop() === true) {
+        templateText();
       } else {
-        out = out + ' ';
+        regexNext = true;
       }
-      continue;
+    } else if (c === ']') {
+      keep(i + 1);
+      regexNext = false;
+    } else if (c === '.' && next === '.' && source[i + 2] === '.') {
+      keep(i + 3);
+      regexNext = true;
+    } else if (c === '.') {
+      keep(i + 1);
+      dotted = true;
+      regexNext = false;
+    } else if ((c === '+' || c === '-') && next === c) {
+      keep(i + 2);
+      regexNext = false;
+    } else {
+      keep(i + 1);
+      regexNext = true;
     }
-    if (state === 'block') {
-      if (c === '*' && next === '/') {
-        state = 'code';
-        out = out + '  ';
-        i = i + 1;
-      } else {
-        out = out + (c === '\n' ? c : ' ');
-      }
-      continue;
-    }
-    if (c === '\\') {
-      out = out + c + (next === undefined ? '' : next);
-      i = i + 1;
-      continue;
-    }
-    if (c === state) {
-      state = 'code';
-    }
-    out = out + c;
   }
   return out;
 }
@@ -304,6 +420,24 @@ test('the source check goes red on a second way into the tick, however it is spe
   assert.deepEqual(submitUses(seat + '// a comment may say tick.submit(proposal)\n/* and tick.submit here */\n').stray, [], 'comments are not calls');
   const url = 'const base = \'http://127.0.0.1:11434\'; export const quick = (tick, p) => tick.submit(p);\n';
   assert.deepEqual(submitUses(url).stray, ['1:' + (url.indexOf('submit') + 1)], 'a URL does not hide the rest of its line');
+  // A regex literal, or a template literal inside another's substitution,
+  // is read as the language reads it: a slash, a comment opener, or a quote
+  // inside one hides nothing after it.
+  const hidden = [
+    'export const quick = (tick, p) => /a\\//.test(p.verb) && tick.submit(p);\n',
+    'export const quick = (tick, p) => /[/*]/.test(p.verb) && tick.submit(p);\n',
+    'export const quick = (tick, p) => /\'/.test(p.verb) && p.url !== \'http://x\' && tick.submit(p);\n',
+    'export function quick(tick, p) {\n  if (p) /a\\//.test(p.verb) && tick.submit(p);\n}\n',
+    'export const quick = (tick, p) => `${`//`}` && tick.submit(p);\n',
+  ];
+  for (const extra of hidden) {
+    const lines = extra.split('\n');
+    const row = lines.findIndex((line) => line.includes('submit'));
+    assert.deepEqual(submitUses(extra).stray, [(row + 1) + ':' + (lines[row].indexOf('submit') + 1)], extra);
+    assert.notDeepEqual(submitUses(seat + extra).stray, [], extra);
+  }
+  const divided = 'export const half = (total) => total / 2; // tick.submit(p) is only named here\nconst third = (a, b) => a / b / 3; /* nor tick.submit here */\n';
+  assert.deepEqual(submitUses(divided).stray, [], 'a slash that divides begins no regex literal, and a comment after it is still a comment');
 });
 
 // ---------------------------------------------------------------------------
