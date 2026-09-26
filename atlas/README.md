@@ -1,41 +1,43 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit d25073e.
+Mapped at 2026-09-26 from commit 8d78f1e.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-15 parts, mostly JavaScript (92 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+16 parts, mostly JavaScript (99 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-25 (de71607)
+## What changed since 2026-09-26 (d25073e)
 
-- harness now imports load, which extends the cycle harness → load → tick → harness.
-- CI now also runs harness/sweep.test.js.
-- CI now also checks harness/plant-throw.mjs.
-- fixtures/sweep/verdicts.json is now written by harness/corpus.mjs.
-- docs/study-swarm/seat-instrument.dispatch.md is now read by docs/study-swarm/seat-instrument.dispatch.citation-receipt.json and docs/study-swarm/seat-instrument.fulltext-check.json.
-- fixtures/ is now also read by harness/sweep.test.js.
-- And 11 more new writers and readers of places.
-- In harness/bundle.mjs, bundle failure gained a step, bundle dir, before write bundle.
-- harness/restore.test.js now starts at planted rerun; it started at restores at.
-- 15 files added and 58 changed content, across 10 parts.
+- propose now imports harness.
+- CI now also runs packages/propose/record.test.js, packages/tick/gate.test.js and packages/tick/roles.test.js.
+- CI now also checks harness/role-session.mjs.
+- fixtures/behavior-minds.json is now also read by packages/propose/propose.test.js.
+- fixtures/golden.txt is now also read by packages/propose/propose.test.js.
+- fixtures/roles/ is now read by harness/restore.test.js, packages/propose/propose.test.js, packages/propose/record.test.js and packages/tick/roles.test.js.
+- And 18 more new writers and readers of places.
+- packages/propose/propose.test.js now starts at probe session; it started at fresh.
+- In packages/tick/tick.js, create tick gained a step, least label, after commit frame.
+- In packages/tick/tick.js, create tick gained a step, least label, after commit frame.
+- roles is a new part, drawn from `predicates/roles/**`.
+- 31 files added, 3 removed and 19 changed content, across 7 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 31 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 25 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 34 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 26 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
-4. **host** (a command people run). Runs packages/host/bin/host.js.
-5. **load** (a command people run). Runs packages/load/bin/load.js.
-6. **propose** (a command people run). Runs packages/propose/bin/propose.js.
+4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
+5. **host** (a command people run). Runs packages/host/bin/host.js.
+6. **load** (a command people run). Runs packages/load/bin/load.js.
 7. **write-golden** (a command people run). Runs harness/sim.mjs and harness/write-golden.js.
 8. **play** (a command people run). Runs packages/tick/bin/play.js.
 9. **replay** (a command people run). Runs packages/tick/bin/replay.js.
 
 ## What happens through CI
 
-1. The workflow runs 19 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js in propose, 4 files in solver, and 8 files in 4 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 14 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 37 files in 7 more places.
+1. The workflow runs 19 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, 4 files in solver, and 10 files in 4 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 15 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 43 files in 7 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
@@ -64,13 +66,68 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       7. body
       8. carrying of
       9. zone index
-   10. Inside packages/propose/propose.test.js, fresh does, in order: load intent rules (tick), fixture world, create world, create memory and create tick.
-   11. **Create tick** (tick) runs, in order: create hasher (frame), install minds, mix load, mix minds, snapshot, u 32 and commit frame.
-   12. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
-   13. **Create tick** runs, in order: create hasher (frame), install minds, mix load, mix minds, snapshot, u 32 and commit frame.
-   14. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
-   15. **Create tick** runs, in order: create hasher (frame), install minds, mix load, mix minds, snapshot, u 32 and commit frame.
-   16. Inside solver/lint.mjs, lint wasm does, in order:
+   10. Inside packages/propose/propose.test.js, probe session does, in order:
+      1. load roles (tick)
+      2. scratch world
+      3. load intent rules
+      4. create world
+      5. create memory
+      6. create tick
+      7. on tick
+      8. run session
+      9. settle
+      10. write session
+   11. **Create tick** (tick) runs, in order:
+      1. create hasher (frame)
+      2. install minds
+      3. mix load
+      4. mix minds
+      5. snapshot
+      6. u 32
+      7. commit frame
+      8. least label
+   12. **Run session** runs, in order:
+      1. template slots
+      2. frame
+      3. render template
+      4. belief keys (tick)
+      5. build schema
+      6. observe
+      7. ask
+      8. while out
+      9. record (4 steps)
+   13. **Settle** (tick) runs, in order: idle and advance.
+   14. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
+   15. **Create tick** runs, in order:
+      1. create hasher (frame)
+      2. install minds
+      3. mix load
+      4. mix minds
+      5. snapshot
+      6. u 32
+      7. commit frame
+      8. least label
+   16. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
+   17. **Create tick** runs, in order:
+      1. create hasher (frame)
+      2. install minds
+      3. mix load
+      4. mix minds
+      5. snapshot
+      6. u 32
+      7. commit frame
+      8. least label
+   18. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
+   19. **Create tick** runs, in order:
+      1. create hasher (frame)
+      2. install minds
+      3. mix load
+      4. mix minds
+      5. snapshot
+      6. u 32
+      7. commit frame
+      8. least label
+   20. Inside solver/lint.mjs, lint wasm does, in order:
       1. byte
       2. signed
       3. byte
@@ -96,11 +153,11 @@ Only CI itself reads what it writes.
 
 **Deploy site to GitHub Pages** runs site/astro.config.mjs and site/src/, and deploys the site.
 
+**propose** (a command people run) runs packages/propose/bin/propose.js and reaches frame, harness and tick.
+
 **host** (a command people run) runs packages/host/bin/host.js and reaches frame and tick.
 
 **load** (a command people run) runs packages/load/bin/load.js, reaches frame and tick, and runs git.
-
-**propose** (a command people run) runs packages/propose/bin/propose.js and reaches frame and tick.
 
 **write-golden** (a command people run) runs harness/sim.mjs and harness/write-golden.js, reaches frame and tick, and writes to fixtures/golden-behaviour.json and fixtures/golden.txt.
 
@@ -112,8 +169,8 @@ Only CI itself reads what it writes.
 
 - **tick** is imported by 4 parts (harness, host, load, propose) and sits on the path of 8 doors.
 - **frame** is imported by 2 parts (harness, tick) and sits on the path of 8 doors.
+- **harness** is imported by 1 part (propose), and by 1 more only from tests; it sits on the path of 4 doors.
 - **load** is imported by 1 part (harness), and by 1 more only from tests; it sits on the path of 3 doors.
-- **harness** is imported only from tests, by 1 part (tick), and sits on the path of 3 doors.
 - **host** is imported by no other part and sits on the path of 2 doors.
 - **propose** is imported by no other part and sits on the path of 2 doors.
 - **solver** is imported by no other part and sits on the path of 2 doors.
@@ -121,17 +178,17 @@ Only CI itself reads what it writes.
 
 ## What tends to change together
 
-- **packages/propose/prompt.js** and **packages/propose/propose.test.js** changed together in 6 of 7 commits, inside the propose part.
-- **packages/propose/propose.test.js** and **packages/propose/seat.js** changed together in 6 of 7 commits, inside the propose part.
 - **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 7 of 9 commits, inside the harness part.
-- **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 6 of 8 commits, inside the propose part.
-- **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 10 of 14 commits, and the tick part imports the frame part.
+- **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 8 of 11 commits, inside the propose part.
+- **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 11 of 16 commits, and the tick part imports the frame part.
+- **packages/host/host.test.js** and **packages/host/session.js** changed together in 8 of 12 commits, inside the host part.
+- **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 8 of 12 commits, inside the propose part.
 
 1 file changed together with its own test, as expected.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
-Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do.
+Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do.
 
 ## What no test touches
 
@@ -143,9 +200,7 @@ Every written place has a reader.
 
 ## Helpers that look duplicated
 
-These are candidates from names and call order, not a judgement.
-
-- **reachedGoal** is exported by packages/propose/scene.js (propose) and packages/tick/scene.js (tick); the two look alike.
+No two parts export a helper that looks alike.
 
 ## Generated, never hand-edited
 
@@ -156,7 +211,7 @@ These are candidates from names and call order, not a judgement.
 
 ## Hand-authored
 
-People write .github/, docs/, predicates/beliefs/, predicates/hazards/, predicates/intents/, the repository root and worlds/; 2 writes with paths built at run time may land here.
+People write .github/, docs/, predicates/beliefs/, predicates/hazards/, predicates/intents/, predicates/roles/, the repository root and worlds/; 2 writes with paths built at run time may land here.
 
 ## Where to start
 
@@ -167,10 +222,10 @@ Read those in order to follow one pull request end to end.
 ## What this map cannot see
 
 - 14 import sites could not be resolved.
-- 2 writes and 2 reads use paths built at run time and are not named here.
+- 2 writes and 3 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
-- 12 writes and 25 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 21 commands are built at run time and not followed, 18 of them in tests.
+- 14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 31 commands are built at run time and not followed, 28 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.

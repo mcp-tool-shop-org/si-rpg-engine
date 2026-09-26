@@ -1,221 +1,247 @@
 #!/usr/bin/env node
-// propose: a pinned local model proposes into a fresh tick, ten runs.
+// propose: the seat's command (T7a). Runs from the repository root.
 //
-//   propose [--budget N] [--runs N] [--model name] [--out report.json]
+//   propose [--catalog <dir>]
+//   propose --role <name> [--catalog <dir>] --spec <session>/spec.json
+//   propose --drift <session dir>
 //
-// Both conditions see the previous proposal and its verdict. Only one sees
-// the checker's reason. Each attempt has its own sampling seed. Replay of
-// an admitted log does not call the model.
+// Without --role it lists the roles in the catalog, predicates/roles unless
+// --catalog names another, each with its status, its world, the Rule of Two
+// properties the loader derived, and its trust label. With --role it refuses
+// a role the seat cannot run, with its reason and exit 2, before any model
+// call: a frozen role, one that acts in a live world, or one whose inputs the
+// seat renders no prompt from. The model's client is not even loaded. For a
+// thawed scratch role it runs the session the spec names through the local
+// Ollama at 127.0.0.1:11434 and writes session.json and one record per call
+// beside the spec. --drift reissues a session's recorded calls and reports how
+// far the new outputs drift from the recorded ones. It runs only by hand, on a
+// GPU, and never blocks: it exits 0 whatever it finds. Neither CI nor npm test
+// runs a model; CI checks the records (packages/propose/record.test.js).
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { chdir } from 'node:process';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createTick } from '../../tick/tick.js';
-import { createWorld } from '../../tick/world.js';
+import { loadRoles, propertiesText } from '../../tick/roles.js';
 import { createMemory } from '../../tick/memory.js';
 import { loadIntentRules } from '../../tick/predicates.js';
-import { FIXTURE_SEED } from '../../tick/fixture.js';
-import { replay } from '../../tick/replay.js';
-import { runSeat } from '../seat.js';
-import { askOllama, pinnedRun } from '../ollama.js';
-import { attemptsToGoal, proposeWorld } from '../scene.js';
-import { oracleSearch } from '../oracle.js';
+import { createTick, settle } from '../../tick/tick.js';
+import { createWorld } from '../../tick/world.js';
 import { guard } from '../../tool/guard.js';
+import { driftOf, readSession, writeSession } from '../record.js';
+import { askWithin, runSession, scratchWorld, sessionRefusal } from '../seat.js';
 
-guard('propose [--unfreeze] [--out <file>]');
+const USAGE = 'propose [--catalog <dir>] | propose --role <name> [--catalog <dir>] --spec <spec.json> | propose --drift <session>';
+guard(USAGE);
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+const here = process.cwd();
 chdir(root);
 
 const args = process.argv.slice(2);
-/**
- * @param {string} name
- * @param {number} fallback
- */
-function flag(name, fallback) {
+/** @param {string} name */
+function value(name) {
   const index = args.indexOf(name);
-  return index >= 0 ? Number(args[index + 1]) : fallback;
+  return index >= 0 ? args[index + 1] : undefined;
 }
-const budget = flag('--budget', 8);
-const runs = flag('--runs', 10);
-const outIndex = args.indexOf('--out');
-const outPath = outIndex >= 0 ? args[outIndex + 1] : null;
-const frozen = JSON.parse(readFileSync(new URL('../model.json', import.meta.url), 'utf8')).frozen;
-if (typeof frozen === 'string' && !args.includes('--unfreeze')) {
-  process.stderr.write('refusing to run: ' + frozen + '\n');
+
+/**
+ * A path the person typed, from where they typed it, as a path from the root.
+ * @param {string} path
+ */
+function fromRoot(path) {
+  return relative(root, resolve(here, path)).split('\\').join('/');
+}
+
+/** @param {string} line */
+function refuse(line) {
+  process.stderr.write(line + '\n');
   process.exit(2);
 }
-const oracle = oracleSearch();
-if (!oracle.solvable || oracle.minAttempts === null || oracle.minAttempts > budget) {
-  process.stderr.write('refusing to run: oracle cannot solve the scene within the budget\n');
+
+const drift = value('--drift');
+if (drift !== undefined) {
+  await driftReport(fromRoot(drift));
+  process.exit(0);
+}
+
+const catalogDir = value('--catalog') === undefined ? 'predicates/roles' : fromRoot(/** @type {string} */ (value('--catalog')));
+const loaded = loadRoles(catalogDir);
+if (!loaded.ok) {
+  process.stderr.write('refused: ' + loaded.reason + '\n');
   process.exit(1);
 }
-const pin = pinnedRun();
-const modelIndex = args.indexOf('--model');
-const model = modelIndex >= 0 ? args[modelIndex + 1] : pin.model;
-const catalog = loadIntentRules();
-const verbs = [...catalog.rules.keys()];
+const catalog = loaded.catalog;
 
-function fresh() {
-  return createTick({
-    seed: FIXTURE_SEED,
-    world: createWorld(proposeWorld()),
-    rules: catalog.rules,
-    retired: catalog.retired,
-    memory: createMemory(),
-  });
-}
-
-/**
- * @param {boolean} withReason
- * @param {number} run
- */
-async function oneRun(withReason, run) {
-  const seat = await runSeat({
-    tick: fresh(),
-    ask: (prompt, call) => askOllama(model, prompt, call),
-    budget,
-    withReason,
-    verbs,
-    seedBase: 1000 + run * 100,
-    temperature: pin.temperature,
-  });
-  const checked = replay({
-    seed: FIXTURE_SEED,
-    world: proposeWorld(),
-    rules: catalog.rules,
-    retired: catalog.retired,
-    log: seat.log,
-  });
-  if (!checked.ok) {
-    process.stderr.write('replay failed on run ' + run + ': ' + checked.reason + '\n');
-    process.exit(1);
+const roleName = value('--role');
+if (roleName === undefined) {
+  for (const [name, entry] of catalog.byName) {
+    const m = entry.manifest;
+    const decided = m.decision === null ? 'no decision recorded' : 'decided by ' + m.decision.by + ' on ' + m.decision.on;
+    process.stdout.write(name + ' ' + m.status + ' ' + m.world + ' properties ' + propertiesText(entry.derived) + ' label ' + entry.derived.label.label + ' ' + decided + '\n');
   }
-  return {
-    seedBase: seat.seedBase,
-    admitted: seat.admitted,
-    rate: seat.rate,
-    attemptsToGoal: attemptsToGoal(seat.attempts),
-    attempts: seat.attempts,
-  };
+  process.exit(0);
 }
 
-/** @type {Awaited<ReturnType<typeof oneRun>>[]} */
-const withReason = [];
-/** @type {Awaited<ReturnType<typeof oneRun>>[]} */
-const blind = [];
-for (let run = 0; run < runs; run = run + 1) {
-  process.stderr.write('run ' + (run + 1) + ' of ' + runs + '\n');
-  withReason.push(await oneRun(true, run));
-  blind.push(await oneRun(false, run));
+const entry = catalog.byName.get(roleName);
+if (!entry) {
+  refuse('refusing to run: ' + catalogDir + ' holds no role named ' + roleName);
 }
+const role = /** @type {import('../../tick/roles.js').RoleEntry} */ (entry);
+const refusal = sessionRefusal(role);
+if (refusal !== null) {
+  refuse('refusing to run: ' + refusal);
+}
+
+const specArg = value('--spec');
+if (specArg === undefined) {
+  refuse('usage: ' + USAGE);
+}
+const specPath = fromRoot(/** @type {string} */ (specArg));
+const dir = dirname(specPath);
+const spec = readSpec(specPath);
+if (spec.role !== roleName) {
+  refuse('refusing to run: the spec is for role ' + spec.role + ', not ' + roleName);
+}
+const built = await scratchWorld(spec.world, root);
+if (!built.ok) {
+  refuse('refusing to run: ' + built.reason);
+}
+const scratch = /** @type {Extract<typeof built, { ok: true }>} */ (built);
+
+const rules = loadIntentRules();
+const world = createWorld(scratch.world, spec.law);
+const memory = createMemory();
+const tick = createTick({ seed: scratch.seed, world, rules: rules.rules, retired: rules.retired, memory, roles: catalog });
+/** @type {string[]} */
+const frames = [];
+tick.attach({
+  draw(frame) {
+    frames.push(frame.hash);
+  },
+});
+// The world may settle before the first call, so its first prompt shows it at rest.
+for (let i = 0; i < spec.startQuanta; i = i + 1) {
+  tick.advance();
+}
+
+// Only now, past every refusal, is the model's client loaded.
+const { askOllama, observeOllama } = await import('../ollama.js');
+const result = await runSession({
+  entry: role,
+  session: spec.session,
+  instance: spec.instance,
+  tick,
+  world,
+  memory,
+  rules: rules.rules,
+  inputs: { dispatch: readInput(dir, spec.dispatch), diff: readInput(dir, spec.diff), access: spec.access },
+  calls: spec.calls,
+  lateQuanta: spec.lateQuanta,
+  client: { observe: observeOllama, ask: askOllama },
+});
+settle(tick);
+
+/** @type {Record<string, import('../../frame/types.js').RoleManifest>} */
+const manifests = { [role.hash]: role.manifest };
+// The last frame the session reached, whose hash holds every admission's provenance.
+const last = tick.frame();
+writeSession(dir, {
+  session: spec.session,
+  role: roleName,
+  catalog: catalogDir,
+  instance: spec.instance,
+  worldFrom: scratch.from,
+  lateQuanta: spec.lateQuanta,
+  seed: scratch.seed,
+  law: spec.law,
+  world: scratch.world,
+  calls: result.calls,
+  refused: result.refused,
+  log: tick.log().slice(),
+  manifests,
+  end: { tick: last.tick, hash: last.hash },
+  frames,
+}, result.records);
+for (const line of result.calls) {
+  process.stdout.write('call ' + line.call + ' built at ' + line.builtAt.tick + ': ' + line.read + (line.admitted ? ', admitted at ' + line.at : ', ' + String(line.reason)) + '\n');
+}
+if (result.refused) {
+  process.stdout.write('stopped: ' + result.refused + '\n');
+}
+process.stdout.write('wrote ' + dir + '/session.json and ' + result.records.length + ' records\n');
 
 /**
- * @param {Array<{ rate: number }>} rows
+ * @param {string} path
+ * @returns {{ session: string, role: string, world: string, instance: string, calls: number, startQuanta: number, lateQuanta: number, law: 'product' | 'reference', dispatch: string, diff: string, access: Record<string, string[]> }}
  */
-function mean(rows) {
-  let sum = 0;
-  for (const row of rows) {
-    sum = sum + row.rate;
+function readSpec(path) {
+  /** @type {any} */
+  let spec;
+  try {
+    spec = JSON.parse(readFileSync(path, 'utf8'));
+  } catch (error) {
+    refuse('refusing to run: the spec did not read: ' + (error instanceof Error ? error.message : String(error)));
   }
-  return sum / rows.length;
+  const allowed = ['session', 'role', 'world', 'instance', 'calls', 'startQuanta', 'lateQuanta', 'law', 'dispatch', 'diff', 'access'];
+  for (const key of Object.keys(spec || {})) {
+    if (!allowed.includes(key)) {
+      refuse('refusing to run: unknown field in the spec: ' + key);
+    }
+  }
+  const ok = spec
+    && typeof spec.session === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(spec.session)
+    && typeof spec.role === 'string'
+    && typeof spec.world === 'string'
+    && typeof spec.instance === 'string' && spec.instance.length > 0 && spec.instance.length <= 120
+    && Number.isInteger(spec.calls) && spec.calls >= 1 && spec.calls <= 1000
+    && Number.isInteger(spec.startQuanta) && spec.startQuanta >= 0 && spec.startQuanta <= 38400
+    && Number.isInteger(spec.lateQuanta) && spec.lateQuanta >= 0 && spec.lateQuanta <= 38400
+    && (spec.law === 'product' || spec.law === 'reference')
+    && typeof spec.dispatch === 'string' && typeof spec.diff === 'string'
+    && spec.access && typeof spec.access === 'object' && !Array.isArray(spec.access)
+    && Object.values(spec.access).every((verbs) => Array.isArray(verbs) && verbs.every((verb) => typeof verb === 'string'));
+  if (!ok) {
+    refuse('refusing to run: a spec names its session, role, world, instance, calls, startQuanta, lateQuanta, law, dispatch and diff files, and access');
+  }
+  return spec;
 }
 
 /**
- * @param {Array<{ attempts: Array<{ kind: string | null, admitted: boolean }> }>} rows
- * @param {string} kind
+ * An input file beside the spec, and nowhere else.
+ * @param {string} folder
+ * @param {string} name
  */
-function byKind(rows, kind) {
-  let admitted = 0;
-  let n = 0;
-  for (const row of rows) {
-    for (const attempt of row.attempts) {
-      if (attempt.kind !== kind) {
+function readInput(folder, name) {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(name)) {
+    refuse('refusing to run: an input file is named beside the spec, and ' + name + ' is not');
+  }
+  return readFileSync(join(folder, name), 'utf8');
+}
+
+/**
+ * Reissues each recorded call and prints how far the new output drifts.
+ * @param {string} folder
+ */
+async function driftReport(folder) {
+  try {
+    const { session, records } = readSession(folder);
+    const { askOllama, observeOllama } = await import('../ollama.js');
+    const client = { observe: observeOllama, ask: askOllama };
+    /** @type {object[]} */
+    const report = [];
+    for (const [key, record] of records) {
+      if (record.output === null) {
         continue;
       }
-      n = n + 1;
-      if (attempt.admitted) {
-        admitted = admitted + 1;
-      }
+      const manifest = session.manifests[record.manifest];
+      const pin = manifest && manifest.model ? manifest.model.digest : record.model.digest;
+      // The seat's one deadline, as the session's own calls had.
+      const { reply } = await askWithin(client, record.request, pin, record.timeoutMs);
+      report.push(driftOf(key, record, reply === null ? null : reply.output, manifest));
     }
+    process.stdout.write(JSON.stringify({ session: session.session, calls: report }, null, 2) + '\n');
+  } catch (error) {
+    process.stdout.write('drift not measured: ' + (error instanceof Error ? error.message : String(error)) + '\n');
   }
-  return { admitted, n };
-}
-
-/**
- * @param {Array<{ attempts: Array<{ prompt: string }> }>} rows
- */
-function reasonsShown(rows) {
-  let n = 0;
-  for (const row of rows) {
-    for (const attempt of row.attempts) {
-      if (attempt.prompt.includes('Checker reason:')) {
-        n = n + 1;
-      }
-    }
-  }
-  return n;
-}
-
-/**
- * @param {Array<{ attemptsToGoal: number | null }>} rows
- */
-function goalSummary(rows) {
-  /** @type {Array<number | null>} */
-  const attempts = rows.map((row) => row.attemptsToGoal);
-  let reached = 0;
-  let sum = 0;
-  for (const value of attempts) {
-    if (value !== null) {
-      reached = reached + 1;
-      sum = sum + value;
-    }
-  }
-  const meanAttempts = reached === 0 ? null : sum / reached;
-  const aboveOracle = meanAttempts === null || oracle.minAttempts === null
-    ? null
-    : meanAttempts - oracle.minAttempts;
-  return { reached, attempts, meanAttempts, aboveOracle };
-}
-
-const shown = reasonsShown(withReason);
-const intent = {
-  withReason: byKind(withReason, 'intent'),
-  blind: byKind(blind, 'intent'),
-};
-const report = {
-  model,
-  temperature: pin.temperature,
-  worldSeed: FIXTURE_SEED,
-  runs,
-  budget,
-  oracleMin: oracle.minAttempts,
-  reasonsShown: shown,
-  goal: { withReason: goalSummary(withReason), blind: goalSummary(blind) },
-  intent,
-  belief: { withReason: byKind(withReason, 'belief'), blind: byKind(blind, 'belief') },
-  body: { withReason: byKind(withReason, 'body'), blind: byKind(blind, 'body') },
-  withReason: { meanRate: mean(withReason), runs: withReason },
-  blind: { meanRate: mean(blind), runs: blind },
-};
-const text = JSON.stringify(report, null, 2) + '\n';
-const summary = 'intent with-reason ' + intent.withReason.admitted + '/' + intent.withReason.n
-  + ' blind ' + intent.blind.admitted + '/' + intent.blind.n
-  + ' goal ' + report.goal.withReason.reached + '/' + runs
-  + ' mean ' + report.goal.withReason.meanAttempts
-  + ' above-oracle ' + report.goal.withReason.aboveOracle
-  + ' blind ' + report.goal.blind.reached + '/' + runs
-  + ' mean ' + report.goal.blind.meanAttempts
-  + ' above-oracle ' + report.goal.blind.aboveOracle
-  + ' oracle ' + oracle.minAttempts
-  + ' reasons ' + shown + '\n';
-process.stderr.write(summary);
-if (shown === 0) {
-  process.stderr.write('refusing to report: the reason condition showed zero checker reasons\n');
-  process.exit(1);
-}
-process.stdout.write(summary);
-if (outPath) {
-  writeFileSync(outPath, text);
 }

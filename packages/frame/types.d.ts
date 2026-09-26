@@ -124,6 +124,14 @@ export type Admission =
   | { admitted: true; quanta: number; hash: string }
   | { admitted: false; reason: string };
 
+/**
+ * A belief's trust (T7a pin 5), from most trusted to least: authored (the
+ * world file, or the host without provenance), observed (the tick's own
+ * sight), role (a role whose sources are all trusted), untrusted (a role with
+ * any untrusted source), hearsay (a role that reads player text).
+ */
+export type TrustLabel = 'authored' | 'observed' | 'role' | 'untrusted' | 'hearsay';
+
 /** A belief record the sim holds. Superseded beliefs are tombstoned, never deleted. */
 export interface Belief {
   id: string;
@@ -134,6 +142,10 @@ export interface Belief {
   source: string;
   supersededBy?: string;
   withdrawnBy?: string;
+  /** fixed at admission; the gate sets it, never the proposer */
+  label: TrustLabel;
+  /** the source a hearsay label names */
+  heard?: string;
 }
 
 /** An admitted event. The raw evidence a belief may cite. */
@@ -153,6 +165,71 @@ export interface LogEntry {
   tick: number;
   proposal: Proposal;
   hash: string;
+  /** present only on a role's admission; a host's entry keeps its old form byte for byte */
+  provenance?: Provenance;
+}
+
+/** The sources a role may read, closed in code (packages/tick/roles.js). */
+export type RoleSource = 'dispatch' | 'access' | 'catalog' | 'feedback' | 'frame-in-sight' | 'diff' | 'player-text' | 'mind' | 'world' | 'other-minds';
+
+/** A source's trust, fixed in code: a mind's content carries its own labels. */
+export type SourceTrust = 'trusted' | 'untrusted' | 'labelled';
+
+/**
+ * Where a role's admission came from (T7a pin 4). The hashes are SHA-256:
+ * the manifest's canonical JSON, the call's rendered messages, its concrete
+ * schema, and its output; `model` is the model's digest and `record` the key
+ * of the call's record. `builtAt` is the committed frame the proposal was
+ * built from, and `inputs` each input's source and trust.
+ */
+export interface Provenance {
+  role: string;
+  instance: string;
+  manifest: string;
+  model: string;
+  prompt: string;
+  schema: string;
+  record: string;
+  output: string;
+  builtAt: { tick: number; hash: string };
+  inputs: Array<{ source: RoleSource; trust: SourceTrust }>;
+}
+
+/** The sampling options a role pins; num_predict is its outputTokens budget, and format its schema. */
+export interface RoleModelOptions {
+  seed: number;
+  temperature: number;
+  top_k: number;
+  top_p: number;
+  num_ctx: number;
+  stop: string[];
+}
+
+/** A role's budgets and their enforcers (T7a pin 10). */
+export interface RoleBudget {
+  callsPerSession: number;
+  outputTokens: number;
+  secondsPerCall: number;
+  freeSpanChars: number;
+  maxProposalsPerWindow: number;
+  windowQuanta: number;
+  maxAgeQuanta: number;
+}
+
+/** A role, admitted like a verb (T7a pin 1). predicates/roles holds the catalog. */
+export interface RoleManifest {
+  role: string;
+  purpose: string;
+  status: 'frozen' | 'thawed';
+  decision: { by: string; on: string } | null;
+  adversarialRun: string | null;
+  world: 'scratch' | 'live';
+  inputs: Array<{ name: string; source: RoleSource }>;
+  outputs: { classes: Array<'intent' | 'belief'>; verbs: 'catalog' | string[]; actors: 'world' | 'own-body' };
+  model: { name: string; digest: string; quantization: string; options: RoleModelOptions } | null;
+  prompt: { template: string; sha256: string };
+  schema: string;
+  budget: RoleBudget;
 }
 
 /** A hand-authored intent rule. Data the tick reads from predicates/intents. */

@@ -1,13 +1,25 @@
 // Beliefs and episodes are records the sim holds. A memory write is one typed
 // belief citing an admitted episode. Supersession is a tombstone that cites
 // the withdrawing episode. Nothing here is deleted, and nothing here is free
-// text the hash would have to trust.
+// text the hash would have to trust. Every belief carries the trust label its
+// writer gave it (T7a pin 5, trust.js), fixed when it is admitted.
+
+import { isLabel, labelFields, labelRank } from './trust.js';
 
 /**
  * @typedef {import('../frame/types.js').Belief} Belief
  * @typedef {import('../frame/types.js').Episode} Episode
  * @typedef {import('../frame/types.js').BeliefWrite} BeliefWrite
+ * @typedef {import('./trust.js').Label} Label
  */
+
+/**
+ * The longest string a belief may hold where nothing narrower bounds it (T7a
+ * pin 5): a mind belief's value where its key declares no maxLength, a mind
+ * belief's subject whatever its key declares, and each string of an unscoped
+ * belief. Free text cannot grow in a mind and flow into later prompts.
+ */
+export const BELIEF_TEXT_LIMIT = 120;
 
 export function createMemory() {
   /** @type {Belief[]} */
@@ -48,11 +60,17 @@ export function createMemory() {
   /**
    * The provenance predicate. Hand-authored. No model.
    * @param {BeliefWrite} w
+   * @param {Label} label the trust of what formed it
    * @returns {{ ok: true; belief: Belief } | { ok: false; reason: string }}
    */
-  function admitBeliefWrite(w) {
+  function admitBeliefWrite(w, label) {
     if (typeof w.subject !== 'string' || typeof w.key !== 'string' || typeof w.value !== 'string') {
       return { ok: false, reason: 'a belief is subject, key, value as strings' };
+    }
+    for (const [name, text] of [['subject', w.subject], ['key', w.key], ['value', w.value]]) {
+      if (text.length > BELIEF_TEXT_LIMIT) {
+        return { ok: false, reason: 'belief ' + name + ' is ' + text.length + ' characters, over the bound of ' + BELIEF_TEXT_LIMIT };
+      }
     }
     if (typeof w.confidence !== 'number' || !(w.confidence >= 0 && w.confidence <= 1)) {
       return { ok: false, reason: 'confidence must be a number in [0, 1]' };
@@ -79,6 +97,7 @@ export function createMemory() {
         return { ok: false, reason: 'stale: ' + w.source + ' is older than ' + old.source };
       }
     }
+    /** @type {Belief} */
     const b = {
       id: 'b' + (beliefs.length + 1),
       subject: w.subject,
@@ -86,6 +105,7 @@ export function createMemory() {
       value: w.value,
       confidence: w.confidence,
       source: w.source,
+      ...labelFields(label),
     };
     beliefs.push(b);
     if (old) {
@@ -116,9 +136,10 @@ export function createMemory() {
    * A mind-scoped write. The key table is checked by the caller.
    * @param {string} mind
    * @param {BeliefWrite} w
+   * @param {Label} label the trust of what formed it
    * @returns {{ ok: true, belief: Belief } | { ok: false, reason: string }}
    */
-  function admitMindBelief(mind, w) {
+  function admitMindBelief(mind, w, label) {
     const list = mindBeliefs(mind);
     const source = episode(w.source);
     if (!source) {
@@ -142,6 +163,7 @@ export function createMemory() {
         return { ok: false, reason: 'stale: ' + w.source + ' is older than ' + old.source };
       }
     }
+    /** @type {Belief} */
     const b = {
       id: 'b' + (list.length + 1),
       subject: /** @type {Belief['subject']} */ (/** @type {unknown} */ (w.subject)),
@@ -149,6 +171,7 @@ export function createMemory() {
       value: /** @type {Belief['value']} */ (/** @type {unknown} */ (w.value)),
       confidence: w.confidence,
       source: w.source,
+      ...labelFields(label),
     };
     list.push(b);
     if (old) {
@@ -156,6 +179,34 @@ export function createMemory() {
       old.withdrawnBy = w.withdrawnBy;
     }
     return { ok: true, belief: b };
+  }
+
+  /** @type {WeakMap<Belief[], { count: number, least: Label | null }>} */
+  const least = new WeakMap();
+
+  /**
+   * The least trusted label among every belief in the mind, tombstones
+   * included: a superseded belief is still in the mind. Null for a mind with
+   * no beliefs. Beliefs are only appended, so the answer is kept per list and
+   * extended by what was added since; a list put back whole is read afresh.
+   * @param {string} mind
+   * @returns {Label | null}
+   */
+  function leastLabel(mind) {
+    const list = mindBeliefs(mind);
+    let known = least.get(list);
+    if (!known || known.count > list.length) {
+      known = { count: 0, least: null };
+    }
+    let found = known.least;
+    for (let i = known.count; i < list.length; i = i + 1) {
+      const item = list[i];
+      if (found === null || labelRank(item.label) > labelRank(found.label)) {
+        found = labelFields({ label: item.label, heard: item.heard });
+      }
+    }
+    least.set(list, { count: list.length, least: found });
+    return found;
   }
 
   /**
@@ -193,7 +244,7 @@ export function createMemory() {
     }
   }
 
-  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite, mindBeliefs, admitMindBelief, save, restore };
+  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite, mindBeliefs, admitMindBelief, leastLabel, save, restore };
 }
 
 /**
@@ -211,7 +262,9 @@ function isEpisode(item) {
 
 /**
  * Whether a value is a belief record: the fixture room's, whose subject is a
- * string, or a mind's, whose subject names a body or a zone.
+ * string, or a mind's, whose subject names a body or a zone. Each keeps the
+ * trust label it was admitted with, and a hearsay label its source (T7a pin
+ * 5), so a restored mind joins a later role's belief as the saved one would.
  * @param {any} item
  */
 function isBelief(item) {
@@ -224,7 +277,8 @@ function isBelief(item) {
   return typeof item.id === 'string' && named && typeof item.key === 'string' && value
     && typeof item.confidence === 'number' && item.confidence >= 0 && item.confidence <= 1 && typeof item.source === 'string'
     && (item.supersededBy === undefined || typeof item.supersededBy === 'string')
-    && (item.withdrawnBy === undefined || typeof item.withdrawnBy === 'string');
+    && (item.withdrawnBy === undefined || typeof item.withdrawnBy === 'string')
+    && isLabel(item.label, item.heard);
 }
 
 /**
@@ -241,7 +295,7 @@ export function memorySaveProblem(saved) {
   if (!saved.episodes.every(isEpisode)) {
     return 'the memory\'s episodes are each an id, a whole-numbered tick, a kind, and a detail';
   }
-  const beliefs = 'the memory\'s beliefs are each an id, a subject, a key, a value, a confidence from 0 through 1, a source, and what superseded it, if anything';
+  const beliefs = 'the memory\'s beliefs are each an id, a subject, a key, a value, a confidence from 0 through 1, a source, what superseded it, if anything, and its trust label, with the source it heard when it is hearsay';
   if (!saved.beliefs.every(isBelief)) {
     return beliefs;
   }

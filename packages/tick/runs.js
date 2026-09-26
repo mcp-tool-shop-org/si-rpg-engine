@@ -34,7 +34,7 @@ import { createWorld } from './world.js';
  * @typedef {ReturnType<typeof createWorld>} World
  * @typedef {ReturnType<typeof createMemory>} Memory
  * @typedef {Parameters<typeof createWorld>[0]} WorldInit
- * @typedef {{ tick: number, hash: string, proposal: import('../frame/types.js').Proposal }} LogEntry
+ * @typedef {{ tick: number, hash: string, proposal: import('../frame/types.js').Proposal, provenance?: import('../frame/types.js').Provenance }} LogEntry
  * @typedef {{ scene: 'product', world: WorldInit, quanta?: number }} ProductSpec
  * @typedef {import('./sessions.js').PlaySpec} PlaySpec
  * @typedef {{ seed: number, world: WorldInit, log: ReadonlyArray<LogEntry>, law?: 'product' | 'reference', retired?: boolean, quanta?: number }} LogSpec
@@ -134,7 +134,9 @@ function logRun(spec) {
   function submitDue() {
     while (next < spec.log.length && spec.log[next].tick === tick.frame().tick) {
       const entry = spec.log[next];
-      const result = tick.submit(entry.proposal);
+      // A role's entry is gated against its manifest (T7a); a bundle carries
+      // none yet, so the tick refuses it by name rather than replay it as the host's.
+      const result = tick.submit(entry.proposal, entry.provenance);
       if (!result.admitted) {
         throw new Error('replay refused entry ' + next + ': ' + result.reason);
       }

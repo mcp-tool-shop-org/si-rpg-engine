@@ -1,0 +1,26 @@
+{
+  "role": "npc-mind",
+  "purpose": "Proposes, for one character during play, intents for its own body and beliefs for its own mind.",
+  "status": "frozen",
+  "decision": null,
+  "adversarialRun": null,
+  "world": "live",
+  "inputs": [
+    { "name": "mind", "source": "mind" },
+    { "name": "sight", "source": "frame-in-sight" },
+    { "name": "player", "source": "player-text" }
+  ],
+  "outputs": { "classes": ["intent", "belief"], "verbs": "catalog", "actors": "own-body" },
+  "model": null,
+  "prompt": { "template": "npc-mind.txt", "sha256": "4b4390d9d7dd1d0b6f373cc2c4b494532ed3344fcc9c7cc4d4ed4145e01c3c1d" },
+  "schema": "role-proposal",
+  "budget": {
+    "callsPerSession": 256,
+    "outputTokens": 128,
+    "secondsPerCall": 10,
+    "freeSpanChars": 200,
+    "maxProposalsPerWindow": 1,
+    "windowQuanta": 320,
+    "maxAgeQuanta": 384
+  }
+}

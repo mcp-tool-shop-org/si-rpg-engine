@@ -1,6 +1,9 @@
 // Sight writes a mind. Goals are marked met. Nothing here plans or speaks.
+// A belief the world file authored is labelled authored, and one sight wrote
+// is labelled observed (T7a pin 5).
 
 import { subjectText } from './subject.js';
+import { AUTHORED, OBSERVED } from './trust.js';
 
 /**
  * @typedef {import('../frame/types.js').Belief} Belief
@@ -44,7 +47,7 @@ export function installMinds(world, memory) {
         value: authored.value,
         confidence: authored.confidence,
         source: load.id,
-      });
+      }, AUTHORED);
     }
   }
 }
@@ -138,7 +141,7 @@ function writeSight(world, memory, mind, bodyId, zone, tick, episodeId) {
     confidence: 1,
     source: episodeId,
     ...(atOld ? { supersedes: atOld.id, withdrawnBy: episodeId } : {}),
-  });
+  }, OBSERVED);
   memory.admitMindBelief(mind, {
     kind: 'belief',
     mind,
@@ -148,7 +151,7 @@ function writeSight(world, memory, mind, bodyId, zone, tick, episodeId) {
     confidence: 1,
     source: episodeId,
     ...(seenOld ? { supersedes: seenOld.id, withdrawnBy: episodeId } : {}),
-  });
+  }, OBSERVED);
 }
 
 /**

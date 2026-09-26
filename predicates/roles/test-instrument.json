@@ -1,0 +1,34 @@
+{
+  "role": "test-instrument",
+  "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+  "status": "frozen",
+  "decision": { "by": "the Director", "on": "2026-09-25" },
+  "adversarialRun": null,
+  "world": "scratch",
+  "inputs": [
+    { "name": "dispatch", "source": "dispatch" },
+    { "name": "diff", "source": "diff" },
+    { "name": "access", "source": "access" },
+    { "name": "catalog", "source": "catalog" },
+    { "name": "world", "source": "world" },
+    { "name": "feedback", "source": "feedback" }
+  ],
+  "outputs": { "classes": ["intent"], "verbs": "catalog", "actors": "world" },
+  "model": {
+    "name": "qwen2.5:7b",
+    "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+    "quantization": "Q4_K_M",
+    "options": { "seed": 1, "temperature": 0, "top_k": 1, "top_p": 1, "num_ctx": 8192, "stop": [] }
+  },
+  "prompt": { "template": "test-instrument.txt", "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d" },
+  "schema": "role-proposal",
+  "budget": {
+    "callsPerSession": 64,
+    "outputTokens": 256,
+    "secondsPerCall": 60,
+    "freeSpanChars": 400,
+    "maxProposalsPerWindow": 4,
+    "windowQuanta": 64,
+    "maxAgeQuanta": 640
+  }
+}

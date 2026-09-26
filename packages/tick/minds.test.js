@@ -8,6 +8,7 @@ import { createWorld } from './world.js';
 import { createMemory } from './memory.js';
 import { loadIntentRules } from './predicates.js';
 import { loadScene, validateScene } from './scene.js';
+import { AUTHORED } from './trust.js';
 import { playMinds, replayMinds } from '../../harness/minds-scene.mjs';
 
 instantiate();
@@ -187,14 +188,14 @@ test('older evidence cannot replace a newer unscoped belief', () => {
   const memory = createMemory();
   memory.recordEpisode(2, 'intent', 'newer');
   memory.recordEpisode(0, 'intent', 'older');
-  const first = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v1', confidence: 0.5, source: 'e1' });
+  const first = memory.admitBeliefWrite({ kind: 'belief', subject: 's', key: 'k', value: 'v1', confidence: 0.5, source: 'e1' }, AUTHORED);
   assert.equal(first.ok, true);
   if (!first.ok) {
     return;
   }
   const stale = memory.admitBeliefWrite({
     kind: 'belief', subject: 's', key: 'k', value: 'v2', confidence: 0.6, source: 'e2', supersedes: first.belief.id, withdrawnBy: 'e2',
-  });
+  }, AUTHORED);
   assert.equal(stale.ok, false);
   if (stale.ok) {
     return;
