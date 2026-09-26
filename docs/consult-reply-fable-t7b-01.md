@@ -1,6 +1,18 @@
 # T7b consult 01 — Fable 5.1, 2026-09-26
 
-A read-only design consult on the draft of `docs/dispatch-t7b-instrument-bench.md`, from the brief `consult-brief-t7b-bench.md`. The consultant read files only and ran nothing. Paths beginning `wt-75/` are PR #75's files at 88379d5; the rest are `main` at 93a2d1e. Where it read `packages/propose/schema.js`, it read the frozen seat's schema on `main`; T7a's schema, on #77, already takes point, body, and zone targets (the coordinator's check, recorded under Q1).
+A read-only design consult on the first draft of `docs/dispatch-t7b-instrument-bench.md`, made on 2026-09-26. The consultant read files only and ran nothing. Paths beginning `wt-75/` are PR #75's files at 88379d5; the rest are `main` at 93a2d1e. Where it read `packages/propose/schema.js`, it read the frozen seat's schema on `main`; T7a's schema, on #77, already takes point, body, and zone targets (the coordinator's check, recorded under Q1).
+
+**What it was asked.** The coordinator's brief asked for a skeptical review that cites the file and line for every claim about the code and marks speculation. It asked eight questions, each to be answered with an answer, a change to the dispatch, a confidence, and a basis:
+1. Whether building the bench before the model fixes shapes T7c would have to undo.
+2. Whether the ladder's order and its stops hold when coverage can miss.
+3. Whether counting "admission differs" as a difference is sound.
+4. Whether an access map built from load states biases the aim.
+5. Whether the mutant operators and the definition of caught are sound.
+6. Whether wall-clock is the right budget, and the stall the right trigger for T7c.
+7. What would make the bench lie, across two builds in one process or two.
+8. Whether the planted F2 test is sound.
+
+The consultant's reply follows as written.
 
 VERDICT: revise
 SENTENCE: The two-build oracle is sound, but three things around it will make the bench lie in use: pin 5 gates every candidate on a coverage rung that cannot see rule files, top-level constants, deletions, or the law; the checker reads its rules from the process's working directory, so the draft's unstated process model can hand both builds one checker; and pin 7's equal-wall-clock comparison contradicts its own deterministic-report promise.
