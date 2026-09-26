@@ -42,6 +42,22 @@
 // form (pin 2), so the same tests prove its restore traces identically; the
 // digest it is checked by is held to the byte loop it replaced, and the
 // sparse restore refuses what the dense one refuses.
+//
+// T7a adds a tick with a role session in it (harness/role-session.mjs): probe,
+// the test-only role in fixtures/roles, moves bodies, and two roles built here
+// write beliefs into a mind, one from player text. Each proposal is offered
+// some quanta after the frame it was built from, as a model's reply arrives,
+// and one is offered over its budget, so the gate's window of frames and its
+// admission ticks decide what it admits. The session's own save is restored
+// at the points where they decide the next offer, twice, into the session run
+// on to its end, and reruns identically with the gate saying what it said; a
+// saved belief keeps its label and the source it heard. A save planted without
+// the window's earlier frames, with its labels gone, or without the admission
+// ticks is caught by the diff, where the gate refuses the late proposal as
+// stale, labels a belief joined with the mind otherwise, or admits the
+// proposal over budget. A save with any of them out of shape, or a belief's
+// label, or a log entry's provenance, is refused before anything changes, and
+// the session traces on as if no restore had been tried.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -52,12 +68,14 @@ import { join } from 'node:path';
 import { createHasher } from '../packages/frame/hash.js';
 import { createMemory } from '../packages/tick/memory.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
+import { catalogFromLog, catalogOf, loadRoles, sha256 } from '../packages/tick/roles.js';
 import { createTick, settle } from '../packages/tick/tick.js';
 import { createWorld } from '../packages/tick/world.js';
 import { bytes as binary, imageDigest, imageRefusal, imageSolver, imageSparse, instantiate, restoreImage, restoreSparse, snapshotBytes, sparseDigest, stackPointer } from '../solver/dist/solver.mjs';
 import { expectIdentical } from './bundle.mjs';
 import { asleep as asleepIn, contacts as contactPairs, solverClasses, switched } from './events.mjs';
 import { replayTo } from './replay-to.mjs';
+import { roleSessionTo } from './role-session.mjs';
 import { endLine } from './trace-line.mjs';
 import { playVerbs } from './verbs-scene.mjs';
 
@@ -67,6 +85,8 @@ import { playVerbs } from './verbs-scene.mjs';
  * @typedef {ReturnType<ReturnType<typeof createWorld>['save']>} WorldSave
  * @typedef {ReturnType<ReturnType<typeof createWorld>['saveSparse']>} SparseWorldSave
  * @typedef {{ name: string, spec: ReplaySpec }} Case
+ * @typedef {import('./role-session.mjs').RoleSessionSpec} RoleSessionSpec
+ * @typedef {import('../packages/tick/roles.js').RoleEntry} RoleEntry
  */
 
 const dir = mkdtempSync(join(tmpdir(), 'si-rpg-restore-'));
@@ -546,6 +566,11 @@ test('a save of another tick, or one with a field out of shape anywhere in it, i
     [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, carried: [['walker']] } } }, /restore refused: the carried bodies are /],
     [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, worldId: 'this one' } } }, /restore refused: the world id is a whole number/],
     [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, image: null } } }, /restore refused: a product world restores from an image/],
+    // A tick with no role catalog keeps no window and no admission ticks,
+    // and logs no role's entry (T7a).
+    [{ ...saved, tick: { ...saved.tick, window: [{ tick: saved.tick.tick, hash: saved.tick.frame.hash, minds: [] }] } }, /restore refused: a tick with no role catalog keeps no window$/],
+    [{ ...saved, tick: { ...saved.tick, admissions: [['probe carry', [1]]] } }, /restore refused: a tick with no role catalog holds no admission ticks$/],
+    [{ ...saved, tick: { ...saved.tick, log: saved.tick.log.map((/** @type {any} */ entry, /** @type {number} */ i) => (i === 0 ? { ...entry, provenance: { role: 'probe' } } : entry)) } }, /restore refused: a tick with no role catalog logs no role's entry$/],
   ])) {
     assert.throws(() => run.restore(planted), reason);
     assert.equal(run.line(), before, 'a refused restore changes nothing');
@@ -604,6 +629,312 @@ test('a save with one malformed sight entry is refused before the restore change
     assert.equal(diff(whole.lines.concat([endLine(whole.lines.length)]), rerun(whole.lines, run)), 'identical\n', name);
     t.diagnostic(name + ': saved at ' + point + ', ' + plants.length + ' malformed sight entries refused at ' + later + ', and the run traced on to ' + end + ' identically');
   }
+});
+
+/**
+ * A role session (T7a) and what the gate said to each of its offers when it
+ * ran live. The world is a floor with three bodies, one of them a mind's:
+ * watcher sees the other two. probe, from fixtures/roles, moves them; hearer
+ * and reader, built here from probe's manifest as packages/tick/gate.test.js
+ * builds its test-only roles, write beliefs into watcher's mind, hearer from
+ * player text and reader from the mind itself. Each proposal is built from
+ * the frame at one tick and offered some quanta later, as a model's reply
+ * arrives, and probe's third move is offered with two of its admissions in
+ * the last 64 quanta, its budget. The live run reads each frame a proposal is
+ * built from; the offers, with their provenance and the manifests they cite,
+ * are the spec a role run replays.
+ * @returns {{ spec: RoleSessionSpec, said: string[] }}
+ */
+function roleSession() {
+  const loaded = loadRoles('fixtures/roles');
+  if (!loaded.ok) {
+    throw new Error(loaded.reason);
+  }
+  const probe = /** @type {RoleEntry} */ (loaded.catalog.byName.get('probe'));
+  const writes = { classes: ['belief'], verbs: [], actors: 'own-body' };
+  const made = catalogOf([
+    { ...probe.manifest, role: 'hearer', world: 'live', inputs: [{ name: 'player', source: 'player-text' }, { name: 'sight', source: 'frame-in-sight' }], outputs: writes },
+    { ...probe.manifest, role: 'reader', world: 'live', inputs: [{ name: 'mind', source: 'mind' }, { name: 'sight', source: 'frame-in-sight' }], outputs: writes },
+  ]);
+  if (!made.ok) {
+    throw new Error(made.reason);
+  }
+  const hearer = /** @type {RoleEntry} */ (made.catalog.byName.get('hearer'));
+  const reader = /** @type {RoleEntry} */ (made.catalog.byName.get('reader'));
+  /** @type {RoleSessionSpec['manifests']} */
+  const manifests = { [probe.hash]: probe.manifest, [hearer.hash]: hearer.manifest, [reader.hash]: reader.manifest };
+  const carried = catalogFromLog(manifests);
+  if (!carried.ok) {
+    throw new Error(carried.reason);
+  }
+  /** @type {RoleSessionSpec['world']} */
+  const world = {
+    name: 'role-session',
+    bodies: [
+      { id: 'watcher', x: 0, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'walker', x: 1, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'runner', x: 1, y: 0.25, z: 1.2, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+    ],
+    colliders: [{ id: 'floor', minX: -3, maxX: 5, minY: -1, maxY: 0, minZ: -3, maxZ: 3 }],
+    zones: [
+      { id: 'west', minX: -3, maxX: 0.5, minY: -1, maxY: 3, minZ: -3, maxZ: 3 },
+      { id: 'east', minX: 0.5, maxX: 5, minY: -1, maxY: 3, minZ: -3, maxZ: 3 },
+    ],
+    minds: [{ body: 'watcher', sight: 6, goals: [], beliefs: [{ subject: { body: 'walker' }, key: 'at', value: 'east', confidence: 1, source: 'e1' }] }],
+  };
+  const seed = 5;
+  const quanta = 200;
+  const session = 'restore-session';
+  const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (probe.manifest.model).digest;
+  /** @param {number} x @param {number} z */
+  const to = (x, z) => ({ x, z });
+  /** @type {Array<{ entry: RoleEntry, instance: string, built: number, at: number, proposal: any }>} */
+  const plan = [
+    { entry: hearer, instance: 'watcher', built: 20, at: 22, proposal: { kind: 'belief', mind: 'watcher', subject: { body: 'walker' }, key: 'at', value: 'west', confidence: 0.5, source: 'e1' } },
+    { entry: probe, instance: session, built: 30, at: 38, proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: to(1.5, 0) } },
+    { entry: reader, instance: 'watcher', built: 44, at: 52, proposal: { kind: 'belief', mind: 'watcher', subject: { zone: 'east' }, key: 'contains', value: 'walker', confidence: 0.9, source: 'e1' } },
+    { entry: probe, instance: session, built: 56, at: 64, proposal: { kind: 'intent', verb: 'move', actor: 'runner', target: to(1.5, 1.2) } },
+    { entry: probe, instance: session, built: 82, at: 90, proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: to(1, 0) } },
+    { entry: probe, instance: session, built: 136, at: 144, proposal: { kind: 'intent', verb: 'move', actor: 'runner', target: to(1, 1.2) } },
+  ];
+  const catalog = loadIntentRules();
+  const live = createTick({ seed, world: createWorld(structuredClone(world), 'product'), rules: catalog.rules, retired: catalog.retired, memory: createMemory(), roles: carried.catalog });
+  /** @type {Map<number, { tick: number, hash: string }>} */
+  const builtAt = new Map();
+  /** @type {RoleSessionSpec['offers'][number][]} */
+  const offers = [];
+  /** @type {string[]} */
+  const said = [];
+  for (let t = 0; t <= quanta; t = t + 1) {
+    plan.forEach((step, i) => {
+      if (step.built === t) {
+        builtAt.set(i, { tick: live.frame().tick, hash: live.frame().hash });
+      }
+    });
+    plan.forEach((step, i) => {
+      if (step.at !== t) {
+        return;
+      }
+      const built = /** @type {{ tick: number, hash: string }} */ (builtAt.get(i));
+      const proposal = step.proposal.kind === 'intent' ? { ...step.proposal, frameHash: built.hash } : step.proposal;
+      const provenance = {
+        role: step.entry.manifest.role,
+        instance: step.instance,
+        manifest: step.entry.hash,
+        model: pin,
+        prompt: sha256('prompt ' + i),
+        schema: sha256('schema'),
+        record: sha256('record ' + i),
+        output: sha256('output ' + i),
+        builtAt: built,
+        inputs: step.entry.derived.inputs.map((input) => ({ source: input.source, trust: input.trust })),
+      };
+      offers.push({ tick: t, proposal, provenance });
+      const admission = live.submit(proposal, provenance);
+      said.push(admission.admitted ? 'admitted' : admission.reason);
+    });
+    if (t < quanta) {
+      live.advance();
+    }
+  }
+  return { spec: { seed, world, law: 'product', manifests, offers, quanta }, said };
+}
+
+/** What the gate said to the role session's six offers. */
+const SESSION_SAID = [
+  'admitted',
+  'admitted',
+  'admitted',
+  'admitted',
+  'over budget: 2 admissions in the last 64 quanta, and role probe allows 2',
+  'admitted',
+];
+
+/**
+ * The role session run once without a save: its trace and what the gate said.
+ * @param {RoleSessionSpec} spec
+ */
+function roleWhole(spec) {
+  const run = roleSessionTo(spec, 0);
+  const lines = [run.line()];
+  while (run.advance()) {
+    lines.push(run.line());
+  }
+  return { lines, said: run.said.slice() };
+}
+
+/**
+ * One run of the role session that saves itself at each point with its own
+ * save(), then runs on to its end, where it is returned.
+ * @param {RoleSessionSpec} spec
+ * @param {number[]} points
+ * @param {string[]} lines the whole session's trace, which this run must match
+ */
+function roleSaves(spec, points, lines) {
+  const run = roleSessionTo(spec, 0);
+  /** @type {Map<number, any>} */
+  const saves = new Map();
+  const again = [run.line()];
+  for (;;) {
+    if (points.includes(run.tick)) {
+      saves.set(run.tick, run.save());
+    }
+    if (!run.advance()) {
+      break;
+    }
+    again.push(run.line());
+  }
+  assert.deepEqual(again, lines, 'a session that saves itself traces the same as one that does not');
+  return { run, saves };
+}
+
+/**
+ * The first-difference block of the role session restored at `point` from a
+ * planted save and run on to its end, with the run, which holds what the
+ * gate said after the restore. Unplanted, the save reruns identically.
+ * @param {RoleSessionSpec} spec
+ * @param {ReturnType<typeof roleWhole>} whole
+ * @param {number} point
+ * @param {(saved: any) => any} plant makes the planted save from the true one
+ */
+function rolePlanted(spec, whole, point, plant) {
+  const { run, saves } = roleSaves(spec, [point], whole.lines);
+  const saved = saves.get(point);
+  const ended = whole.lines.concat([endLine(whole.lines.length)]);
+  evict();
+  run.restore(saved);
+  assert.equal(diff(ended, rerunCaught(whole.lines, run)), 'identical\n', 'unplanted, the save reruns identically');
+  evict();
+  run.restore(plant(saved));
+  return { saved, run, block: diff(ended, rerunCaught(whole.lines, run)).split('\n') };
+}
+
+test('a role session\'s own save restores without replay into the session run on to its end, twice, where the gate reads its window or its budget, and a saved belief keeps its label and the source it heard', (t) => {
+  const { spec, said } = roleSession();
+  assert.deepEqual(said, SESSION_SAID, 'live: a hearsay belief, a late move, a belief joined with the mind, a second move, a third over budget, and a fourth once the window has passed');
+  const whole = roleWhole(spec);
+  assert.deepEqual(whole.said, said, 'the role run offers the same proposals and the gate says the same');
+  // Each point is between a proposal's frame and its offer, or, at 76, between
+  // probe's second admission and its move over budget.
+  const points = [21, 34, 48, 76, 140, 170];
+  const { run, saves } = roleSaves(spec, points, whole.lines);
+  const ended = whole.lines.concat([endLine(whole.lines.length)]);
+  for (const point of points) {
+    const saved = saves.get(point);
+    for (let again = 0; again < 2; again = again + 1) {
+      evict();
+      const from = run.tick;
+      run.restore(saved);
+      assert.equal(run.tick, point, 'the restore puts the session back at ' + point + ' from ' + from);
+      assert.equal(diff(ended, rerun(whole.lines, run)), 'identical\n', 'restored at ' + point + ', restore ' + (again + 1));
+      assert.deepEqual(run.said, said, 'restored at ' + point + ', the gate says what it said');
+    }
+  }
+  const kept = saves.get(76).tick;
+  assert.deepEqual(kept.admissions, [['hearer watcher', [22]], ['probe restore-session', [38, 64]], ['reader watcher', [52]]], 'the save carries each instance\'s admission ticks');
+  assert.equal(kept.window.length, 65, 'and the window of frames the oldest a role may cite needs');
+  assert.deepEqual(kept.window[kept.window.length - 1].minds, [['watcher', { label: 'hearsay', heard: 'player-text' }]], 'with each mind\'s least trusted label');
+  /** @param {any[]} list */
+  const hearsay = (list) => list.filter((belief) => belief.label === 'hearsay').map((belief) => [belief.key, belief.value, belief.label, belief.heard]);
+  const [mind, list] = kept.memory.minds[0];
+  assert.equal(mind, 'watcher');
+  assert.deepEqual(hearsay(list), [['at', 'west', 'hearsay', 'player-text'], ['contains', 'walker', 'hearsay', 'player-text']], 'a saved belief keeps its label and the source it heard: hearer\'s, and reader\'s, joined with it');
+  evict();
+  run.restore(saves.get(76));
+  assert.deepEqual(hearsay(run.memory.mindBeliefs('watcher')), hearsay(list), 'and the restored mind holds them so');
+  t.diagnostic('role session of ' + spec.offers.length + ' offers over ' + spec.quanta + ' quanta, saved at ' + points.join(', ') + ', each restored twice from tick ' + (whole.lines.length - 1));
+});
+
+test('a role session\'s save planted without the window\'s earlier frames is caught: the gate refuses the proposal built before the save as stale', () => {
+  const { spec } = roleSession();
+  const whole = roleWhole(spec);
+  const { saved, run, block } = rolePlanted(spec, whole, 48, (kept) => ({ ...kept, tick: { ...kept.tick, window: kept.tick.window.slice(-1) } }));
+  assert.equal(saved.tick.window.length, 49, 'the save carries every frame since the load');
+  assert.equal(run.said[2], 'stale: the tick keeps no frame at tick 44', 'reader\'s belief, built at 44 and offered at 52, is refused');
+  assert.equal(block[0], 'first difference at tick 53', block.join('\n'));
+});
+
+test('a role session\'s save planted with its window\'s labels gone is caught: a belief joined with the mind is labelled role, not hearsay', () => {
+  const { spec } = roleSession();
+  const whole = roleWhole(spec);
+  const { run, block } = rolePlanted(spec, whole, 48, (kept) => ({
+    ...kept,
+    tick: { ...kept.tick, window: kept.tick.window.map((/** @type {any} */ frame) => ({ ...frame, minds: frame.minds.map((/** @type {any[]} */ pair) => [pair[0], null]) })) },
+  }));
+  assert.equal(run.said[2], 'admitted');
+  const joined = run.memory.mindBeliefs('watcher').find((belief) => belief.key === 'contains');
+  assert.equal(joined && joined.label, 'role', 'reader reads a mind the window says holds nothing');
+  assert.equal(block[0], 'first difference at tick 53', block.join('\n'));
+  assert.equal(block[1], 'hash', 'the label is in the hash, and in nothing else the trace shows');
+});
+
+test('a role session\'s save planted without the admission ticks is caught: the move over budget is admitted', () => {
+  const { spec } = roleSession();
+  const whole = roleWhole(spec);
+  const { saved, run, block } = rolePlanted(spec, whole, 76, (kept) => ({ ...kept, tick: { ...kept.tick, admissions: [] } }));
+  assert.deepEqual(saved.tick.admissions.find((/** @type {any[]} */ entry) => entry[0] === 'probe restore-session'), ['probe restore-session', [38, 64]]);
+  assert.equal(run.said[4], 'admitted', 'probe\'s third move, offered at 90');
+  assert.equal(block[0], 'first difference at tick 91', block.join('\n'));
+});
+
+test('a role session\'s save with its window, its admission ticks, a belief\'s label, or a log entry\'s provenance out of shape is refused before anything changes, and the session traces on as if no restore had been tried', (t) => {
+  const { spec } = roleSession();
+  const whole = roleWhole(spec);
+  const run = roleSessionTo(spec, 76);
+  const saved = /** @type {any} */ (run.save());
+  while (run.tick < 120) {
+    run.advance();
+  }
+  const later = /** @type {any} */ (run.save());
+  const kept = saved.tick;
+  const first = kept.window[0];
+  /** @param {object} patch */
+  const plant = (patch) => ({ ...saved, tick: { ...kept, ...patch } });
+  /** @param {(frame: any) => any} change */
+  const reframe = (change) => kept.window.map((/** @type {any} */ frame, /** @type {number} */ i) => (i === 3 ? change(frame) : frame));
+  const [mind, list] = kept.memory.minds[0];
+  const heard = list.findIndex((/** @type {any} */ belief) => belief.label === 'hearsay');
+  /** @param {(belief: any) => any} change */
+  const relabel = (change) => ({ ...kept.memory, minds: [[mind, list.map((/** @type {any} */ belief, /** @type {number} */ i) => (i === heard ? change(belief) : belief))]] });
+  /** @param {(provenance: any) => any} change */
+  const recite = (change) => kept.log.map((/** @type {any} */ entry, /** @type {number} */ i) => (i === 0 ? { ...entry, provenance: change(entry.provenance) } : entry));
+  const window = /^Error: restore refused: the window is one frame per tick, oldest first, /;
+  const ticks = /^Error: restore refused: the admission ticks are, for each instance of a role in this catalog, /;
+  const before = run.line();
+  /** @type {Array<[any, RegExp]>} */
+  const plants = [
+    [plant({ window: undefined }), /^Error: restore refused: the window is a list of frames$/],
+    [plant({ window: [] }), /^Error: restore refused: the window holds the saved frame and at most 64 frames before it$/],
+    [plant({ window: [{ ...first, tick: first.tick - 1 }].concat(kept.window) }), /^Error: restore refused: the window holds the saved frame and at most 64 frames before it$/],
+    [plant({ window: later.tick.window }), /^Error: restore refused: the window ends at the saved frame$/],
+    [plant({ window: kept.window.slice(0, -1) }), /^Error: restore refused: the window ends at the saved frame$/],
+    [plant({ window: kept.window.filter((/** @type {any} */ _frame, /** @type {number} */ i) => i !== 10) }), window],
+    [plant({ window: reframe((frame) => ({ ...frame, hash: 'not a hash' })) }), window],
+    [plant({ window: reframe((frame) => ({ ...frame, minds: [['watcher', { label: 'trusted' }]] })) }), window],
+    [plant({ window: reframe((frame) => ({ ...frame, minds: [['watcher', { label: 'hearsay' }]] })) }), window],
+    [plant({ window: reframe((frame) => ({ ...frame, minds: [['walker', null]] })) }), window],
+    [plant({ window: reframe((frame) => ({ ...frame, seen: true })) }), window],
+    [plant({ admissions: undefined }), /^Error: restore refused: the admission ticks are a list$/],
+    [plant({ admissions: [['nobody restore-session', [38]]] }), ticks],
+    [plant({ admissions: [['probe', [38]]] }), ticks],
+    [plant({ admissions: [['probe restore-session', [64, 38]]] }), ticks],
+    [plant({ admissions: [['probe restore-session', [38, 900]]] }), ticks],
+    [plant({ admissions: [['probe restore-session', []]] }), ticks],
+    [plant({ admissions: [['probe restore-session', [38]], ['probe restore-session', [64]]] }), ticks],
+    [plant({ memory: relabel((belief) => ({ ...belief, heard: undefined })) }), /^Error: restore refused: the memory's beliefs are /],
+    [plant({ memory: relabel((belief) => ({ ...belief, label: 'trusted', heard: undefined })) }), /^Error: restore refused: the memory's beliefs are /],
+    [plant({ memory: relabel((belief) => ({ ...belief, label: 'observed' })) }), /^Error: restore refused: the memory's beliefs are /],
+    [plant({ log: recite((provenance) => ({ ...provenance, manifest: sha256('another manifest') })) }), /^Error: restore refused: a log entry's provenance is refused: the log carries no manifest [0-9a-f]{64}$/],
+    [plant({ log: recite((provenance) => Object.fromEntries(Object.entries(provenance).filter(([key]) => key !== 'builtAt'))) }), /^Error: restore refused: a log entry's provenance is refused: provenance names no builtAt$/],
+  ];
+  for (const [planted, reason] of plants) {
+    assert.throws(() => run.restore(planted), reason);
+    assert.equal(run.line(), before, 'a refused restore changes nothing');
+  }
+  const ended = whole.lines.concat([endLine(whole.lines.length)]);
+  assert.equal(diff(ended, rerun(whole.lines, run)), 'identical\n', 'the session traces on to its end as if no restore had been tried');
+  assert.deepEqual(run.said, SESSION_SAID, 'and the gate says what it said');
+  t.diagnostic('saved at 76, ' + plants.length + ' planted saves refused at 120, and the session traced on to ' + spec.quanta + ' identically');
 });
 
 test('behavior-1c is a 2D capture the loader refuses, so it has no run to restore', () => {
