@@ -1,13 +1,16 @@
 // T7a: the seat. It is the only code that calls a model, it reaches the tick
 // only through submitAsRole, and every call is recorded. No test here calls a
-// model: each fake one returns what its test needs, and the command's tests
-// replace fetch so that any call to a model would fail them. Run from the
-// repository root.
+// model: each fake one returns what its test needs, the command's tests
+// replace fetch so that any call to a model would fail them, and the one test
+// that builds the real client points it at a server it starts itself on
+// 127.0.0.1, with fetch refusing every other address while it runs. Run from
+// the repository root.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cpSync, mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -42,7 +45,8 @@ function probe() {
 }
 
 /**
- * What a fake client reads before a call: the server holds the pin.
+ * What a fake client reads before a call: the server holds the pin, with
+ * nothing loaded.
  * @param {string} name
  * @param {string} pin
  * @returns {Observed}
@@ -50,10 +54,53 @@ function probe() {
 function observed(name, pin) {
   return {
     model: { name, digest: pin, quantization: 'Q4_K_M', format: 'gguf', family: 'qwen2', parameterSize: '7.6B' },
-    server: { version: 'test', settings: {}, loaded: null, callsAtOnce: 1 },
+    server: { version: 'test', loadedBefore: null },
+    client: { environment: {} },
     gpu: { names: ['test'], count: 1, driver: null },
   };
 }
+
+/**
+ * The model as a fake server holds it loaded.
+ * @param {string} digest
+ */
+function loadedAs(digest) {
+  return { name: 'qwen2.5:7b', model: 'qwen2.5:7b', digest, size: 5133943438, size_vram: 5133943438, context_length: 8192 };
+}
+
+/**
+ * A fake client whose server holds `before` loaded when the call is made and
+ * `after` once it ends.
+ * @param {Client} client
+ * @param {Record<string, unknown> | null} before
+ * @param {Record<string, unknown> | null} after
+ * @returns {Client}
+ */
+function loadedAround(client, before, after) {
+  return {
+    observe: async (name, pin) => {
+      const seen = await client.observe(name, pin);
+      return { ...seen, server: { ...seen.server, loadedBefore: before } };
+    },
+    ask: client.ask,
+    loaded: async () => after,
+  };
+}
+
+/**
+ * A session's record of call `i`, which the seat makes at version 2.
+ * @param {{ records: import('./record.js').CallRecord[] }} result
+ * @param {number} [i]
+ * @returns {import('./record.js').CallRecord2}
+ */
+function recordOf(result, i) {
+  const record = result.records[i === undefined ? 0 : i];
+  assert.equal(record && record.record, 2, 'the seat makes records at version 2');
+  return /** @type {import('./record.js').CallRecord2} */ (record);
+}
+
+/** The timing of a call that failed before its budget, but for its time from ask to rejection: nothing the server reported. */
+const FAILED = { timedOut: false, totalDuration: null, loadDuration: null, promptEvalCount: null, promptEvalDuration: null, evalCount: null, evalDuration: null, doneReason: null };
 
 /**
  * A reply that came back within the budget, in `ms` milliseconds.
@@ -66,7 +113,8 @@ function replied(output, ms) {
 }
 
 /**
- * A fake model: the server holds the pin, and each call returns the next output.
+ * A fake model: the server holds the pin, each call returns the next output,
+ * and nothing is loaded after it.
  * @param {Array<string | null>} outputs
  * @param {(request: ChatRequest) => void} [seen]
  * @returns {Client}
@@ -83,6 +131,7 @@ function fakeClient(outputs, seen) {
       n = n + 1;
       return replied(output);
     },
+    loaded: async () => null,
   };
 }
 
@@ -567,6 +616,7 @@ test('the tick advances while a slow call is outstanding, and the proposal is ch
     },
     client: {
       observe: reply.observe,
+      loaded: reply.loaded,
       ask: (request, signal) => {
         const tick = /** @type {ReturnType<typeof createTick>} */ (/** @type {unknown} */ (held));
         const start = tick.frame().tick;
@@ -618,6 +668,7 @@ test('the seat keeps its call budgets: callsPerSession, outputTokens, and second
     calls: 5,
     client: {
       observe: counted.observe,
+      loaded: counted.loaded,
       ask: (request, signal) => {
         asks = asks + 1;
         return counted.ask(request, signal);
@@ -631,7 +682,7 @@ test('the seat keeps its call budgets: callsPerSession, outputTokens, and second
   const waited = [];
   const slow = await probeSession({
     calls: 1,
-    client: { observe: counted.observe, ask: () => new Promise(() => {}) },
+    client: { observe: counted.observe, loaded: counted.loaded, ask: () => new Promise(() => {}) },
     timer: (ms) => {
       waited.push(ms);
       return Promise.resolve();
@@ -655,6 +706,7 @@ test('a call that never returns is cut off at the seat\'s one deadline and recor
     calls: 1,
     client: {
       observe: reads.observe,
+      loaded: reads.loaded,
       ask: (_request, signal) => {
         signals.push(signal);
         return new Promise(() => {});
@@ -666,11 +718,17 @@ test('a call that never returns is cut off at the seat\'s one deadline and recor
     },
   });
   const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (silent.entry.manifest.model).digest;
-  const cut = silent.result.records[0];
+  const cut = recordOf(silent.result);
   const key = silent.result.calls[0].record;
   assert.deepEqual(waited, [120000], 'secondsPerCall is the one deadline');
   assert.equal(signals.length === 1 && signals[0].aborted, true, 'the seat aborts the call it cut off');
-  assert.deepEqual({ model: cut.model, server: cut.server, gpu: cut.gpu }, observed('qwen2.5:7b', pin), 'what was read before the call, never a placeholder');
+  const before = observed('qwen2.5:7b', pin);
+  assert.deepEqual(
+    { model: cut.model, server: cut.server, client: cut.client, gpu: cut.gpu },
+    { model: before.model, server: { ...before.server, loaded: null }, client: { ...before.client, callsAtOnce: 1 }, gpu: before.gpu },
+    'what was read before the call, and the loaded model read again after it, never a placeholder',
+  );
+  assert.equal(cut.failure, null, 'a call cut off at its budget did not fail');
   assert.equal(cut.output, null);
   assert.equal(cut.outputSha256, null);
   assert.deepEqual(cut.timing, cutOffTiming(120000), 'no output, and the budget as its time');
@@ -681,25 +739,499 @@ test('a call that never returns is cut off at the seat\'s one deadline and recor
   // record is the same bytes as that of a call that never returned.
   const late = await probeSession({
     calls: 1,
-    client: { observe: reads.observe, ask: async () => replied(move, 120001) },
+    client: { observe: reads.observe, loaded: reads.loaded, ask: async () => replied(move, 120001) },
   });
   assert.equal(JSON.stringify(late.result.records[0]), JSON.stringify(cut), 'the same record whichever clock would have fired first');
   assert.equal(late.tick.log().length, 0, 'nothing is admitted from a reply past the deadline');
   assert.deepEqual(verifySession(late.dir).failures, []);
 
   // Planted in the session: a call that returned over its budget still
-  // fails, and so does a cut-off record out of its one form.
+  // fails, and its call line, which says it timed out, no longer matches it;
+  // and a cut-off record out of its one form fails.
   const file = join(silent.dir, 'records', key + '.json');
   /** @param {object} record */
   const plant = (record) => {
     writeFileSync(file, JSON.stringify(record, null, 2) + '\n');
     return verifySession(silent.dir).failures;
   };
-  assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move), timing: replied(move, 120001).timing }), ['record ' + key + ': took 120001 ms, over the budget of 120 s']);
+  assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move), timing: replied(move, 120001).timing }), ['record ' + key + ': took 120001 ms, over the budget of 120 s', 'call 0: read timed-out, and record ' + key + ' reads ok']);
   assert.deepEqual(plant({ ...cut, timing: { ...cut.timing, ms: 120001 } }), ['record ' + key + ': a call cut off at its budget is recorded at the budget of 120000 ms, with nothing the server reported']);
   assert.deepEqual(plant({ ...cut, timing: { ...cut.timing, evalCount: 3 } }), ['record ' + key + ': a call cut off at its budget is recorded at the budget of 120000 ms, with nothing the server reported']);
   assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move) }), ['record ' + key + ': a call cut off at its budget holds no output, and this one holds one']);
   assert.deepEqual(plant(cut), [], 'the record as the seat wrote it verifies again');
+});
+
+// ---------------------------------------------------------------------------
+// The model-calling path, hardened for T7c (#87).
+
+/**
+ * A seat whose one call is abandoned, run in a process of its own with strict
+ * unhandled rejections: at the call's deadline (`deadline`), or because the
+ * tick throws while the call is out (`tick`). The ask rejects only after the
+ * seat has let it go: on the seat's abort, or on its own a moment later. The
+ * process prints how the session ended and whether the ask's signal was
+ * aborted, once any rejection has had time to surface.
+ */
+const ABANDONED = `
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+const root = process.cwd();
+const from = (path) => import(pathToFileURL(join(root, path)).href);
+const { loadRoles } = await from('packages/tick/roles.js');
+const { loadIntentRules } = await from('packages/tick/predicates.js');
+const { createMemory } = await from('packages/tick/memory.js');
+const { createTick } = await from('packages/tick/tick.js');
+const { createWorld } = await from('packages/tick/world.js');
+const { runSession, scratchWorld } = await from('packages/propose/seat.js');
+const mode = process.argv[2];
+const loaded = loadRoles('fixtures/roles');
+const entry = loaded.catalog.byName.get('probe');
+const pin = entry.manifest.model.digest;
+const built = await scratchWorld('worlds/crate-and-door.json', root);
+const rules = loadIntentRules();
+const world = createWorld(built.world, 'reference');
+const memory = createMemory();
+const tick = createTick({ seed: built.seed, world, rules: rules.rules, retired: rules.retired, memory, roles: loaded.catalog });
+if (mode === 'tick') {
+  tick.advance = () => {
+    throw new Error('the tick failed');
+  };
+}
+let signal = null;
+const client = {
+  observe: async (name) => ({
+    model: { name, digest: pin, quantization: 'Q4_K_M', format: 'gguf', family: 'qwen2', parameterSize: '7.6B' },
+    server: { version: 'test', loadedBefore: null },
+    client: { environment: {} },
+    gpu: { names: [], count: 0, driver: null },
+  }),
+  ask: (_request, given) => {
+    signal = given;
+    return new Promise((_resolve, reject) => {
+      if (mode === 'deadline') {
+        given.addEventListener('abort', () => reject(new Error('the seat aborted the call')));
+      } else {
+        setTimeout(() => reject(new Error('the server reset the call')), 20);
+      }
+    });
+  },
+  loaded: async () => null,
+};
+let ended = '';
+try {
+  const result = await runSession({
+    entry, session: 'abandoned', instance: 'abandoned', tick, world, memory, rules: rules.rules,
+    inputs: { dispatch: 'A change to the push verb.', diff: '', access: {} },
+    calls: 1, lateQuanta: 1, client, timer: () => Promise.resolve(),
+  });
+  ended = result.calls[0].read;
+} catch (error) {
+  ended = 'threw: ' + error.message;
+}
+await new Promise((resolve) => setTimeout(resolve, 100));
+process.stdout.write(ended + ', aborted ' + String(signal !== null && signal.aborted) + '\\n');
+`;
+
+test('an abandoned call is handled: when its deadline wins, or the tick throws while it is out, the seat aborts it and handles its rejection, and a process with strict unhandled rejections exits clean', () => {
+  const script = join(mkdtempSync(join(tmpdir(), 'abandoned-')), 'abandoned.mjs');
+  writeFileSync(script, ABANDONED);
+  for (const [mode, ended] of [['deadline', 'timed-out'], ['tick', 'threw: the tick failed']]) {
+    const run = spawnSync(process.execPath, ['--unhandled-rejections=strict', script, mode], { cwd: root, encoding: 'utf8' });
+    assert.equal(run.status, 0, mode + ': ' + run.stderr);
+    assert.equal(run.stderr, '', mode);
+    assert.equal(run.stdout.trim(), ended + ', aborted true', mode);
+  }
+});
+
+test('a read before the call that throws is recorded, with what was read before it, no output, and the throw as its failure; the session stops after it, is written, and verifies', async () => {
+  let asks = 0;
+  const reads = fakeClient([JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } })]);
+  const { result, dir, tick } = await probeSession({
+    calls: 3,
+    client: {
+      observe: async () => {
+        throw new Error('the server is gone');
+      },
+      ask: (request, signal) => {
+        asks = asks + 1;
+        return reads.ask(request, signal);
+      },
+      loaded: async () => null,
+    },
+  });
+  assert.equal(asks, 0, 'a call whose reads failed is never asked');
+  assert.equal(result.records.length, 1, 'the call is recorded');
+  assert.deepEqual(result.calls.map((line) => [line.call, line.read, line.reason, line.admitted, line.at]), [[0, 'call-failed', 'the server is gone', false, null]], 'and the session stops after it');
+  assert.equal(result.refused, 'the session stops at call 0, which failed: the server is gone');
+  const record = recordOf(result);
+  assert.equal(record.failure, 'the server is gone');
+  assert.deepEqual(
+    [record.model, record.server, record.client, record.gpu],
+    ['unread', { version: 'unread', loadedBefore: 'unread', loaded: null }, { environment: 'unread', callsAtOnce: 1 }, 'unread'],
+    'nothing was read before the throw, and the loaded model was read again after the call',
+  );
+  assert.equal(record.output, null);
+  assert.equal(record.outputSha256, null);
+  assert.deepEqual(record.timing, { ms: 0, ...FAILED }, 'never asked, so no time from ask to rejection, and nothing the server reported');
+  assert.equal(tick.log().length, 0);
+  // Its write happens: the session's directory holds the record and the call line, and it verifies.
+  assert.deepEqual(JSON.parse(readFileSync(join(dir, 'session.json'), 'utf8')).calls, result.calls);
+  assert.deepEqual(readdirSync(join(dir, 'records')), [result.calls[0].record + '.json']);
+  assert.deepEqual(verifySession(dir).failures, []);
+
+  // A client that read some of what it reads before the throw says so with
+  // the throw, and the record holds what it read and nothing more.
+  const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (probe().entry.manifest.model).digest;
+  const whole = observed('qwen2.5:7b', pin);
+  const partly = await probeSession({
+    calls: 1,
+    client: {
+      ...reads,
+      observe: async () => {
+        throw Object.assign(new Error('ollama did not answer /api/version within 10000 ms'), { seen: { client: whole.client, gpu: whole.gpu, model: whole.model } });
+      },
+    },
+  });
+  const part = recordOf(partly.result);
+  assert.deepEqual(
+    [part.model, part.server, part.client, part.gpu],
+    [whole.model, { version: 'unread', loadedBefore: 'unread', loaded: null }, { environment: {}, callsAtOnce: 1 }, whole.gpu],
+  );
+  assert.deepEqual(verifySession(partly.dir).failures, []);
+});
+
+test('an ask that rejects before its deadline is recorded, with what was read before it, no output, and the rejection as its failure; the session stops after it, is written, and verifies', async () => {
+  const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (probe().entry.manifest.model).digest;
+  const reads = fakeClient([]);
+  const { result, dir, tick } = await probeSession({
+    calls: 3,
+    client: {
+      observe: reads.observe,
+      ask: async () => {
+        throw new Error('the server reset the call');
+      },
+      loaded: async () => loadedAs(pin),
+    },
+  });
+  assert.equal(result.records.length, 1, 'the call is recorded');
+  assert.deepEqual(result.calls.map((line) => [line.call, line.read, line.reason, line.admitted, line.at]), [[0, 'call-failed', 'the server reset the call', false, null]], 'and the session stops after it');
+  assert.equal(result.refused, 'the session stops at call 0, which failed: the server reset the call');
+  const record = recordOf(result);
+  const before = observed('qwen2.5:7b', pin);
+  assert.equal(record.failure, 'the server reset the call');
+  assert.deepEqual(
+    [record.model, record.server, record.client, record.gpu],
+    [before.model, { ...before.server, loaded: loadedAs(pin) }, { ...before.client, callsAtOnce: 1 }, before.gpu],
+    'everything read before the call, and the loaded model read again after it',
+  );
+  assert.equal(record.output, null);
+  assert.equal(record.outputSha256, null);
+  assert.deepEqual({ ...record.timing, ms: 0 }, { ms: 0, ...FAILED }, 'nothing the server reported');
+  assert.ok(record.timing.ms >= 0 && record.timing.ms <= record.timeoutMs, 'the time from its ask to its rejection, within its budget');
+  assert.equal(tick.log().length, 0);
+  assert.deepEqual(JSON.parse(readFileSync(join(dir, 'session.json'), 'utf8')).calls, result.calls);
+  assert.deepEqual(readdirSync(join(dir, 'records')), [result.calls[0].record + '.json']);
+  assert.deepEqual(verifySession(dir).failures, []);
+});
+
+/**
+ * A server standing in for Ollama, which the test starts on 127.0.0.1 at a
+ * port the system picks. It answers each path the seat's client reads, and
+ * /api/chat with `output`, except a request `holds` names, which it accepts
+ * and never answers. While it runs, fetch refuses every other address, so
+ * nothing a test does can reach a real server.
+ * @param {string} pin
+ * @param {string} output
+ * @param {(path: string, count: number) => boolean} holds the path, and how many times it has been asked for, this time included
+ */
+async function standIn(pin, output, holds) {
+  /** @type {Record<string, unknown>} */
+  const answers = {
+    '/api/tags': { models: [{ name: 'qwen2.5:7b', model: 'qwen2.5:7b', digest: pin, details: { format: 'gguf', family: 'qwen2', parameter_size: '7.6B', quantization_level: 'Q4_K_M' } }] },
+    '/api/version': { version: '0.34.0' },
+    '/api/ps': { models: [{ ...loadedAs(pin), expires_at: '2026-09-26T12:00:00Z' }] },
+    '/api/chat': { model: 'qwen2.5:7b', message: { role: 'assistant', content: output }, done: true, done_reason: 'stop', total_duration: 400000000, load_duration: 6000000, prompt_eval_count: 900, prompt_eval_duration: 30000000, eval_count: 20, eval_duration: 300000000 },
+  };
+  /** @type {string[]} */
+  const requests = [];
+  const server = createServer((request, response) => {
+    const path = String(request.url);
+    requests.push(request.method + ' ' + path);
+    const count = requests.filter((line) => line.endsWith(' ' + path)).length;
+    request.resume();
+    request.on('end', () => {
+      if (holds(path, count)) {
+        return;
+      }
+      const body = answers[path];
+      response.writeHead(body === undefined ? 404 : 200, { 'content-type': 'application/json' });
+      response.end(JSON.stringify(body === undefined ? { error: 'no such path' } : body));
+    });
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(undefined)));
+  const port = /** @type {import('node:net').AddressInfo} */ (server.address()).port;
+  const origin = 'http://127.0.0.1:' + port + '/';
+  const real = globalThis.fetch;
+  globalThis.fetch = (input, init) => {
+    const url = input instanceof Request ? input.url : String(input);
+    return url.startsWith(origin) ? real(input, init) : Promise.reject(new Error('a test reached for ' + url));
+  };
+  return {
+    port,
+    requests,
+    close: async () => {
+      globalThis.fetch = real;
+      server.closeAllConnections();
+      await new Promise((resolve) => server.close(() => resolve(undefined)));
+    },
+  };
+}
+
+test('every read of the server has a timeout: a path the server accepts and never answers fails the call within the shortened timeout, naming the path, and the call is recorded with what was read before it', async () => {
+  // Imported here, not at the top: this is the one test that builds the real
+  // client, and it points it at the stand-in the test starts.
+  const { ENVIRONMENT, READ_TIMEOUT_MS, ollamaClient } = await import('./ollama.js');
+  const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (probe().entry.manifest.model).digest;
+  const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
+  const gpu = { names: ['stand-in'], count: 1, driver: null };
+  const model = { name: 'qwen2.5:7b', digest: pin, quantization: 'Q4_K_M', format: 'gguf', family: 'qwen2', parameterSize: '7.6B' };
+  /** @type {Array<[string, unknown, unknown, unknown, unknown]>} the path held, and what the record holds of the model, the version, and the loaded model before and after the call */
+  const cases = [
+    ['/api/tags', 'unread', 'unread', 'unread', loadedAs(pin)],
+    ['/api/version', model, 'unread', 'unread', loadedAs(pin)],
+    ['/api/ps', model, '0.34.0', 'unread', 'unread'],
+  ];
+  for (const [held, seenModel, version, loadedBefore, loaded] of cases) {
+    const server = await standIn(pin, move, (path) => path === held);
+    try {
+      const started = performance.now();
+      const { result, dir } = await probeSession({ calls: 3, client: ollamaClient({ port: server.port, readTimeoutMs: 500, gpu: () => gpu }) });
+      const took = performance.now() - started;
+      assert.ok(took < READ_TIMEOUT_MS, held + ': the call failed after ' + Math.round(took) + ' ms, under the default timeout of ' + READ_TIMEOUT_MS + ' ms');
+      const record = recordOf(result);
+      assert.equal(record.failure, 'ollama did not answer ' + held + ' within 500 ms', held);
+      assert.deepEqual(result.calls.map((line) => [line.read, line.reason]), [['call-failed', record.failure]], held + ': the call is recorded, and the session stops after it');
+      assert.deepEqual([record.model, record.server.version, record.server.loadedBefore, record.server.loaded], [seenModel, version, loadedBefore, loaded], held + ': what was read before the throw, and after the call');
+      assert.deepEqual(Object.keys(/** @type {object} */ (record.client.environment)), ENVIRONMENT, held + ': the client\'s environment, named as its own');
+      assert.deepEqual(record.gpu, gpu);
+      assert.equal(record.output, null);
+      assert.equal(server.requests.includes('POST /api/chat'), false, held + ': a call whose reads failed is never asked');
+      assert.deepEqual(verifySession(dir).failures, [], held);
+    } finally {
+      await server.close();
+    }
+  }
+
+  // A read after the call that times out is unread, and the call keeps its own ending.
+  const server = await standIn(pin, move, (path, count) => path === '/api/ps' && count === 2);
+  try {
+    const { result, dir, tick } = await probeSession({ calls: 1, client: ollamaClient({ port: server.port, readTimeoutMs: 500, gpu: () => gpu }) });
+    const record = recordOf(result);
+    assert.deepEqual(server.requests, ['GET /api/tags', 'GET /api/version', 'GET /api/ps', 'POST /api/chat', 'GET /api/ps']);
+    assert.deepEqual([record.server.loadedBefore, record.server.loaded], [loadedAs(pin), 'unread']);
+    assert.equal(record.failure, null);
+    assert.equal(record.output, move);
+    assert.deepEqual(result.calls.map((line) => [line.read, line.admitted]), [['ok', true]]);
+    assert.equal(tick.log().length, 1);
+    assert.deepEqual(verifySession(dir).failures, []);
+  } finally {
+    await server.close();
+  }
+});
+
+test('the loaded model is read before the call and again after it: a model swapped while the call is out, or before it, reads model-changed, and a model first loaded by the call does not', async () => {
+  const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (probe().entry.manifest.model).digest;
+  const other = '0'.repeat(64);
+  const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
+
+  const swapped = await probeSession({ calls: 1, client: loadedAround(fakeClient([move]), loadedAs(pin), loadedAs(other)) });
+  assert.deepEqual(swapped.result.calls.map((line) => [line.read, line.reason, line.admitted]), [['model-changed', 'the server held ' + other + ' loaded after the call, not the pin', false]]);
+  assert.deepEqual(recordOf(swapped.result).server, { version: 'test', loadedBefore: loadedAs(pin), loaded: loadedAs(other) });
+  assert.equal(swapped.tick.log().length, 0, 'nothing a swapped model said is submitted');
+  assert.deepEqual(verifySession(swapped.dir).failures, []);
+
+  const early = await probeSession({ calls: 1, client: loadedAround(fakeClient([move]), loadedAs(other), loadedAs(pin)) });
+  assert.deepEqual(early.result.calls.map((line) => [line.read, line.reason, line.admitted]), [['model-changed', 'the server held ' + other + ' loaded before the call, not the pin', false]]);
+  assert.deepEqual(verifySession(early.dir).failures, []);
+
+  const first = await probeSession({ calls: 1, client: loadedAround(fakeClient([move]), null, loadedAs(pin)) });
+  assert.deepEqual(first.result.calls.map((line) => [line.read, line.admitted]), [['ok', true]], 'a model not loaded before the call is loaded by it, which is no change');
+  assert.deepEqual(recordOf(first.result).server, { version: 'test', loadedBefore: null, loaded: loadedAs(pin) });
+  assert.deepEqual(verifySession(first.dir).failures, []);
+});
+
+test('a version-2 record keys both readings of the loaded model, the client\'s environment, and its failure: an edit to any of them fails its key', async () => {
+  const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (probe().entry.manifest.model).digest;
+  const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
+  const ended = await probeSession({ calls: 1, client: loadedAround(fakeClient([move]), null, loadedAs(pin)) });
+  const failed = await probeSession({
+    calls: 1,
+    client: {
+      ...fakeClient([]),
+      ask: async () => {
+        throw new Error('the server reset the call');
+      },
+    },
+  });
+  /** @type {Array<[string, string, (record: any) => void]>} */
+  const edits = [
+    ['loadedBefore', ended.dir, (record) => {
+      record.server.loadedBefore = loadedAs(pin);
+    }],
+    ['loaded', ended.dir, (record) => {
+      record.server.loaded = null;
+    }],
+    ['client.environment', ended.dir, (record) => {
+      record.client.environment = { ...record.client.environment, OLLAMA_NUM_PARALLEL: '4' };
+    }],
+    ['failure', failed.dir, (record) => {
+      record.failure = 'the server answered';
+    }],
+  ];
+  for (const [field, from, edit] of edits) {
+    const dir = mkdtempSync(join(tmpdir(), 'edited-'));
+    cpSync(from, dir, { recursive: true });
+    const [file] = readdirSync(join(dir, 'records'));
+    const key = file.slice(0, -'.json'.length);
+    const record = JSON.parse(readFileSync(join(dir, 'records', file), 'utf8'));
+    assert.equal(record.record, 2, field);
+    edit(record);
+    writeFileSync(join(dir, 'records', file), JSON.stringify(record, null, 2) + '\n');
+    const failures = verifySession(dir).failures;
+    assert.ok(failures.some((line) => line.startsWith('record ' + key + ': its content keys to ')), field + ': ' + JSON.stringify(failures));
+  }
+});
+
+test('a failed call\'s record is held to its one form, and a record that read no model, a version this check does not read, or a line out of shape goes red', async () => {
+  const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
+  const failed = await probeSession({
+    calls: 1,
+    client: {
+      ...fakeClient([]),
+      ask: async () => {
+        throw new Error('the server reset the call');
+      },
+    },
+  });
+  const ended = await probeSession({ calls: 1, client: fakeClient([move]) });
+  assert.deepEqual(verifySession(failed.dir).failures, []);
+  assert.deepEqual(verifySession(ended.dir).failures, []);
+  /** @type {Array<{ from: string, change: (record: any, line: any) => void, failure: (key: string) => string }>} */
+  const cases = [
+    {
+      from: failed.dir,
+      change: (record) => {
+        record.output = move;
+        record.outputSha256 = sha256(move);
+      },
+      failure: (key) => 'record ' + key + ': a call that failed holds no output, and this one holds one',
+    },
+    {
+      from: failed.dir,
+      change: (record) => {
+        record.timing.evalCount = 3;
+      },
+      failure: (key) => 'record ' + key + ': a call that failed is recorded with the time from its ask to the ask\'s rejection, and nothing the server reported',
+    },
+    {
+      from: failed.dir,
+      change: (record) => {
+        record.timing.ms = -1;
+      },
+      failure: (key) => 'record ' + key + ': a call that failed is recorded with the time from its ask to the ask\'s rejection, and nothing the server reported',
+    },
+    {
+      from: failed.dir,
+      change: (record) => {
+        record.failure = '';
+      },
+      failure: (key) => 'record ' + key + ': its failure is null or what the call threw, and it is ""',
+    },
+    {
+      from: ended.dir,
+      change: (record) => {
+        record.model = 'unread';
+      },
+      failure: (key) => 'record ' + key + ': it read no model, and only a call that failed before it was asked holds none',
+    },
+    {
+      from: ended.dir,
+      change: (record) => {
+        record.record = 3;
+      },
+      failure: (key) => 'record ' + key + ': version 3 is not one this check reads, 1 or 2',
+    },
+    {
+      from: ended.dir,
+      change: (_record, line) => {
+        line.admitted = 'yes';
+      },
+      failure: () => 'call 0: admitted "yes", and admitted is true or false',
+    },
+    {
+      from: ended.dir,
+      change: (_record, line) => {
+        line.call = 5;
+      },
+      failure: () => 'call 5: it is line 0 of the session, whose calls are numbered from 0 in order',
+    },
+  ];
+  for (const { from, change, failure } of cases) {
+    const dir = mkdtempSync(join(tmpdir(), 'planted-'));
+    cpSync(from, dir, { recursive: true });
+    const [file] = readdirSync(join(dir, 'records'));
+    const key = file.slice(0, -'.json'.length);
+    const record = JSON.parse(readFileSync(join(dir, 'records', file), 'utf8'));
+    const session = JSON.parse(readFileSync(join(dir, 'session.json'), 'utf8'));
+    change(record, session.calls[0]);
+    writeFileSync(join(dir, 'records', file), JSON.stringify(record, null, 2) + '\n');
+    writeFileSync(join(dir, 'session.json'), JSON.stringify(session, null, 2) + '\n');
+    const failures = verifySession(dir).failures;
+    assert.ok(failures.includes(failure(key)), failure(key) + ': ' + JSON.stringify(failures));
+  }
+});
+
+test('a call line not admitted is checked too: its read and reason against its record, and its admitted and at against the log', async () => {
+  const { result, dir } = await probeSession({
+    calls: 3,
+    client: fakeClient([
+      JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, z: 0 } } }),
+      'the model wandered off',
+      JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 50, z: 0 } } }),
+    ]),
+  });
+  assert.deepEqual(result.calls.map((line) => [line.read, line.admitted]), [['ok', true], ['not-json', false], ['ok', false]]);
+  assert.deepEqual(verifySession(dir).failures, []);
+  const unread = result.calls[1].record;
+  const refused = result.calls[2].record;
+  /** @type {Array<[number, (line: any) => void, RegExp]>} */
+  const cases = [
+    [1, (line) => {
+      line.read = 'no-output';
+    }, new RegExp('^call 1: read no-output, and record ' + unread + ' reads not-json$')],
+    [1, (line) => {
+      line.reason = 'the reply was fine';
+    }, new RegExp('^call 1: reason "the reply was fine", and record ' + unread + ' gives "the output is not one JSON object"$')],
+    [1, (line) => {
+      line.at = 16;
+    }, /^call 1: at 16, and a call not admitted has no tick$/],
+    [2, (line) => {
+      line.reason = null;
+    }, /^call 2: reason null, and a call the checker refused names its refusal$/],
+    [2, (line) => {
+      line.admitted = true;
+    }, new RegExp('^call 2: admitted true, and no log entry cites record ' + refused + '$')],
+  ];
+  for (const [call, tamper, pattern] of cases) {
+    const copied = mkdtempSync(join(tmpdir(), 'tampered-'));
+    cpSync(dir, copied, { recursive: true });
+    const path = join(copied, 'session.json');
+    const session = JSON.parse(readFileSync(path, 'utf8'));
+    tamper(session.calls[call]);
+    writeFileSync(path, JSON.stringify(session, null, 2) + '\n');
+    const failures = verifySession(copied).failures;
+    assert.ok(failures.some((line) => pattern.test(line)), pattern + ': ' + JSON.stringify(failures));
+  }
 });
 
 test('a scratch world is built only from files under fixtures/ or worlds/, or the product scene', async () => {
@@ -873,6 +1405,10 @@ test('a thawed scratch role the loader admits and the seat cannot render is refu
     ask: async () => {
       asks = asks + 1;
       return replied(null);
+    },
+    loaded: async () => {
+      reads = reads + 1;
+      return null;
     },
   };
   /** @type {Array<[Array<{ name: string, source: import('../frame/types.js').RoleSource }>, string]>} */

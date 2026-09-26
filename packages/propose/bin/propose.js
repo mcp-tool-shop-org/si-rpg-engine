@@ -28,7 +28,7 @@ import { loadIntentRules } from '../../tick/predicates.js';
 import { createTick, settle } from '../../tick/tick.js';
 import { createWorld } from '../../tick/world.js';
 import { guard } from '../../tool/guard.js';
-import { driftOf, readSession, writeSession } from '../record.js';
+import { digestOf, driftOf, readSession, writeSession } from '../record.js';
 import { askWithin, runSession, scratchWorld, sessionRefusal } from '../seat.js';
 
 const USAGE = 'propose [--catalog <dir>] | propose --role <name> [--catalog <dir>] --spec <spec.json> | propose --drift <session>';
@@ -126,7 +126,7 @@ for (let i = 0; i < spec.startQuanta; i = i + 1) {
 }
 
 // Only now, past every refusal, is the model's client loaded.
-const { askOllama, observeOllama } = await import('../ollama.js');
+const { ollamaClient } = await import('../ollama.js');
 const result = await runSession({
   entry: role,
   session: spec.session,
@@ -138,7 +138,7 @@ const result = await runSession({
   inputs: { dispatch: readInput(dir, spec.dispatch), diff: readInput(dir, spec.diff), access: spec.access },
   calls: spec.calls,
   lateQuanta: spec.lateQuanta,
-  client: { observe: observeOllama, ask: askOllama },
+  client: ollamaClient(),
 });
 settle(tick);
 
@@ -226,8 +226,8 @@ function readInput(folder, name) {
 async function driftReport(folder) {
   try {
     const { session, records } = readSession(folder);
-    const { askOllama, observeOllama } = await import('../ollama.js');
-    const client = { observe: observeOllama, ask: askOllama };
+    const { ollamaClient } = await import('../ollama.js');
+    const client = ollamaClient();
     /** @type {object[]} */
     const report = [];
     for (const [key, record] of records) {
@@ -235,10 +235,10 @@ async function driftReport(folder) {
         continue;
       }
       const manifest = session.manifests[record.manifest];
-      const pin = manifest && manifest.model ? manifest.model.digest : record.model.digest;
+      const pin = manifest && manifest.model ? manifest.model.digest : String(digestOf(record));
       // The seat's one deadline, as the session's own calls had.
-      const { reply } = await askWithin(client, record.request, pin, record.timeoutMs);
-      report.push(driftOf(key, record, reply === null ? null : reply.output, manifest));
+      const { reply, failure } = await askWithin(client, record.request, pin, record.timeoutMs);
+      report.push({ ...driftOf(key, record, reply === null ? null : reply.output, manifest), failure });
     }
     process.stdout.write(JSON.stringify({ session: session.session, calls: report }, null, 2) + '\n');
   } catch (error) {

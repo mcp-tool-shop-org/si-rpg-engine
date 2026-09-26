@@ -127,6 +127,7 @@ test('every committed session verifies without a GPU, and at least one admitted 
     admitted = admitted + result.entries;
     const { session, records } = readSession(join(SESSIONS, name));
     for (const record of records.values()) {
+      assert.ok(record.record === 1, 'made at version 1, and verified under the rules it was made under');
       assert.equal(record.model.digest, '845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e', 'recorded with the pinned model');
       assert.equal(record.request.options.temperature, 0);
       assert.equal(record.server.version, '0.34.0');
@@ -333,4 +334,47 @@ test('a record filed under a key its content does not make goes red', () => {
   const key = keys(dir)[0];
   renameSync(join(dir, 'records', key + '.json'), join(dir, 'records', 'f'.repeat(64) + '.json'));
   red(dir, new RegExp('^record f{64}: its content keys to ' + key + '$'));
+});
+
+test('a session\'s call lines are checked against their records and the log: each field tampered in turn goes red, with the field named', () => {
+  /** @type {Array<[string, (line: any, session: any) => void, (key: string) => RegExp]>} */
+  const cases = [
+    ['builtAt', (line) => {
+      line.builtAt.hash = 'f'.repeat(16);
+    }, () => /^call 1: builtAt tick 264 f{16} is not a frame of the session, whose frame at tick 264 is [0-9a-f]{16}$/],
+    ['builtAt', (line, session) => {
+      line.builtAt = { tick: 263, hash: session.frames[263] };
+    }, () => /^call 1: builtAt tick 263 [0-9a-f]{16} is not the frame log entry 1 was built from, tick 264 [0-9a-f]{16}$/],
+    ['read', (line) => {
+      line.read = 'not-json';
+    }, (key) => new RegExp('^call 1: read not-json, and record ' + key + ' reads ok$')],
+    ['reason', (line) => {
+      line.reason = 'the checker refused it';
+    }, () => /^call 1: reason "the checker refused it", and an admitted call has none$/],
+    ['admitted', (line) => {
+      line.admitted = false;
+    }, (key) => new RegExp('^call 1: admitted false, and log entry 1 cites record ' + key + '$')],
+    ['at', (line) => {
+      line.at = 273;
+    }, (key) => new RegExp('^call 1: at 273, and log entry 1 admits record ' + key + ' at tick 272$')],
+    ['call', (line) => {
+      line.call = 2;
+    }, (key) => new RegExp('^call 2: record ' + key + ' is call 1$')],
+  ];
+  for (const [field, tamper, pattern] of cases) {
+    const dir = copy();
+    const key = readSession(dir).session.calls[1].record;
+    assert.deepEqual(verifySession(dir).failures, [], 'the copy verifies before ' + field + ' is tampered');
+    editSession(dir, (session) => tamper(session.calls[1], session));
+    red(dir, pattern(key));
+  }
+});
+
+test('an admission in the log that no call line accounts for goes red', () => {
+  const dir = copy();
+  let removed = '';
+  editSession(dir, (session) => {
+    removed = session.calls.pop().record;
+  });
+  red(dir, new RegExp('^log entry 2: no call line admits record ' + removed + ' at tick 472$'));
 });

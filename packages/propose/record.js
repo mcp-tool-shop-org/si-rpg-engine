@@ -1,19 +1,34 @@
-// Every model call is recorded, and the record, not a rerun of the model, is
-// the truth for replay and for CI (T7a pins 6 and 7).
+// Every model call is recorded, however it ends, and the record, not a rerun
+// of the model, is the truth for replay and for CI (T7a pins 6 and 7, #87).
 //
 // A record holds the rendered messages; every sampling option (seed,
 // temperature, top_k, top_p, num_ctx, num_predict, stop) and the format
 // schema; the messages' and the schema's SHA-256; the model's digest and
-// quantization read from the server at call time; the Ollama version and the
-// server settings the client can read, the parallel setting among them; the
-// GPU's name and count; the hash of the manifest it was made under; the raw
-// output, its SHA-256, and the timing. Its key is the SHA-256 of the canonical
-// JSON of everything but the output, its hash, and the timing, so a changed
-// model can never match an old record (findings 29, 30). The key names the
-// request and all the client can observe of the model and the server; it does
-// not promise the same output, since batching on the server is invisible to a
-// client and changes outputs (findings 24, 26). So CI never regenerates an
-// output: it checks the records.
+// quantization read from the server at call time; the Ollama version; the
+// model as the server holds it loaded; the client's own environment, the
+// parallel setting among it; the GPU's name and count; the hash of the
+// manifest it was made under; the raw output, its SHA-256, and the timing.
+// Its key is the SHA-256 of the canonical JSON of everything but the output,
+// its hash, and the timing, so a changed model can never match an old record
+// (findings 29, 30). The key names the request and all the client can observe
+// of the model and the server; it does not promise the same output, since
+// batching on the server is invisible to a client and changes outputs
+// (findings 24, 26). So CI never regenerates an output: it checks the records.
+//
+// A record is at version 2 (#87). The loaded model is read twice, before the
+// call (server.loadedBefore) and after it ends, however it ends
+// (server.loaded), so a model swapped while a call is out is seen; either
+// reading naming a digest other than the pin makes the call read
+// model-changed. A reading the client did not make, or one that failed or
+// timed out, is the string `unread`, since null means the model was not
+// loaded. The variables the client's environment names are its own
+// (client.environment), with the one call at once it keeps
+// (client.callsAtOnce): nothing in a version-2 record says they are the
+// server's. `failure` is null for a call that ended, or what its reads or its
+// ask threw. The committed probe sessions were made at version 1, at f06470d,
+// when the one reading of the loaded model was taken after the call and the
+// client's environment was named the server's settings. They verify under the
+// rules they were made under, and their keys do not move.
 //
 // The seat's deadline is a call's only one (seat.js askWithin). What the
 // client can observe of the model, the server, and the GPU is read before the
@@ -21,7 +36,13 @@
 // its budget has one form: no output, the budget as its time, and nothing the
 // server reported (cutOffTiming). So a timed-out record is the same whichever
 // clock would have fired first, and it verifies; a call that returned after
-// its budget does not.
+// its budget does not. A call that failed has one form too: no output,
+// nothing the server reported, and the time from its ask to the ask's
+// rejection, 0 when it failed before it was asked (failedTiming).
+//
+// How a call reads from its record, and so what its call line says, is one
+// function, callRead, which the seat applies as it makes the record and
+// verifySession applies again to check the line.
 //
 // A session is a directory the session names: session.json, which is the
 // log (seed, world, law, entries, and at its top level the manifests its
@@ -42,11 +63,13 @@ import { readRoleOutput, stampProposal } from './parse.js';
 /**
  * @typedef {import('../frame/types.js').RoleManifest} RoleManifest
  * @typedef {import('../frame/types.js').LogEntry} LogEntry
+ * @typedef {import('./parse.js').RoleProposal} RoleProposal
  * @typedef {import('./ollama.js').ChatRequest} ChatRequest
  * @typedef {import('./ollama.js').ModelSeen} ModelSeen
- * @typedef {import('./ollama.js').ServerSeen} ServerSeen
+ * @typedef {import('./ollama.js').Loaded} Loaded
  * @typedef {import('./ollama.js').GpuSeen} GpuSeen
  * @typedef {import('./ollama.js').Timing} Timing
+ * @typedef {'unread'} Unread a reading the client did not make, or one that failed or timed out
  * @typedef {{
  *   record: 1,
  *   session: string,
@@ -58,12 +81,39 @@ import { readRoleOutput, stampProposal } from './parse.js';
  *   schema: string,
  *   timeoutMs: number,
  *   model: ModelSeen,
- *   server: ServerSeen,
+ *   server: { version: string, settings: Record<string, string | null>, loaded: Loaded, callsAtOnce: 1 },
  *   gpu: GpuSeen,
  *   output: string | null,
  *   outputSha256: string | null,
  *   timing: Timing,
- * }} CallRecord
+ * }} CallRecord1 a record made at version 1: one reading of the loaded model, taken after the call, and the client's environment under the name server.settings
+ * @typedef {{
+ *   model: ModelSeen | Unread,
+ *   server: { version: string | Unread, loadedBefore: Loaded | Unread, loaded: Loaded | Unread },
+ *   client: { environment: Record<string, string | null> | Unread, callsAtOnce: 1 },
+ *   gpu: GpuSeen | Unread,
+ * }} Readings what the client read of the model, the server, itself, and the GPU for one call, each reading or unread
+ * @typedef {{
+ *   record: 2,
+ *   session: string,
+ *   call: number,
+ *   role: string,
+ *   manifest: string,
+ *   request: ChatRequest,
+ *   prompt: string,
+ *   schema: string,
+ *   timeoutMs: number,
+ *   model: Readings['model'],
+ *   server: Readings['server'],
+ *   client: Readings['client'],
+ *   gpu: Readings['gpu'],
+ *   failure: string | null,
+ *   output: string | null,
+ *   outputSha256: string | null,
+ *   timing: Timing,
+ * }} CallRecord2 a record made at version 2 (#87)
+ * @typedef {CallRecord1 | CallRecord2} CallRecord
+ * @typedef {{ read: 'ok', proposal: RoleProposal } | { read: string, reason: string }} CallRead how a call reads from its record: its proposal, or why it proposes nothing
  * @typedef {{ call: number, record: string, builtAt: { tick: number, hash: string }, read: string, reason: string | null, admitted: boolean, at: number | null }} CallLine
  * @typedef {{
  *   session: string,
@@ -139,6 +189,92 @@ export function cutOffTiming(ms) {
 }
 
 /**
+ * The timing of a call that failed, in its one form: the time from its ask to
+ * the ask's rejection, 0 when the call failed before it was asked, and
+ * nothing the server reported, since no reply was taken. verifySession
+ * accepts a failed record only in this form.
+ * @param {number} ms
+ * @returns {Timing}
+ */
+export function failedTiming(ms) {
+  return { ms, timedOut: false, totalDuration: null, loadDuration: null, promptEvalCount: null, promptEvalDuration: null, evalCount: null, evalDuration: null, doneReason: null };
+}
+
+/** @param {unknown} value */
+function isObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+/**
+ * The model digest a record read from the server's model list, or null when
+ * it read none.
+ * @param {CallRecord} record
+ * @returns {string | null}
+ */
+export function digestOf(record) {
+  return isObject(record.model) && typeof (/** @type {ModelSeen} */ (record.model)).digest === 'string' ? (/** @type {ModelSeen} */ (record.model)).digest : null;
+}
+
+/**
+ * Why a call's readings of the loaded model name a model other than the pin,
+ * or null. A version-1 record holds one reading, taken after the call, and is
+ * read by the rule it was made under. A version-2 record holds two, before
+ * and after the call, and either naming a digest other than the pin is a
+ * change. A model not loaded (null) or a reading not made (unread) names no
+ * digest, so it is no change: a model not loaded before the call is loaded
+ * by it.
+ * @param {CallRecord} record
+ * @param {string} pin
+ * @returns {string | null}
+ */
+export function modelChange(record, pin) {
+  /** @type {Array<[string, unknown]>} */
+  const readings = record.record === 1
+    ? [['', record.server.loaded]]
+    : [[' before the call', record.server.loadedBefore], [' after the call', record.server.loaded]];
+  for (const [when, reading] of readings) {
+    const digest = isObject(reading) ? (/** @type {Record<string, unknown>} */ (reading)).digest : undefined;
+    if (typeof digest === 'string' && digest !== pin) {
+      return 'the server held ' + digest + ' loaded' + when + ', not the pin';
+    }
+  }
+  return null;
+}
+
+/**
+ * How a call reads from its record, by the rules the seat applies as it
+ * makes the record (seat.js runSession) and verifySession applies again to
+ * check the call's line. In order: a call that failed reads call-failed, with
+ * its failure as the reason; one cut off at its budget, timed-out; one whose
+ * reply held nothing, no-output; one whose readings of the loaded model name
+ * another model, model-changed; and otherwise what the seat's parser reads of
+ * the output under the manifest, whose proposal is what the seat submits.
+ * @param {CallRecord} record
+ * @param {RoleManifest} manifest the manifest the record cites
+ * @returns {CallRead}
+ */
+export function callRead(record, manifest) {
+  if (record.record === 2 && record.failure !== null) {
+    return { read: 'call-failed', reason: record.failure };
+  }
+  if (record.timing.timedOut) {
+    return { read: 'timed-out', reason: 'no output within ' + manifest.budget.secondsPerCall + ' s' };
+  }
+  if (record.output === null) {
+    return { read: 'no-output', reason: 'the reply held no output' };
+  }
+  const changed = manifest.model === null ? null : modelChange(record, manifest.model.digest);
+  if (changed !== null) {
+    return { read: 'model-changed', reason: changed };
+  }
+  const read = readRoleOutput(record.output, manifest);
+  if (read.verdict !== 'ok') {
+    return { read: read.verdict, reason: read.reason };
+  }
+  return { read: 'ok', proposal: read.proposal };
+}
+
+/**
  * Writes a session's log and records into its directory.
  * @param {string} dir
  * @param {Session} session
@@ -173,11 +309,14 @@ export function readSession(dir) {
 }
 
 /**
- * The seven checks of pin 7, over one session, with no GPU and no model. Each
- * failure names what it found; an empty list is a session that verifies.
- *   1. every record's key is recomputed from its content;
+ * The seven checks of pin 7 over one session, and the check of its call lines
+ * (#87 pin 6), with no GPU and no model. Each failure names what it found; an
+ * empty list is a session that verifies.
+ *   1. every record's key is recomputed from its content, and its version is
+ *      1 or 2, each read by the rules it was made under;
  *   2. every record's model digest is the pin in the manifest it cites, as
  *      the session carries that manifest, so a later re-pin breaks nothing;
+ *      a record that read no model is a call that failed before it was asked;
  *   3. every output matches its hash, the prompt and schema hashes match the
  *      request, and every log entry's provenance matches its record: role,
  *      manifest, model, prompt, schema, and output;
@@ -185,10 +324,21 @@ export function readSession(dir) {
  *      the log admitted;
  *   5. every record keeps its role's budgets: calls, output tokens, seconds,
  *      and notes; a call the seat cut off at its budget is accepted in its
- *      one form, and a call that returned after its budget is not;
+ *      one form, and so is a call that failed, and a call that returned
+ *      after its budget is not;
  *   6. the admitted log replays, gated against its own manifests, to the same
  *      frame hashes, and to its end, which is the session's last frame;
- *   7. a record the session cites and does not hold is a failure.
+ *   7. a record the session cites and does not hold is a failure;
+ *   8. every call line agrees with its record and the log. Lines are numbered
+ *      from 0 in order, each its record's call. Its builtAt is a frame of the
+ *      session, at its tick with its hash, and an admitted line's is the frame
+ *      its log entry was built from. Its read and reason are what callRead
+ *      gives of its record under the manifest it cites; for a line whose
+ *      record reads ok, the reason is null if it was admitted, and otherwise
+ *      the checker's refusal, which neither the record nor the log holds, so
+ *      it is checked only to name one. An admitted line's log entry is at its
+ *      `at` and cites its record; a line not admitted has no entry and no
+ *      `at`. Every admission in the log is a call line's.
  * @param {string} dir
  * @returns {{ failures: string[], records: number, entries: number }}
  */
@@ -220,6 +370,11 @@ export function verifySession(dir) {
     if (found !== key) {
       failures.push('record ' + key + ': its content keys to ' + found);
     }
+    const version = /** @type {unknown} */ (record.record);
+    if (version !== 1 && version !== 2) {
+      failures.push('record ' + key + ': version ' + String(version) + ' is not one this check reads, 1 or 2');
+      continue;
+    }
     const manifest = byHash.get(record.manifest);
     if (!manifest) {
       failures.push('record ' + key + ': cites manifest ' + record.manifest + ', which the session does not carry');
@@ -229,8 +384,13 @@ export function verifySession(dir) {
     if (record.role !== manifest.role) {
       failures.push('record ' + key + ': names role ' + record.role + ', and its manifest is ' + manifest.role);
     }
-    if (manifest.model === null || record.model.digest !== manifest.model.digest) {
-      failures.push('record ' + key + ': model digest ' + record.model.digest + ' is not the pin in manifest ' + record.manifest);
+    const digest = digestOf(record);
+    if (digest === null) {
+      if (!(record.record === 2 && record.model === 'unread' && record.failure !== null)) {
+        failures.push('record ' + key + ': it read no model, and only a call that failed before it was asked holds none');
+      }
+    } else if (manifest.model === null || digest !== manifest.model.digest) {
+      failures.push('record ' + key + ': model digest ' + digest + ' is not the pin in manifest ' + record.manifest);
     }
     if (outputHash(record.output) !== record.outputSha256) {
       failures.push('record ' + key + ': its output does not hash to its outputSha256');
@@ -252,6 +412,18 @@ export function verifySession(dir) {
       failures.push('record ' + key + ': a timeout of ' + record.timeoutMs + ' ms is not the secondsPerCall budget of ' + budget.secondsPerCall);
     }
     const budgetMs = budget.secondsPerCall * 1000;
+    if (record.record === 2 && record.failure !== null) {
+      if (typeof record.failure !== 'string' || record.failure.length === 0) {
+        failures.push('record ' + key + ': its failure is null or what the call threw, and it is ' + JSON.stringify(record.failure));
+      }
+      if (record.output !== null) {
+        failures.push('record ' + key + ': a call that failed holds no output, and this one holds one');
+      }
+      const ms = /** @type {unknown} */ (record.timing.ms);
+      if (typeof ms !== 'number' || ms < 0 || canonical(record.timing) !== canonical(failedTiming(ms))) {
+        failures.push('record ' + key + ': a call that failed is recorded with the time from its ask to the ask\'s rejection, and nothing the server reported');
+      }
+    }
     if (record.timing.timedOut) {
       if (record.output !== null) {
         failures.push('record ' + key + ': a call cut off at its budget holds no output, and this one holds one');
@@ -276,13 +448,87 @@ export function verifySession(dir) {
     }
   }
 
-  for (const line of session.calls || []) {
-    if (!records.has(line.record)) {
+  const log = session.log || [];
+  /** @type {Map<string, number[]>} the log entries whose provenance cites each record */
+  const citing = new Map();
+  for (let i = 0; i < log.length; i = i + 1) {
+    const p = log[i].provenance;
+    if (p) {
+      citing.set(p.record, [...(citing.get(p.record) || []), i]);
+    }
+  }
+  /** @type {Set<number>} the log entries an admitted call line accounts for */
+  const accounted = new Set();
+  const lines = session.calls || [];
+  for (let index = 0; index < lines.length; index = index + 1) {
+    const line = lines[index];
+    const at = 'call ' + line.call + ': ';
+    const record = records.get(line.record);
+    if (!record) {
       failures.push('call ' + line.call + ' cites record ' + line.record + ', which is missing; a missing record is never asked for again');
+    }
+    if (line.call !== index) {
+      failures.push(at + 'it is line ' + index + ' of the session, whose calls are numbered from 0 in order');
+    }
+    if (record && record.call !== line.call) {
+      failures.push(at + 'record ' + line.record + ' is call ' + record.call);
+    }
+    const built = line.builtAt;
+    const tick = built && Number.isInteger(built.tick) ? built.tick : -1;
+    const framed = tick >= 0 && tick < session.frames.length;
+    if (!built || !framed || session.frames[tick] !== built.hash) {
+      failures.push(at + 'builtAt tick ' + (built ? built.tick : 'none') + ' ' + (built ? built.hash : 'none') + ' is not a frame of the session' + (framed ? ', whose frame at tick ' + tick + ' is ' + session.frames[tick] : ''));
+    }
+    const manifest = record ? byHash.get(record.manifest) : undefined;
+    if (record && manifest && (record.record === 1 || record.record === 2)) {
+      const read = callRead(record, manifest);
+      if (line.read !== read.read) {
+        failures.push(at + 'read ' + line.read + ', and record ' + line.record + ' reads ' + read.read);
+      }
+      if (!('proposal' in read)) {
+        if (line.reason !== read.reason) {
+          failures.push(at + 'reason ' + JSON.stringify(line.reason) + ', and record ' + line.record + ' gives ' + JSON.stringify(read.reason));
+        }
+      } else if (line.admitted === true) {
+        if (line.reason !== null) {
+          failures.push(at + 'reason ' + JSON.stringify(line.reason) + ', and an admitted call has none');
+        }
+      } else if (typeof line.reason !== 'string' || line.reason.length === 0) {
+        failures.push(at + 'reason ' + JSON.stringify(line.reason) + ', and a call the checker refused names its refusal');
+      }
+    }
+    const entries = citing.get(line.record) || [];
+    if (line.admitted === true) {
+      const hit = entries.find((i) => log[i].tick === line.at);
+      if (entries.length === 0) {
+        failures.push(at + 'admitted true, and no log entry cites record ' + line.record);
+      } else if (hit === undefined) {
+        failures.push(at + 'at ' + String(line.at) + ', and log entry ' + entries[0] + ' admits record ' + line.record + ' at tick ' + log[entries[0]].tick);
+      } else {
+        accounted.add(hit);
+        const from = /** @type {NonNullable<LogEntry['provenance']>} */ (log[hit].provenance).builtAt;
+        if (built && from && (built.tick !== from.tick || built.hash !== from.hash)) {
+          failures.push(at + 'builtAt tick ' + built.tick + ' ' + built.hash + ' is not the frame log entry ' + hit + ' was built from, tick ' + from.tick + ' ' + from.hash);
+        }
+      }
+    } else if (line.admitted === false) {
+      if (entries.length > 0) {
+        failures.push(at + 'admitted false, and log entry ' + entries[0] + ' cites record ' + line.record);
+      }
+      if (line.at !== null) {
+        failures.push(at + 'at ' + String(line.at) + ', and a call not admitted has no tick');
+      }
+    } else {
+      failures.push(at + 'admitted ' + JSON.stringify(line.admitted) + ', and admitted is true or false');
+    }
+  }
+  for (let i = 0; i < log.length; i = i + 1) {
+    const p = log[i].provenance;
+    if (p && !accounted.has(i)) {
+      failures.push('log entry ' + i + ': no call line admits record ' + p.record + ' at tick ' + log[i].tick);
     }
   }
 
-  const log = session.log || [];
   for (let i = 0; i < log.length; i = i + 1) {
     const entry = log[i];
     const p = entry.provenance;
@@ -298,7 +544,7 @@ export function verifySession(dir) {
     const pairs = [
       ['role', p.role, record.role],
       ['manifest', p.manifest, record.manifest],
-      ['model', p.model, record.model.digest],
+      ['model', p.model, digestOf(record)],
       ['prompt', p.prompt, record.prompt],
       ['schema', p.schema, record.schema],
       ['output', p.output, record.outputSha256],
