@@ -43,7 +43,7 @@ Serves the debug view on `127.0.0.1`, port 4173 by default. Without `--world` it
 
 ### `propose [--catalog <dir>]`, `propose --role <name> --spec <spec.json>`, `propose --drift <session>`
 
-The seat, the only code that calls a model. Without `--role` it lists the roles in `predicates/roles/`, or in `--catalog`, each with its status, its world, the Rule of Two properties the loader derived, and its trust label. With `--role` it refuses a frozen role, or one that acts in a live world, with exit 2 before any model client loads. For a thawed scratch role it runs the session the spec names through Ollama at `127.0.0.1:11434`, and writes `session.json` and one record per call beside the spec. `--drift` reissues a recorded session's calls and reports how far the new outputs drift from the recorded ones; it runs by hand on a GPU and exits 0 whatever it finds. Both declared roles are frozen.
+The seat, the only code that calls a model. Without `--role` it lists the roles in `predicates/roles/`, or in `--catalog`, each with its status, its world, the Rule of Two properties the loader derived, and its trust label. With `--role` it refuses a frozen role, or one that acts in a live world, with exit 2 before any model client loads. For a thawed scratch role it runs the session the spec names through Ollama at `127.0.0.1:11434`, and writes `session.json` and one record per call beside the spec, a failed call included; a session stops at its first failed call. `--drift` reissues a recorded session's calls and reports how far the new outputs drift from the recorded ones, and any call that failed; it runs by hand on a GPU and exits 0 whatever it finds. Both declared roles are frozen.
 
 ### `write-golden`
 
