@@ -60,10 +60,13 @@ jobs:
       # bundle here (harness/bundle.mjs); the last step uploads them on failure.
       - name: Where failures write bundles
         run: echo "SI_RPG_BUNDLES=$RUNNER_TEMP/bundles" >> "$GITHUB_ENV"
+      # llvm-tools: the bench's law tests map the coverage build's counters to
+      # lines with the pinned toolchain's llvm-profdata and llvm-cov (T7b pin 3).
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: "1.98.1"
           targets: wasm32-unknown-unknown
+          components: llvm-tools
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: solver
