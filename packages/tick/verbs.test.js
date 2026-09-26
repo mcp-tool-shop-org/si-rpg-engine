@@ -273,5 +273,77 @@ test('the verb fixture replays frame for frame', () => {
     return;
   }
   assert.ok(crate.x > 2 && walker.x > 2, 'the carry finishes on the far side of the gap');
-  assert.ok(crate.y > 0.2, 'the crate is set down on the far floor');
+  for (const name of ['carry', 'carry-capsule']) {
+    const spec = saved.cases.find((/** @type {{ name: string }} */ item) => item.name === name);
+    const played = playVerbs(spec, catalog.rules);
+    assert.equal(played.ok, true, name);
+    if (!played.ok) {
+      return;
+    }
+    const down = played.bodies.find((body) => body.id === 'crate');
+    const who = played.bodies.find((body) => body.id === 'walker');
+    const target = spec.script.find((/** @type {{ verb: string }} */ step) => step.verb === 'drop').target;
+    assert.ok(down && who && target && typeof target.x === 'number' && typeof target.z === 'number');
+    if (!down || !who || !target || typeof target.x !== 'number' || typeof target.z !== 'number') {
+      return;
+    }
+    assert.ok(Math.hypot(down.x - who.x, down.z - who.z) > 0.05, name + ' crate is not still on the walker');
+    assert.ok(Math.hypot(down.x - target.x, down.z - target.z) <= 0.05, name + ' crate is at the drop target');
+    assert.ok(Math.abs(down.y - down.hy) < 0.02, name + ' crate is resting on the floor at y ' + down.y);
+    const clear = !(Math.abs(down.x - who.x) < down.hx + who.hx && Math.abs(down.y - who.y) < down.hy + who.hy && Math.abs(down.z - who.z) < down.hz + who.hz);
+    assert.ok(clear, name + ' crate is clear of the walker');
+  }
+});
+
+test('a release whose placement overlaps the actor leaves the body carried', () => {
+  const world = createWorld({
+    bodies: [
+      { id: 'walker', x: 0, y: 0.25, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'crate', x: 0, y: 0.7, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.2, hy: 0.2, hz: 0.2 },
+    ],
+    colliders: [{ id: 'floor', minX: -2, maxX: 2, minY: -1, maxY: 0, minZ: -2, maxZ: 2 }],
+  });
+  assert.equal(world.carry('walker', 'crate'), true);
+  assert.equal(world.release('walker', 0, 0), false);
+  assert.equal(world.carryingOf('walker'), 'crate');
+  const crate = world.body('crate');
+  assert.ok(crate);
+  if (!crate) {
+    return;
+  }
+  assert.equal(crate.x, 0);
+  assert.equal(crate.y, 0.7);
+});
+
+test('a drop from short of the target sets the crate down there and stops clear of it', () => {
+  const world = createWorld({
+    bodies: [
+      { id: 'walker', x: 0, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'crate', x: 0.8, y: 0.26, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.12, hy: 0.2, hz: 0.12 },
+    ],
+    colliders: [{ id: 'floor', minX: -2, maxX: 4, minY: -1, maxY: 0, minZ: -2, maxZ: 2 }],
+  });
+  const rules = loadIntentRules().rules;
+  const tick = createTick({ seed: 1, world, rules, memory: createMemory() });
+  for (let i = 0; i < 128 && !world.sleeping('crate'); i = i + 1) {
+    tick.advance();
+  }
+  const pick = tick.submit({ kind: 'intent', verb: 'pick-up', actor: 'walker', target: { body: 'crate' }, frameHash: tick.frame().hash });
+  assert.equal(pick.admitted, true, pick.admitted ? '' : pick.reason);
+  settle(tick);
+  const drop = tick.submit({ kind: 'intent', verb: 'drop', actor: 'walker', target: { x: 2, z: 0 }, frameHash: tick.frame().hash });
+  assert.equal(drop.admitted, true, drop.admitted ? '' : drop.reason);
+  settle(tick);
+  const walker = world.body('walker');
+  const crate = world.body('crate');
+  assert.ok(walker && crate);
+  if (!walker || !crate) {
+    return;
+  }
+  assert.equal(world.carryingOf('walker'), null);
+  assert.ok(Math.hypot(crate.x - 2, crate.z - 0) <= 0.05, 'crate at (' + crate.x + ', ' + crate.z + ')');
+  assert.ok(Math.abs(crate.y - crate.hy) < 0.02, 'resting at y ' + crate.y);
+  assert.ok(walker.x < 2 - (walker.hx + crate.hx) + 0.02, 'the walker stopped short at x ' + walker.x);
+  const overlaps = Math.abs(crate.x - walker.x) < crate.hx + walker.hx && Math.abs(crate.y - walker.y) < crate.hy + walker.hy && Math.abs(crate.z - walker.z) < crate.hz + walker.hz;
+  assert.equal(overlaps, false);
 });

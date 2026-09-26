@@ -736,12 +736,16 @@ export function createWorld(init, law) {
   /**
    * Highest surface at or below fromY under (x, z). A rotated collider is
    * tested in its local frame. A resting body is one whose velocity is zero.
+   * `skip` names bodies that are not a surface for this query: a drop skips
+   * the actor and the body being set down, so the support is the floor or
+   * another resting body and not the actor's own head.
    * @param {number} x
    * @param {number} z
    * @param {number} fromY
+   * @param {ReadonlySet<string>} [skip]
    * @returns {number | null}
    */
-  function supportAt(x, z, fromY) {
+  function supportAt(x, z, fromY, skip) {
     /** @type {number | null} */
     let best = null;
     /**
@@ -760,7 +764,7 @@ export function createWorld(init, law) {
     }
     for (let i = 0; i < bodies.length; i = i + 1) {
       const b = bodies[i];
-      if (carriedBy.has(b.id) || b.vx !== 0 || b.vy !== 0 || b.vz !== 0) {
+      if (carriedBy.has(b.id) || (skip && skip.has(b.id)) || b.vx !== 0 || b.vy !== 0 || b.vz !== 0) {
         continue;
       }
       if (x < b.x - b.hx || x > b.x + b.hx || z < b.z - b.hz || z > b.z + b.hz) {
@@ -942,6 +946,9 @@ export function createWorld(init, law) {
   /**
    * Puts the carried body back in the solver, awake, just above the support.
    * A bottom that starts exactly on a surface falls through the discrete step.
+   * The support ignores the actor and the carried body. The placement is
+   * checked again here: a box that overlaps another body, or a collider, is
+   * refused and the body stays carried.
    * @param {string} actorId
    * @param {number} x
    * @param {number} z
@@ -953,12 +960,26 @@ export function createWorld(init, law) {
     if (!bodyId || !actor || !carried) {
       return false;
     }
-    const support = supportAt(x, z, actor.y + 8);
+    const support = supportAt(x, z, actor.y + 8, new Set([actorId, bodyId]));
     if (support === null) {
       return false;
     }
+    const y = support + carried.hy + 0.05;
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const other = bodies[i];
+      if (other.id === bodyId) {
+        continue;
+      }
+      if (Math.abs(other.x - x) < carried.hx + other.hx && Math.abs(other.y - y) < carried.hy + other.hy && Math.abs(other.z - z) < carried.hz + other.hz) {
+        return false;
+      }
+    }
+    const hit = overlaps({ x, y, z, hx: carried.hx, hy: carried.hy, hz: carried.hz });
+    if (hit !== null && !bodies.some((other) => other.id === hit)) {
+      return false;
+    }
     carried.x = x;
-    carried.y = support + carried.hy + 0.05;
+    carried.y = y;
     carried.z = z;
     carried.vx = 0;
     carried.vy = 0;

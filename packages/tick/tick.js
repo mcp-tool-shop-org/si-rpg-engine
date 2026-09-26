@@ -43,7 +43,8 @@ import { canonical } from './canonical.js';
 import { beliefLabel, budgetRefusal, freshnessRefusal, provenanceProblem, roleRefusal } from './gate.js';
 import { memorySaveProblem } from './memory.js';
 import { installMinds, mindsSaveProblem, mixMinds, observeMinds, restoreMinds, saveMinds } from './minds.js';
-import { admitIntent } from './predicates.js';
+import { RELEASE_MARGIN_STEPS, admitIntent } from './predicates.js';
+import { DT } from './world.js';
 import { findRole } from './roles.js';
 import { AUTHORED, isLabel, labelFields } from './trust.js';
 
@@ -310,9 +311,49 @@ function buildTick(init) {
     if (action.effect === 'carry' && action.remaining === 1 && action.otherId && world.carry) {
       world.carry(id, action.otherId);
     }
-    if (action.effect === 'release' && action.remaining === 1 && world.release) {
-      world.release(id, action.aimX, action.aimZ);
-      return;
+    if (action.effect === 'release') {
+      // Stop at reach. A step that would put the actor's box through the
+      // carried body's placement is not taken, and a step that has backed out
+      // of that placement stops there. The body is set down once the actor is
+      // clear, and the quanta still scheduled let it land.
+      const carriedId = world.carryingOf ? world.carryingOf(id) : null;
+      const carried = carriedId ? world.body(carriedId) : undefined;
+      if (carried && world.supportAt) {
+        const support = world.supportAt(action.aimX, action.aimZ, actor.y + 8, new Set([id, carried.id]));
+        if (support !== null) {
+          const placeY = support + carried.hy + 0.05;
+          const stanceY = support + actor.hy;
+          const yHits = (/** @type {number} */ y) => Math.abs(y - placeY) < actor.hy + carried.hy;
+          // A stance on the placement's support counts: the actor may still be
+          // on a ledge, clear in y, and about to walk down into the box.
+          const overlaps = (/** @type {number} */ x, /** @type {number} */ z) => (yHits(actor.y) || yHits(stanceY))
+            && Math.abs(x - action.aimX) < actor.hx + carried.hx
+            && Math.abs(z - action.aimZ) < actor.hz + carried.hz;
+          const movingAway = actor.vx * (actor.x - action.aimX) + actor.vz * (actor.z - action.aimZ) > 0;
+          const here = overlaps(actor.x, actor.z);
+          const next = overlaps(actor.x + actor.vx * DT * RELEASE_MARGIN_STEPS, actor.z + actor.vz * DT * RELEASE_MARGIN_STEPS);
+          if (movingAway) {
+            if (!here) {
+              actor.vx = 0;
+              actor.vz = 0;
+            }
+          } else if (here || next) {
+            actor.vx = 0;
+            actor.vz = 0;
+          }
+          const stopped = actor.vx === 0 && actor.vz === 0;
+          if (world.release && stopped && !overlaps(actor.x, actor.z)) {
+            world.release(id, action.aimX, action.aimZ);
+            return;
+          }
+        }
+      }
+      if (action.remaining === 1 && world.release && world.carryingOf && world.carryingOf(id)) {
+        actor.vx = 0;
+        actor.vz = 0;
+        world.release(id, action.aimX, action.aimZ);
+        return;
+      }
     }
     if (action.effect === 'climb' && action.riseQuanta > 0) {
       world.lifted.add(id);
@@ -518,6 +559,18 @@ function buildTick(init) {
         if (effect === 'release' && check.aimX !== undefined && check.aimZ !== undefined) {
           aimX = check.aimX;
           aimZ = check.aimZ;
+          if (check.standX !== undefined && check.standZ !== undefined) {
+            const sx = check.standX - actor.x;
+            const sz = check.standZ - actor.z;
+            const standGround = Math.sqrt(sx * sx + sz * sz);
+            if (standGround === 0) {
+              actor.vx = 0;
+              actor.vz = 0;
+            } else {
+              actor.vx = check.rule.speed * sx / standGround;
+              actor.vz = check.rule.speed * sz / standGround;
+            }
+          }
         }
         memory.recordEpisode(tick, 'intent', proposal.verb + ' ' + proposal.actor);
         record(proposal, role);
