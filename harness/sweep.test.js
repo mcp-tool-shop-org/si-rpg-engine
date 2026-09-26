@@ -6,18 +6,21 @@
 // every zone witness of every world swept is replayed through the ordinary
 // replay path and compared hash for hash (pin 8). A sweep whose restore omits
 // the hasher's lanes has witnesses that do not replay, so the replay is the
-// check that exploring by restore explores the real world. The last two tests
-// hold existing content to what the sweep says of it: everything that loads
-// today still loads but for the minds fixture, whose crate the product law
-// launches over its walls, pinned here, and the scheduled job's record of
-// every world it sweeps fails on any verdict that moves.
+// check that exploring by restore explores the real world. A throw planted
+// into the tick, in the processes of load world and replay only, is refused
+// with its bundle, and replay reproduces it. Two tests hold existing content
+// to what the sweep says of it: everything that loads today still loads but
+// for the minds fixture, whose crate the product law launches over its walls,
+// pinned here, and the scheduled job's record of every world it sweeps fails
+// on any verdict that moves.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { readBundle, specOf } from '../packages/tick/bundle.js';
 import { replayTo } from '../packages/tick/runs.js';
 import { settles } from '../packages/tick/admit-world.js';
@@ -302,6 +305,53 @@ test('load world refuses a zone nothing reaches and a body leaving the world, na
   const deferred = considerWorld(loaded.scene, { budget: { quanta: 2000, restores: 20 }, bundles: null });
   assert.equal(deferred.ok, true);
   assert.ok(deferred.lines.some((line) => /^sweep: sweep deferred: the budget of 2000 quanta and 20 restores ran out with \d+ cells archived and \d+ left in the frontier/.test(line)), deferred.lines.join('\n'));
+});
+
+test('a throw planted after an admitted push is refused by load world with a throw finding and its bundle, and replay on the bundle reproduces the throw', () => {
+  // No swept world throws, so the throw is planted: harness/plant-throw.mjs,
+  // imported into these commands' own processes and no other, loads the tick
+  // with the push's first quantum writing NaN into the pusher's vx, and the
+  // tick's own check throws. The product path has no hook for it.
+  const plant = ['--import', pathToFileURL(resolve('harness/plant-throw.mjs')).href];
+  const index = readFileSync('worlds/index.json');
+  const planted = spawnSync(process.execPath, plant.concat(['packages/load/bin/load.js', 'world', 'worlds/crate-and-door.json']), { encoding: 'utf8', env: { ...process.env, SI_RPG_BUNDLES: dir } });
+  // A world load world admits is written to the index; this one must not be.
+  const after = readFileSync('worlds/index.json');
+  if (!after.equals(index)) {
+    writeFileSync('worlds/index.json', index);
+  }
+  assert.ok(after.equals(index), 'the planted world was admitted and written to the index');
+  assert.equal(planted.status, 1, planted.stderr);
+  assert.equal(planted.stdout, '');
+  // The throw is the one reason: the door is still reached by moves. A
+  // warning node prints about the hook is not a reason.
+  const reasons = planted.stderr.split(/\r?\n/).filter((line) => line !== '' && !line.startsWith('sweep: ') && !/^\((node:\d+|Use `node --trace-)/.test(line));
+  assert.equal(reasons.length, 1, planted.stderr);
+  const found = /^the tick throws: the tick throws after push crate by walker, producing tick (\d+): NaN in body walker at tick \1 \(and \d+ more like it\); bundle (.+\.bundle\.json)$/.exec(reasons[0]);
+  assert.ok(found, reasons[0]);
+  const tick = Number(found[1]);
+  const path = found[2];
+  // Pin 7's bundle: the witness and the push, and the hashes from the load to
+  // the push's first quantum, the last of them the trace's NAN mark.
+  const bundle = readBundle(path);
+  assert.equal(bundle.run, 'log');
+  assert.equal(bundle.tick, tick);
+  assert.equal(bundle.hashes.length, tick + 1);
+  assert.equal(bundle.hashes[tick], 'NAN');
+  const last = bundle.log[bundle.log.length - 1];
+  const push = /** @type {import('../packages/frame/types.js').Intent} */ (last.proposal);
+  assert.deepEqual([push.verb, push.actor, push.target], ['push', 'walker', { body: 'crate' }]);
+  assert.equal(last.tick, tick - 1, 'it throws on the push\'s first quantum');
+  // Up to the push, the hashes are the product path's own.
+  assert.equal(replayTo(specOf(bundle), tick - 1).hash, bundle.hashes[tick - 1]);
+  // `replay <bundle>` with the plant reproduces the throw, at its tick.
+  const replayed = spawnSync(process.execPath, plant.concat(['packages/tick/bin/replay.js', path]), { encoding: 'utf8' });
+  assert.equal(replayed.status, 1, replayed.stderr);
+  assert.equal(replayed.stdout, 'first difference at tick ' + tick + ': the run threw: NaN in body walker at tick ' + tick + '\n');
+  // Without the plant the law does not throw there: the NAN mark is compared, not assumed.
+  const clean = spawnSync(process.execPath, ['packages/tick/bin/replay.js', path], { encoding: 'utf8' });
+  assert.equal(clean.status, 1, clean.stderr);
+  assert.match(clean.stdout, new RegExp('^first difference at tick ' + tick + '\\nhash\\n  bundle NAN\\n  replay [0-9a-f]{16}\\n$'));
 });
 
 test('the scheduled sweep holds each world to its record: the recorded verdict passes, and a record planted with a finding gone, a zone moved, or no entry fails naming the difference, with the findings bundled', () => {
