@@ -35,10 +35,10 @@ What it aims to be is the simulation core inside a host: a browser, Godot, or Un
 | Save and restore two ways, by replaying the inputs to a step or by copying the physics module's memory, each proven to continue exactly | `packages/tick/runs.js`, `solver/build.mjs` | `harness/restore.test.js` |
 | Bundles: a failing test writes its seed, world, accepted inputs, and hashes, which `replay` reproduces in one command; a weekly job replays every bundle, fixture, and log far longer than a pull request can | `packages/tick/bundle.js`, `.github/workflows/corpus.yml` | `harness/bundle.test.js` |
 | One binary on two CPU architectures, with memory fixed at 32 MiB and a lint that refuses host-chosen instructions, memory growth, and state kept outside memory | `solver/build.rs`, `solver/src/arena.rs`, `solver/lint.mjs` | CI's ARM64 job; `solver/lint.test.js`, `harness/caps.test.js` |
-| Tests of what the world did: a character course at the controller's measured limits, a thin fast body against a thin wall, and terrain seams | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuses to write while any of them fails |
+| Tests of what the world did: a character course at the controller's measured limits, a full stride on every step of a long flat walk, a thin fast body against a thin wall, terrain seams, and the whole scene moved a million units | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuses to write while any of them fails |
 | Replay from a seed and a log, and a debug view of the tick on localhost | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` is a person's play through the host boundary |
 
-241 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
+243 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
 
 ## Install
 
@@ -96,4 +96,4 @@ Pre-1.0, released as `0.x` from `main`. There is no compatibility promise betwee
 
 ## License
 
-MIT. Built by <a href="https://mcp-tool-shop.github.io/">MCP Tool Shop</a>.
+MIT, except `solver/src/kcc.rs`, a modified copy of part of Rapier's character controller, which is under the Apache License 2.0 (`solver/LICENSE-APACHE-2.0`, `solver/NOTICE`). Built by <a href="https://mcp-tool-shop.github.io/">MCP Tool Shop</a>.

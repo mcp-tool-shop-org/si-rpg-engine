@@ -20,11 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- **The product golden is `b5e62d2cc42d9ad8`.** The product scene's climber now stands on a floor, where before it fell for the whole run, and an action's start or end no longer rebuilds the physics world.
+- **The product golden is `6e0d351693b18c93`.** The product scene's climber now stands on a floor, where before it fell for the whole run; an action's start or end no longer rebuilds the physics world; and the walker no longer loses a step's travel on flat ground.
 - **Actions switch bodies in place.** Starting or finishing an action, or picking a body up or putting it down, used to rebuild the whole physics world, which woke every sleeping body and discarded every contact's warm start. Now only that body switches, so untouched sleeping bodies stay asleep and keep their contacts. A body put down joins the character's queries at the next step. `solverRebuilds()` counts the worlds the physics module has built.
 - **Fixed memory.** The solver's memory is fixed at 512 pages, 32 MiB, with an allocator over that span, and `heapHighWater()` reports its peak. The build exports the stack pointer so a memory image is only taken between calls.
 - **Terrain and fast bodies.** Heightfields are built with Rapier's internal-edge fix, and `max_ccd_substeps` is set to 1 explicitly.
-- **The Linux solver digest is `fd6d51778e798af217ffb2ba263bbf1d51e5b0d561cd0c91041a4d64a72bc776`.**
+- **The Linux solver digest is `1b66023d91a8f031daa36afdb9baed8cfef96430bccd0a2a23b74fc5c3861143`.**
 - **Stricter inputs to the physics.** Infinities are refused alongside NaN; a body mode outside the four the law knows is refused; quaternions with extreme components normalize correctly or are refused.
 - **The world's signature compares geometry directly.** It used to compare a 64-bit fold that two different worlds could share.
 - **The snapshot digests in the trace and the behaviour file carry 64 bits.** Their two halves were identical before.
@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- **The walker keeps its stride.** On flat ground the character lost most of a step's travel on about one step in 30. Rapier's character controller files the whole step as vertical when the floor's normal is vertical but for its last bit (dimforge/rapier#1019). The character now moves through the engine's own copy of that routine, `solver/src/kcc.rs`, with one branch for that case, and a native test shows the copy matches Rapier's controller bit for bit without it. The copy is under the Apache License 2.0.
 - **Undefined behaviour in the solver.** `solver_clear_warmstart` wrote warm-start impulses through a pointer cast from a shared reference. It is removed, and the engine no longer writes into Rapier's state from any path.
 - **Memory growth.** The 0.1.0 binary declared no memory maximum, and its allocator could grow memory, which a host may allow or refuse. Memory is now fixed.
 - **Sleep state per world.** Asking whether a body is asleep in a world the physics module does not currently hold used to answer for whichever world stepped last; it now refuses with a reason.
