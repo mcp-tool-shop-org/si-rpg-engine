@@ -253,6 +253,7 @@
       "findings": [
         "leaves crate by walker",
         "leaves walker by walker",
+        "thrown crate by walker",
         "thrown walker by walker"
       ]
     },
