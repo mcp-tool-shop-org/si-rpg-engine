@@ -416,14 +416,24 @@ bundled('outcome 4: the product scene translated by (1e6, 0, 1e6) over 10000 qua
 // The engine's copy of the controller, solver/src/kcc.rs, files it as
 // horizontal; its native control test, at the end of solver/src/rapier_law.rs,
 // holds the copy to Rapier's own controller bit for bit with the branch off.
-// The run also prints the quanta where the walker sinks more than 1e-3 into
-// its skin while keeping its travel, which docs/PHASE-2.md records as known
-// and not fixed.
+//
+// Since F4 (docs/dispatch-f4-floor-cast.md, pin 3) no quantum may sink more
+// than 1e-3 into the skin either. Before F4 the move's first cast found no
+// floor on 8 quanta at the origin and 7 at the offset (4d below says why),
+// and the walker kept its travel but took the gravity step, 1.953125e-3, into
+// its 0.01 skin, then climbed back at the controller's 1e-4 nudge: 80 and 70
+// quanta more than 1e-3 under its start, from 2242 and 1532. The run prints
+// them.
 
 const FLAT_QUANTA = 10000;
 const STRIDE = 0.4 * DT;
 const PRODUCT_WALKER = { id: 'walker', x: 10, y: 0.26, z: 0, vx: 0.4, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 };
 const PRODUCT_FLOOR = { id: 'floor', minX: 4, maxX: 80, minY: -1, maxY: 0, minZ: -2, maxZ: 6 };
+// A walker has sunk when it is more than this under its start, 0.26: about
+// half the gravity step, 1.953125e-3, that a missed floor lets it take. It
+// climbs back 1e-4 a quantum, so one sink counts on the 10 quanta before it is
+// within 1e-3 again.
+const SINK = 1e-3;
 
 /** @param {number} offset */
 function flatWalk(offset) {
@@ -454,14 +464,14 @@ function flatWalk(offset) {
     if (b.vy !== 0) {
       airborne.push(q);
     }
-    if (b.y < PRODUCT_WALKER.y - 1e-3) {
+    if (b.y < PRODUCT_WALKER.y - SINK) {
       sunk.push(q);
     }
   }
   return { short, airborne, sunk, least };
 }
 
-bundled('outcome 4b: the product walker on the product floor travels its full stride on every one of 10000 quanta at 0.4 units per second, at the origin and at (1e6, 0, 1e6), grounded throughout', (t) => {
+bundled('outcome 4b: the product walker on the product floor travels its full stride on every one of 10000 quanta at 0.4 units per second, at the origin and at (1e6, 0, 1e6), grounded throughout, and never sinks 1e-3 into its skin', (t) => {
   /** @type {string[]} */
   const failures = [];
   for (const offset of [0, 1e6]) {
@@ -472,6 +482,9 @@ bundled('outcome 4b: the product walker on the product floor travels its full st
     }
     if (walk.airborne.length > 0) {
       failures.push('at ' + offset + ' the walker left the floor on ' + walk.airborne.length + ' quanta, first ' + walk.airborne[0]);
+    }
+    if (walk.sunk.length > 0) {
+      failures.push('at ' + offset + ' the walker sank more than 1e-3 into its skin on ' + walk.sunk.length + ' quanta, first ' + walk.sunk[0]);
     }
   }
   assert.deepEqual(failures, []);
@@ -535,4 +548,93 @@ bundled('outcome 4c: at 0.4 units per second the 0.29 step is climbed from 20 st
     t.diagnostic(dir.name + ': climbed from ' + climbed + ' of ' + STEP_STARTS + ' starts');
   }
   assert.deepEqual(refused, []);
+});
+
+// ---------------------------------------------------------------------------
+// 4d and 4e. The walker stays on the floor it starts on (F4 pin 3).
+//
+// A character standing on a floor starts its move with its skin on the
+// floor's face to within rounding. The controller's first cast is the
+// character's box, dilated by the 0.01 skin, cast along the quantum's move,
+// and from there parry's GJK cast can report no hit at all: its projected
+// distance falls to the rounding floor of the shapes' Minkowski difference,
+// about 2.5e-15 for the product floor, just above its tolerance of 2.2e-15,
+// and the search direction it then takes is rounding noise
+// (https://github.com/dimforge/parry/issues/452). Before F4 the walker then
+// took its whole move, gravity step included, and sank 1.953125e-3 into its
+// skin. The engine's copy of the controller, solver/src/kcc.rs, now casts
+// again with the skin 1e-9 larger when the move's first cast finds nothing
+// while the character was grounded at its start. Its native control test, at
+// the end of solver/src/rapier_law.rs, holds the copy with the retry off to
+// the law before F4 bit for bit, and requires every hit of the retry to start
+// on the skin.
+//
+// 4d is one quantum: the product walker on the product floor at x 7.51119, y
+// 3 units in the last place under 0.26, z 0. Before F4 it ended the quantum
+// at y 0.25804687499999984, sunk; with the retry it ends at
+// 0.2601000000000001, the skin and one normal nudge above the floor. It rests
+// on those bits: at 2 or 6 units under 0.26 the walker held before F4 too.
+// 4e does not: 900 single-quantum starts, x = 5 + k * 0.00617 for k from 400
+// to 419 at 0 to 44 units in the last place under 0.26, of which 3 sank
+// before F4. A failure of 4d writes a bundle of its start, and one of 4e a
+// bundle of each start that sank.
+
+/**
+ * The double `n` units in the last place under the positive `x`, for an `n`
+ * that keeps its exponent.
+ * @param {number} x
+ * @param {number} n
+ */
+function unitsUnder(x, n) {
+  const view = new DataView(new ArrayBuffer(8));
+  view.setFloat64(0, x);
+  view.setBigUint64(0, view.getBigUint64(0) - BigInt(n));
+  return view.getFloat64(0);
+}
+
+/**
+ * One quantum of the product walker from (x, y, 0) on the product floor.
+ * @param {number} x
+ * @param {number} y
+ */
+function oneQuantum(x, y) {
+  const init = { bodies: [{ ...PRODUCT_WALKER, x, y }], colliders: [PRODUCT_FLOOR] };
+  const world = createWorld(init, 'product');
+  world.step(new Set(['walker']));
+  const b = /** @type {{ x: number, y: number }} */ (world.body('walker'));
+  return { init, x: b.x, y: b.y, sank: b.y < PRODUCT_WALKER.y - SINK };
+}
+
+/** @param {{ bodies: unknown[], colliders: unknown[] }} init */
+function recordQuantum(init) {
+  recordRun({ seed: 0, steps: 1, driven: ['walker'], world: init });
+}
+
+bundled('outcome 4d: the product walker with its skin on the product floor 3 units in the last place under 0.26 ends the quantum on the floor with its stride, not 1.953125e-3 into its skin', (t) => {
+  const y = unitsUnder(0.26, 3);
+  assert.equal(y, 0.25999999999999984);
+  const run = oneQuantum(7.51119, y);
+  recordQuantum(run.init);
+  t.diagnostic('from (7.51119, ' + y + ', 0) the walker ends the quantum at x ' + run.x + ', y ' + run.y);
+  assert.ok(!run.sank, 'the walker sank to ' + run.y + ', ' + (PRODUCT_WALKER.y - run.y) + ' under its start');
+  assert.ok(Math.abs(run.x - 7.51119 - STRIDE) <= STRIDE * 1e-6, 'the walker travelled ' + (run.x - 7.51119) + ', not its stride ' + STRIDE);
+});
+
+bundled('outcome 4e: of 900 product walkers each started with its skin on the product floor, at x 5 + k * 0.00617 for k from 400 to 419 and 0 to 44 units in the last place under 0.26, none sinks in its quantum', (t) => {
+  /** @type {string[]} */
+  const sank = [];
+  let starts = 0;
+  for (let k = 400; k <= 419; k = k + 1) {
+    for (let n = 0; n <= 44; n = n + 1) {
+      const run = oneQuantum(5 + k * 0.00617, unitsUnder(0.26, n));
+      starts = starts + 1;
+      if (run.sank) {
+        sank.push('k ' + k + ', ' + n + ' units under 0.26: y ' + run.y);
+        recordQuantum(run.init);
+      }
+    }
+  }
+  t.diagnostic(starts + ' starts; ' + sank.length + ' sank' + (sank.length > 0 ? ': ' + sank.join('; ') : ''));
+  assert.equal(starts, 900);
+  assert.deepEqual(sank, []);
 });
