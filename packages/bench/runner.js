@@ -591,6 +591,24 @@ function reachWitness(spec) {
 }
 
 /**
+ * T1's comparison of two runs' lines. A trace it cannot read, as when a
+ * restore puts the tick count off by a fraction, is itself the runs' failure
+ * to trace alike, and its words are the difference.
+ * @param {string[]} a
+ * @param {string[]} b
+ * @param {string} nameA
+ * @param {string} nameB
+ * @returns {string}
+ */
+function readableCompare(a, b, nameA, nameB) {
+  try {
+    return mods.difference.compareLines(a, b, nameA, nameB);
+  } catch (error) {
+    return 'the traces do not read as traces: ' + (error instanceof Error ? error.message : String(error)) + '\n';
+  }
+}
+
+/**
  * Rung 0's second run: from the load, with a save at the midpoint, run on to
  * the end, then the save restored and the second half run again. It must
  * trace as the first run did, and the restored half as the half it repeats.
@@ -633,8 +651,8 @@ function restoreCheck(spec, first, firstFailure) {
   const oneRun = second.length - 1;
   /** @type {string | null} */
   let problem = null;
-  const compare = mods.difference.compareLines;
   const endLine = mods.traceLine.endLine;
+  const compare = readableCompare;
   if (failed && firstFailure === null) {
     problem = 'the second run from the load stopped at tick ' + (s.lines.length - 1) + ' before the midpoint ' + mid + ', and the first did not';
   } else {
@@ -891,7 +909,7 @@ function sessionRestoreCheck(spec, first) {
       }
     }
   }
-  const compare = mods.difference.compareLines;
+  const compare = readableCompare;
   const endLine = mods.traceLine.endLine;
   /** @type {string | null} */
   let problem = null;

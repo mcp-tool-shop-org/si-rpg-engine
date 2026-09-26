@@ -219,6 +219,29 @@ export const MUTANT_LINES = [
 ];
 
 /**
+ * A line of the form the early-return operator takes: a return, whole on its
+ * line, inside a block of its function, rewritten with a trailing comma. No
+ * candidate names the actor as its own target, so no source reaches it.
+ * @type {Edit[]}
+ */
+export const EARLY_RETURN = [{ file: 'packages/tick/predicates.js', from: '      return { ok: false, reason: \'target is the actor\' };\n', to: '      return { ok: false, reason: \'target is the actor\', };\n' }];
+
+/**
+ * Every planted change, by name, for the cap's check (pin 7): each is one
+ * head's change against a clean base, as its test plants it.
+ * @type {Record<string, Edit[]>}
+ */
+export const EVERY_PLANT = {
+  neutral: Object.values(NEUTRAL).flat(),
+  notAimed: Object.values(NOT_AIMED).flat(),
+  ...Object.fromEntries(Object.entries(FINDING).map(([name, edits]) => ['finding ' + name, edits])),
+  mutantLines: MUTANT_LINES.concat(EARLY_RETURN),
+  law: Object.values(LAW).flat().concat(Object.values(NOT_AIMED_SOLVER).flat(), SKEW),
+  brokenLaw: BROKEN_LAW,
+  pushFirst: PUSH_FIRST,
+};
+
+/**
  * Applies a plant to a tree.
  * @param {(tree: string, file: string, from: string, to: string) => void} plant
  * @param {string} tree

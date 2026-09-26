@@ -29,11 +29,13 @@ import { lineStarts, scanJs } from './scan-js.js';
 import { scanRust } from './scan-rust.js';
 
 /**
- * The most mutants a run makes. Every planted change of pin 9 makes at most
- * 29 (harness/bench-law.test.js's one-operator line in rapier_law.rs, and the
- * multi-operator lines of packages/bench/bench.test.js; bench.test.js checks
- * each plant against this number), so 64 holds them all with room for a real
- * change of a few functions. Measured in the pull request that set it.
+ * The most mutants a run makes. The planted change that makes the most is the
+ * law head of packages/bench/law.test.js, 32: its const's four, the unused
+ * const's four, and the comparisons, conditions, early return, and literals
+ * of the function that skews the coverage build. The planted mutant lines and
+ * the neutral head make 20 each. packages/bench/mutants.test.js checks every
+ * plant against this number, which holds the largest twice over, room for a
+ * real change of a few functions. Nothing about the cap depends on time.
  */
 export const MUTANT_CAP = 64;
 
