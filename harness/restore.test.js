@@ -58,6 +58,13 @@
 // proposal over budget. A save with any of them out of shape, or a belief's
 // label, or a log entry's provenance, is refused before anything changes, and
 // the session traces on as if no restore had been tried.
+//
+// #83 checks the save's committed frame record by record. A save whose frame
+// has a record without one of its numbers, a number that is not one, an id
+// that is not its body's, or one record too few or too many is refused, and
+// the tick commits, frame for frame, the frames of a run never restored. A
+// save taken between a body draft and the quantum that commits it has a frame
+// one record short of the world, and it restores.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -69,7 +76,7 @@ import { createHasher } from '../packages/frame/hash.js';
 import { createMemory } from '../packages/tick/memory.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
 import { catalogFromLog, catalogOf, loadRoles, sha256 } from '../packages/tick/roles.js';
-import { createTick, settle } from '../packages/tick/tick.js';
+import { createRestorableTick, createTick, settle } from '../packages/tick/tick.js';
 import { createWorld } from '../packages/tick/world.js';
 import { bytes as binary, imageDigest, imageRefusal, imageSolver, imageSparse, instantiate, restoreImage, restoreSparse, snapshotBytes, sparseDigest, stackPointer } from '../solver/dist/solver.mjs';
 import { expectIdentical } from './bundle.mjs';
@@ -575,6 +582,170 @@ test('a save of another tick, or one with a field out of shape anywhere in it, i
     assert.throws(() => run.restore(planted), reason);
     assert.equal(run.line(), before, 'a refused restore changes nothing');
   }
+});
+
+/**
+ * A log run on a restorable tick held here, so a test reads each frame the
+ * tick commits (#83): the log's entries are submitted at their ticks, as the
+ * log run of packages/tick/runs.js submits them, and the tick runs to `end`.
+ * Before each quantum, after what is due at its tick, `at` is handed the tick.
+ * @param {import('./replay-to.mjs').LogSpec} spec
+ * @param {number} end
+ * @param {(tick: ReturnType<typeof createRestorableTick>) => void} [at]
+ */
+function framesTo(spec, end, at) {
+  const tick = createRestorableTick({ seed: spec.seed, world: createWorld(spec.world, 'product'), rules, memory: createMemory() });
+  const frames = [tick.frame()];
+  while (tick.frame().tick < end) {
+    for (const entry of spec.log) {
+      if (entry.tick === tick.frame().tick) {
+        const admission = tick.submit(entry.proposal);
+        assert.ok(admission.admitted, 'the entry at ' + entry.tick + ' is admitted');
+      }
+    }
+    if (at) {
+      at(tick);
+    }
+    tick.advance();
+    frames.push(tick.frame());
+  }
+  return { tick, frames };
+}
+
+/**
+ * The frames a tick commits from its current one to `end`.
+ * @param {ReturnType<typeof createRestorableTick>} tick
+ * @param {number} end
+ */
+function framesOn(tick, end) {
+  const frames = [tick.frame()];
+  while (tick.frame().tick < end) {
+    tick.advance();
+    frames.push(tick.frame());
+  }
+  return frames;
+}
+
+/**
+ * Saves whose committed frame is planted (#83 pin 2). The carry script runs
+ * to five quanta into its move, the walker carrying the crate, and saves
+ * there. Each planted save is tried 20 quanta later, in a run of its own,
+ * where a restore that took it would move the run back. It is refused with
+ * its reason before anything is written: the tick shows the frame it showed,
+ * and the run commits, frame for frame, the frames of a run that was never
+ * restored. The save the plant was made from is then restored into the run
+ * at its end, and the run commits the frames from the save on again, so the
+ * refusal is the plant's alone.
+ * @param {(records: any[]) => Array<[any[], string]>} plants each planted frame's records, made from the committed ones, and why a restore refuses them
+ * @returns {number} how many planted saves were refused
+ */
+function refusesFrame(plants) {
+  const { spec, point } = carryCase();
+  // The script to its move; the drop and the uses come after the move ends.
+  const move = { ...spec, log: spec.log.filter((entry) => entry.tick < point) };
+  const later = point + 20;
+  const end = later + 40;
+  const whole = framesTo(move, end).frames;
+  const records = /** @type {any[]} */ (whole[point].bodies);
+  assert.deepEqual(records.map((record) => record.id), ['walker', 'crate']);
+  const planted = plants(records);
+  assert.ok(planted.length > 0);
+  for (const [bodies, reason] of planted) {
+    /** @type {any} */
+    let saved = null;
+    const { tick, frames } = framesTo(move, end, (run) => {
+      if (run.frame().tick === point) {
+        saved = run.save();
+        assert.deepEqual(saved.actions.map((/** @type {any[]} */ entry) => entry[0]), ['walker'], 'the save has the move in flight');
+        assert.deepEqual(saved.world.carried, [['walker', 'crate']], 'and the crate carried');
+      } else if (run.frame().tick === later) {
+        const shown = run.frame();
+        assert.throws(() => run.restore({ ...saved, frame: { ...saved.frame, bodies } }), { message: 'restore refused: ' + reason });
+        assert.equal(run.frame(), shown, 'a refused restore leaves the frame the tick shows');
+      }
+    });
+    assert.deepEqual(frames, whole, reason + ': the run commits the frames of a run never restored');
+    tick.restore(saved);
+    assert.deepEqual(framesOn(tick, end), whole.slice(point), 'the save the plant was made from restores');
+  }
+  return planted.length;
+}
+
+test('a save whose frame has a record without one of its numbers is refused, for each number and each record, and the tick commits the frames of a run never restored', (t) => {
+  // The numbers are the committed record's own keys, so a number commitFrame
+  // gains is one this test plants without.
+  const refused = refusesFrame((records) => records.flatMap((record, i) => Object.keys(record).filter((key) => key !== 'id').map((key) => {
+    const without = { ...record };
+    delete without[key];
+    return /** @type {[any[], string]} */ ([records.map((each, j) => (j === i ? without : each)), 'frame record ' + i + ' (' + record.id + ') is not a record of numbers']);
+  })));
+  t.diagnostic(refused + ' planted saves refused');
+});
+
+test('a save whose frame has a record with a field that is not a number is refused, for each number and each record, and the tick commits the frames of a run never restored', (t) => {
+  const refused = refusesFrame((records) => records.flatMap((record, i) => Object.keys(record).filter((key) => key !== 'id').map((key) => (
+    /** @type {[any[], string]} */ ([records.map((each, j) => (j === i ? { ...record, [key]: String(record[key]) } : each)), 'frame record ' + i + ' (' + record.id + ') is not a record of numbers'])
+  ))));
+  t.diagnostic(refused + ' planted saves refused');
+});
+
+test('a save whose frame has a record whose id is not its body\'s is refused, and the tick commits the frames of a run never restored', (t) => {
+  const refused = refusesFrame(([walker, crate]) => [
+    [[crate, walker], 'frame record 0 is crate in the save and walker here'],
+    [[walker, { ...crate, id: 'parcel' }], 'frame record 1 is parcel in the save and crate here'],
+    [[null, crate], 'frame record 0 is null in the save and walker here'],
+  ]);
+  t.diagnostic(refused + ' planted saves refused');
+});
+
+test('a save whose frame has one record too few is refused, and the tick commits the frames of a run never restored', (t) => {
+  const refused = refusesFrame(([walker, crate]) => [
+    [[walker], 'the frame does not have the 2 bodies of this world'],
+    [[crate], 'the frame does not have the 2 bodies of this world'],
+  ]);
+  t.diagnostic(refused + ' planted saves refused');
+});
+
+test('a save whose frame has one record too many is refused, and the tick commits the frames of a run never restored', (t) => {
+  const refused = refusesFrame(([walker, crate]) => [
+    [[walker, crate, { ...crate, id: 'parcel' }], 'the frame does not have the 2 bodies of this world'],
+    [[walker, crate, crate], 'the frame does not have the 2 bodies of this world'],
+  ]);
+  t.diagnostic(refused + ' planted saves refused');
+});
+
+test('a save taken between a body draft and the quantum that commits it, whose frame has one record fewer than the world, restores; the same frame with a record for the drafted body, or with one fewer, is refused', () => {
+  // A drafted body is in the world at once and in the frame at the next
+  // quantum, so the frame of a save taken between the two is the world's
+  // but for the body the log drafted at the saved tick.
+  const { spec } = owedCase();
+  const [draft] = spec.log;
+  assert.equal(draft.proposal.kind, 'body');
+  const drafted = draft.tick;
+  const later = drafted + 20;
+  const end = later + 40;
+  const whole = framesTo(spec, end).frames;
+  /** @type {any} */
+  let saved = null;
+  const { tick, frames } = framesTo(spec, end, (run) => {
+    if (run.frame().tick === drafted) {
+      saved = run.save();
+      assert.deepEqual(saved.frame.bodies.map((/** @type {any} */ record) => record.id), ['walker', 'crate']);
+      assert.deepEqual(saved.world.bodies.map((/** @type {any} */ record) => record.id), ['walker', 'crate', 'parcel']);
+    } else if (run.frame().tick === later) {
+      const shown = run.frame();
+      const parcel = whole[end].bodies[2];
+      for (const bodies of [saved.frame.bodies.concat([parcel]), saved.frame.bodies.slice(1)]) {
+        assert.throws(() => run.restore({ ...saved, frame: { ...saved.frame, bodies } }), { message: 'restore refused: the frame does not have the 2 bodies of this world before the 1 drafted at tick ' + drafted });
+      }
+      assert.equal(run.frame(), shown, 'a refused restore leaves the frame the tick shows');
+    }
+  });
+  assert.deepEqual(frames, whole, 'the run commits the frames of a run never restored');
+  // The save itself restores, at the draft's tick with the draft's quantum
+  // owed, and the run commits the rest of the frames again.
+  tick.restore(saved);
+  assert.deepEqual(framesOn(tick, end), whole.slice(drafted));
 });
 
 /**
