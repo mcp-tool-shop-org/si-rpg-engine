@@ -21,12 +21,13 @@ Three JavaScript engines, V8, SpiderMonkey, and JavaScriptCore, print the same h
 - Find the first step, body, and value where two runs part, from a trace of every step in exact bits.
 - Save a world and restore it, by replaying its inputs, by copying the physics module's memory, or by the tick's own save, and prove the rerun exact.
 - Sweep a world's reachable states before it is admitted, and refuse a zone nothing reaches or a body pushed out of the world.
+- Measure a change against the build before it: which inputs reach the change, where the two runs first part, and what fails only on the change.
 - Watch the committed frames in a debug view on your own machine.
 
 ## Where to start
 
 1. [Getting started](getting-started/) installs the toolchain and runs the suite.
-2. [Usage](usage/) walks through the six commands.
+2. [Usage](usage/) walks through the seven commands.
 3. [World files](world-files/) describes the content format and every reason a file is refused.
 4. [Reference](reference/) lists every command, flag, exit code, and file format.
 5. [Testing](testing/) explains how the engine is checked on every commit, and what is not yet proven.

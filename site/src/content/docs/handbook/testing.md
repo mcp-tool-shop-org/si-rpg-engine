@@ -94,10 +94,22 @@ Every call a role makes to a model is recorded, however it ends. The record hold
 
 A call whose reads or ask throw is recorded as failed, and the session stops there and is written. Every read of the server has a timeout. A model changed while a call is out is caught by the second reading, and the call reads as changed. Records made before this form are version 1, and still verify under the rules they were made under. CI has no GPU and calls no model. Over each committed session it recomputes every record's key and checks each model digest against the pin in the manifest the record cites. It checks each output against its hash and against the log entry that cites it, parses the output again with the seat's own parser and requires the proposal the log admitted, and checks every call against its role's budgets. It checks each of the session's call lines against its record and the log: the frame it was built from, how its output read, and whether and when it was admitted. A tampered field fails with the field named. It replays the session's log to the same step hashes, and fails on a missing record rather than call a model. A planted record for each check goes red. Two sessions are committed, three calls each of a test-only role in `worlds/crate-and-door.json`. One was run with a change written to steer the model, and its proposals stayed inside the role's manifest. When the rails were built, each of the 51 was removed in turn, and each removal turned a test red.
 
+## A change measured against its parent
+
+The bench's tests plant changes with known, measured effects, and check what the bench reports about each:
+- a change that alters nothing, reported as reached and never as a difference;
+- a verb's rule narrowed, a comparison flipped, a step height lowered, a push made faster, a constant changed, and a verb retired, each found with its first difference;
+- a change to the physics, whose reach is read from the coverage build after its run matched the product build's frame for frame;
+- the process model's refusals: another tree's modules, a module from outside the tree, two live runs in one process, and a save restored in a process that did not take it;
+- each rung of the ladder, the mutants' verdicts, the base and the head swapped, and two runs with one seed that give one report.
+
+F2's fix to the physics, planted by hand with its branch off, is found at quantum 98, the walker, field x, in the walker-stall bundle and in the product scene.
+
 ## Content
 
 Twelve load refusals for world files, a hazard suite for each action effect, and the minds' refusals are tests; see [World files](../world-files/).
 
 ## Not yet proven
 
+- Whether the bench's proposers reach every change a pull request makes is not proven. Each run's access map names every anchor nothing reached.
 - Whether the solver's warm-start data steers the next step is not proven. The tests show it is inside the fingerprint and inside the memory image; a proof that it changes the next step needs a test-only native build.

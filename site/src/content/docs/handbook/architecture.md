@@ -45,6 +45,10 @@ A language model proposes only through a role: a manifest in `predicates/roles/`
 
 The host receives frozen committed frames and returns intents stamped with the newest committed hash. `host` serves a debug view that draws the tick's state as projected boxes and nothing more. Presentation has no path back into the hash.
 
+## The bench
+
+The bench measures a change against its parent. It runs the base and the head each in a Node process of its own, whose working directory is its tree's root and which loads only its own tree's modules, so no run can read the other tree's code or restore the other's save. Each candidate runs on both trees from the load, each tree citing its own frames, and T1's comparison names the first step, body, and field where they part. When `solver/` changes, each tree builds its own binary. A coverage build of the head then says which lines of the law each run reached, after its run of the product scene has matched the product build's frame for frame. Its one line in the law's source, a symbol the coverage build needs, compiles only in that build, so the product binary does not move.
+
 ## The repository
 
 | Path | Owns |
@@ -55,6 +59,7 @@ The host receives frozen committed frames and returns intents stamped with the n
 | `packages/host` | the session, the server, the debug view, the `host` command |
 | `packages/propose` | the seat: the only code that calls a model, its records, and the `propose` command |
 | `packages/tool` | the command guard every bin shares |
+| `packages/bench` | the instrument's bench: a change's anchors, its trees and their processes, reach, the ladder, the mutants, the report, and the `bench` command |
 | `solver/` | the Rust crate, its build scripts, the allocator, and the binary lint |
 | `predicates/` | admitted verbs, hazard scenarios, belief keys |
 | `worlds/` | world files and the index |

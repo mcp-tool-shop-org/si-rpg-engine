@@ -38,10 +38,11 @@ What it aims to be is the simulation core inside a host: a browser, Godot, or Un
 | Bundles: a failing test writes its seed, world, accepted inputs, and hashes, which `replay` reproduces in one command; a weekly job replays every bundle, fixture, and log far longer than a pull request can | `packages/tick/bundle.js`, `.github/workflows/corpus.yml` | `harness/bundle.test.js` |
 | One binary on two CPU architectures, with memory fixed at 32 MiB and a lint that refuses host-chosen instructions, memory growth, and state kept outside memory | `solver/build.rs`, `solver/src/arena.rs`, `solver/lint.mjs` | CI's ARM64 job; `solver/lint.test.js`, `harness/caps.test.js` |
 | Tests of what the world did: a character course at the controller's measured limits, a full stride on every step of a long flat walk and no step sunk into the floor, a thin fast body against a thin wall, terrain seams, and the whole scene moved a million units | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuses to write while any of them fails |
+| The instrument's bench: a change and the build before it, each tree run in a process of its own. It names the code and data the change touches, runs every candidate input on both trees, and reports what reached the change, where the two runs first part, and what fails only on the change, every verdict from the engine and none from a model. The law's reach is read from a coverage build whose run must match the product build's frame for frame, and mutants planted at the change measure the bench | `packages/bench` | 86 tests in `packages/bench/` against changes planted with known effects; F2's law change, planted by hand, found at quantum 98 |
 | Roles for model seats: a manifest per role, the Rule of Two derived from what the role reads, a role gate in the checker, provenance on every admission, trust labels that stay with a belief, and every model call recorded and checked without a GPU; both declared roles frozen | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` over the sessions in `fixtures/sessions/` |
 | Replay from a seed and a log, and a debug view of the tick on localhost | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` is a person's play through the host boundary |
 
-380 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
+474 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
 
 ## Install
 
@@ -79,6 +80,16 @@ node harness/first-difference.js a.trace b.trace    # identical, or the first st
 node solver/lint.mjs                                # refuse a binary that could grow memory or let the host choose a result
 ```
 
+A change can be measured against the build before it. The bench runs by hand, and no workflow runs it:
+
+```bash
+npx bench trees . main HEAD ../trees                # the base and the head as git worktrees, the head's binary built in its own tree
+npx bench anchors --base ../trees/base --head ../trees/head    # the code and data the change touches, as JSON
+npx bench run --base ../trees/base --head ../trees/head --out ../bench --product-scene    # reach, differences, and catches, with a report
+```
+
+The report names its seed, counts its budgets in quanta and restores, and says what it did not measure; two runs with one seed give the same report outside its environment block. When `solver/` changes, each tree builds its own binary, and the law's reach comes from a coverage build of the head that must run the product scene exactly as the product build does, or the bench stops with the reason.
+
 A world restores three ways, and none writes into the physics engine's internal state, which is why each is exact. You can replay its accepted inputs to a step. You can copy the physics module's whole memory with `imageSolver()` and put it back with `restoreImage()`. Or you can save the whole tick with `save()` and put it back with `restore(saved)`, which needs no replay and is how the sweep returns to a state thousands of times. An image from another binary, of the wrong length, or with a changed byte is refused, and a save that does not check out whole changes nothing.
 
 The debug view is a debug view. It draws committed frames as projected boxes along the axis chosen with `x`, `y`, or `z`; a click is a ground-plane target; `M`, `C`, `G`, `D`, and `U` choose move, climb, pick up, drop, and use; the walker's zone and each mind's beliefs sit beside the tick and the hash. It never draws anything the tick does not hold.
@@ -91,7 +102,7 @@ A seeded tick is the law. One step, a quantum, is 1/64 s; every step is hashed, 
 
 ## Trust model
 
-The engine runs locally and touches only files inside its own checkout: worlds, action drafts, fixtures, and any log you ask a command to write. `host` binds `127.0.0.1` only. No command opens any other socket but `propose`, which talks to a local Ollama server and nowhere else, and only for a role whose manifest is thawed to act in a scratch world; both roles the engine declares are frozen, so it refuses before any model client loads. A model's proposal enters the world only through the role gate, which holds it to its role's manifest. No credentials are read, stored, or sent. No telemetry is collected. Authored content is untrusted and is validated at load; a refused file changes nothing. The WebAssembly binary is built from source in CI and pinned by its SHA-256, never committed as bytes. Its memory is fixed at 32 MiB and cannot grow, so a world too dense for it stops the same way on every host instead of diverging. See [SECURITY.md](SECURITY.md).
+The engine runs locally and touches only files inside its own checkout: worlds, action drafts, fixtures, and any log you ask a command to write. `host` binds `127.0.0.1` only. `bench` is the exception to the checkout: it writes its trees and its report where you point it, and runs each tree in a child process of its own. No command opens any other socket but `propose`, which talks to a local Ollama server and nowhere else, and only for a role whose manifest is thawed to act in a scratch world; both roles the engine declares are frozen, so it refuses before any model client loads. A model's proposal enters the world only through the role gate, which holds it to its role's manifest. To build a tree's physics, `bench` runs `cargo build --locked`, as the solver's own build does, and cargo fetches a pinned crate from crates.io only when its cache lacks it. No credentials are read, stored, or sent. No telemetry is collected. Authored content is untrusted and is validated at load; a refused file changes nothing. The WebAssembly binary is built from source in CI and pinned by its SHA-256, never committed as bytes. Its memory is fixed at 32 MiB and cannot grow, so a world too dense for it stops the same way on every host instead of diverging. See [SECURITY.md](SECURITY.md).
 
 ## Support status
 
