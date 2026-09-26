@@ -101,21 +101,21 @@
   "changes": {
     "fileCounts": {
       "added": 0,
-      "changed": 1,
+      "changed": 22,
       "moved": 0,
-      "parts": 1,
+      "parts": 5,
       "removed": 0
     },
     "items": [
       {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-26; 1 file changed content.",
+        "sentence": "Nothing structural changed since 2026-09-26; 22 files changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "63e6d787d52c97cc62a7b4fae2f77ceba4d86392",
-      "generatedAt": "2026-09-26T17:59:00.304Z"
+      "commit": "450e2622cb4aa3fc6ca2c235c8eb18b8ec15dc6a",
+      "generatedAt": "2026-09-26T18:33:30.526Z"
     },
     "unchanged": true
   },
@@ -202,9 +202,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 13 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "e1794973bd329966f03f9953bdc43498544b50a5",
+  "commit": "87768861148ae845f265b6d18a3ec4b1ace1ebed",
   "defaultBranch": "main",
-  "derived": "17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
+  "derived": "17 parts, mostly JavaScript (132 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -256,7 +256,7 @@
         {
           "boundary": "bench",
           "depth": 0,
-          "files": 27
+          "files": 28
         },
         {
           "boundary": "fixtures",
@@ -320,6 +320,7 @@
         "harness/switch.test.js",
         "harness/trace.mjs",
         "harness/trace.test.js",
+        "packages/bench/coverage.test.js",
         "packages/bench/finding.test.js",
         "packages/bench/law.test.js",
         "packages/bench/mutants.test.js",
@@ -349,7 +350,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 48,
+      "runsCount": 49,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -769,12 +770,12 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T18:15:38.897Z",
+  "generatedAt": "2026-09-26T20:56:27.953Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 8 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "49 writes and 99 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "49 writes and 101 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "38 commands are built at run time and not followed, 32 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
@@ -1960,9 +1961,9 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 42,
+  "testFiles": 43,
   "testedBy": {
-    "bench": 8,
+    "bench": 9,
     "frame": 16,
     "host": 1,
     "load": 4,

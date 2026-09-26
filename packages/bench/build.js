@@ -13,7 +13,9 @@
 // pinned rustc, with -C instrument-coverage -Z no-profiler-runtime under
 // RUSTC_BOOTSTRAP=1, --cfg law_coverage, and -C link-arg=--no-gc-sections,
 // beside the product's own flags, into a target directory of its own,
-// solver/target/coverage inside the tree. RUSTC_BOOTSTRAP is set in cargo's
+// solver/target/coverage inside the tree. A law tree's target is seeded from
+// the head's with file times kept and the law crate left out, so cargo
+// rebuilds that crate alone. RUSTC_BOOTSTRAP is set in cargo's
 // own environment and nowhere else. The flags carry the product's cargo-home
 // remap but not its tree remaps, so the mapping names each source by its path
 // in the tree and llvm-cov finds it there. The build's glue is the product
@@ -107,13 +109,70 @@ export function coverageDir(tree) {
 }
 
 /**
- * Starts a law tree's coverage target as a copy of the head's, leaving out
- * every file of the law crate itself (pin 7). Cargo then builds the law crate
- * from the law tree's own sources, in the law tree's own target directory,
- * and takes the dependencies' artifacts as they are: the coverage flags name
- * no tree, so those are the same build's in any tree. The caller checks that
- * the reference it builds is not the head's bytes: the mapping names each
- * source by its path, so a law crate built in the law tree differs.
+ * Path packages in a Cargo.lock: every package block with no source. The seed
+ * leaves their artifacts out, and it refuses unless that list is si-solver
+ * alone, because the filter matches artifact names and another path package
+ * would be left out or kept for the wrong reason.
+ * @param {string} text
+ * @returns {string[]}
+ */
+function unsourcedPackages(text) {
+  /** @type {string[]} */
+  const names = [];
+  for (const block of text.replace(/\r\n/g, '\n').split('\n[[package]]\n').slice(1)) {
+    const name = /^name = "([^"]+)"/m.exec(block);
+    if (!name) {
+      continue;
+    }
+    if (!/^source = /m.test(block)) {
+      names.push(name[1]);
+    }
+  }
+  if (names.length !== 1 || names[0] !== 'si-solver') {
+    throw new BuildFailure('Cargo.lock lists a path package other than si-solver (' + (names.join(', ') || 'none') + '), and the coverage seed filters by name');
+  }
+  return names;
+}
+
+/**
+ * Whether a copied path is an artifact of a package the seed leaves out, or
+ * the coverage glue. A package's artifacts are named with its lock name and
+ * with hyphens turned into underscores.
+ * @param {string} path
+ * @param {string[]} names
+ */
+function leftOut(path, names) {
+  const segments = path.split(/[\\/]/);
+  if (segments[segments.length - 1] === 'solver.mjs') {
+    return true;
+  }
+  for (const segment of segments) {
+    for (const name of names) {
+      const underscore = name.replaceAll('-', '_');
+      for (const stem of underscore === name ? [name] : [name, underscore]) {
+        // Cargo names an artifact with the package, a hyphen, or an underscore,
+        // and an rlib adds a lib prefix. Matching the stem as a prefix is the
+        // same rule the law crate's own files were left out by.
+        if (segment.startsWith(stem) || segment.startsWith('lib' + stem)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Starts a law tree's coverage target as a copy of the head's, file times
+ * kept. Every Cargo.lock package with no source is left out, and a lock that
+ * lists a path package other than si-solver is refused, since the filter goes
+ * by name. Cargo then builds the law crate from the law tree's own sources
+ * and takes the dependencies' artifacts as they are: their times still say
+ * they are newer than their sources, and the coverage flags name no tree, so
+ * those are the same build's in any tree. Product targets are not copied. The
+ * caller checks that the reference it builds is not the head's bytes: the
+ * mapping names each source by its path, so a law crate built in the law tree
+ * differs.
  * @param {string} from
  * @param {string} to
  * @returns {boolean} whether there was a target to copy
@@ -123,7 +182,16 @@ export function seedCoverage(from, to) {
   if (!existsSync(source) || existsSync(coverageDir(to))) {
     return false;
   }
-  cpSync(source, coverageDir(to), { recursive: true, filter: (path) => !/[\\/](si[-_]solver[^\\/]*|solver\.mjs)$/.test(path) });
+  const lockPath = join(from, 'solver', 'Cargo.lock');
+  if (!existsSync(lockPath)) {
+    throw new BuildFailure('the coverage seed has no Cargo.lock to name the path packages it leaves out');
+  }
+  const omitted = unsourcedPackages(readFileSync(lockPath, 'utf8'));
+  cpSync(source, coverageDir(to), {
+    recursive: true,
+    preserveTimestamps: true,
+    filter: (path) => !leftOut(path, omitted),
+  });
   return true;
 }
 
@@ -141,7 +209,7 @@ function cargoHome() {
  * @param {string} tree
  * @param {string} name
  * @param {{ extraFlags?: string[] }} [options] extraFlags: planted flags, for the test of a build that fails
- * @returns {{ wasm: string, glue: string, digest: string, ms: number }}
+ * @returns {{ wasm: string, glue: string, digest: string, ms: number, compiling: string[], cfgWarnings: number }}
  */
 export function buildCoverage(tree, name, options) {
   const t0 = performance.now();
@@ -165,6 +233,19 @@ export function buildCoverage(tree, name, options) {
     env,
     maxBuffer: 1 << 26,
   });
+  const log = ((run.stderr || '') + '\n' + (run.stdout || '')).replace(/\x1b\[[0-9;]*m/g, '').replace(/\r/g, '');
+  /** @type {string[]} */
+  const compiling = [];
+  let cfgWarnings = 0;
+  for (const line of log.split('\n')) {
+    const unit = /^\s*Compiling\s+(\S+)/.exec(line);
+    if (unit) {
+      compiling.push(unit[1]);
+    }
+    if (line.includes('unexpected') && line.includes('law_coverage')) {
+      cfgWarnings = cfgWarnings + 1;
+    }
+  }
   const wasm = join(target, 'wasm32-unknown-unknown', 'release', 'si_solver.wasm');
   if (run.status !== 0 || !existsSync(wasm)) {
     const lines = (run.stderr || run.stdout || '').trim().split('\n');
@@ -187,7 +268,7 @@ export function buildCoverage(tree, name, options) {
     + 'import { readFileSync as readCoverageBytes } from \'node:fs\';\n'
     + 'export const bytes = new Uint8Array(readCoverageBytes(new URL(\'./wasm32-unknown-unknown/release/si_solver.wasm\', import.meta.url)));\n'
     + text.slice(end + 4));
-  return { wasm, glue, digest: sha256(new Uint8Array(readFileSync(wasm))), ms: performance.now() - t0 };
+  return { wasm, glue, digest: sha256(new Uint8Array(readFileSync(wasm))), ms: performance.now() - t0, compiling, cfgWarnings };
 }
 
 /**

@@ -14,10 +14,10 @@
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, cpSync } from 'node:fs';
 import { join } from 'node:path';
 import { CANARY, runBench } from './bench.js';
-import { buildCoverage, coverageDir, glueBytes, productGlue, sha256 } from './build.js';
+import { buildCoverage, coverageDir, copyProduct, glueBytes, productGlue, seedCoverage, sha256 } from './build.js';
 import { copyCheckout, leaks, plant, scratch, teardown } from './plant.js';
 import { BROKEN_LAW, LAW, NEUTRAL, NOT_AIMED_SOLVER, NO_SHIM, SKEW, apply } from './plants.js';
 import { startProcess } from './processes.js';
@@ -39,6 +39,10 @@ let noShim;
 const runs = {};
 /** @type {Record<string, any>} */
 let access;
+/** @type {string[]} */
+let seededUnits = [];
+/** @type {string[]} */
+let unfilteredUnits = [];
 /** @type {any[]} */
 let records;
 
@@ -63,16 +67,33 @@ function build(tree) {
 }
 
 before(async () => {
-  lawHead = copyCheckout(dir, 'law-head');
-  apply(plant, lawHead, [...LAW.operator, ...LAW.constant, ...LAW.comment, ...LAW.deleted, ...LAW.unused, ...LAW.copied, ...NEUTRAL.hazard, ...NOT_AIMED_SOLVER.cargoToml, ...NOT_AIMED_SOLVER.cargoLock, ...SKEW]);
+  // The base and the control are checked out before the head is built, so a
+  // seed of the head's coverage is newer than their sources. Nothing in them
+  // is written after that build.
   lawBase = copyCheckout(dir, 'law-base');
+  const control = copyCheckout(dir, 'law-control');
   noShim = copyCheckout(dir, 'no-shim');
   apply(plant, noShim, NO_SHIM);
-  await Promise.all([
-    build(lawHead).then(() => { buildCoverage(lawHead, 'law head'); }),
-    build(lawBase).then(() => { buildCoverage(lawBase, 'law base'); }),
-    build(noShim),
-  ]);
+  lawHead = copyCheckout(dir, 'law-head');
+  apply(plant, lawHead, [...LAW.operator, ...LAW.constant, ...LAW.comment, ...LAW.deleted, ...LAW.unused, ...LAW.copied, ...NEUTRAL.hazard, ...NOT_AIMED_SOLVER.cargoToml, ...NOT_AIMED_SOLVER.cargoLock, ...SKEW]);
+  await build(lawHead);
+  buildCoverage(lawHead, 'law head');
+  if (!seedCoverage(lawHead, lawBase)) {
+    throw new Error('the law base has no coverage seed');
+  }
+  const seeded = buildCoverage(lawBase, 'law base');
+  seededUnits = seeded.compiling;
+  if (seededUnits.length !== 1 || seededUnits[0] !== 'si-solver') {
+    throw new Error('a seeded coverage build compiled ' + (seededUnits.join(', ') || 'nothing') + ', not exactly si-solver');
+  }
+  cpSync(coverageDir(lawHead), coverageDir(control), { recursive: true, preserveTimestamps: true });
+  copyProduct(lawHead, control);
+  const raw = buildCoverage(control, 'unfiltered');
+  unfilteredUnits = raw.compiling;
+  if (unfilteredUnits.length !== 0) {
+    throw new Error('an unfiltered seed compiled ' + unfilteredUnits.join(', ') + ', and the gate requires nothing');
+  }
+  await Promise.all([build(lawBase), build(noShim)]);
   shared = join(dir, 'shared-target');
   mkdirSync(shared);
   const before = process.env.CARGO_TARGET_DIR;
@@ -108,6 +129,11 @@ before(async () => {
 });
 
 after(() => teardown(dir));
+
+test('the law base coverage seed compiles exactly si-solver, and an unfiltered seed compiles nothing', () => {
+  assert.deepEqual(seededUnits, ['si-solver']);
+  assert.deepEqual(unfilteredUnits, []);
+});
 
 /**
  * @param {string} prefix

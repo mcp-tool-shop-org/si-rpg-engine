@@ -1,20 +1,20 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit e179497.
+Mapped at 2026-09-26 from commit 8776886.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
+17 parts, mostly JavaScript (132 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (63e6d78)
+## What changed since 2026-09-26 (450e262)
 
-Nothing structural changed since 2026-09-26; 1 file changed content.
+Nothing structural changed since 2026-09-26; 22 files changed content.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 45 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 46 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -27,7 +27,7 @@ Nothing structural changed since 2026-09-26; 1 file changed content.
 
 ## What happens through CI
 
-1. The workflow runs 8 files in bench, 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
+1. The workflow runs 9 files in bench, 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
@@ -226,7 +226,7 @@ Read those in order to follow one pull request end to end.
 - 18 import sites could not be resolved.
 - 3 writes and 8 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
-- 49 writes and 99 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 49 writes and 101 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
 - 38 commands are built at run time and not followed, 32 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 

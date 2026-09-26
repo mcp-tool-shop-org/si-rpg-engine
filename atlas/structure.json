@@ -423,7 +423,7 @@
             "seedCoverage",
             "sha256"
           ],
-          "hash": "78b6c5a48cf81996e3f3ce1d9357ef6aa546ae6be23a14381039065610beb5f4",
+          "hash": "9b75ead159acb4ea6803c6d27d0121fe33ee3ab48b46d0c2dc8fcea9645b6106",
           "path": "packages/bench/build.js"
         },
         {
@@ -434,6 +434,14 @@
             "packages/bench/plants.js"
           ],
           "path": "packages/bench/costs.js"
+        },
+        {
+          "hash": "06d67bee1f577b366ee6c191677a7d28f7299147f786993b82ee3b1bf680e5eb",
+          "importsFiles": [
+            "packages/bench/build.js",
+            "packages/bench/plant.js"
+          ],
+          "path": "packages/bench/coverage.test.js"
         },
         {
           "exports": [
@@ -640,7 +648,7 @@
         {
           "entry": "build",
           "entryRule": 1,
-          "hash": "f7f48346590dfeffef928508002072c6971764bdf126a7573aaaec25a2b7922f",
+          "hash": "6326a45bedc6f3e6911dfc6f4961ab7ff3adc855bbdf6056386f046e5730bc8a",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/build.js",
@@ -770,7 +778,7 @@
           "exports": [
             "apply"
           ],
-          "hash": "c1b9af453bc29453278e0fe497fc80177c0f0ca55ce0f498889b2d2e1e1d0186",
+          "hash": "e1f1ea50f3ed74ff7c9f330913dc528a12cf9b8d5510dc5f87f41a1d900c9073",
           "path": "packages/bench/plants.js"
         },
         {
@@ -1174,7 +1182,7 @@
         {
           "entry": "importsOf",
           "entryRule": 1,
-          "hash": "f8bd871c8d4aec57086db58f310b79c43bcd4555324b3c7a2803090592f22725",
+          "hash": "f1c6f1bb66f8c5534b8d81837e7328df48a1989069e7cdf728e57dcc5c77be2d",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/build.js",
@@ -1210,10 +1218,10 @@
       "importConfidence": "full",
       "name": "bench",
       "origin": "authored",
-      "outsideReads": 58,
+      "outsideReads": 60,
       "outsideWrites": 35,
       "role": "code",
-      "testedBy": 8,
+      "testedBy": 9,
       "unresolvedSites": 3
     },
     {
@@ -1225,7 +1233,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "194eb67761edb7f801afaf4ff45b37100f82e890e596570f264cbe8fc7044cb6",
+          "hash": "a559d1d2a234450aaedcb979b2151bb8238de399bef1ae41486d87d8ddc46347",
           "path": "docs/HANDOFF.md"
         },
         {
@@ -1245,7 +1253,7 @@
           "path": "docs/atlas-design.md"
         },
         {
-          "hash": "bc5c806559ac3cfb470c05f4ba0695baa5bd0f31a895c465cc0b698ddfdd7020",
+          "hash": "6ec99c346bef861e3735a319d5b3f99ff5e71a6972aced30bd88d0c4d08d92dd",
           "path": "docs/consult-brief-01.md"
         },
         {
@@ -1261,15 +1269,15 @@
           "path": "docs/consult-brief-physics-01.md"
         },
         {
-          "hash": "bd0357e0bd3fad3655bd61b8955d98b57aa5124451469627b95b27f32aa3ae1d",
+          "hash": "193abea1cde4709cffb65219a08b01dfb71b7b4ff547f7f490f078fdb2341d59",
           "path": "docs/consult-reply-claude-01.md"
         },
         {
-          "hash": "6d9be18b2e3f1d5869621e04f1889eeeb787728c9e07b6a2b6bdecad4871f42e",
+          "hash": "cc408de92e37c7d4c2413f82925031531220ff33d46a493b4b8dfdd3b2c0bc46",
           "path": "docs/consult-reply-claude-02.md"
         },
         {
-          "hash": "a60b3f3f413b3178c4b24ca35a7a78b12819e2b4a228ac1ae6f4144cb106a14d",
+          "hash": "ee0969f2d3f083d63ad99cd94224d403a5d46ac42f1f1dd3c0a3244158108d36",
           "path": "docs/consult-reply-claude-atlas-01.md"
         },
         {
@@ -1285,7 +1293,7 @@
           "path": "docs/consult-reply-fable-t7b-01.md"
         },
         {
-          "hash": "2c7dacb2ac7ba27ed2e4622ef341e8b382130b60ee755f493d00dc2952132291",
+          "hash": "7578181994b72d50723e9517c20eb22ac7aa10be33b2c46ff2e3cca920a82459",
           "path": "docs/consult-reply-gemini-01.md"
         },
         {
@@ -1297,11 +1305,11 @@
           "path": "docs/consult-reply-grok-e2-solver.md"
         },
         {
-          "hash": "2cb24c312915421c80d52260f782f1d3757404fd6be9be3bf01cd23152dcd9b7",
+          "hash": "26601b07acb18b2074717ec340cf874d6be8f484dc6b1b56dbfa5bc2ae1709b4",
           "path": "docs/dispatch-113-ci-trees.md"
         },
         {
-          "hash": "b7dfe2c7e7bcdbd2304a1aaf6744668f66c8017274bf9bc4004c45fe95bbbc12",
+          "hash": "14b0a036a7ded12af6a8d8e06e2eecf5e68b2512a8debb2857280c9196e21822",
           "path": "docs/dispatch-114-drop-clearance.md"
         },
         {
@@ -1413,7 +1421,7 @@
           "path": "docs/dispatch-t7b-instrument-bench.md"
         },
         {
-          "hash": "97057b788806e5d61967223ded91a1df81fe9eb1624b440e36ac6f36a66cede5",
+          "hash": "e8087ce1b245aca42b2f62f331c5f985d20d430124e841bfaae77a6ebb5b65b1",
           "path": "docs/dispatch-t7c-model.md"
         },
         {
@@ -1425,11 +1433,11 @@
           "path": "docs/rust-kb-requests.md"
         },
         {
-          "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
+          "hash": "64cdee834df343cff0d2651a27f22da0cb454627de5fbe182a067977f3508e17",
           "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
         },
         {
-          "hash": "e3ea920ad0685f5dda0aa0445b7b6347c58a14b7d50583738d4678d3dd6f01b2",
+          "hash": "a95ff0183284c0ad677631be54a361d7cde9f6e33e416b425a506dc8ac3634c3",
           "path": "docs/study-swarm/consult-02.dispatch.md"
         },
         {
@@ -1461,11 +1469,11 @@
           "path": "docs/study-swarm/seat-instrument.fulltext-check.json"
         },
         {
-          "hash": "b3e11ed1473ef4af6ddee0ef2bc12c7a3b39fdba5f2fcec514c10e47792889ae",
+          "hash": "0331203b7505a9047ac3c95263a0c0f808a3e16b99e65dd2b90c3f3ee876157d",
           "path": "docs/study-swarm/si-rpg-engine.citation-receipt.json"
         },
         {
-          "hash": "6355daacbebd3488b217af7d17446ece88e36c233cf77219633cf892ef353ce8",
+          "hash": "6e1c8f0346eb348486400d201ca0029341beaf52a78a635b4110b3d8ec9e3f4c",
           "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
         },
         {
@@ -1520,7 +1528,7 @@
           "path": "fixtures/behavior-solver.json"
         },
         {
-          "hash": "fba41913aaa42bff8c7a6c380fe18ce554b2a271862e8bb502f054e9ec74d2b6",
+          "hash": "6e04a131d90db52ca3a031930282ed608d4984b9d9d4daae45a19ced3dbc5fed",
           "path": "fixtures/behavior-verbs.json"
         },
         {
@@ -1592,11 +1600,11 @@
           "path": "fixtures/law-runs/behavior-rotation-tumble.txt"
         },
         {
-          "hash": "f30502f8bcef0151fd70cfb4c75eca1d1cd2ea3f1a7b81826233c767fa2fa319",
+          "hash": "4a91748009b11e3589310c4a0c7d4610985d09d29f5d4fe0bd38fcc72fcce29d",
           "path": "fixtures/law-runs/behavior-verbs-carry-capsule.txt"
         },
         {
-          "hash": "cb3238b920891bf2c5e541bc9998e5cb1273c2eed75abe1ae994260ad394d619",
+          "hash": "6e663b64dc57f587ffcdef3e10c90612dec34f67264f3d439b17780f9bfdfbca",
           "path": "fixtures/law-runs/behavior-verbs-carry.txt"
         },
         {
@@ -1764,7 +1772,7 @@
           "path": "fixtures/sweep/plateau-low.json"
         },
         {
-          "hash": "a8041cb6cb8a3480a13585e4a161ec054383986d8884e2f353f768076a28a2b7",
+          "hash": "63d862a7b96015c1e1d737074827d5d25cd48816c9c8949a6eab9731bfb35e4b",
           "path": "fixtures/sweep/verdicts.json"
         },
         {
@@ -6293,7 +6301,7 @@
                 {
                   "inner": [
                     {
-                      "line": 114,
+                      "line": 115,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
@@ -6301,7 +6309,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 146,
+                      "line": 147,
                       "name": "installMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -6309,13 +6317,13 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 149,
+                      "line": 150,
                       "name": "mixLoad",
                       "target": null,
                       "via": "buildTick"
                     },
                     {
-                      "line": 151,
+                      "line": 152,
                       "name": "mixMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -6323,19 +6331,19 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 210,
+                      "line": 211,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 214,
+                      "line": 215,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 155,
+                      "line": 156,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -6343,7 +6351,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 161,
+                      "line": 162,
                       "name": "leastLabel",
                       "target": null,
                       "via": "mindLabels"
@@ -6453,12 +6461,12 @@
                 {
                   "inner": [
                     {
-                      "line": 957,
+                      "line": 1010,
                       "name": "idle",
                       "target": null
                     },
                     {
-                      "line": 958,
+                      "line": 1011,
                       "name": "advance",
                       "target": null
                     }
@@ -7261,43 +7269,43 @@
           "path": ".gitignore"
         },
         {
-          "hash": "2bde0c51b66b6c689ec797cc23d427104c8518535a3a260388b3824104f6a373",
+          "hash": "fe4a88996e779af46c5b4b0ac04e551c95c51fa93b884262d14d36b8a8e51c33",
           "path": "CHANGELOG.md"
         },
         {
-          "hash": "367e5141e4f5884e5791c4021f33a9faa958840a5decf44e1b273a87aad1c459",
+          "hash": "5ae6b3c8f446f0a7cb95176e4dadb91b68aaffb16b3be09f64f5de248b6a973a",
           "path": "LICENSE"
         },
         {
-          "hash": "ce3358adba9ca3d204d85441a058c7778ced0f650f2942d8e4b83043f7a43cd9",
+          "hash": "3891a826faf4f00a1d7b22fff21fe3b690c3e317785f92ee69f9148565994af1",
           "path": "README.es.md"
         },
         {
-          "hash": "d15a52906ba98ead993312278c4e6e6c25469929ae55f190dee1be14285515f6",
+          "hash": "611d1597e75b8239b5645874030b338ce071ce60a194a94d745d5309ffcef74c",
           "path": "README.fr.md"
         },
         {
-          "hash": "a42dc539d876380339851629f882dc032d6eb1beff13594415a55b2cb2439424",
+          "hash": "e81ad68a654718c2868662aaf9966441bbdccc7aad10976e3cb0b72e6be94cd9",
           "path": "README.hi.md"
         },
         {
-          "hash": "40206e961b14eb78e3461698cef87b739ba9b38e8a68fd5ea2ffa667bf78ff0f",
+          "hash": "3131bdfac5ab9d3f565296e0e8b3b15271b64702202d38b31c1ceaae7f64686b",
           "path": "README.it.md"
         },
         {
-          "hash": "04bf20c4f009726b6dfc50f6e16ba8171704155faf540cdb607fa915d6b41898",
+          "hash": "dc6f71e0ee235d9c13cc8efeb33942b252215faabc0d8476ff09ba63ac5faa2f",
           "path": "README.ja.md"
         },
         {
-          "hash": "8b8d7203c6545ea80cc5365d2a130a06399926db1bbd953f1c145c82c0dc0e4d",
+          "hash": "7b4cb34b0bc58bac99c6df9898cf825664f9b1316ecc3b9e96b9d77e15b00705",
           "path": "README.md"
         },
         {
-          "hash": "753190481ba362f10055033bca2b0f5f7bc58cd95babd19c6086a0c6b8973c5d",
+          "hash": "bba72055d03a44b03f58838925e27fb42c70e345a06a99ac12ef76f96fa5e275",
           "path": "README.pt-BR.md"
         },
         {
-          "hash": "a124c6e9bab06bb436c1a0e2d408035094ac12ada1e7a4ddea79ca17089c312f",
+          "hash": "8991f8ea945f9e4d8d40af6897a2b2594e3e0e8016f948299cb7b6575ec128f9",
           "path": "README.zh.md"
         },
         {
@@ -7317,7 +7325,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "9f5a893517ad83cfedc73e15f3d45dde4c55985637456f364592dfcfa8f907ef",
+          "hash": "ff0f368ebe1a3650bd204d0adb05926d99c70708e4224f4a7be9609123bf9ea3",
           "path": "package.json"
         },
         {
@@ -7375,7 +7383,7 @@
           "path": "solver/build.mjs"
         },
         {
-          "hash": "bc119bab7dd0f4267518895ba587b6fa4ccf6c749ab0dbe3184f02e354ee6fb6",
+          "hash": "144aabc549f0627bb06a43e025f3187926d910d8ebea7f3d290fda80b798e6ea",
           "path": "solver/build.rs"
         },
         {
@@ -8602,7 +8610,7 @@
                 {
                   "inner": [
                     {
-                      "line": 114,
+                      "line": 115,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
@@ -8610,7 +8618,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 146,
+                      "line": 147,
                       "name": "installMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -8618,13 +8626,13 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 149,
+                      "line": 150,
                       "name": "mixLoad",
                       "target": null,
                       "via": "buildTick"
                     },
                     {
-                      "line": 151,
+                      "line": 152,
                       "name": "mixMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -8632,19 +8640,19 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 210,
+                      "line": 211,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 214,
+                      "line": 215,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 155,
+                      "line": 156,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -8652,7 +8660,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 161,
+                      "line": 162,
                       "name": "leastLabel",
                       "target": null,
                       "via": "mindLabels"
@@ -8873,7 +8881,7 @@
                 {
                   "inner": [
                     {
-                      "line": 114,
+                      "line": 115,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
@@ -8881,7 +8889,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 146,
+                      "line": 147,
                       "name": "installMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -8889,13 +8897,13 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 149,
+                      "line": 150,
                       "name": "mixLoad",
                       "target": null,
                       "via": "buildTick"
                     },
                     {
-                      "line": 151,
+                      "line": 152,
                       "name": "mixMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -8903,19 +8911,19 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 210,
+                      "line": 211,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 214,
+                      "line": 215,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 155,
+                      "line": 156,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -8923,7 +8931,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 161,
+                      "line": 162,
                       "name": "leastLabel",
                       "target": null,
                       "via": "mindLabels"
@@ -8950,7 +8958,7 @@
             "admitIntent",
             "loadIntentRules"
           ],
-          "hash": "0c9b21ee506167f14b2b9dfb08a4c28600521126cdcc9319f807d987dbca0388",
+          "hash": "8c3deecdc857877148270a2a6ef0a0f30a4c1697ba1db488366a67dc0bbde56a",
           "importsFiles": [
             "packages/tick/world.js"
           ],
@@ -8959,12 +8967,12 @@
             {
               "calls": [
                 {
-                  "line": 115,
+                  "line": 129,
                   "name": "carriedByOf",
                   "target": null
                 },
                 {
-                  "line": 122,
+                  "line": 136,
                   "name": "overlaps",
                   "target": null
                 }
@@ -8977,24 +8985,24 @@
             {
               "calls": [
                 {
-                  "line": 153,
+                  "line": 167,
                   "name": "supportAt",
                   "target": null
                 },
                 {
-                  "line": 115,
+                  "line": 129,
                   "name": "carriedByOf",
                   "target": null,
                   "via": "volumeClear"
                 },
                 {
-                  "line": 122,
+                  "line": 136,
                   "name": "overlaps",
                   "target": null,
                   "via": "volumeClear"
                 },
                 {
-                  "line": 173,
+                  "line": 187,
                   "name": "segmentHits",
                   "target": null
                 }
@@ -9007,32 +9015,32 @@
             {
               "calls": [
                 {
-                  "line": 199,
+                  "line": 213,
                   "name": "carryingOf",
                   "target": null
                 },
                 {
-                  "line": 206,
+                  "line": 220,
                   "name": "body",
                   "target": null
                 },
                 {
-                  "line": 216,
+                  "line": 230,
                   "name": "carriedByOf",
                   "target": null
                 },
                 {
-                  "line": 225,
+                  "line": 239,
                   "name": "holds",
                   "target": null
                 },
                 {
-                  "line": 228,
+                  "line": 242,
                   "name": "sleeping",
                   "target": null
                 },
                 {
-                  "line": 242,
+                  "line": 256,
                   "name": "segmentHits",
                   "target": null
                 }
@@ -9045,34 +9053,34 @@
             {
               "calls": [
                 {
-                  "line": 258,
+                  "line": 272,
                   "name": "carryingOf",
                   "target": null
                 },
                 {
-                  "line": 262,
+                  "line": 276,
                   "name": "body",
                   "target": null
                 },
                 {
-                  "line": 276,
+                  "line": 290,
                   "name": "supportAt",
                   "target": null
                 },
                 {
-                  "line": 115,
+                  "line": 129,
                   "name": "carriedByOf",
                   "target": null,
                   "via": "volumeClear"
                 },
                 {
-                  "line": 122,
+                  "line": 136,
                   "name": "overlaps",
                   "target": null,
                   "via": "volumeClear"
                 },
                 {
-                  "line": 286,
+                  "line": 300,
                   "name": "segmentHits",
                   "target": null
                 }
@@ -9086,17 +9094,17 @@
               "calls": [
                 {
                   "branch": "typeof target.zone === 'string'",
-                  "line": 305,
+                  "line": 370,
                   "name": "zoneOf",
                   "target": null
                 },
                 {
-                  "line": 314,
+                  "line": 379,
                   "name": "body",
                   "target": null
                 },
                 {
-                  "line": 332,
+                  "line": 397,
                   "name": "segmentHits",
                   "target": null
                 }
@@ -9109,136 +9117,136 @@
             {
               "calls": [
                 {
-                  "line": 356,
+                  "line": 421,
                   "name": "body",
                   "target": null
                 },
                 {
                   "branch": "effect === 'climb'",
-                  "line": 153,
+                  "line": 167,
                   "name": "supportAt",
                   "target": null,
                   "via": "admitClimb"
                 },
                 {
                   "branch": "effect === 'climb'",
-                  "line": 115,
+                  "line": 129,
                   "name": "carriedByOf",
                   "target": null,
                   "via": "volumeClear"
                 },
                 {
                   "branch": "effect === 'climb'",
-                  "line": 122,
+                  "line": 136,
                   "name": "overlaps",
                   "target": null,
                   "via": "volumeClear"
                 },
                 {
                   "branch": "effect === 'climb'",
-                  "line": 173,
+                  "line": 187,
                   "name": "segmentHits",
                   "target": null,
                   "via": "admitClimb"
                 },
                 {
                   "branch": "effect === 'carry'",
-                  "line": 199,
+                  "line": 213,
                   "name": "carryingOf",
                   "target": null,
                   "via": "admitCarry"
                 },
                 {
                   "branch": "effect === 'carry'",
-                  "line": 206,
+                  "line": 220,
                   "name": "body",
                   "target": null,
                   "via": "admitCarry"
                 },
                 {
                   "branch": "effect === 'carry'",
-                  "line": 216,
+                  "line": 230,
                   "name": "carriedByOf",
                   "target": null,
                   "via": "admitCarry"
                 },
                 {
                   "branch": "effect === 'carry'",
-                  "line": 225,
+                  "line": 239,
                   "name": "holds",
                   "target": null,
                   "via": "admitCarry"
                 },
                 {
                   "branch": "effect === 'carry'",
-                  "line": 228,
+                  "line": 242,
                   "name": "sleeping",
                   "target": null,
                   "via": "admitCarry"
                 },
                 {
                   "branch": "effect === 'carry'",
-                  "line": 242,
+                  "line": 256,
                   "name": "segmentHits",
                   "target": null,
                   "via": "admitCarry"
                 },
                 {
                   "branch": "effect === 'release'",
-                  "line": 258,
+                  "line": 272,
                   "name": "carryingOf",
                   "target": null,
                   "via": "admitRelease"
                 },
                 {
                   "branch": "effect === 'release'",
-                  "line": 262,
+                  "line": 276,
                   "name": "body",
                   "target": null,
                   "via": "admitRelease"
                 },
                 {
                   "branch": "effect === 'release'",
-                  "line": 276,
+                  "line": 290,
                   "name": "supportAt",
                   "target": null,
                   "via": "admitRelease"
                 },
                 {
                   "branch": "effect === 'release'",
-                  "line": 286,
+                  "line": 300,
                   "name": "segmentHits",
                   "target": null,
                   "via": "admitRelease"
                 },
                 {
                   "branch": "effect === 'episode'",
-                  "line": 305,
+                  "line": 370,
                   "name": "zoneOf",
                   "target": null,
                   "via": "admitEpisode"
                 },
                 {
                   "branch": "effect === 'episode'",
-                  "line": 314,
+                  "line": 379,
                   "name": "body",
                   "target": null,
                   "via": "admitEpisode"
                 },
                 {
                   "branch": "effect === 'episode'",
-                  "line": 332,
+                  "line": 397,
                   "name": "segmentHits",
                   "target": null,
                   "via": "admitEpisode"
                 },
                 {
-                  "line": 382,
+                  "line": 447,
                   "name": "body",
                   "target": null
                 },
                 {
-                  "line": 400,
+                  "line": 465,
                   "name": "segmentHits",
                   "target": null
                 }
@@ -9584,7 +9592,7 @@
             "createTick",
             "settle"
           ],
-          "hash": "b87b8db40d043b2e547ffd7d90ec215e2f8be39a55de3c84032ce08bb4bce1fc",
+          "hash": "14b69306321d723adbd59b8ea4e1dc7fd8d775471cbf3ce1c46c9f0c93f0ee92",
           "importsFiles": [
             "packages/frame/frame.js",
             "packages/frame/hash.js",
@@ -9595,14 +9603,15 @@
             "packages/tick/minds.js",
             "packages/tick/predicates.js",
             "packages/tick/roles.js",
-            "packages/tick/trust.js"
+            "packages/tick/trust.js",
+            "packages/tick/world.js"
           ],
           "path": "packages/tick/tick.js",
           "sequences": [
             {
               "calls": [
                 {
-                  "line": 114,
+                  "line": 115,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -9610,7 +9619,7 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 146,
+                  "line": 147,
                   "name": "installMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -9618,13 +9627,13 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 149,
+                  "line": 150,
                   "name": "mixLoad",
                   "target": null,
                   "via": "buildTick"
                 },
                 {
-                  "line": 151,
+                  "line": 152,
                   "name": "mixMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -9632,19 +9641,19 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 210,
+                  "line": 211,
                   "name": "snapshot",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 214,
+                  "line": 215,
                   "name": "u32",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 155,
+                  "line": 156,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
@@ -9652,7 +9661,7 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 161,
+                  "line": 162,
                   "name": "leastLabel",
                   "target": null,
                   "via": "mindLabels"
@@ -9666,7 +9675,7 @@
             {
               "calls": [
                 {
-                  "line": 114,
+                  "line": 115,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -9674,7 +9683,7 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 146,
+                  "line": 147,
                   "name": "installMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -9682,13 +9691,13 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 149,
+                  "line": 150,
                   "name": "mixLoad",
                   "target": null,
                   "via": "buildTick"
                 },
                 {
-                  "line": 151,
+                  "line": 152,
                   "name": "mixMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -9696,19 +9705,19 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 210,
+                  "line": 211,
                   "name": "snapshot",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 214,
+                  "line": 215,
                   "name": "u32",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 155,
+                  "line": 156,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
@@ -9716,7 +9725,7 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 161,
+                  "line": 162,
                   "name": "leastLabel",
                   "target": null,
                   "via": "mindLabels"
@@ -9730,52 +9739,52 @@
             {
               "calls": [
                 {
-                  "line": 114,
+                  "line": 115,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   }
                 },
                 {
-                  "line": 146,
+                  "line": 147,
                   "name": "installMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
                   }
                 },
                 {
-                  "line": 149,
+                  "line": 150,
                   "name": "mixLoad",
                   "target": null
                 },
                 {
-                  "line": 151,
+                  "line": 152,
                   "name": "mixMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
                   }
                 },
                 {
-                  "line": 210,
+                  "line": 211,
                   "name": "snapshot",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 214,
+                  "line": 215,
                   "name": "u32",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 155,
+                  "line": 156,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
                   }
                 },
                 {
-                  "line": 161,
+                  "line": 162,
                   "name": "leastLabel",
                   "target": null,
                   "via": "mindLabels"
@@ -9789,12 +9798,12 @@
             {
               "calls": [
                 {
-                  "line": 957,
+                  "line": 1010,
                   "name": "idle",
                   "target": null
                 },
                 {
-                  "line": 958,
+                  "line": 1011,
                   "name": "advance",
                   "target": null
                 }
@@ -9865,7 +9874,7 @@
                 {
                   "inner": [
                     {
-                      "line": 114,
+                      "line": 115,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
@@ -9873,7 +9882,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 146,
+                      "line": 147,
                       "name": "installMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -9881,13 +9890,13 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 149,
+                      "line": 150,
                       "name": "mixLoad",
                       "target": null,
                       "via": "buildTick"
                     },
                     {
-                      "line": 151,
+                      "line": 152,
                       "name": "mixMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -9895,19 +9904,19 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 210,
+                      "line": 211,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 214,
+                      "line": 215,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 155,
+                      "line": 156,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
@@ -9915,7 +9924,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 161,
+                      "line": 162,
                       "name": "leastLabel",
                       "target": null,
                       "via": "mindLabels"
@@ -9994,7 +10003,7 @@
           "path": "packages/tick/trust.js"
         },
         {
-          "hash": "31bed245ec2392f4c5c69a4403c29124da6818ead6ad333302bf5bbdf216f3b1",
+          "hash": "fa3e3f8ec77303756ac122ca5290e9673f1acc1339cb721195b10eedf8a41af8",
           "importsFiles": [
             "harness/verbs-scene.mjs",
             "packages/frame/hash.js",
@@ -10013,7 +10022,7 @@
             "createWorld",
             "fixtureColliders"
           ],
-          "hash": "f91950373e9abf3f8cdea075a210e8b26193bf62d4b7a69fd05537612bbf01dc",
+          "hash": "44e55f89d3f9969c44464ec8c601fa63233a95d35ebdff9cb81a4b6656083ceb",
           "importsFiles": [
             "packages/tick/minds.js",
             "packages/tick/subject.js"
@@ -10231,7 +10240,7 @@
         {
           "boundary": "bench",
           "depth": 0,
-          "files": 27
+          "files": 28
         },
         {
           "boundary": "fixtures",
@@ -10545,6 +10554,11 @@
         },
         {
           "job": "engines",
+          "path": "packages/bench/coverage.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "packages/bench/finding.test.js",
           "runKind": "executes"
         },
@@ -10778,7 +10792,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 79,
+      "runsCount": 80,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -11653,8 +11667,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "e1794973bd329966f03f9953bdc43498544b50a5",
-    "tracked": 358
+    "commit": "87768861148ae845f265b6d18a3ec4b1ace1ebed",
+    "tracked": 359
   },
   "landings": [
     {
@@ -12883,17 +12897,6 @@
     {
       "readers": [
         {
-          "by": "docs/dispatch-113-ci-trees.md",
-          "call": "--test",
-          "confidence": "text"
-        }
-      ],
-      "target": "packages/bench/law.test.js",
-      "writers": []
-    },
-    {
-      "readers": [
-        {
           "by": "packages/bench/source.test.js",
           "call": "readFileSync",
           "confidence": "ast",
@@ -13856,6 +13859,12 @@
           "confidence": "ast"
         },
         {
+          "by": "packages/bench/coverage.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/bench/law.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -13931,6 +13940,12 @@
         {
           "by": "packages/bench/source.test.js",
           "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/bench/source.test.js",
+          "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
         }
@@ -14463,7 +14478,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 42,
+  "testFiles": 43,
   "unassigned": [
     {
       "exports": [
@@ -14609,7 +14624,7 @@
       "sequences": []
     },
     {
-      "hash": "9d6887f9aef66c4fe3d79a33264d15020171c32fd4f3ad60a2e867b80da84cfd",
+      "hash": "6580bbdc3b8057dac64a24040f08711c17433da1c37f6542536900ab293ed1d1",
       "importsFiles": [
         "packages/tool/guard.js",
         "tools/panel.js",
