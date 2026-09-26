@@ -42,7 +42,7 @@ Chrome、Firefox 和 Safari 背后的 JavaScript 引擎（V8、SpiderMonkey 和 
 | 模型角色的作用：每个角色都有一个清单，从角色读取的内容中得出“双重规则”，检查器中有一个角色门，对每个接受的内容进行来源跟踪，信任标签会与信念一起保留，并且记录并检查每个模型调用，无需使用 GPU；声明的两个角色都是固定的。 | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`，在 `fixtures/sessions/` 中，跨会话进行 `packages/propose/record.test.js` |
 | 从种子和日志中重播，并查看 localhost 上的调试视图。 | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` 是一个人通过主机边界进行的测试。 |
 
-474 个测试，七个行为测试用例，这些测试用例会逐步重播，并且三个引擎在 x64 上以及节点在 ARM64 上，在每次提交时打印两个黄金哈希值。
+476 个测试，七个行为测试用例，这些测试用例会逐步重播，并且三个引擎在 x64 上以及节点在 ARM64 上，在每次提交时打印两个黄金哈希值。
 
 ## 安装
 

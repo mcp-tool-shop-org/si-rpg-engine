@@ -39,26 +39,26 @@ v0.2.0 is Phase 2 so far: the suite that measures the engine, and the fixes to t
 - the product golden, `69a671f962665563`;
 - the arithmetic golden, `0d38671370d12d1e`;
 - the Linux digest, `fd4b46bb45f299894d31e8745a3649f986c08b95ad3acba7ec20d70bfef2fde2`;
-- 474 node tests and 36 native tests.
+- 476 node tests and 36 native tests.
 
 **Open issues.**
 - **#97:** two leftovers from #83.
 - **#109:** tightening F4's tests.
 - **#100:** three corners of the model-calling path, to close before T7c records real calls.
 - **#101:** a doc comment in `warm_broadphase`, for the next slice that re-pins the digest.
-- **#114:** the bench's room finds a crate leaving the world after a drop at the step's edge. It crosses a wall 3 high, and `load world fixtures/bench/room.json` reproduces it.
-- **#115:** T7b's round-2 review findings. The grammar's saves are keyed without the world, which matters once the bench runs over more than one world. Three small items go with it.
+- **#115:** T7b's round-2 review findings. The grammar's saves are keyed without the world, which matters once the bench runs over more than one world. Three small items go with it. T7c's dispatch takes the first of them.
+- **#127:** a sweep finding that leaves the world by rising more than the climb allows, or by a vertical speed with no lift, is recorded as thrown, and a re-record names each one.
+- **#128:** a walker thrown to y 8.9 in the refusals fixture, recorded as an ordinary walk-off. A law slice after the Archivist's answer, with a control test.
+- **#129:** a drop started with the actor exactly on the target clears the back-out velocity, and the release is refused. It waits behind #127.
 - **#113:** CI's engines job went from about 7 minutes to 14 with T7b, whose law tests build five trees from scratch. The issue also holds the shim's compiler warning, for a later change to the law's build.
 
 The handbook's testing page lists what is known and not yet proven.
 
 ## What comes next, in order
 
-1. **T7c, the model in the bench.** T7c puts a model into T7b's bench as one more generator. It runs the adversarial run on T7a's rails, and thaws `test-instrument` only if the model earns its place against the bench's own proposers. Its dispatch takes #100 in first, and #115's first item before the bench runs over more than one world. The research is `docs/study-swarm/seat-instrument.dispatch.md`.
-2. **The room's crate (#114),** a triage that can run beside T7c. The sweep already refuses such a world at load, so no admitted world is affected.
-   - First decide whether the checker admits a drop that overlaps a static collider, or the physics ejects the crate fast enough to cross a wall.
-   - Then decide whether the fix is a checker rule or a law change. A law change carries its own control test, as F2 to F5 did.
-3. **#113, CI's time,** before T7c adds its own tests to the job.
+1. **T7c, the model in the bench.** T7c puts a model into T7b's bench as one more generator. It runs the adversarial run on T7a's rails, and thaws `test-instrument` only if the model earns its place against the bench's own proposers. Its dispatch takes #100 in first, and #115's first item before the bench runs over more than one world. The research is `docs/study-swarm/seat-instrument.dispatch.md`. #126 has merged, so the hand runs follow the slice. #125 merges before the T7c slice.
+2. **#114 is closed** by #126. A drop stops short of its target and sets the body down clear of the actor. #129 is the edge that remains, and it waits behind #127.
+3. **#113, CI's time,** is pull request #125. It merges before the T7c slice. #127, the sweep's thrown kind, starts after that merge, beside T7c's build. #128 is a law slice and waits on the Archivist.
 4. **#97 and #109,** small hardening slices that can share a builder.
 5. **The Rapier 0.36.0 bump,** as its own slice, measured by T7b's bench. `solver/FLAGS.md` says a bump reruns the copies' control tests first.
    - 0.36.0 carries #1004, so `impulses.rs`'s first change becomes Rapier's own.

@@ -42,7 +42,7 @@ Ce que cela vise à être est le moteur de simulation à l’intérieur d’un h
 | Rôles pour les modèles : un manifeste par rôle, la règle des deux, dérivée de ce que le rôle lit, une porte de rôle dans le vérificateur, une provenance pour chaque admission, des étiquettes de confiance qui restent associées à une croyance, et chaque appel de modèle enregistré et vérifié sans GPU ; les deux rôles déclarés sont figés. | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` sur les sessions dans `fixtures/sessions/` |
 | Relecture à partir d’une graine et d’un journal, et une vue de débogage du cycle sur localhost. | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` est une simulation d’une personne à travers la limite de l’hôte. |
 
-474 tests, sept éléments de test de comportement qui relancent étape par étape, et deux hachages de référence imprimés par trois moteurs sur x64 et par node sur ARM64, pour chaque commit.
+476 tests, sept éléments de test de comportement qui relancent étape par étape, et deux hachages de référence imprimés par trois moteurs sur x64 et par node sur ARM64, pour chaque commit.
 
 ## Installation
 

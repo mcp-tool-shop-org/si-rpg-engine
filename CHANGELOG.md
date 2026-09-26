@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- A drop stops short of its target and sets the carried body down clear of the actor. A placement that overlaps another body or a collider is refused, and the body stays carried.
+
 ## [0.2.0] - 2026-09-26
 
 Phase 2 so far: the suite that measures the engine, the fixes to the law it found, and the bench that measures a change against its parent. Every change below merged from a written dispatch in `docs/`, was verified on a fresh checkout, and was reviewed by other model families before it merged. `docs/HANDOFF.md` says where the work stands and what comes next.
