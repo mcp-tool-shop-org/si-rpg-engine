@@ -764,7 +764,11 @@ export function findingBundle(input, finding, dir) {
  * the world, a throw, and, when the frontier emptied within the budget, an
  * authored zone no explored state reached. Admitted with a note: a world that
  * does not settle after an action, until the scheduled job shows how often it
- * happens, and a sweep the budget cut short, which the scheduled job finishes.
+ * happens, and a sweep the budget cut short. The scheduled job sweeps that
+ * world again under its own, larger budget (SWEEP_BUDGET in
+ * harness/corpus.mjs) and fails when the verdict differs from the one
+ * fixtures/sweep/verdicts.json records; that budget may cut the sweep short
+ * too, and then the record holds it deferred.
  * A leave or a throw found before the budget ran out is refused even so: its
  * bundle is a proof, which a cut-short sweep cannot take back.
  * @param {SweepReport} report
