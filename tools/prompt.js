@@ -12,6 +12,47 @@ import { createHash } from 'node:crypto';
 
 export const MAX_PROMPT = 400000;
 
+// Recorded model sessions are outputs the record test checks in CI; a session's change.diff and
+// anything else beside them is still sent.
+export const OMIT = [/^fixtures\/behavior-.*\.json$/, /^fixtures\/corpus\//, /^fixtures\/shape-traversal\.json$/, /^fixtures\/sessions\/[^/]+\/(session\.json$|records\/)/, /^atlas\//, /package-lock\.json$/, /^README\.[a-zA-Z-]+\.md$/];
+
+/** The most of one file's diff that is sent. A hand-written source file of 1,500 lines runs to about 76,000 characters. */
+export const MAX_FILE_DIFF = 80000;
+
+/**
+ * What of a pull request's diff is sent, and what is only listed. A file under OMIT is listed and
+ * not sent; a file past MAX_FILE_DIFF is sent cut and listed. With `only`, a file whose path it does
+ * not match is listed as not in this pass, so a pull request too large for one message is reviewed
+ * in passes over disjoint files, each with the whole dispatch, description, and checklist.
+ * @param {string} rawDiff
+ * @param {RegExp | null} [only]
+ * @returns {{ diff: string, omitted: string[] }}
+ */
+export function splitDiff(rawDiff, only = null) {
+  /** @type {string[]} */
+  const kept = [];
+  /** @type {string[]} */
+  const omitted = [];
+  for (const part of rawDiff.split(/^(?=diff --git )/m)) {
+    const m = /^diff --git a\/(\S+) b\/(\S+)/.exec(part);
+    if (!m) continue;
+    const file = m[2];
+    const added = (part.match(/^\+(?!\+\+)/gm) || []).length;
+    const removed = (part.match(/^-(?!--)/gm) || []).length;
+    if (OMIT.some((re) => re.test(file))) {
+      omitted.push(`${file} (+${added} -${removed}, generated or bulky; not sent)`);
+    } else if (only && !only.test(file)) {
+      omitted.push(`${file} (+${added} -${removed}, not in this pass)`);
+    } else if (part.length > MAX_FILE_DIFF) {
+      omitted.push(`${file} (+${added} -${removed}, ${part.length} characters; too large to send whole)`);
+      kept.push(part.slice(0, MAX_FILE_DIFF) + '\n[... truncated ...]\n');
+    } else {
+      kept.push(part);
+    }
+  }
+  return { diff: kept.join(''), omitted };
+}
+
 export const SYSTEM = [
   'You are an independent reviewer of a pull request to a deterministic, hashed, replayable 3D simulation engine: a JavaScript tick over a Rust physics law (rapier3d-f64 with enhanced-determinism) compiled to one WebAssembly binary.',
   'You did not write this code. Your job is to find what is wrong with it, not to approve it. Refute by default: an item HOLDS only when the diff shows it.',
