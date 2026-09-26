@@ -60,6 +60,20 @@ export const F2 = {
 };
 
 /**
+ * Refuses to start unless the daemon serves the copy's model under its pinned
+ * digest, so no call is made to another model.
+ */
+async function checkModel() {
+  const copy = JSON.parse(readFileSync(join(SETTINGS.catalog, SETTINGS.role + '.json'), 'utf8'));
+  const res = await fetch('http://127.0.0.1:11434/api/tags', { signal: AbortSignal.timeout(10000) });
+  const tags = /** @type {{ models: Array<{ name: string, digest: string }> }} */ (await res.json());
+  const served = tags.models.find((m) => m.name === copy.model.name);
+  if (!served || served.digest !== copy.model.digest) {
+    throw new Error('the daemon serves ' + copy.model.name + ' as ' + (served ? served.digest : 'nothing') + ', not the pin ' + copy.model.digest);
+  }
+}
+
+/**
  * The unified diff of one edited file between two trees, with a/ and b/ paths.
  * @param {string} base
  * @param {string} head
@@ -130,6 +144,9 @@ async function main(argv) {
   const only = at('--only');
   const dry = argv.includes('--dry-run');
   const record = argv.includes('--record') && !dry;
+  if (!dry) {
+    await checkModel();
+  }
   const dir = scratch('t7c');
   try {
     const runs = plan(dir).filter((r) => only === undefined || r.name === only);
