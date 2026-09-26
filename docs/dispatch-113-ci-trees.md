@@ -21,13 +21,13 @@ One smaller item rides along. Every build of the law warns `unexpected cfg condi
 3. **The cfg warning is named.** `solver` declares `law_coverage` to rustc with a `check-cfg` entry, so a build that passes `--cfg law_coverage` does not warn, and a build that does not pass it does not warn either. The product wasm's bytes are unchanged: a local `node solver/build.mjs` before the entry and after it prints the same digest. `fixtures/solver.sha256` does not move. The Linux digest is CI's, and the pull request says whether the engines job's digest check stayed green.
    - The warning is the red on `main`: `cargo build` of `solver` prints `unexpected cfg condition name: law_coverage`. Here it does not.
 
-4. **The job is measured.** The pull request quotes the engines job's time on `main` at the release, 14 minutes 14 seconds, and the time of the job on this head. The slice is not done on a time that is not shorter. If the seeded builds are not shorter on the runner, the pull request says so and does not claim the issue closed.
+4. **The job is measured.** The pull request quotes the engines job's time on `main` at the release, 14 minutes 14 seconds, and the time of the job on this head. Closing #113 waits on the head being shorter. A head that is not shorter still merges, the pull request names both times, and it leaves #113 open.
 
 5. **Nothing else moves.** The goldens and the behaviour numbers do not move. The builder does not edit `README.md`, its translations, `site/`, or `CHANGELOG.md`. The Atlas map is regenerated on Linux with the published `@dogfood-lab/atlas@1.17.0` if a file is added.
 
 ## Acceptance
 
 - A seeded tree builds in its own target directory, and a changed law crate does not reuse the cached wasm.
-- The `law_coverage` warning is gone, and the product digest is the one already in `fixtures/solver.sha256`.
-- The engines job on this head is shorter than 14 minutes 14 seconds, and the pull request quotes both times.
-- The typecheck is clean, the test count is at or above `main`, and the Atlas check is green.
+- The `law_coverage` warning is gone. A local build before the `check-cfg` entry and after it prints the same digest. `fixtures/solver.sha256` is not edited. The pull request says whether CI's digest check stayed green.
+- The pull request quotes the engines job's time on `main` at the release, 14 minutes 14 seconds, and the time on this head. Closing #113 waits on the head being shorter. A head that is not shorter still merges, and the pull request leaves #113 open with both times named.
+- No test is deleted or weakened. The typecheck is clean, the test count is at or above `main`, and the Atlas check is green.
