@@ -116,7 +116,8 @@ enum Load {
     /// The loaded world is the same world with the same modes, and stays.
     Kept,
     /// The loaded world is the same world and only the modes changed: its
-    /// bodies switched in place, in record order (F1 pin 2).
+    /// bodies switched in place, in record order with the drops before the
+    /// pick-ups (F1 pin 2, #71).
     Switched,
     /// A new world was built.
     Built,
@@ -418,7 +419,8 @@ fn warm_broadphase(world: &mut PhysicsWorld) {
     // instead of hiding it (F1 pin 3): the character's queries run before the
     // step, so in the quantum of a switch a removed body is gone from them at
     // once, and a dropped body is not in them until that step's broad phase
-    // takes it in. harness/switch.test.js holds both.
+    // takes it in, whatever the record order of a pick-up in the same quantum
+    // (#71, switch_in_place). harness/switch.test.js holds both.
     for (_, body) in world.bodies.iter_mut() {
         if !body.is_fixed() {
             body.wake_up(true);
@@ -554,16 +556,18 @@ fn held(loaded: &Loaded, i: usize) -> Result<(RigidBodyHandle, ColliderHandle), 
 
 /// Applies a change of the driven and carried masks to the running world, in
 /// place (F1 pin 2). It walks the bodies in record order, never a map's
-/// order. Every lookup and every value that can refuse is taken first, and
-/// nothing moves until all of them have, so a refusal leaves the world as it
-/// was. Modes 1 and 2 are both in the driven mask, so lifted to driving and
-/// back is no switch. A pick-up is `remove_body`; a drop inserts
+/// order, and applies what it planned in that order with every drop before
+/// every pick-up (#71). Every lookup and every value that can refuse is taken
+/// first, and nothing moves until all of them have, so a refusal leaves the
+/// world as it was. Modes 1 and 2 are both in the driven mask, so lifted to
+/// driving and back is no switch. A pick-up is `remove_body`; a drop inserts
 /// build_world's body for the record, which takes the most recently freed
-/// slot at the arena's next generation, so handle generations follow the
-/// carry history and reach the hash through the snapshot's pair keys (S1 pin
-/// 9). In a capsule world a driven body's collider becomes the capsule and a
-/// dynamic body's the box, as build_world would make them. The load pass is
-/// never run here (S1 pin 12); see warm_broadphase for what that costs.
+/// slot at the arena's next generation, never one freed in its own quantum,
+/// so handle generations follow the carry history and reach the hash through
+/// the snapshot's pair keys (S1 pin 9). In a capsule world a driven body's
+/// collider becomes the capsule and a dynamic body's the box, as build_world
+/// would make them. The load pass is never run here (S1 pin 12); see
+/// warm_broadphase for what that costs.
 fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(), Refusal> {
     let shape = loaded.signature.shape;
     let mut plan: Vec<(usize, Transition)> = Vec::new();
@@ -594,6 +598,23 @@ fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(),
         };
         plan.push((i, transition));
     }
+    // Drops before pick-ups (#71). Rapier's collider arena gives an insert
+    // the slot the latest removal freed, and until this quantum's step the
+    // broad phase keeps a removed collider's leaf, with its old box, under
+    // that slot; the queries turn a leaf into a collider by slot alone. So a
+    // drop applied after a pick-up took the picked-up body's slot, and until
+    // the step every query over the picked-up body's old footprint found the
+    // dropped body. It was tested at its real shape and pose, so nothing was
+    // ever hit where the picked-up body had been, but a cast crossing both
+    // places met the dropped body a quantum before any other drop is met, and
+    // only when a body with a lower record index was picked up in the same
+    // quantum. Applied first, a drop takes no slot freed this quantum, so a
+    // dropped body enters the queries at the step whatever the record order.
+    // The sort is stable: the other transitions keep their record order, and
+    // so do the pick-ups among themselves. The Rust knowledge base measured
+    // the alias and this order (readouts, rust-knowledge wave 3,
+    // requests/slot-alias.md).
+    plan.sort_by_key(|(_, transition)| matches!(transition, Transition::PickUp(_)));
     for (i, transition) in plan {
         match transition {
             Transition::ToDriven(handle, collider) => {
@@ -1052,6 +1073,12 @@ pub extern "C" fn solver_rebuilds() -> u32 {
 // capsule world switches the collider's shape, and an omitted shape is caught;
 // and a drop carries a handle generation into the snapshot (pin 6, S1 pin 9).
 //
+// #71, after F1's switch tests: a body put down in the quantum another is
+// picked up enters the queries at the step whichever has the lower record
+// index; the pick-up switched before the drop, the order main applied a
+// lower-index pick-up in, lets the queries over the old footprint find the
+// dropped body until the step, and never hits it where the picked-up body was.
+//
 // F2, the character's controller, at the end of the module: the control test
 // holds the copy with its branch off to Rapier's controller bit for bit, its
 // red finds the branch on exactly Rapier's stalled quanta, the flat walk keeps
@@ -1495,6 +1522,170 @@ mod tests {
         assert_eq!(bodies_found_at(here), 0, "a dropped body is in the queries before its step");
         assert_eq!(solver_step(*turn, 1, 1, 0, 0, 0.0, 0), 1);
         assert_eq!(bodies_found_at(here), 1, "the step's broad phase took the dropped body in");
+    }
+
+    // #71: a pick-up and a drop in one quantum.
+
+    use rapier3d_f64::parry::query::details::ShapeCastOptions;
+
+    /// A body of the #71 scene: the one picked up, or the one put down in the
+    /// same quantum.
+    #[derive(Clone, Copy, Debug, PartialEq)]
+    enum Role {
+        PickedUp,
+        Dropped,
+    }
+
+    /// Where a probe's cast along +x hits the dropped body's near face: the
+    /// body is put down at x = 3 with half-extent 0.25, and the probe's
+    /// half-extent is 0.1.
+    const DROPPED_FACE: f64 = 3.0 - 0.25 - 0.1;
+
+    /// What the character's queries find of the bodies, fixed colliders left
+    /// out: the bodies whose leaf in the broad phase meets `footprint`, and
+    /// for a probe box of half-extent 0.1 cast along +x at y = 0.25, through
+    /// the picked-up body's place alone (x from -1 to 1), through the dropped
+    /// body's place alone (x from 2 to 4), and through both (x from -1 to 4),
+    /// the body the probe hits first and the probe's x at the hit.
+    #[derive(Clone, Debug, PartialEq)]
+    struct Seen {
+        footprint: Vec<Role>,
+        old_place: Option<(Role, f64)>,
+        new_place: Option<(Role, f64)>,
+        both: Option<(Role, f64)>,
+    }
+
+    /// The queries of the loaded world as the character's see them, `was`
+    /// being the picked-up body's handle before the pick-up and `dropped` the
+    /// dropped body's record.
+    fn seen(dropped: usize, was: RigidBodyHandle, footprint: Aabb) -> Seen {
+        let solver = unsafe { &*(&raw const SOLVER) };
+        let loaded = solver.loaded.as_ref().expect("a loaded world");
+        let world = &loaded.world;
+        let query = world.broad_phase.as_query_pipeline(
+            world.narrow_phase.query_dispatcher(),
+            &world.bodies,
+            &world.colliders,
+            QueryFilter::exclude_fixed(),
+        );
+        let role = |co: &Collider| -> Role {
+            match co.parent() {
+                Some(parent) if Some(parent) == loaded.handles[dropped] => Role::Dropped,
+                Some(parent) if parent == was => Role::PickedUp,
+                other => panic!("a query found the collider of body {other:?}, which is neither body of the scene"),
+            }
+        };
+        let probe = SharedShape::cuboid(0.1, 0.1, 0.1);
+        let cast = |from: f64, to: f64| -> Option<(Role, f64)> {
+            let start = Pose::from_translation(Vector::new(from, 0.25, 0.0));
+            let travel = Vector::new(to - from, 0.0, 0.0);
+            query
+                .cast_shape(&start, travel, &*probe, ShapeCastOptions::with_max_time_of_impact(1.0))
+                .map(|(handle, hit)| (role(&world.colliders[handle]), from + hit.time_of_impact * (to - from)))
+        };
+        Seen {
+            footprint: query.intersect_aabb_conservative(footprint).map(|(_, co)| role(co)).collect(),
+            old_place: cast(-1.0, 1.0),
+            new_place: cast(2.0, 4.0),
+            both: cast(-1.0, 4.0),
+        }
+    }
+
+    /// The #71 scene in world `turn`: the floor, body `picked` resting on it
+    /// at the origin, and body `dropped` carried, its record at x = 3 for the
+    /// drop. Eight quanta settle the resting body and give it a leaf in the
+    /// broad phase. Returns the resting body's handle, its collider's handle,
+    /// and its footprint, the box of its record.
+    fn pick_and_drop_scene(turn: u32, picked: usize, dropped: usize) -> (RigidBodyHandle, ColliderHandle, Aabb) {
+        set_body(picked, box_at(0.0, 0.26, 0.0));
+        let mut carried = box_at(3.0, 0.26, 0.0);
+        carried[DRIVEN] = 3.0;
+        set_body(dropped, carried);
+        set_collider(0, FLOOR);
+        assert_eq!(ensure(turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Built));
+        for _ in 0..8 {
+            assert_eq!(solver_step(turn, 2, 1, 0, 0, 0.0, 0), 1);
+        }
+        let b = body_at(picked);
+        let footprint = Aabb::from_half_extents(Vector::new(b[0], b[1], b[2]), Vector::new(b[HX], b[HY], b[HZ]));
+        let solver = unsafe { &*(&raw const SOLVER) };
+        let (handle, collider) = held(solver.loaded.as_ref().expect("a loaded world"), picked).expect("the resting body");
+        (handle, collider, footprint)
+    }
+
+    /// The handle of body `i`'s collider in the loaded world.
+    fn collider_of(i: usize) -> ColliderHandle {
+        let solver = unsafe { &*(&raw const SOLVER) };
+        held(solver.loaded.as_ref().expect("a loaded world"), i).expect("a body in the world").1
+    }
+
+    // #71. Body `picked` rests on the floor and body `dropped` is carried; in
+    // one quantum `picked` is picked up and `dropped` put down 3 away, in
+    // both record orders. Until the quantum's step, the broad phase still
+    // holds the picked-up body's leaf, with its old box, under its collider's
+    // slot, and every query resolves a leaf by slot alone. Rapier's collider
+    // arena gives an insert the slot the latest removal freed, so a drop
+    // applied after the pick-up takes that slot, and the queries over the old
+    // footprint then find the dropped body. Whichever body has the lower
+    // record index, the queries must see the same: nothing over the old
+    // footprint before the step and the dropped body in no query yet, and
+    // after the step the dropped body at its real face and nothing over the
+    // old footprint.
+    //
+    // The check's red, planted: the same quantum as two switches with no step
+    // between them, the pick-up's first, which is the order a single switch
+    // applied the two in on main whenever the picked-up body had the lower
+    // index. The drop takes the freed slot at a new generation and the old
+    // footprint finds the dropped body; still no query hits anything where
+    // the picked-up body was, and a cast crossing both places hits the
+    // dropped body only at its real face, where the step puts it anyway.
+    #[test]
+    fn a_body_put_down_as_another_is_picked_up_enters_the_queries_at_the_step_in_either_record_order() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let mut orders = Vec::new();
+        for (picked, dropped) in [(0, 1), (1, 0)] {
+            *turn += 1;
+            let (was, freed, footprint) = pick_and_drop_scene(*turn, picked, dropped);
+            let resting = seen(dropped, was, footprint);
+            set_slot(picked, DRIVEN, 3.0);
+            set_slot(dropped, DRIVEN, 0.0);
+            assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Switched), "picked-up body {picked}");
+            let taken = collider_of(dropped).into_raw_parts().0 == freed.into_raw_parts().0;
+            let before = seen(dropped, was, footprint);
+            assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, 0), 1);
+            let after = seen(dropped, was, footprint);
+            println!("body {picked} picked up and body {dropped} put down: at rest {resting:?}; the drop took the freed slot: {taken}; before the step {before:?}; after it {after:?}");
+            orders.push((picked, resting, taken, before, after));
+        }
+        for (picked, resting, taken, before, after) in &orders {
+            assert_eq!(resting.footprint, vec![Role::PickedUp], "picked-up body {picked}: at rest, the query over its footprint did not find it, so the check could not go red");
+            assert!(!before.footprint.contains(&Role::Dropped), "picked-up body {picked}: before the step, the query over its old footprint found the dropped body: {before:?}");
+            assert!(!taken, "picked-up body {picked}: the drop took the collider slot the pick-up freed in its quantum");
+            assert_eq!(*before, Seen { footprint: vec![], old_place: None, new_place: None, both: None }, "picked-up body {picked}: the queries found a body before the step");
+            assert!(after.footprint.is_empty() && after.old_place.is_none(), "picked-up body {picked}: after the step, a query found a body where the picked-up body was: {after:?}");
+            for hit in [after.new_place, after.both] {
+                assert!(hit.is_some_and(|(role, x)| role == Role::Dropped && (x - DROPPED_FACE).abs() < 1.0e-6), "picked-up body {picked}: after the step, the dropped body is not hit at its face: {after:?}");
+            }
+        }
+        assert_eq!(orders[0].3, orders[1].3, "the two record orders see different bodies before the step");
+        assert_eq!(orders[0].4, orders[1].4, "the two record orders see different bodies after the step");
+
+        // The red: the pick-up switched first, then the drop, before the step.
+        *turn += 1;
+        let (was, freed, footprint) = pick_and_drop_scene(*turn, 0, 1);
+        set_slot(0, DRIVEN, 3.0);
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Switched));
+        set_slot(1, DRIVEN, 0.0);
+        assert_eq!(ensure(*turn, 2, 1, 0, 0, 0.0, 0), Ok(Load::Switched));
+        let (slot, generation) = collider_of(1).into_raw_parts();
+        let (freed_slot, freed_generation) = freed.into_raw_parts();
+        let aliased = seen(1, was, footprint);
+        println!("the pick-up switched before the drop: the dropped body's collider is at slot {slot} generation {generation}, the freed one at slot {freed_slot} generation {freed_generation}; before the step {aliased:?}");
+        assert!(slot == freed_slot && generation != freed_generation, "the drop did not take the freed slot at a new generation, so the check could not go red");
+        assert_eq!(aliased.footprint, vec![Role::Dropped], "the old footprint did not find the dropped body, so the check could not go red");
+        assert_eq!(aliased.old_place, None, "a cast through the picked-up body's old place alone hit a body");
+        assert_eq!(aliased.new_place, None, "a cast through the dropped body's place alone found it before the step, which has no leaf for it yet");
+        assert!(aliased.both.is_some_and(|(role, x)| role == Role::Dropped && (x - DROPPED_FACE).abs() < 1.0e-6), "a cast crossing both places hit elsewhere than the dropped body's face: {aliased:?}");
     }
 
     /// Driven to dynamic with the velocities set before the type: the order
