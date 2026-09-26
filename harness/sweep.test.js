@@ -13,13 +13,18 @@
 // minds fixture included since F3 stopped the push launching its crate over
 // its walls, pinned here, and the scheduled job's record of every world it
 // sweeps fails on any verdict that moves.
+//
+// Swept twice, a world with findings gives the same findings in the same
+// order, with bundles equal byte for byte (#83); and a sweep that throws in
+// the scheduled job fails with a block naming the world and the throw, and
+// the issue the job writes quotes the block.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { basename, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { readBundle, specOf } from '../packages/tick/bundle.js';
 import { replayTo } from '../packages/tick/runs.js';
@@ -27,7 +32,7 @@ import { settles } from '../packages/tick/admit-world.js';
 import { loadScene, validateScene } from '../packages/tick/scene.js';
 import { costLine, replayWitness, sceneInput, sweep, sweepVerdict } from '../packages/load/sweep.js';
 import { LOAD_BUDGET, considerWorld } from '../packages/load/world.js';
-import { SWEEP_BUDGET, readSweepRecord, sweepCorpus, sweepWorlds } from './corpus.mjs';
+import { SWEEP_BUDGET, issueText, readSweepRecord, runCorpus, sweepCorpus, sweepWorlds } from './corpus.mjs';
 
 const dir = mkdtempSync(join(tmpdir(), 'si-rpg-sweep-'));
 
@@ -228,25 +233,44 @@ test('every world and every product-law fixture world that loads today still loa
   assert.ok(mindsVerdict.lines.some((line) => line.startsWith(deferred)), mindsVerdict.lines.join(' | '));
 });
 
-test('sweeping a world twice gives the same archive, the same witnesses, and the same verdicts', () => {
-  const loaded = loadScene('fixtures/sweep/walled-open.json');
-  assert.ok(loaded.ok);
-  if (!loaded.ok) {
-    return;
-  }
-  const input = sceneInput(loaded.scene);
+test('sweeping a world twice gives the same archive, the same witnesses, and the same verdicts, and for a world with findings the same findings in the same order, with bundles equal byte for byte', () => {
   /** @param {SweepReport} report */
   const summary = (report) => JSON.stringify({
     archive: report.archive.map((part) => ({ actor: part.actor, cells: part.cells.map((cell) => ({ key: cell.key, tick: cell.tick, hash: cell.hash, log: cell.witness().log })) })),
     zones: report.zones.map((zone) => ({ id: zone.id, reached: zone.reached, witness: zone.witness })),
     findings: report.findings.map((finding) => ({ ...finding, bundle: null })),
-    verdict: sweepVerdict(report),
+    // The verdict names each bundle by its path, whose directory is each
+    // sweep's own; it is compared with the bundles named by their files.
+    verdict: sweepVerdict({ ...report, findings: report.findings.map((finding) => ({ ...finding, bundle: finding.bundle && basename(finding.bundle) })) }),
     counts: [report.cells, report.tried, report.admitted, report.quanta, report.restores],
   });
-  const first = sweep(input, { budget: LOAD_BUDGET, bundles: null });
-  const second = sweep(input, { budget: LOAD_BUDGET, bundles: null });
-  assert.ok(first.cells > 10);
-  assert.equal(summary(second), summary(first));
+  // walled-open has no finding. floor-gap has one, so its two sweeps also
+  // compare what walled-open cannot (#83): which finding of each kind comes
+  // first, the order of the findings list, and the bundles written for it.
+  // Each sweep writes into a directory of its own, so the second does not
+  // number its files past the first's.
+  for (const file of ['fixtures/sweep/walled-open.json', 'fixtures/sweep/floor-gap.json']) {
+    const loaded = loadScene(file);
+    assert.ok(loaded.ok, file);
+    if (!loaded.ok) {
+      continue;
+    }
+    const input = sceneInput(loaded.scene);
+    const first = sweep(input, { budget: LOAD_BUDGET, bundles: mkdtempSync(join(dir, 'twice-')) });
+    const second = sweep(input, { budget: LOAD_BUDGET, bundles: mkdtempSync(join(dir, 'twice-')) });
+    assert.ok(first.cells > 10, file);
+    assert.equal(summary(second), summary(first), file);
+    assert.equal(second.findings.length, first.findings.length, file);
+    first.findings.forEach((finding, i) => {
+      const again = second.findings[i];
+      assert.ok(finding.bundle && again.bundle, file + ': finding ' + i + ' is bundled');
+      assert.deepEqual({ ...again, bundle: basename(again.bundle) }, { ...finding, bundle: basename(finding.bundle) }, file + ': finding ' + i);
+      assert.ok(readFileSync(again.bundle).equals(readFileSync(finding.bundle)), file + ': finding ' + i + '\'s bundles differ');
+    });
+    if (file.endsWith('floor-gap.json')) {
+      assert.ok(first.findings.length > 0, 'floor-gap has findings to compare');
+    }
+  }
 });
 
 test('every zone witness of every world swept here replays hash for hash, and a sweep whose restore omits the hasher lanes has witnesses that do not', (t) => {
@@ -401,4 +425,31 @@ test('the scheduled sweep holds each world to its record: the recorded verdict p
       process.env.SI_RPG_BUNDLES = was;
     }
   }
+});
+
+test('a sweep that throws in the scheduled job fails with a block naming the world and the throw, and the issue the job writes for the run quotes it', () => {
+  // Planted: a budget whose quanta throws when it is read. The sweep reads
+  // its budget once the load has settled, before its first action, so the
+  // throw comes from inside the sweep of the one world the run wants, where
+  // the job's catch meets it. Nothing in the job is changed for the plant.
+  const name = 'fixture shape-traversal ledge-box';
+  const message = 'planted: this budget cannot be read';
+  /** @type {{ quanta: number, restores: number }} */
+  const budget = {
+    /** @returns {number} */
+    get quanta() {
+      throw new Error(message);
+    },
+    restores: SWEEP_BUDGET.restores,
+  };
+  const results = runCorpus({ quanta: 0, points: 0, only: 'sweep ' + name, sweepBudget: budget, say: () => {} });
+  assert.deepEqual(results.map((result) => result.name + ' ' + result.status), ['sweep ' + name + ' error']);
+  const [thrown] = results;
+  assert.equal(thrown.detail, 'the sweep threw: ' + message);
+  assert.equal(thrown.block, 'the sweep of ' + name + ' threw: ' + message + '\n');
+  // The issue the job opens for the run: titled with the block's first line,
+  // and quoting the block in its body.
+  const issue = issueText(results);
+  assert.equal(issue.title, 'corpus: sweep ' + name + ': the sweep of ' + name + ' threw: ' + message);
+  assert.ok(issue.body.includes('```\n' + String(thrown.block).trim() + '\n```'), issue.body);
 });

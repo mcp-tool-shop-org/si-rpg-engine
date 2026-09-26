@@ -791,7 +791,9 @@ export function sweepCorpus(options) {
       report = input.actors.length === 0 ? null : sweep(input, { budget: options.budget, bundles: null });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      results.push({ name, kind: 'sweep', status: 'error', ms: performance.now() - t0, detail: 'the sweep threw: ' + message });
+      // A block, as the sweep's other failing results have, naming the world
+      // and the throw: the job's issue is titled from it and quotes it (#83).
+      results.push({ name, kind: 'sweep', status: 'error', ms: performance.now() - t0, detail: 'the sweep threw: ' + message, block: 'the sweep of ' + world.name + ' threw: ' + message + '\n' });
       options.say('FAIL  ' + name + ': the sweep threw: ' + message);
       continue;
     }
