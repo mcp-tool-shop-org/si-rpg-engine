@@ -114,8 +114,8 @@
       }
     ],
     "since": {
-      "commit": "ed05b617b2d006af7d9e350582f3d589554c234e",
-      "generatedAt": "2026-09-26T17:47:28.266Z"
+      "commit": "00d1c90794733042541d01601d0a5a9d64c8d47c",
+      "generatedAt": "2026-09-26T17:48:51.572Z"
     },
     "unchanged": true
   },
@@ -202,7 +202,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 13 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "00d1c90794733042541d01601d0a5a9d64c8d47c",
+  "commit": "3a2c4379afc3142f262b978d487d050a6186a5f8",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -769,7 +769,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T17:48:51.572Z",
+  "generatedAt": "2026-09-26T17:56:36.159Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 8 reads use paths built at run time and are not named here.",
