@@ -75,6 +75,17 @@
 // when its part is spent, checked before each proposal, so it may overrun by
 // one action and its settle. A sweep with any actor stopped is deferred:
 // whatever it has found stands, and no zone is refused as unreached.
+//
+// Watching (T7b pin 5). The instrument's bench runs this sweep as its aimed
+// proposer and takes each action's reach around it. A caller that passes
+// `watch` is told of every proposal, in the order the sweep makes them: open()
+// just before it is submitted, then refused() with the checker's reason, or,
+// once an admitted action has run out and settled or been found, admitted()
+// with the witness of the cell it was taken from, its log entry, and how it
+// ended. Between open() and admitted() only the submission and its quanta run:
+// no restore, no save, and no zone or cell bookkeeping. The watch reads what
+// it is handed and returns nothing the sweep reads, so a sweep with one
+// explores, and reports, exactly as a sweep without.
 
 import { worldFloor } from '../tick/admit-world.js';
 import { bundleFrom, captureBundle, writeBundle } from '../tick/bundle.js';
@@ -108,6 +119,11 @@ export const REACHES = /** @type {ReadonlyArray<number>} */ ([1, 2, 3]);
  * @typedef {{ kind: FindingKind, actor: string, body: string | null, action: Action | null, from: string | null, tick: number, hash: string, detail: string, witness: Witness, count: number, bundle: string | null }} Finding
  * @typedef {{ id: string, reached: boolean, body: string | null, actor: string | null, witness: Witness | null }} ZoneVerdict
  * @typedef {{ actor: string, pitch: number, cells: number, tried: number, admitted: number, quanta: number, restores: number, complete: boolean, frontier: number }} ActorCosts
+ * @typedef {{
+ *   open: () => void,
+ *   refused: (made: { actor: string, cell: string, action: Action, reason: string }) => void,
+ *   admitted: (made: { actor: string, cell: string, witness: Witness, action: Action, entry: LogEntry, end: 'settled' | FindingKind, tick: number, hash: string }) => void,
+ * }} SweepWatch
  * @typedef {{
  *   name: string, actors: string[], actionSet: string, complete: boolean, settledAtLoad: boolean,
  *   zones: ZoneVerdict[], findings: Finding[],
@@ -355,14 +371,16 @@ export function replayWitness(input, witness) {
  *   bundles?: string | null,
  *   restore?: (tick: ReturnType<typeof createRestorableTick>, saved: TickSave) => void,
  *   say?: (line: string) => void,
+ *   watch?: SweepWatch,
  * }} options bundles: the directory findings write their bundles into, or null
  *   for none; restore: how a state is put back, the tick's own restore unless a
- *   test plants another
+ *   test plants another; watch: told of every proposal (see Watching, above)
  * @returns {SweepReport}
  */
 export function sweep(input, options) {
   const t0 = performance.now();
   const say = options.say || (() => {});
+  const watch = options.watch || null;
   const catalog = loadIntentRules();
   const rules = catalog.rules;
   const set = actionSet(rules);
@@ -617,9 +635,15 @@ export function sweep(input, options) {
           at = cell.key;
         }
         counts.tried = counts.tried + 1;
+        if (watch) {
+          watch.open();
+        }
         const result = tick.submit({ kind: 'intent', verb: action.verb, actor: actorId, target: action.target, frameHash: tick.frame().hash });
         if (!result.admitted) {
           counts.refused = counts.refused + 1;
+          if (watch) {
+            watch.refused({ actor: actorId, cell: cell.key, action, reason: result.reason });
+          }
           continue;
         }
         counts.admitted = counts.admitted + 1;
@@ -628,6 +652,9 @@ export function sweep(input, options) {
         const entry = log[log.length - 1];
         const end = runOut();
         const now = tick.frame();
+        if (watch) {
+          watch.admitted({ actor: actorId, cell: cell.key, witness: witnessOf(cell), action, entry, end: end.kind, tick: now.tick, hash: now.hash });
+        }
         /** @returns {Witness} */
         const here = () => {
           const path = pathOf(cell);

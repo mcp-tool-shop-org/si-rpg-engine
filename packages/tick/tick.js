@@ -247,6 +247,18 @@ function buildTick(init) {
   }
 
   /**
+   * The use verb's episode. Its text goes into the memory's episodes, which
+   * the hash does not mix; a mind's use goal is met by reading it (minds.js).
+   * It is a function of its own so the instrument's bench marks what it
+   * writes apart from the rest of submit (T7b pin 3).
+   * @param {string} actor
+   * @param {string} name the zone or the body used
+   */
+  function recordUse(actor, name) {
+    memory.recordEpisode(tick, 'use', 'use ' + actor + ' ' + name);
+  }
+
+  /**
    * Hands a committed frame to one host. A host that throws is detached and
    * the quantum completes. A host cannot hold the law by failing.
    * @param {Host} host
@@ -482,7 +494,7 @@ function buildTick(init) {
         const effect = check.rule.effect || 'drive';
         if (effect === 'episode') {
           const name = check.zoneId || check.otherId || '';
-          memory.recordEpisode(tick, 'use', 'use ' + proposal.actor + ' ' + name);
+          recordUse(proposal.actor, name);
           record(proposal, role);
           actions.set(proposal.actor, { remaining: 1, effect, riseQuanta: 0, aimX: actor.x, aimZ: actor.z, otherId: check.otherId || null, speed: 0 });
           return { admitted: true, quanta: 1, hash: current.hash };
