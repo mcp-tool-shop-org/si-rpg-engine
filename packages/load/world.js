@@ -10,11 +10,12 @@ import { costLine, sceneInput, sweep, sweepVerdict } from './sweep.js';
 /**
  * The sweep's budget at load. A world whose sweep does not finish inside it
  * is admitted with the sweep deferred to the scheduled job (pin 10). Measured
- * on the builder's machine after T6 pin 2: worlds/crate-and-door.json sweeps in
- * 226,362 quanta and 2,190 restores, 13 s (81 s before pin 2), and the largest
- * world in fixtures/sweep/ in 50,486 quanta and 575 restores, 3 s. The budget
- * is about four times crate-and-door, so a world of its size finishes at load
- * in under a minute.
+ * on the builder's machine on F2's law, after T6 pin 2:
+ * worlds/crate-and-door.json, walled on four sides, sweeps in 139,732 quanta
+ * and 1,396 restores, 8.6 s (53.3 s before pin 2), and the largest world in
+ * fixtures/sweep/, plateau-low, in 51,910 quanta and 598 restores, 3 s. The
+ * budget is about seven times crate-and-door, so a world of its size finishes
+ * at load in under a minute.
  */
 export const LOAD_BUDGET = { quanta: 1000000, restores: 10000 };
 

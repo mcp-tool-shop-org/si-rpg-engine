@@ -629,10 +629,11 @@ function productLong(quanta, count, say, plantSplit, plantStop) {
  * was recorded under: one and a half times load world's. It cuts short the
  * product scene, where lower and the walker each spend their share of the
  * quanta, half a million, while the climber finishes, and the minds fixture;
- * every other world finishes inside it, the largest in 616,000 quanta. All 25
- * sweeps took six and a half minutes on the builder's machine, which runs a
- * product quantum in 54 us to CI's 95 us, so about 12 minutes in CI, beside
- * the replay's 3, inside the step's 25.
+ * every other world finishes inside it, on F2's law the largest, the verb
+ * fixture's refusals case, in 516,674 quanta. All 25 sweeps took six and a
+ * half minutes on the builder's machine, which runs a product quantum in
+ * 54 us to CI's 95 us, so about 12 minutes in CI, beside the replay's 3,
+ * inside the step's 25.
  */
 export const SWEEP_BUDGET = { quanta: 1500000, restores: 15000 };
 
