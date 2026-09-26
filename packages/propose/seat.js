@@ -10,6 +10,10 @@
 // proposal is checked against the world as it is when it arrives (pin 8).
 // The seat enforces the call budgets: at most callsPerSession calls,
 // outputTokens as each call's num_predict, and secondsPerCall as its timeout.
+// That timeout is the seat's own deadline, the call's only one (askWithin):
+// what the client can observe of the model, the server, and the GPU is read
+// before the call, and a call still out at the budget is cut off and recorded
+// with what was read, no output, and the budget as its time.
 
 import { readFileSync, realpathSync } from 'node:fs';
 import { basename, isAbsolute, join, relative } from 'node:path';
@@ -18,7 +22,7 @@ import { validateScene } from '../tick/scene.js';
 import { settle } from '../tick/tick.js';
 import { readRoleOutput, stampProposal } from './parse.js';
 import { accessText, catalogText, feedbackText, renderTemplate, worldText } from './prompt.js';
-import { outputHash, promptHash, recordKey, schemaHash } from './record.js';
+import { cutOffTiming, outputHash, promptHash, recordKey, schemaHash } from './record.js';
 import { buildSchema } from './schema.js';
 
 /**
@@ -30,11 +34,15 @@ import { buildSchema } from './schema.js';
  * @typedef {import('../frame/types.js').RoleSource} RoleSource
  * @typedef {import('../tick/roles.js').RoleEntry} RoleEntry
  * @typedef {import('./ollama.js').ChatRequest} ChatRequest
- * @typedef {import('./ollama.js').CallResult} CallResult
+ * @typedef {import('./ollama.js').Observed} Observed
+ * @typedef {import('./ollama.js').Reply} Reply
  * @typedef {import('./record.js').CallRecord} CallRecord
  * @typedef {import('./record.js').CallLine} CallLine
  * @typedef {import('./prompt.js').Feedback} Feedback
- * @typedef {(request: ChatRequest, options: { timeoutMs: number, pin: string }) => Promise<CallResult>} Ask
+ * @typedef {{
+ *   observe: (name: string, pin: string) => Promise<Observed>,
+ *   ask: (request: ChatRequest, signal: AbortSignal) => Promise<Reply>,
+ * }} Client the model's client: a read before each call, and the call under the seat's signal
  * @typedef {Parameters<typeof import('../tick/world.js').createWorld>[0]} WorldInit
  */
 
@@ -146,7 +154,7 @@ export async function scratchWorld(spec, root) {
  *   inputs: { dispatch: string, diff: string, access: Record<string, string[]> },
  *   calls: number,
  *   lateQuanta: number,
- *   ask: Ask,
+ *   client: Client,
  *   timer?: (ms: number) => Promise<void>,
  * }} SessionInit
  */
@@ -201,12 +209,12 @@ function schemaContext(init) {
 }
 
 /**
- * Resolves with the call's result, or with null once the timeout passes
- * first: the seat's own bound, beside the one the call is given.
- * @param {Promise<CallResult>} asked
+ * Resolves with the call's reply, or with null once the seat's deadline
+ * passes first.
+ * @param {Promise<Reply>} asked
  * @param {number} ms
  * @param {((ms: number) => Promise<void>) | undefined} timer
- * @returns {Promise<CallResult | null>}
+ * @returns {Promise<Reply | null>}
  */
 async function within(asked, ms, timer) {
   /** @type {ReturnType<typeof setTimeout> | undefined} */
@@ -221,6 +229,36 @@ async function within(asked, ms, timer) {
       clearTimeout(handle);
     }
   }
+}
+
+/**
+ * One call under the seat's deadline, which is the call's only one. What the
+ * client can observe of the model, the server, and the GPU is read first. The
+ * call is then given the seat's signal, `whileOut` runs while it is out, and
+ * the seat waits at most `timeoutMs`. A reply within the budget is taken. A
+ * call still out at the budget, or a reply that took longer than it, is cut
+ * off: the signal is aborted and no reply is taken. So a call that times out
+ * ends the same way whichever clock would have fired first.
+ * @param {Client} client
+ * @param {ChatRequest} request
+ * @param {string} pin the model digest the role pins
+ * @param {number} timeoutMs
+ * @param {{ timer?: (ms: number) => Promise<void>, whileOut?: () => void }} [options]
+ * @returns {Promise<{ seen: Observed, reply: Reply | null }>}
+ */
+export async function askWithin(client, request, pin, timeoutMs, options) {
+  const seen = await client.observe(request.model, pin);
+  const deadline = new AbortController();
+  const asked = client.ask(request, deadline.signal);
+  if (options && options.whileOut) {
+    options.whileOut();
+  }
+  const reply = await within(asked, timeoutMs, options ? options.timer : undefined);
+  if (reply === null || reply.timing.ms > timeoutMs) {
+    deadline.abort();
+    return { seen, reply: null };
+  }
+  return { seen, reply };
 }
 
 /**
@@ -280,12 +318,15 @@ export async function runSession(init) {
       stream: false,
     };
     const timeoutMs = budget.secondsPerCall * 1000;
-    const asked = init.ask(request, { timeoutMs, pin: model.digest });
-    // The tick never waits for a model: it runs on while the call is out.
-    for (let i = 0; i < init.lateQuanta; i = i + 1) {
-      tick.advance();
-    }
-    const result = await within(asked, timeoutMs, init.timer);
+    const { seen, reply } = await askWithin(init.client, request, model.digest, timeoutMs, {
+      timer: init.timer,
+      // The tick never waits for a model: it runs on while the call is out.
+      whileOut: () => {
+        for (let i = 0; i < init.lateQuanta; i = i + 1) {
+          tick.advance();
+        }
+      },
+    });
     /** @type {CallRecord} */
     const record = {
       record: 1,
@@ -297,25 +338,30 @@ export async function runSession(init) {
       prompt: promptHash(messages),
       schema: schemaHash(format),
       timeoutMs,
-      model: result ? result.model : { name: model.name, digest: 'unobserved', quantization: 'unobserved', format: 'unobserved', family: 'unobserved', parameterSize: 'unobserved' },
-      server: result ? result.server : { version: 'unobserved', settings: {}, loaded: null, callsAtOnce: 1 },
-      gpu: result ? result.gpu : { names: [], count: 0, driver: null },
-      output: result ? result.output : null,
-      outputSha256: outputHash(result ? result.output : null),
-      timing: result ? result.timing : { ms: timeoutMs, timedOut: true, totalDuration: null, loadDuration: null, promptEvalCount: null, promptEvalDuration: null, evalCount: null, evalDuration: null, doneReason: null },
+      model: seen.model,
+      server: seen.server,
+      gpu: seen.gpu,
+      output: reply === null ? null : reply.output,
+      outputSha256: outputHash(reply === null ? null : reply.output),
+      // The seat, not the client, says whether a call was cut off.
+      timing: reply === null ? cutOffTiming(timeoutMs) : { ...reply.timing, timedOut: false },
     };
     const key = recordKey(/** @type {Record<string, unknown>} */ (/** @type {unknown} */ (record)));
     records.push(record);
     /** @type {CallLine} */
     const line = { call, record: key, builtAt, read: 'ok', reason: null, admitted: false, at: null };
     const loaded = record.server.loaded;
-    if (record.output === null) {
+    if (record.timing.timedOut) {
       line.read = 'timed-out';
       line.reason = 'no output within ' + budget.secondsPerCall + ' s';
       feedback.push({ call, proposal: null, read: line.read, admitted: false, reason: line.reason, at: null });
+    } else if (record.output === null) {
+      line.read = 'no-output';
+      line.reason = 'the reply held no output';
+      feedback.push({ call, proposal: null, read: line.read, admitted: false, reason: line.reason, at: null });
     } else if (loaded && typeof loaded.digest === 'string' && loaded.digest !== model.digest) {
       line.read = 'model-changed';
-      line.reason = 'the server ran ' + loaded.digest + ', not the pin';
+      line.reason = 'the server held ' + loaded.digest + ' loaded, not the pin';
       feedback.push({ call, proposal: null, read: line.read, admitted: false, reason: line.reason, at: null });
     } else {
       const read = readRoleOutput(record.output, manifest);

@@ -13,20 +13,22 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createMemory } from '../tick/memory.js';
 import { loadIntentRules } from '../tick/predicates.js';
-import { catalogOf, loadRoles, manifestHash, templateHash } from '../tick/roles.js';
+import { catalogOf, loadRoles, manifestHash, sha256, templateHash } from '../tick/roles.js';
 import { FIXTURE_SEED } from '../tick/fixture.js';
 import { createTick, settle } from '../tick/tick.js';
 import { createWorld } from '../tick/world.js';
 import { readRoleOutput, stampProposal } from './parse.js';
 import { npcMindPrompt, npcMindState, renderTemplate } from './prompt.js';
-import { driftOf, verifySession, writeSession } from './record.js';
+import { cutOffTiming, driftOf, verifySession, writeSession } from './record.js';
 import { buildSchema, roleProposalSchema } from './schema.js';
 import { runSession, scratchWorld, submitAsRole } from './seat.js';
 
 /**
  * @typedef {import('../tick/roles.js').RoleEntry} RoleEntry
- * @typedef {import('./ollama.js').CallResult} CallResult
  * @typedef {import('./ollama.js').ChatRequest} ChatRequest
+ * @typedef {import('./ollama.js').Observed} Observed
+ * @typedef {import('./ollama.js').Reply} Reply
+ * @typedef {import('./seat.js').Client} Client
  */
 
 const root = process.cwd();
@@ -40,36 +42,53 @@ function probe() {
 }
 
 /**
- * A fake model: each call returns the next output, and says the server holds the pin.
+ * What a fake client reads before a call: the server holds the pin.
+ * @param {string} name
+ * @param {string} pin
+ * @returns {Observed}
+ */
+function observed(name, pin) {
+  return {
+    model: { name, digest: pin, quantization: 'Q4_K_M', format: 'gguf', family: 'qwen2', parameterSize: '7.6B' },
+    server: { version: 'test', settings: {}, loaded: null, callsAtOnce: 1 },
+    gpu: { names: ['test'], count: 1, driver: null },
+  };
+}
+
+/**
+ * A reply that came back within the budget, in `ms` milliseconds.
+ * @param {string | null} output
+ * @param {number} [ms]
+ * @returns {Reply}
+ */
+function replied(output, ms) {
+  return { output, timing: { ms: ms === undefined ? 5 : ms, timedOut: false, totalDuration: null, loadDuration: null, promptEvalCount: null, promptEvalDuration: null, evalCount: 20, evalDuration: null, doneReason: 'stop' } };
+}
+
+/**
+ * A fake model: the server holds the pin, and each call returns the next output.
  * @param {Array<string | null>} outputs
  * @param {(request: ChatRequest) => void} [seen]
+ * @returns {Client}
  */
-function fakeAsk(outputs, seen) {
+function fakeClient(outputs, seen) {
   let n = 0;
-  /**
-   * @param {ChatRequest} request
-   * @param {{ timeoutMs: number, pin: string }} options
-   * @returns {Promise<CallResult>}
-   */
-  return async (request, options) => {
-    if (seen) {
-      seen(request);
-    }
-    const output = outputs[n];
-    n = n + 1;
-    return {
-      output,
-      model: { name: request.model, digest: options.pin, quantization: 'Q4_K_M', format: 'gguf', family: 'qwen2', parameterSize: '7.6B' },
-      server: { version: 'test', settings: {}, loaded: null, callsAtOnce: 1 },
-      gpu: { names: ['test'], count: 1, driver: null },
-      timing: { ms: 5, timedOut: false, totalDuration: null, loadDuration: null, promptEvalCount: null, promptEvalDuration: null, evalCount: 20, evalDuration: null, doneReason: 'stop' },
-    };
+  return {
+    observe: async (name, pin) => observed(name, pin),
+    ask: async (request) => {
+      if (seen) {
+        seen(request);
+      }
+      const output = outputs[n];
+      n = n + 1;
+      return replied(output);
+    },
   };
 }
 
 /**
  * A scratch session of the probe role in the crate-and-door world.
- * @param {{ ask: import('./seat.js').Ask, calls: number, lateQuanta?: number, timer?: (ms: number) => Promise<void>, onTick?: (tick: ReturnType<typeof createTick>) => void }} options
+ * @param {{ client: Client, calls: number, lateQuanta?: number, timer?: (ms: number) => Promise<void>, onTick?: (tick: ReturnType<typeof createTick>) => void }} options
  */
 async function probeSession(options) {
   const { catalog, entry } = probe();
@@ -99,7 +118,7 @@ async function probeSession(options) {
     inputs: { dispatch: 'A change to the push verb.', diff: '--- a/predicates/intents/push.json\n+++ b/predicates/intents/push.json\n', access: { 'admitIntent in packages/tick/predicates.js': ['move', 'push'] } },
     calls: options.calls,
     lateQuanta,
-    ask: options.ask,
+    client: options.client,
     timer: options.timer,
   });
   settle(tick);
@@ -367,7 +386,7 @@ test('a session records every call, admits late proposals with provenance, and v
   const requests = [];
   const { result, tick, dir, entry } = await probeSession({
     calls: 3,
-    ask: fakeAsk([
+    client: fakeClient([
       JSON.stringify({ notes: 'toward the door', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, z: 0 } } }),
       'the model wandered off',
       JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'crate', target: { x: 2.4, z: 1 } } }),
@@ -403,29 +422,32 @@ test('the tick advances while a slow call is outstanding, and the proposal is ch
   let held = null;
   /** @type {number[]} */
   const asked = [];
-  const reply = fakeAsk([JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, z: 0 } } })]);
+  const reply = fakeClient([JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, z: 0 } } })]);
   const { result } = await probeSession({
     calls: 1,
     lateQuanta: 20,
     onTick: (tick) => {
       held = tick;
     },
-    ask: (request, options) => {
-      const tick = /** @type {ReturnType<typeof createTick>} */ (/** @type {unknown} */ (held));
-      const start = tick.frame().tick;
-      asked.push(start);
-      // The reply comes only once the tick has run on 20 quanta: a seat that
-      // waited on the model before stepping the tick would never get it.
-      return new Promise((resolve) => {
-        const poll = () => {
-          if (tick.frame().tick >= start + 20) {
-            resolve(reply(request, options));
-          } else {
-            setImmediate(poll);
-          }
-        };
-        poll();
-      });
+    client: {
+      observe: reply.observe,
+      ask: (request, signal) => {
+        const tick = /** @type {ReturnType<typeof createTick>} */ (/** @type {unknown} */ (held));
+        const start = tick.frame().tick;
+        asked.push(start);
+        // The reply comes only once the tick has run on 20 quanta: a seat that
+        // waited on the model before stepping the tick would never get it.
+        return new Promise((resolve) => {
+          const poll = () => {
+            if (tick.frame().tick >= start + 20) {
+              resolve(reply.ask(request, signal));
+            } else {
+              setImmediate(poll);
+            }
+          };
+          poll();
+        });
+      },
     },
   });
   assert.deepEqual(asked, [0]);
@@ -437,12 +459,15 @@ test('the tick advances while a slow call is outstanding, and the proposal is ch
 test('the seat keeps its call budgets: callsPerSession, outputTokens, and secondsPerCall', async () => {
   let asks = 0;
   const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
-  const counted = fakeAsk([move, move, move, move, move]);
+  const counted = fakeClient([move, move, move, move, move]);
   const over = await probeSession({
     calls: 5,
-    ask: (request, options) => {
-      asks = asks + 1;
-      return counted(request, options);
+    client: {
+      observe: counted.observe,
+      ask: (request, signal) => {
+        asks = asks + 1;
+        return counted.ask(request, signal);
+      },
     },
   });
   assert.equal(asks, 3, 'the probe allows 3 calls a session, and a fourth is never made');
@@ -452,7 +477,7 @@ test('the seat keeps its call budgets: callsPerSession, outputTokens, and second
   const waited = [];
   const slow = await probeSession({
     calls: 1,
-    ask: () => new Promise(() => {}),
+    client: { observe: counted.observe, ask: () => new Promise(() => {}) },
     timer: (ms) => {
       waited.push(ms);
       return Promise.resolve();
@@ -463,6 +488,64 @@ test('the seat keeps its call budgets: callsPerSession, outputTokens, and second
   assert.equal(slow.result.records[0].output, null);
   assert.equal(slow.result.records[0].timing.timedOut, true);
   assert.equal(slow.tick.log().length, 0, 'a call that timed out proposes nothing');
+});
+
+test('a call that never returns is cut off at the seat\'s one deadline and recorded from what was read before it, and it verifies; a call that returned over its budget does not', async () => {
+  const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
+  const reads = fakeClient([]);
+  /** @type {AbortSignal[]} */
+  const signals = [];
+  /** @type {number[]} */
+  const waited = [];
+  const silent = await probeSession({
+    calls: 1,
+    client: {
+      observe: reads.observe,
+      ask: (_request, signal) => {
+        signals.push(signal);
+        return new Promise(() => {});
+      },
+    },
+    timer: (ms) => {
+      waited.push(ms);
+      return Promise.resolve();
+    },
+  });
+  const pin = /** @type {NonNullable<RoleEntry['manifest']['model']>} */ (silent.entry.manifest.model).digest;
+  const cut = silent.result.records[0];
+  const key = silent.result.calls[0].record;
+  assert.deepEqual(waited, [120000], 'secondsPerCall is the one deadline');
+  assert.equal(signals.length === 1 && signals[0].aborted, true, 'the seat aborts the call it cut off');
+  assert.deepEqual({ model: cut.model, server: cut.server, gpu: cut.gpu }, observed('qwen2.5:7b', pin), 'what was read before the call, never a placeholder');
+  assert.equal(cut.output, null);
+  assert.equal(cut.outputSha256, null);
+  assert.deepEqual(cut.timing, cutOffTiming(120000), 'no output, and the budget as its time');
+  assert.equal(silent.result.calls[0].read, 'timed-out');
+  assert.deepEqual(verifySession(silent.dir).failures, [], 'a call the seat cut off at its budget verifies');
+
+  // A reply that comes back only after the budget is not taken, and its
+  // record is the same bytes as that of a call that never returned.
+  const late = await probeSession({
+    calls: 1,
+    client: { observe: reads.observe, ask: async () => replied(move, 120001) },
+  });
+  assert.equal(JSON.stringify(late.result.records[0]), JSON.stringify(cut), 'the same record whichever clock would have fired first');
+  assert.equal(late.tick.log().length, 0, 'nothing is admitted from a reply past the deadline');
+  assert.deepEqual(verifySession(late.dir).failures, []);
+
+  // Planted in the session: a call that returned over its budget still
+  // fails, and so does a cut-off record out of its one form.
+  const file = join(silent.dir, 'records', key + '.json');
+  /** @param {object} record */
+  const plant = (record) => {
+    writeFileSync(file, JSON.stringify(record, null, 2) + '\n');
+    return verifySession(silent.dir).failures;
+  };
+  assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move), timing: replied(move, 120001).timing }), ['record ' + key + ': took 120001 ms, over the budget of 120 s']);
+  assert.deepEqual(plant({ ...cut, timing: { ...cut.timing, ms: 120001 } }), ['record ' + key + ': a call cut off at its budget is recorded at the budget of 120000 ms, with nothing the server reported']);
+  assert.deepEqual(plant({ ...cut, timing: { ...cut.timing, evalCount: 3 } }), ['record ' + key + ': a call cut off at its budget is recorded at the budget of 120000 ms, with nothing the server reported']);
+  assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move) }), ['record ' + key + ': a call cut off at its budget holds no output, and this one holds one']);
+  assert.deepEqual(plant(cut), [], 'the record as the seat wrote it verifies again');
 });
 
 test('a scratch world is built only from files under fixtures/ or worlds/, or the product scene', async () => {

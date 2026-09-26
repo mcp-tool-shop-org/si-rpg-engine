@@ -15,6 +15,14 @@
 // client and changes outputs (findings 24, 26). So CI never regenerates an
 // output: it checks the records.
 //
+// The seat's deadline is a call's only one (seat.js askWithin). What the
+// client can observe of the model, the server, and the GPU is read before the
+// call, so a record holds it however the call ends. A call the seat cut off at
+// its budget has one form: no output, the budget as its time, and nothing the
+// server reported (cutOffTiming). So a timed-out record is the same whichever
+// clock would have fired first, and it verifies; a call that returned after
+// its budget does not.
+//
 // A session is a directory the session names: session.json, which is the
 // log (seed, world, law, entries, and at its top level the manifests its
 // records and entries cite, keyed by hash) with the session's calls and every
@@ -118,6 +126,17 @@ export function outputHash(output) {
 }
 
 /**
+ * The timing of a call the seat cut off at its budget, in its one form: the
+ * budget as its time, and nothing the server reported, since no reply was
+ * taken. verifySession accepts a timed-out record only in this form.
+ * @param {number} ms the call's budget, secondsPerCall in milliseconds
+ * @returns {Timing}
+ */
+export function cutOffTiming(ms) {
+  return { ms, timedOut: true, totalDuration: null, loadDuration: null, promptEvalCount: null, promptEvalDuration: null, evalCount: null, evalDuration: null, doneReason: null };
+}
+
+/**
  * Writes a session's log and records into its directory.
  * @param {string} dir
  * @param {Session} session
@@ -163,7 +182,8 @@ export function readSession(dir) {
  *   4. every output parses again, with the seat's own parser, to the proposal
  *      the log admitted;
  *   5. every record keeps its role's budgets: calls, output tokens, seconds,
- *      and notes;
+ *      and notes; a call the seat cut off at its budget is accepted in its
+ *      one form, and a call that returned after its budget is not;
  *   6. the admitted log replays, gated against its own manifests, to the same
  *      frame hashes;
  *   7. a record the session cites and does not hold is a failure.
@@ -229,7 +249,15 @@ export function verifySession(dir) {
     if (record.timeoutMs !== budget.secondsPerCall * 1000) {
       failures.push('record ' + key + ': a timeout of ' + record.timeoutMs + ' ms is not the secondsPerCall budget of ' + budget.secondsPerCall);
     }
-    if (record.timing.ms > budget.secondsPerCall * 1000) {
+    const budgetMs = budget.secondsPerCall * 1000;
+    if (record.timing.timedOut) {
+      if (record.output !== null) {
+        failures.push('record ' + key + ': a call cut off at its budget holds no output, and this one holds one');
+      }
+      if (canonical(record.timing) !== canonical(cutOffTiming(budgetMs))) {
+        failures.push('record ' + key + ': a call cut off at its budget is recorded at the budget of ' + budgetMs + ' ms, with nothing the server reported');
+      }
+    } else if (record.timing.ms > budgetMs) {
       failures.push('record ' + key + ': took ' + Math.round(record.timing.ms) + ' ms, over the budget of ' + budget.secondsPerCall + ' s');
     }
     if (record.output !== null) {

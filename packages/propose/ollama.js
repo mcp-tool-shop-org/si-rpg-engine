@@ -1,12 +1,15 @@
 // The seat's one connection to a model: a local Ollama at 127.0.0.1:11434 and
 // nowhere else. CI and npm test never import a path that calls it; a person
-// runs it by hand, on a GPU. Each call reads what the client can observe of
-// the model and the server at call time, so its record holds it (T7a pin 6,
-// findings 24 to 30): the model's digest and quantization from the server's
-// model list, the Ollama version, the server settings this process can read
-// from its environment, the model as the server holds it loaded after the
-// call, and the GPU's name and count. Before the call it refuses a model whose
-// digest is not the role's pin, so a changed model is never asked.
+// runs it by hand, on a GPU. Before each call, observeOllama reads what the
+// client can observe of the model, the server, and the GPU, so the call's
+// record holds it however the call ends (T7a pin 6, findings 24 to 30): the
+// model's digest and quantization from the server's model list, the Ollama
+// version, the server settings this process can read from its environment,
+// the model as the server holds it loaded, and the GPU's name and count. It
+// refuses a model whose digest is not the role's pin, so a changed model is
+// never asked. askOllama makes the call and keeps no clock of its own: it
+// takes the seat's signal, and the seat's deadline is the call's only one
+// (seat.js askWithin).
 //
 // Ollama takes no per-request setting for its parallel slots: the server
 // reads OLLAMA_NUM_PARALLEL when it starts. The seat asks for one slot the
@@ -39,7 +42,8 @@ export const SETTINGS = [
  * @typedef {{ version: string, settings: Record<string, string | null>, loaded: Record<string, unknown> | null, callsAtOnce: 1 }} ServerSeen
  * @typedef {{ names: string[], count: number, driver: string | null }} GpuSeen
  * @typedef {{ ms: number, timedOut: boolean, totalDuration: number | null, loadDuration: number | null, promptEvalCount: number | null, promptEvalDuration: number | null, evalCount: number | null, evalDuration: number | null, doneReason: string | null }} Timing
- * @typedef {{ output: string | null, model: ModelSeen, server: ServerSeen, gpu: GpuSeen, timing: Timing }} CallResult
+ * @typedef {{ model: ModelSeen, server: ServerSeen, gpu: GpuSeen }} Observed what the client reads before a call
+ * @typedef {{ output: string | null, timing: Timing }} Reply a call that returned
  * @typedef {{ model: string, messages: Array<{ role: string, content: string }>, options: Record<string, unknown>, format: object, stream: false }} ChatRequest
  */
 
@@ -123,54 +127,52 @@ export function gpuSeen() {
 }
 
 /**
- * One chat call. Refuses a model whose digest is not the pin before asking.
- * A call past its timeout is aborted and comes back with no output.
- * @param {ChatRequest} request
- * @param {{ timeoutMs: number, pin: string }} options
- * @returns {Promise<CallResult>}
+ * What the client can observe of the model, the server, and the GPU, read
+ * before a call. Refuses a model whose digest is not the pin, so it is never
+ * asked.
+ * @param {string} name
+ * @param {string} pin
+ * @returns {Promise<Observed>}
  */
-export async function askOllama(request, options) {
-  const model = await modelSeen(request.model);
-  if (model.digest !== options.pin) {
-    throw new Error('the server holds ' + request.model + ' as ' + model.digest + ', not the pinned ' + options.pin);
+export async function observeOllama(name, pin) {
+  const model = await modelSeen(name);
+  if (model.digest !== pin) {
+    throw new Error('the server holds ' + name + ' as ' + model.digest + ', not the pinned ' + pin);
   }
   const version = String((await getJson('/api/version')).version);
-  const gpu = gpuSeen();
+  const loaded = await loadedSeen(name);
+  return { model, server: { version, settings: settingsSeen(), loaded, callsAtOnce: 1 }, gpu: gpuSeen() };
+}
+
+/**
+ * One chat call, under the seat's signal. It keeps no clock of its own: when
+ * the seat's deadline passes, the seat aborts the signal, this call rejects,
+ * and the seat records the call as cut off at its budget (seat.js askWithin).
+ * @param {ChatRequest} request
+ * @param {AbortSignal} signal
+ * @returns {Promise<Reply>}
+ */
+export async function askOllama(request, signal) {
   const started = performance.now();
-  /** @type {any} */
-  let body = null;
-  let timedOut = false;
-  try {
-    const response = await fetch(BASE + '/api/chat', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(request),
-      signal: AbortSignal.timeout(options.timeoutMs),
-    });
-    if (!response.ok) {
-      throw new Error('ollama returned ' + response.status + ' for /api/chat: ' + (await response.text()));
-    }
-    body = await response.json();
-  } catch (error) {
-    if (error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
-      timedOut = true;
-    } else {
-      throw error;
-    }
+  const response = await fetch(BASE + '/api/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(request),
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error('ollama returned ' + response.status + ' for /api/chat: ' + (await response.text()));
   }
+  /** @type {any} */
+  const body = await response.json();
   const ms = performance.now() - started;
-  const loaded = await loadedSeen(request.model);
   /** @param {unknown} n */
   const count = (n) => (typeof n === 'number' ? n : null);
-  const content = body && body.message && typeof body.message.content === 'string' ? body.message.content : null;
   return {
-    output: timedOut ? null : content,
-    model,
-    server: { version, settings: settingsSeen(), loaded, callsAtOnce: 1 },
-    gpu,
+    output: body && body.message && typeof body.message.content === 'string' ? body.message.content : null,
     timing: {
       ms,
-      timedOut,
+      timedOut: false,
       totalDuration: body ? count(body.total_duration) : null,
       loadDuration: body ? count(body.load_duration) : null,
       promptEvalCount: body ? count(body.prompt_eval_count) : null,
