@@ -1,0 +1,2 @@
+# Shell scripts run under bash, including WSL on a Windows checkout, where a CRLF line ending breaks them.
+*.sh text eol=lf

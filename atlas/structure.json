@@ -523,7 +523,7 @@
           "path": "fixtures/shape-traversal.json"
         },
         {
-          "hash": "947871837b2571c138e9c81ad1f517228aeae1949fea90a94b004486b8ea0b30",
+          "hash": "d47607fd0f2a8868f922c06238d678a02f95860de514df394fbd968fd155c602",
           "path": "fixtures/solver.sha256"
         },
         {
@@ -6025,11 +6025,15 @@
       "externals": 0,
       "files": [
         {
+          "hash": "7e990b53b712d7398e0653a0ef6272d09a3094be9168acb92f925ebbba447939",
+          "path": ".gitattributes"
+        },
+        {
           "hash": "aca7ee64a4cc04ce03b026a56d2fbec41dab3a0797a0972c8a3510479933cce1",
           "path": ".gitignore"
         },
         {
-          "hash": "765e0f55524ac5981c8ab8d29e801de2d0624de8ae09a1fe213c43a15a818b97",
+          "hash": "2c2f49e2537f7d32db467e4566933b7d620cb7b5a98f178c369bc6f53d4f5639",
           "path": "CHANGELOG.md"
         },
         {
@@ -6037,35 +6041,35 @@
           "path": "LICENSE"
         },
         {
-          "hash": "c67cc99510a119264aaa8e1c36c8c3b558284b6f7505710f37793cf61df871a7",
+          "hash": "8a5d31101921b6b7c2d0ac28cd47ce992cf87fecdf17cc2a559ae11f14e35aa8",
           "path": "README.es.md"
         },
         {
-          "hash": "da2c0c61226062444f9cd93c259977116d7f0046f8456125d1596afee7ad1dd3",
+          "hash": "9e6b8d0b124a26b4af17b68b5cd5328c046e8e884ec688854a0ebc0ff5f0ac48",
           "path": "README.fr.md"
         },
         {
-          "hash": "e8dfcbe9e2b4b44237ec8db821c1bd8866c0635bf19a12b0c6db03d731b21b46",
+          "hash": "8e67d42816d4cd8cbe13b8973b17db3d51f3a896e0367da5bdde0062a5c75404",
           "path": "README.hi.md"
         },
         {
-          "hash": "7d09c7cb9ac79927e119b29cf56ff5df3d95ec2f27ac3e3bef26bc0822638b91",
+          "hash": "ecf5f54a32364aa48ab2b6d63bdbceb5444588ff7d2cac64ea01fda812fe2190",
           "path": "README.it.md"
         },
         {
-          "hash": "7802eefccec428cafaa16b6642dcc4cc27eb63f5baf886f3532b77659a12a448",
+          "hash": "dc7e45297f7c74cee6c0a6e4f4fd9b195abfe0223287ca6b384b982b0e17ceb4",
           "path": "README.ja.md"
         },
         {
-          "hash": "ec36700cc18f5ddfc3c8230c4bd219e96be01469b2c7c58299aa5e43daeb32db",
+          "hash": "f5ed8833f02a80ecdb7fe4497dde28a77120a6da872ad85fbbf3a7b97e31eece",
           "path": "README.md"
         },
         {
-          "hash": "d1e670f5bea2d49906cf25b3dde1cb759a7f42927055a985910b15f2687dfa9b",
+          "hash": "4853c5fa633a83bbe99590d47a28078b161314af9483868d803cee3fefdffa04",
           "path": "README.pt-BR.md"
         },
         {
-          "hash": "16e8ebf5a627798c8226eec9957b83bf284e1f243f1fa4dace5480ad2afdac57",
+          "hash": "b6ab0f304b992fa34d6a1f61872ff040beffcfb71c13ff0e3c9989416170c1a7",
           "path": "README.zh.md"
         },
         {
@@ -6085,7 +6089,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "d9a8fc1ee7ddff20542e7ff62da0a5812bb43c393758aa24b5364051fe4cb81b",
+          "hash": "6f5563bfc436df6f9ac6830247c158b4f2d3bbd45e94848cd71faed95fc63c58",
           "path": "package.json"
         },
         {
@@ -9446,6 +9450,11 @@
         },
         {
           "job": "engines",
+          "path": "tools/coordinator/check-translations.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "matched": true,
           "path": "tools/panel.js",
           "runKind": "checks",
@@ -9488,7 +9497,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 69,
+      "runsCount": 70,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -10264,10 +10273,21 @@
     }
   ],
   "generatedFrom": {
-    "commit": "282e65eb7368ac61393800adabebc4fddc823ba1",
-    "tracked": 317
+    "commit": "386f0d9c9514e0d293fa9f7a5d71acf35a737b65",
+    "tracked": 323
   },
   "landings": [
+    {
+      "readers": [
+        {
+          "by": "tools/coordinator/check-translations.mjs",
+          "call": "readFileSync",
+          "confidence": "weak"
+        }
+      ],
+      "target": "README.md",
+      "writers": []
+    },
     {
       "readers": [
         {
@@ -11702,6 +11722,17 @@
       "writers": []
     },
     {
+      "readers": [
+        {
+          "by": "tools/coordinator/verify-pr.sh",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "solver/build.mjs",
+      "writers": []
+    },
+    {
       "readers": [],
       "target": "solver/dist",
       "tracked": false,
@@ -12123,7 +12154,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 33,
+  "testFiles": 34,
   "unassigned": [
     {
       "exports": [
@@ -12157,11 +12188,11 @@
       "path": "site/src/content.config.ts"
     },
     {
-      "hash": "bfbbe154038e9b4fe24bb24ff2f7c54736a138487f360e7e3c8ee0023498956b",
+      "hash": "f6756abdb265b3d6d7f52183129b5767d57ecc3289e5ea8d221c3eafa3dfa5bb",
       "path": "site/src/content/docs/handbook/architecture.md"
     },
     {
-      "hash": "3a8e3357b3e5e34cd0558bfa07f1f5146d0d7c24553d21c079931173ebd2f369",
+      "hash": "383287289668e7b2e2d683faa60cfe41344f05046170904225c585e9f404f0cd",
       "path": "site/src/content/docs/handbook/getting-started.md"
     },
     {
@@ -12177,7 +12208,7 @@
       "path": "site/src/content/docs/handbook/security.md"
     },
     {
-      "hash": "8ac15596412525ddf495af418e01aab24dd552197e298109f49c9ca3e35ff31a",
+      "hash": "e3a8eb407c5753994129f2434e3b546ea0eb8d5e9dea81d8801e4550c8c99199",
       "path": "site/src/content/docs/handbook/testing.md"
     },
     {
@@ -12193,7 +12224,7 @@
       "path": "site/src/pages/index.astro"
     },
     {
-      "hash": "d45183151b89bc30995fed122754b211b5f07a78d7cadf0d4305aa747585ce36",
+      "hash": "9e0242180a43b1f1f3c960520ee4a3721cfb289123e30b205645b46dcb855f22",
       "path": "site/src/site-config.ts"
     },
     {
@@ -12207,6 +12238,32 @@
     {
       "hash": "61fc24492db9aef7ec38eb91cfeebaef96155014bb5f22648fd8ed2327c6cae2",
       "path": "site/tsconfig.json"
+    },
+    {
+      "hash": "dbe8be4b03745ea36d296febb0db9d1adda25296aaf206bfbdf679a22c722a10",
+      "path": "tools/coordinator/README.md"
+    },
+    {
+      "hash": "729eeace125ca778dc998e74da6489c131bb8ec1c6634c859155d20de56dfcbb",
+      "path": "tools/coordinator/atlas-linux.sh"
+    },
+    {
+      "exports": [
+        "compare"
+      ],
+      "hash": "f0166c4e75b417a7d7bbbe32c2ffb387fdc8b4d3f208de4bc206532d91a75f5b",
+      "path": "tools/coordinator/check-translations.mjs"
+    },
+    {
+      "hash": "79af7c18554cb0b5f0291a7ea83f2a875c6b0bf54f1e2c69a6fc68da54a79eba",
+      "importsFiles": [
+        "tools/coordinator/check-translations.mjs"
+      ],
+      "path": "tools/coordinator/check-translations.test.js"
+    },
+    {
+      "hash": "98c44ed278f6e55214a401f083b056517a8b1395a459dc4ee08c64c3579b6246",
+      "path": "tools/coordinator/verify-pr.sh"
     },
     {
       "exports": [
