@@ -83,7 +83,7 @@ The handbook's testing page lists what is known and not yet proven.
    - A lone BLOCK is checked against the code, and refuted or fixed.
    - A BLOCK two families share goes back to the builder.
    - Low findings become issues.
-5. **The disposition.** The review's summary and each finding's disposition are posted on the pull request, and then it merges with a merge commit.
+5. **The disposition.** The review's summary and each finding's disposition are posted on the pull request, and then it merges with a merge commit. The coordinator commits, pushes, and merges with a merge commit, and deletes a branch whose tip is already on `main`. A branch with commits that are not on `main` stays.
 6. **The docs, the same hour.** The README and its seven translations, the handbook, and the CHANGELOG follow each merge. The builder never edits them.
 
 ### Rules that hold on every slice
