@@ -252,7 +252,8 @@
       },
       "findings": [
         "leaves crate by walker",
-        "leaves walker by walker"
+        "leaves walker by walker",
+        "thrown walker by walker"
       ]
     },
     "fixture behavior-minds": {
