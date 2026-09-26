@@ -251,7 +251,6 @@
         "east": true
       },
       "findings": [
-        "leaves crate by walker",
         "leaves walker by walker"
       ]
     },
@@ -283,8 +282,6 @@
       "findings": [
         "leaves climber by climber",
         "leaves lower by lower",
-        "leaves lower by walker",
-        "leaves parcel by walker",
         "leaves tip by lower",
         "leaves tip by walker",
         "leaves walker by walker"

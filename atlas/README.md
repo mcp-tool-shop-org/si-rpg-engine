@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit 33052f1.
+Mapped at 2026-09-26 from commit 2f2f2d7.
 
 ## What this is
 
@@ -8,15 +8,11 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 16 parts, mostly JavaScript (102 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (83d9caf)
+## What changed since 2026-09-26 (33052f1)
 
-- CI now also runs harness/push.test.js.
-- CI now also checks harness/law-runs.mjs.
-- fixtures/law-runs/ is now written by harness/law-runs.mjs.
-- fixtures/law-runs/ is now read by harness/law-runs.mjs.
-- fixtures/push/ is now read by harness/law-runs.mjs.
-- And 1 more new writer or reader of a place.
-- 22 files added and 8 changed content, across 4 parts.
+- In packages/propose/seat.js, run session gained a step, loaded, before prompt hash.
+- In packages/propose/seat.js, run session lost a step, cut off timing.
+- 8 files added and 52 changed content, across 8 parts.
 
 ## What comes in
 
@@ -90,7 +86,8 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       6. observe
       7. ask
       8. while out
-      9. record (4 steps)
+      9. loaded
+      10. record (3 steps)
    13. **Settle** (tick) runs, in order: idle and advance.
    14. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
    15. **Create tick** runs, in order:
@@ -174,13 +171,13 @@ Only CI itself reads what it writes.
 
 ## What tends to change together
 
-- **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 7 of 9 commits, inside the harness part.
-- **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 8 of 11 commits, inside the propose part.
-- **packages/frame/types.d.ts** and **packages/tick/tick.js** changed together in 11 of 16 commits, and the tick part imports the frame part.
+- **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 7 of 10 commits, inside the harness part.
+- **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 9 of 13 commits, inside the propose part.
 - **packages/host/host.test.js** and **packages/host/session.js** changed together in 8 of 12 commits, inside the host part.
-- **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 8 of 12 commits, inside the propose part.
+- **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 8 of 12 commits, inside the propose part.
+- **packages/propose/prompt.js** and **packages/propose/schema.js** changed together in 6 of 9 commits, inside the propose part.
 
-1 file changed together with its own test, as expected.
+2 files changed together with their own tests, as expected.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
@@ -222,7 +219,7 @@ Read those in order to follow one pull request end to end.
 - 2 writes and 3 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 32 commands are built at run time and not followed, 29 of them in tests.
+- 33 commands are built at run time and not followed, 30 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.

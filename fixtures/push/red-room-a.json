@@ -1,6 +1,6 @@
 {
   "name": "red-room-a",
-  "note": "Red room A of the Rust knowledge base's squeeze-launch answer (readouts, rust-knowledge wave 3, section 4.1): a 5 by 3 room walled 2.0 high on every side, above the controller's 1.5 maximum rise, with the walker, a crate 0.12 by 0.2 by 0.12 flush beside its path, and the shade ahead of it. The walker pushes the shade at tick 0 and the run is 200 quanta. Through Rapier's own impulse routine (main at 5d6bbea) the crate is inside the walker's reach beside the shade on quanta 42 to 53, the shade's manifold overwrites the crate's, and the crate first exceeds 10 units a second at tick 53, at 26.06416630354704, frame hash 375c78856a5a4b15; the frame hash at tick 200 is 8936cf832bc642ab. Through the engine's copy with Rapier's #1004 no body in the room exceeds the guard's bound, and the frame hash at tick 200 is the one below.",
+  "note": "Red room A of the Rust knowledge base's squeeze-launch answer (readouts, rust-knowledge wave 3, section 4.1): a 5 by 3 room walled 2.0 high on every side, above the controller's 1.5 maximum rise, with the walker, a crate 0.12 by 0.2 by 0.12 flush beside its path, and the shade ahead of it. The walker pushes the shade at tick 0 and the run is 200 quanta. Through Rapier's own impulse routine (main at 5d6bbea) the crate is inside the walker's reach beside the shade on quanta 42 to 53, the shade's manifold overwrites the crate's, and the crate first exceeds 10 units a second at tick 53, at 26.06416630354704, frame hash 375c78856a5a4b15; the frame hash at tick 200 is 8936cf832bc642ab. Through the engine's copy with Rapier's #1004 (F3, main at 29e1c52) the fastest body is the shade, at 2.0535 at tick 50, and the frame hash at tick 200 is f436e7596fd4d6ea. With the push's mass as well (F5) the fastest body is the walker, at 1, and the frame hash at tick 200 is the one below.",
   "seed": 11,
   "quanta": 200,
   "world": {
@@ -26,5 +26,5 @@
   "log": [
     { "tick": 0, "hash": "35cdd48435cdd484", "proposal": { "kind": "intent", "verb": "push", "actor": "walker", "target": { "body": "shade" }, "frameHash": "35cdd48435cdd484" } }
   ],
-  "hash": "f436e7596fd4d6ea"
+  "hash": "69cc8d12a240069f"
 }

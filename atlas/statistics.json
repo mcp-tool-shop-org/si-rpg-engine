@@ -85,12 +85,12 @@
           "tick"
         ]
       },
-      "cohesion": 0.787162,
+      "cohesion": 0.779874,
       "cohesionDropped": false,
       "confidence": "full",
       "highWater": null,
       "name": "harness",
-      "qualifyingSourceCommits": 59,
+      "qualifyingSourceCommits": 62,
       "rebaseline": null
     },
     {
@@ -161,7 +161,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "load",
-      "qualifyingSourceCommits": 11,
+      "qualifyingSourceCommits": 12,
       "rebaseline": null
     },
     {
@@ -177,7 +177,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "propose",
-      "qualifyingSourceCommits": 18,
+      "qualifyingSourceCommits": 20,
       "rebaseline": null
     },
     {
@@ -244,12 +244,12 @@
           "propose"
         ]
       },
-      "cohesion": 0.222409,
+      "cohesion": 0.224836,
       "cohesionDropped": false,
       "confidence": "full",
       "highWater": null,
       "name": "tick",
-      "qualifyingSourceCommits": 48,
+      "qualifyingSourceCommits": 49,
       "rebaseline": null
     },
     {
@@ -309,8 +309,8 @@
         "path": ".gitignore"
       },
       {
-        "commits": 9,
-        "lines": 176,
+        "commits": 19,
+        "lines": 202,
         "path": "CHANGELOG.md"
       },
       {
@@ -319,43 +319,43 @@
         "path": "LICENSE"
       },
       {
-        "commits": 9,
-        "lines": 523,
+        "commits": 17,
+        "lines": 857,
         "path": "README.es.md"
       },
       {
-        "commits": 9,
-        "lines": 495,
+        "commits": 17,
+        "lines": 965,
         "path": "README.fr.md"
       },
       {
-        "commits": 9,
-        "lines": 555,
+        "commits": 17,
+        "lines": 981,
         "path": "README.hi.md"
       },
       {
-        "commits": 9,
-        "lines": 511,
+        "commits": 17,
+        "lines": 985,
         "path": "README.it.md"
       },
       {
-        "commits": 9,
-        "lines": 561,
+        "commits": 17,
+        "lines": 1007,
         "path": "README.ja.md"
       },
       {
-        "commits": 43,
-        "lines": 503,
+        "commits": 51,
+        "lines": 545,
         "path": "README.md"
       },
       {
-        "commits": 9,
-        "lines": 467,
+        "commits": 17,
+        "lines": 825,
         "path": "README.pt-BR.md"
       },
       {
-        "commits": 9,
-        "lines": 527,
+        "commits": 17,
+        "lines": 993,
         "path": "README.zh.md"
       },
       {
@@ -364,8 +364,8 @@
         "path": "SCORECARD.md"
       },
       {
-        "commits": 2,
-        "lines": 80,
+        "commits": 4,
+        "lines": 86,
         "path": "SECURITY.md"
       },
       {
@@ -374,8 +374,8 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 83,
-        "lines": 3387,
+        "commits": 85,
+        "lines": 3447,
         "path": "atlas/README.md"
       },
       {
@@ -384,18 +384,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 83,
-        "lines": 13116,
+        "commits": 85,
+        "lines": 13284,
         "path": "atlas/page.json"
       },
       {
-        "commits": 83,
-        "lines": 18915,
+        "commits": 85,
+        "lines": 19331,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 83,
-        "lines": 46569,
+        "commits": 85,
+        "lines": 47063,
         "path": "atlas/structure.json"
       },
       {
@@ -409,8 +409,8 @@
         "path": "docs/PHASE-1.md"
       },
       {
-        "commits": 21,
-        "lines": 144,
+        "commits": 25,
+        "lines": 152,
         "path": "docs/PHASE-2.md"
       },
       {
@@ -439,6 +439,11 @@
         "path": "docs/consult-brief-physics-01.md"
       },
       {
+        "commits": 2,
+        "lines": 148,
+        "path": "docs/consult-brief-t7b-bench.md"
+      },
+      {
         "commits": 1,
         "lines": 53,
         "path": "docs/consult-reply-claude-01.md"
@@ -462,6 +467,11 @@
         "commits": 2,
         "lines": 82,
         "path": "docs/consult-reply-claude-physics-01.md"
+      },
+      {
+        "commits": 3,
+        "lines": 216,
+        "path": "docs/consult-reply-fable-t7b-01.md"
       },
       {
         "commits": 1,
@@ -490,8 +500,23 @@
       },
       {
         "commits": 2,
+        "lines": 62,
+        "path": "docs/dispatch-71-drops-first.md"
+      },
+      {
+        "commits": 2,
         "lines": 64,
         "path": "docs/dispatch-76-load-hash.md"
+      },
+      {
+        "commits": 2,
+        "lines": 68,
+        "path": "docs/dispatch-83-t6-hardening.md"
+      },
+      {
+        "commits": 2,
+        "lines": 98,
+        "path": "docs/dispatch-87-seat-hardening.md"
       },
       {
         "commits": 2,
@@ -540,7 +565,12 @@
       },
       {
         "commits": 2,
-        "lines": 124,
+        "lines": 134,
+        "path": "docs/dispatch-f4-floor-cast.md"
+      },
+      {
+        "commits": 4,
+        "lines": 134,
         "path": "docs/dispatch-f5-push-mass.md"
       },
       {
@@ -587,6 +617,11 @@
         "commits": 5,
         "lines": 548,
         "path": "docs/dispatch-t7a-seat-rails.md"
+      },
+      {
+        "commits": 11,
+        "lines": 1408,
+        "path": "docs/dispatch-t7b-instrument-bench.md"
       },
       {
         "commits": 4,
@@ -674,8 +709,8 @@
         "path": "fixtures/behavior-3d.json"
       },
       {
-        "commits": 10,
-        "lines": 10944,
+        "commits": 11,
+        "lines": 11868,
         "path": "fixtures/behavior-minds.json"
       },
       {
@@ -684,8 +719,8 @@
         "path": "fixtures/behavior-ramp.json"
       },
       {
-        "commits": 6,
-        "lines": 2346,
+        "commits": 7,
+        "lines": 2794,
         "path": "fixtures/behavior-rotation.json"
       },
       {
@@ -694,8 +729,8 @@
         "path": "fixtures/behavior-solver.json"
       },
       {
-        "commits": 8,
-        "lines": 9390,
+        "commits": 9,
+        "lines": 10136,
         "path": "fixtures/behavior-verbs.json"
       },
       {
@@ -739,93 +774,98 @@
         "path": "fixtures/golden.txt"
       },
       {
-        "commits": 2,
-        "lines": 33,
+        "commits": 4,
+        "lines": 92,
         "path": "fixtures/law-runs/behavior-minds.txt"
       },
       {
-        "commits": 1,
-        "lines": 6,
+        "commits": 2,
+        "lines": 12,
         "path": "fixtures/law-runs/behavior-ramp-slide.txt"
       },
       {
-        "commits": 1,
-        "lines": 7,
+        "commits": 2,
+        "lines": 14,
         "path": "fixtures/law-runs/behavior-rotation-stack.txt"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "fixtures/law-runs/behavior-rotation-tip.txt"
       },
       {
-        "commits": 1,
-        "lines": 7,
+        "commits": 3,
+        "lines": 22,
         "path": "fixtures/law-runs/behavior-rotation-tumble.txt"
       },
       {
-        "commits": 1,
-        "lines": 23,
+        "commits": 3,
+        "lines": 58,
         "path": "fixtures/law-runs/behavior-verbs-carry-capsule.txt"
       },
       {
-        "commits": 1,
-        "lines": 23,
+        "commits": 3,
+        "lines": 76,
         "path": "fixtures/law-runs/behavior-verbs-carry.txt"
       },
       {
-        "commits": 1,
-        "lines": 111,
+        "commits": 2,
+        "lines": 222,
         "path": "fixtures/law-runs/behavior-verbs-climb.txt"
       },
       {
-        "commits": 1,
-        "lines": 26,
+        "commits": 2,
+        "lines": 52,
         "path": "fixtures/law-runs/product-scene.txt"
       },
       {
         "commits": 1,
-        "lines": 17,
+        "lines": 15,
+        "path": "fixtures/law-runs/push-mass-thin-box.txt"
+      },
+      {
+        "commits": 3,
+        "lines": 42,
         "path": "fixtures/law-runs/red-room-a.txt"
       },
       {
-        "commits": 1,
-        "lines": 6,
+        "commits": 2,
+        "lines": 12,
         "path": "fixtures/law-runs/shape-traversal-gap-box.txt"
       },
       {
-        "commits": 1,
-        "lines": 6,
+        "commits": 2,
+        "lines": 12,
         "path": "fixtures/law-runs/shape-traversal-gap-capsule.txt"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "fixtures/law-runs/shape-traversal-ledge-box.txt"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "fixtures/law-runs/shape-traversal-ledge-capsule.txt"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "fixtures/law-runs/shape-traversal-slope-box.txt"
       },
       {
-        "commits": 1,
-        "lines": 5,
+        "commits": 2,
+        "lines": 10,
         "path": "fixtures/law-runs/shape-traversal-slope-capsule.txt"
       },
       {
-        "commits": 1,
-        "lines": 6,
+        "commits": 2,
+        "lines": 12,
         "path": "fixtures/law-runs/shape-traversal-step-box.txt"
       },
       {
-        "commits": 1,
-        "lines": 6,
+        "commits": 2,
+        "lines": 12,
         "path": "fixtures/law-runs/shape-traversal-step-capsule.txt"
       },
       {
@@ -855,7 +895,12 @@
       },
       {
         "commits": 1,
-        "lines": 30,
+        "lines": 29,
+        "path": "fixtures/push/push-mass-thin-box.json"
+      },
+      {
+        "commits": 3,
+        "lines": 64,
         "path": "fixtures/push/red-room-a.json"
       },
       {
@@ -949,8 +994,8 @@
         "path": "fixtures/shape-traversal.json"
       },
       {
-        "commits": 26,
-        "lines": 50,
+        "commits": 30,
+        "lines": 58,
         "path": "fixtures/solver.sha256"
       },
       {
@@ -969,8 +1014,8 @@
         "path": "fixtures/sweep/plateau-low.json"
       },
       {
-        "commits": 5,
-        "lines": 644,
+        "commits": 7,
+        "lines": 655,
         "path": "fixtures/sweep/verdicts.json"
       },
       {
@@ -1024,8 +1069,8 @@
         "path": "harness/check.test.js"
       },
       {
-        "commits": 15,
-        "lines": 2640,
+        "commits": 17,
+        "lines": 2648,
         "path": "harness/corpus.mjs"
       },
       {
@@ -1049,8 +1094,8 @@
         "path": "harness/golden-gate.test.js"
       },
       {
-        "commits": 1,
-        "lines": 381,
+        "commits": 2,
+        "lines": 762,
         "path": "harness/law-runs.mjs"
       },
       {
@@ -1084,8 +1129,8 @@
         "path": "harness/product.test.js"
       },
       {
-        "commits": 1,
-        "lines": 105,
+        "commits": 3,
+        "lines": 302,
         "path": "harness/push.test.js"
       },
       {
@@ -1094,8 +1139,8 @@
         "path": "harness/replay-to.mjs"
       },
       {
-        "commits": 13,
-        "lines": 2780,
+        "commits": 15,
+        "lines": 3126,
         "path": "harness/restore.test.js"
       },
       {
@@ -1139,8 +1184,8 @@
         "path": "harness/surface.test.js"
       },
       {
-        "commits": 6,
-        "lines": 966,
+        "commits": 9,
+        "lines": 1196,
         "path": "harness/sweep.test.js"
       },
       {
@@ -1179,8 +1224,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 60,
-        "lines": 229,
+        "commits": 61,
+        "lines": 231,
         "path": "package.json"
       },
       {
@@ -1254,8 +1299,8 @@
         "path": "packages/load/suite.js"
       },
       {
-        "commits": 3,
-        "lines": 1690,
+        "commits": 5,
+        "lines": 1702,
         "path": "packages/load/sweep.js"
       },
       {
@@ -1264,8 +1309,8 @@
         "path": "packages/load/world.js"
       },
       {
-        "commits": 17,
-        "lines": 1434,
+        "commits": 19,
+        "lines": 1466,
         "path": "packages/propose/bin/propose.js"
       },
       {
@@ -1274,8 +1319,8 @@
         "path": "packages/propose/model.json"
       },
       {
-        "commits": 7,
-        "lines": 574,
+        "commits": 9,
+        "lines": 1038,
         "path": "packages/propose/ollama.js"
       },
       {
@@ -1294,18 +1339,18 @@
         "path": "packages/propose/prompt.js"
       },
       {
-        "commits": 21,
-        "lines": 2816,
+        "commits": 24,
+        "lines": 3938,
         "path": "packages/propose/propose.test.js"
       },
       {
-        "commits": 4,
-        "lines": 824,
+        "commits": 7,
+        "lines": 1438,
         "path": "packages/propose/record.js"
       },
       {
-        "commits": 3,
-        "lines": 672,
+        "commits": 6,
+        "lines": 760,
         "path": "packages/propose/record.test.js"
       },
       {
@@ -1319,8 +1364,8 @@
         "path": "packages/propose/schema.js"
       },
       {
-        "commits": 18,
-        "lines": 1530,
+        "commits": 20,
+        "lines": 2134,
         "path": "packages/propose/seat.js"
       },
       {
@@ -1444,8 +1489,8 @@
         "path": "packages/tick/subject.js"
       },
       {
-        "commits": 27,
-        "lines": 2166,
+        "commits": 29,
+        "lines": 2262,
         "path": "packages/tick/tick.js"
       },
       {
@@ -1684,8 +1729,8 @@
         "path": "site/src/content.config.ts"
       },
       {
-        "commits": 9,
-        "lines": 180,
+        "commits": 15,
+        "lines": 200,
         "path": "site/src/content/docs/handbook/architecture.md"
       },
       {
@@ -1694,33 +1739,33 @@
         "path": "site/src/content/docs/handbook/getting-started.md"
       },
       {
-        "commits": 5,
-        "lines": 91,
+        "commits": 7,
+        "lines": 97,
         "path": "site/src/content/docs/handbook/index.md"
       },
       {
-        "commits": 7,
-        "lines": 264,
+        "commits": 11,
+        "lines": 284,
         "path": "site/src/content/docs/handbook/reference.md"
       },
       {
-        "commits": 7,
-        "lines": 78,
+        "commits": 9,
+        "lines": 84,
         "path": "site/src/content/docs/handbook/security.md"
       },
       {
-        "commits": 10,
-        "lines": 255,
+        "commits": 20,
+        "lines": 327,
         "path": "site/src/content/docs/handbook/testing.md"
       },
       {
-        "commits": 7,
-        "lines": 226,
+        "commits": 9,
+        "lines": 248,
         "path": "site/src/content/docs/handbook/usage.md"
       },
       {
-        "commits": 5,
-        "lines": 148,
+        "commits": 7,
+        "lines": 194,
         "path": "site/src/content/docs/handbook/world-files.md"
       },
       {
@@ -1729,8 +1774,8 @@
         "path": "site/src/pages/index.astro"
       },
       {
-        "commits": 9,
-        "lines": 238,
+        "commits": 11,
+        "lines": 244,
         "path": "site/src/site-config.ts"
       },
       {
@@ -1764,8 +1809,8 @@
         "path": "solver/Cargo.toml"
       },
       {
-        "commits": 19,
-        "lines": 385,
+        "commits": 21,
+        "lines": 410,
         "path": "solver/FLAGS.md"
       },
       {
@@ -1774,8 +1819,8 @@
         "path": "solver/LICENSE-APACHE-2.0"
       },
       {
-        "commits": 3,
-        "lines": 107,
+        "commits": 5,
+        "lines": 152,
         "path": "solver/NOTICE"
       },
       {
@@ -1814,8 +1859,8 @@
         "path": "solver/src/arena.rs"
       },
       {
-        "commits": 1,
-        "lines": 264,
+        "commits": 3,
+        "lines": 625,
         "path": "solver/src/impulses.rs"
       },
       {
@@ -1824,18 +1869,18 @@
         "path": "solver/src/kcc.rs"
       },
       {
-        "commits": 19,
-        "lines": 1012,
+        "commits": 20,
+        "lines": 1013,
         "path": "solver/src/lib.rs"
       },
       {
-        "commits": 24,
-        "lines": 7986,
+        "commits": 29,
+        "lines": 10499,
         "path": "solver/src/rapier_law.rs"
       },
       {
-        "commits": 3,
-        "lines": 243,
+        "commits": 5,
+        "lines": 257,
         "path": "tools/panel.js"
       },
       {
@@ -1854,18 +1899,18 @@
         "path": "tools/prompt.test.js"
       },
       {
-        "commits": 10,
-        "lines": 1204,
+        "commits": 12,
+        "lines": 1212,
         "path": "tools/review.mjs"
       },
       {
-        "commits": 6,
-        "lines": 455,
+        "commits": 8,
+        "lines": 577,
         "path": "tools/verdicts.js"
       },
       {
-        "commits": 6,
-        "lines": 407,
+        "commits": 8,
+        "lines": 441,
         "path": "tools/verdicts.test.js"
       },
       {
@@ -1894,52 +1939,276 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-26T08:16:09.574Z",
+  "generatedAt": "2026-09-26T10:31:39.798Z",
   "generatedFrom": {
-    "commit": "33052f13c0cdce03db798d86f21278e7fe3e01d1"
+    "commit": "2f2f2d76fafb36524be89be3d49af33a6ce5a5d7"
   },
   "pairs": [
     {
+      "a": "CHANGELOG.md",
+      "b": "README.es.md",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "README.fr.md",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "README.hi.md",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "README.it.md",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "README.ja.md",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "README.pt-BR.md",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "README.zh.md",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
+      "either": 9,
+      "shared": 7,
+      "strength": 0.777778
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "site/src/content/docs/handbook/reference.md",
+      "either": 9,
+      "shared": 5,
+      "strength": 0.555556
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "site/src/content/docs/handbook/testing.md",
+      "either": 10,
+      "shared": 8,
+      "strength": 0.8
+    },
+    {
+      "a": "README.es.md",
+      "b": "README.fr.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.es.md",
+      "b": "README.hi.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.es.md",
+      "b": "README.it.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.es.md",
+      "b": "README.ja.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.es.md",
+      "b": "README.pt-BR.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.es.md",
+      "b": "README.zh.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.fr.md",
+      "b": "README.hi.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.fr.md",
+      "b": "README.it.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.fr.md",
+      "b": "README.ja.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.fr.md",
+      "b": "README.pt-BR.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.fr.md",
+      "b": "README.zh.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.hi.md",
+      "b": "README.it.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.hi.md",
+      "b": "README.ja.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.hi.md",
+      "b": "README.pt-BR.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.hi.md",
+      "b": "README.zh.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.it.md",
+      "b": "README.ja.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.it.md",
+      "b": "README.pt-BR.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.it.md",
+      "b": "README.zh.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.ja.md",
+      "b": "README.pt-BR.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.ja.md",
+      "b": "README.zh.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
+      "a": "README.pt-BR.md",
+      "b": "README.zh.md",
+      "either": 8,
+      "shared": 8,
+      "strength": 1
+    },
+    {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 48,
-      "shared": 48,
+      "either": 49,
+      "shared": 49,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 48,
-      "shared": 48,
+      "either": 49,
+      "shared": 49,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 48,
-      "shared": 48,
+      "either": 49,
+      "shared": 49,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 48,
-      "shared": 48,
+      "either": 49,
+      "shared": 49,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 48,
-      "shared": 48,
+      "either": 49,
+      "shared": 49,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 48,
-      "shared": 48,
+      "either": 49,
+      "shared": 49,
       "strength": 1
+    },
+    {
+      "a": "fixtures/behavior-minds.json",
+      "b": "fixtures/behavior-verbs.json",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
     },
     {
       "a": "fixtures/golden.txt",
@@ -1958,9 +2227,9 @@
     {
       "a": "harness/bundle.test.js",
       "b": "harness/corpus.mjs",
-      "either": 9,
+      "either": 10,
       "shared": 7,
-      "strength": 0.777778
+      "strength": 0.7
     },
     {
       "a": "harness/product-scene.mjs",
@@ -1986,9 +2255,9 @@
     {
       "a": "packages/frame/types.d.ts",
       "b": "packages/tick/tick.js",
-      "either": 16,
+      "either": 17,
       "shared": 11,
-      "strength": 0.6875
+      "strength": 0.647059
     },
     {
       "a": "packages/host/host.test.js",
@@ -2056,23 +2325,23 @@
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/prompt.js",
-      "either": 12,
+      "either": 13,
       "shared": 7,
-      "strength": 0.583333
+      "strength": 0.538462
     },
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/propose.test.js",
-      "either": 15,
-      "shared": 9,
-      "strength": 0.6
+      "either": 17,
+      "shared": 10,
+      "strength": 0.588235
     },
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/seat.js",
-      "either": 12,
-      "shared": 8,
-      "strength": 0.666667
+      "either": 13,
+      "shared": 9,
+      "strength": 0.692308
     },
     {
       "a": "packages/propose/parse.js",
@@ -2089,20 +2358,6 @@
       "strength": 0.571429
     },
     {
-      "a": "packages/propose/parse.js",
-      "b": "packages/propose/seat.js",
-      "either": 10,
-      "shared": 5,
-      "strength": 0.5
-    },
-    {
-      "a": "packages/propose/prompt.js",
-      "b": "packages/propose/propose.test.js",
-      "either": 15,
-      "shared": 8,
-      "strength": 0.533333
-    },
-    {
       "a": "packages/propose/prompt.js",
       "b": "packages/propose/schema.js",
       "either": 9,
@@ -2112,16 +2367,16 @@
     {
       "a": "packages/propose/prompt.js",
       "b": "packages/propose/seat.js",
-      "either": 11,
+      "either": 12,
       "shared": 8,
-      "strength": 0.727273
+      "strength": 0.666667
     },
     {
       "a": "packages/propose/propose.test.js",
       "b": "packages/propose/seat.js",
-      "either": 15,
-      "shared": 9,
-      "strength": 0.6
+      "either": 17,
+      "shared": 10,
+      "strength": 0.588235
     },
     {
       "a": "packages/tick/scene.js",
@@ -2129,6 +2384,55 @@
       "either": 6,
       "shared": 5,
       "strength": 0.833333
+    },
+    {
+      "a": "site/src/content/docs/handbook/architecture.md",
+      "b": "site/src/content/docs/handbook/reference.md",
+      "either": 8,
+      "shared": 4,
+      "strength": 0.5
+    },
+    {
+      "a": "site/src/content/docs/handbook/architecture.md",
+      "b": "site/src/content/docs/handbook/testing.md",
+      "either": 10,
+      "shared": 6,
+      "strength": 0.6
+    },
+    {
+      "a": "site/src/content/docs/handbook/architecture.md",
+      "b": "site/src/site-config.ts",
+      "either": 8,
+      "shared": 4,
+      "strength": 0.5
+    },
+    {
+      "a": "site/src/content/docs/handbook/reference.md",
+      "b": "site/src/site-config.ts",
+      "either": 6,
+      "shared": 4,
+      "strength": 0.666667
+    },
+    {
+      "a": "tools/review.mjs",
+      "b": "tools/verdicts.js",
+      "either": 8,
+      "shared": 5,
+      "strength": 0.625
+    },
+    {
+      "a": "tools/review.mjs",
+      "b": "tools/verdicts.test.js",
+      "either": 8,
+      "shared": 5,
+      "strength": 0.625
+    },
+    {
+      "a": "tools/verdicts.js",
+      "b": "tools/verdicts.test.js",
+      "either": 5,
+      "shared": 5,
+      "strength": 1
     }
   ],
   "parameters": {
@@ -2141,16 +2445,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-26T04:15:25-04:00",
-    "inScopeFiles": 314,
+    "headDate": "2026-09-26T06:27:28-04:00",
+    "inScopeFiles": 322,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 223,
+    "qualifyingCommits": 257,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-30T08:15:25.000Z",
+    "since": "2026-03-30T10:27:28.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
