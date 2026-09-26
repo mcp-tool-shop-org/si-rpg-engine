@@ -96,67 +96,36 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 22,
-      "changed": 8,
+      "added": 8,
+      "changed": 52,
       "moved": 0,
-      "parts": 4,
+      "parts": 8,
       "removed": 0
     },
     "items": [
       {
-        "kind": "door",
-        "sentence": "CI now also runs harness/push.test.js.",
+        "kind": "sequence",
+        "sentence": "In packages/propose/seat.js, run session gained a step, loaded, before prompt hash.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/push.test.js"
+          "packages/propose/seat.js"
         ]
       },
       {
-        "kind": "door",
-        "sentence": "CI now also checks harness/law-runs.mjs.",
+        "kind": "sequence",
+        "sentence": "In packages/propose/seat.js, run session lost a step, cut off timing.",
         "subjects": [
-          ".github/workflows/ci.yml",
-          "harness/law-runs.mjs"
+          "packages/propose/seat.js"
         ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "fixtures/law-runs/ is now written by harness/law-runs.mjs.",
-        "subjects": [
-          "fixtures/law-runs/",
-          "harness/law-runs.mjs"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "fixtures/law-runs/ is now read by harness/law-runs.mjs.",
-        "subjects": [
-          "fixtures/law-runs/",
-          "harness/law-runs.mjs"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "fixtures/push/ is now read by harness/law-runs.mjs.",
-        "subjects": [
-          "fixtures/push/",
-          "harness/law-runs.mjs"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 1 more new writer or reader of a place.",
-        "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "22 files added and 8 changed content, across 4 parts.",
+        "sentence": "8 files added and 52 changed content, across 8 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "83d9caf114b467717e89f3a9a203d0e52eec6a1c",
-      "generatedAt": "2026-09-26T07:35:08.171Z"
+      "commit": "33052f13c0cdce03db798d86f21278e7fe3e01d1",
+      "generatedAt": "2026-09-26T08:16:09.574Z"
     },
     "unchanged": false
   },
@@ -164,7 +133,7 @@
     {
       "a": "harness/bundle.test.js",
       "b": "harness/corpus.mjs",
-      "either": 9,
+      "either": 10,
       "partLabels": [
         "harness",
         "harness"
@@ -177,9 +146,9 @@
       "shared": 7
     },
     {
-      "a": "packages/propose/prompt.js",
+      "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/seat.js",
-      "either": 11,
+      "either": 13,
       "partLabels": [
         "propose",
         "propose"
@@ -189,22 +158,7 @@
         "propose"
       ],
       "relation": "inside",
-      "shared": 8
-    },
-    {
-      "a": "packages/frame/types.d.ts",
-      "b": "packages/tick/tick.js",
-      "either": 16,
-      "partLabels": [
-        "frame",
-        "tick"
-      ],
-      "parts": [
-        "frame",
-        "tick"
-      ],
-      "relation": "b-imports-a",
-      "shared": 11
+      "shared": 9
     },
     {
       "a": "packages/host/host.test.js",
@@ -222,7 +176,7 @@
       "shared": 8
     },
     {
-      "a": "packages/propose/bin/propose.js",
+      "a": "packages/propose/prompt.js",
       "b": "packages/propose/seat.js",
       "either": 12,
       "partLabels": [
@@ -235,15 +189,30 @@
       ],
       "relation": "inside",
       "shared": 8
+    },
+    {
+      "a": "packages/propose/prompt.js",
+      "b": "packages/propose/schema.js",
+      "either": 9,
+      "partLabels": [
+        "propose",
+        "propose"
+      ],
+      "parts": [
+        "propose",
+        "propose"
+      ],
+      "relation": "inside",
+      "shared": 6
     }
   ],
   "changesTogetherNote": [
-    "1 file changed together with its own test, as expected.",
+    "2 files changed together with their own tests, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
     "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
-  "changesTogetherWithTests": 1,
-  "commit": "33052f13c0cdce03db798d86f21278e7fe3e01d1",
+  "changesTogetherWithTests": 2,
+  "commit": "2f2f2d76fafb36524be89be3d49af33a6ce5a5d7",
   "defaultBranch": "main",
   "derived": "16 parts, mostly JavaScript (102 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -761,13 +730,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T08:16:09.574Z",
+  "generatedAt": "2026-09-26T10:31:39.798Z",
   "limits": [
     "15 import sites could not be resolved.",
     "2 writes and 3 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "32 commands are built at run time and not followed, 29 of them in tests.",
+    "33 commands are built at run time and not followed, 30 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -1223,7 +1192,13 @@
               "phrase": "while out"
             },
             {
-              "count": 4,
+              "name": "loaded",
+              "part": null,
+              "partLabel": null,
+              "phrase": "loaded"
+            },
+            {
+              "count": 3,
               "name": null,
               "part": "propose",
               "partLabel": "propose",
