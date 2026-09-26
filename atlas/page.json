@@ -100,100 +100,40 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 31,
-      "changed": 5,
+      "added": 1,
+      "changed": 37,
       "moved": 0,
-      "parts": 7,
+      "parts": 3,
       "removed": 0
     },
     "items": [
       {
-        "kind": "import-added",
-        "sentence": "bench now imports tick.",
-        "subjects": [
-          "bench",
-          "tick"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also runs packages/bench/finding.test.js, packages/bench/law.test.js, packages/bench/mutants.test.js and 5 more.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/bench/finding.test.js",
-          "packages/bench/law.test.js",
-          "packages/bench/mutants.test.js",
-          "packages/bench/neutral.test.js",
-          "packages/bench/process.test.js",
-          "packages/bench/report.test.js",
-          "packages/bench/rungs.test.js",
-          "packages/bench/source.test.js"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also checks packages/bench/.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/bench/"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "bench (package.json) is a new command. It runs packages/bench/bin/bench.js.",
-        "subjects": [
-          "package.json",
-          "packages/bench/bin/bench.js"
-        ]
-      },
-      {
         "kind": "landing",
-        "sentence": ".github/ is now read by packages/bench/anchors.js.",
+        "sentence": "solver/src/lib.rs is now also read by tools/prompt.test.js.",
         "subjects": [
-          ".github/",
-          "packages/bench/anchors.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "docs/ is now read by packages/bench/anchors.js.",
-        "subjects": [
-          "docs/",
-          "packages/bench/anchors.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "docs/PHASE-2.md is now read by packages/bench/plants.js.",
-        "subjects": [
-          "docs/PHASE-2.md",
-          "packages/bench/plants.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 68 more new writers and readers of places.",
-        "subjects": []
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/load/sweep.js, sweep gained a step, open, before refused.",
-        "subjects": [
-          "packages/load/sweep.js"
+          "solver/src/lib.rs",
+          "tools/prompt.test.js"
         ]
       },
       {
         "kind": "sequence",
-        "sentence": "In packages/load/sweep.js, sweep gained a step, refused, before admitted.",
+        "sentence": "In packages/bench/bench.js, run bench gained a step, same path, before one tree per process.",
         "subjects": [
-          "packages/load/sweep.js"
+          "packages/bench/bench.js"
         ]
       },
       {
         "kind": "sequence",
-        "sentence": "In packages/load/sweep.js, sweep gained a step, admitted, after refused.",
+        "sentence": "In packages/bench/bench.js, run bench lost a step, product glue.",
         "subjects": [
-          "packages/load/sweep.js"
+          "packages/bench/bench.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/bench/bench.js, run bench gained a step, same path, before one tree per process.",
+        "subjects": [
+          "packages/bench/bench.js"
         ]
       },
       {
@@ -202,25 +142,33 @@
         "subjects": []
       },
       {
-        "kind": "part",
-        "sentence": "bench is a new part, drawn from `packages/bench/**`.",
-        "subjects": [
-          "bench"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "31 files added and 5 changed content, across 7 parts.",
+        "sentence": "1 file added and 37 changed content, across 3 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "386f0d9c9514e0d293fa9f7a5d71acf35a737b65",
-      "generatedAt": "2026-09-26T12:13:24.565Z"
+      "commit": "1d2952be2b700ead34bcd8a9bca5bb6e2b205d09",
+      "generatedAt": "2026-09-26T13:04:08.434Z"
     },
     "unchanged": false
   },
   "changesTogether": [
+    {
+      "a": "packages/bench/bench.js",
+      "b": "packages/bench/neutral.test.js",
+      "either": 5,
+      "partLabels": [
+        "bench",
+        "bench"
+      ],
+      "parts": [
+        "bench",
+        "bench"
+      ],
+      "relation": "inside",
+      "shared": 5
+    },
     {
       "a": "harness/bundle.test.js",
       "b": "harness/corpus.mjs",
@@ -280,30 +228,15 @@
       ],
       "relation": "inside",
       "shared": 8
-    },
-    {
-      "a": "packages/propose/prompt.js",
-      "b": "packages/propose/schema.js",
-      "either": 9,
-      "partLabels": [
-        "propose",
-        "propose"
-      ],
-      "parts": [
-        "propose",
-        "propose"
-      ],
-      "relation": "inside",
-      "shared": 6
     }
   ],
   "changesTogetherNote": [
     "2 files changed together with their own tests, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
-    "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
+    "Window: 180 days; a pair counts from 3 shared commits, since 13 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "1d2952be2b700ead34bcd8a9bca5bb6e2b205d09",
+  "commit": "c5d702911af4b72e32a230b56e285818783115cb",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -870,12 +803,12 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T13:04:08.434Z",
+  "generatedAt": "2026-09-26T15:15:33.848Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 8 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "49 writes and 95 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "49 writes and 99 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "38 commands are built at run time and not followed, 32 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
@@ -1246,6 +1179,12 @@
           "phrase": "run bench",
           "steps": [
             {
+              "name": "samePath",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "same path"
+            },
+            {
               "name": "oneTreePerProcess",
               "part": "bench",
               "partLabel": "bench",
@@ -1271,7 +1210,7 @@
               "phrase": "trees"
             },
             {
-              "count": 5,
+              "count": 4,
               "name": null,
               "part": "bench",
               "partLabel": "bench",
@@ -1317,6 +1256,12 @@
           "phrase": "run bench",
           "steps": [
             {
+              "name": "samePath",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "same path"
+            },
+            {
               "name": "oneTreePerProcess",
               "part": "bench",
               "partLabel": "bench",
@@ -1342,7 +1287,7 @@
               "phrase": "trees"
             },
             {
-              "count": 5,
+              "count": 4,
               "name": null,
               "part": "bench",
               "partLabel": "bench",

@@ -27,3 +27,18 @@
 1. The README, SECURITY.md, CHANGELOG, and the command guard (A, B, C).
 2. verify script, `npm audit` in CI, version 0.1.0 matching the tag (D).
 3. Landing page, handbook, translations, metadata (E).
+
+## At v0.2.0
+
+`npx @mcptoolshop/shipcheck audit` on 2026-09-26: 22 items checked, 17 skipped with a reason each, none unchecked, a pass rate of 100%. The executed gates:
+
+| Gate | Result |
+|---|---|
+| `security-docs` | Passes: SECURITY.md with a reporting contact, and the README's trust model |
+| `deps` | Passes: two dependency trees audited, nothing at or above high |
+| `manifest` | Passes: the lockfile is committed, and the manifest's version matches the newest tag |
+| `secrets`, `pack` | Skipped: the package is private and publishes nothing |
+
+Identity scan of the tracked tree: clean.
+
+**Coverage.** Measured on the code this release tags, with Node's built-in `node --test --experimental-test-coverage` over the whole suite: 89.32% of lines, 84.28% of branches, and 92.35% of functions. It is measured by hand and not uploaded. A coverage service would add a third-party action and a token to a repository whose only development dependencies are TypeScript and Node's type declarations, and the engine's proof is what its tests check, not which lines they run: two goldens, a trace in exact bits, restores proven exact, and tests of outcomes. For a change, `bench` measures which inputs reach it.
