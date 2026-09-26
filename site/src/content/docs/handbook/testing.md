@@ -83,7 +83,16 @@ A native test puts one body down as another is picked up in the same step, in bo
 
 ## A model's calls, checked without the model
 
-Every call a role makes to a model is recorded: the rendered prompt, every sampling option, the schema's hash, the model's digest as the server reports it at call time, the server's version and settings, the GPU, the output, and its hash. CI has no GPU and calls no model. Over each committed session it recomputes every record's key and checks each model digest against the pin in the manifest the record cites. It checks each output against its hash and against the log entry that cites it, parses the output again with the seat's own parser and requires the proposal the log admitted, and checks every call against its role's budgets. It replays the session's log to the same step hashes, and fails on a missing record rather than call a model. A planted record for each check goes red. Two sessions are committed, three calls each of a test-only role in `worlds/crate-and-door.json`. One was run with a change written to steer the model, and its proposals stayed inside the role's manifest. When the rails were built, each of the 51 was removed in turn, and each removal turned a test red.
+Every call a role makes to a model is recorded, however it ends. The record holds:
+- the rendered prompt, every sampling option, and the schema's hash;
+- the model's digest as the server reports it, and the server's version;
+- the model the server holds loaded, read before the call and again after it;
+- the client's environment, named as the client's, since the server's own settings cannot be read;
+- the GPU;
+- the output and its hash;
+- for a call that failed, its failure.
+
+A call whose reads or ask throw is recorded as failed, and the session stops there and is written. Every read of the server has a timeout. A model changed while a call is out is caught by the second reading, and the call reads as changed. Records made before this form are version 1, and still verify under the rules they were made under. CI has no GPU and calls no model. Over each committed session it recomputes every record's key and checks each model digest against the pin in the manifest the record cites. It checks each output against its hash and against the log entry that cites it, parses the output again with the seat's own parser and requires the proposal the log admitted, and checks every call against its role's budgets. It checks each of the session's call lines against its record and the log: the frame it was built from, how its output read, and whether and when it was admitted. A tampered field fails with the field named. It replays the session's log to the same step hashes, and fails on a missing record rather than call a model. A planted record for each check goes red. Two sessions are committed, three calls each of a test-only role in `worlds/crate-and-door.json`. One was run with a change written to steer the model, and its proposals stayed inside the role's manifest. When the rails were built, each of the 51 was removed in turn, and each removal turned a test red.
 
 ## Content
 

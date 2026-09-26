@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Model-call records are version 2.** A record holds the loaded model read before the call and after it, where version 1 held one reading. It names the client's environment as the client's, where version 1 called it the server's settings. And it holds a failure. Committed version-1 records verify unchanged.
 - **The load hash covers the whole world file.** It used to miss a collider nothing touched at load, and most of a body's and a mind's fields, so an edited file could pass the index. It now covers every field but the name, and `worlds/crate-and-door.json` is admitted again under `e3c445a78b7428c8`.
 - **An actor at rest can act.** A body at rest sits a contact margin into what it rests on, and the checker's clear-path tests used to start inside the floor. They now start one controller skin, 0.01, above it.
 - **crate-and-door is walled on every side,** and so is the minds fixture's room: the sweep found bodies carried out of both.
@@ -39,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- **A model call that fails is recorded.** A read or an ask that threw used to end the session with no record of the call and no write. The call is now recorded as failed, and the session stops and is written. Every read of the server has a timeout, and a tick that throws while a call is out no longer leaves the call's rejection unhandled.
 - **A body put down is seen from the next step, whatever the order of the records.** When one body was picked up and another put down in the same step, the dropped body could take the broad-phase slot the other had freed. A query crossing the picked-up body's old place then found the dropped body one step early. It was never hit where the removed body had been, since every query tests a collider's real shape and place. A step now applies its drops before its pick-ups.
 - **A save corrupt only inside its committed frame is refused.** A restore used to check the committed frame's shape and nothing more. It now checks the frame record by record before it writes anything. A save taken between a body draft and the next step, whose frame is one record short, still restores.
 - **A sweep that throws in the weekly job is reported with a block** naming the world and the throw, like every other sweep failure, so the job's issue is titled from it.
