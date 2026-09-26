@@ -5,6 +5,7 @@
     "predicates/beliefs/",
     "predicates/hazards/",
     "predicates/intents/",
+    "predicates/roles/",
     "root",
     "worlds/"
   ],
@@ -34,6 +35,18 @@
       "partLabel": "frame"
     },
     {
+      "doors": 4,
+      "importedBy": [
+        "propose"
+      ],
+      "importedByTests": [
+        "tick"
+      ],
+      "kind": "part",
+      "name": "harness",
+      "partLabel": "harness"
+    },
+    {
       "doors": 3,
       "importedBy": [
         "harness"
@@ -44,16 +57,6 @@
       "kind": "part",
       "name": "load",
       "partLabel": "load"
-    },
-    {
-      "doors": 3,
-      "importedBy": [],
-      "importedByTests": [
-        "tick"
-      ],
-      "kind": "part",
-      "name": "harness",
-      "partLabel": "harness"
     },
     {
       "doors": 2,
@@ -93,125 +96,112 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 15,
-      "changed": 58,
+      "added": 31,
+      "changed": 19,
       "moved": 0,
-      "parts": 10,
-      "removed": 0
+      "parts": 7,
+      "removed": 3
     },
     "items": [
       {
-        "kind": "cycle",
-        "sentence": "harness now imports load, which extends the cycle harness → load → tick → harness.",
+        "kind": "import-added",
+        "sentence": "propose now imports harness.",
         "subjects": [
-          "harness",
-          "load",
-          "tick"
+          "propose",
+          "harness"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI now also runs harness/sweep.test.js.",
+        "sentence": "CI now also runs packages/propose/record.test.js, packages/tick/gate.test.js and packages/tick/roles.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "harness/sweep.test.js"
+          "packages/propose/record.test.js",
+          "packages/tick/gate.test.js",
+          "packages/tick/roles.test.js"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI now also checks harness/plant-throw.mjs.",
+        "sentence": "CI now also checks harness/role-session.mjs.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "harness/plant-throw.mjs"
+          "harness/role-session.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/sweep/verdicts.json is now written by harness/corpus.mjs.",
+        "sentence": "fixtures/behavior-minds.json is now also read by packages/propose/propose.test.js.",
         "subjects": [
-          "fixtures/sweep/verdicts.json",
-          "harness/corpus.mjs"
+          "fixtures/behavior-minds.json",
+          "packages/propose/propose.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "docs/study-swarm/seat-instrument.dispatch.md is now read by docs/study-swarm/seat-instrument.dispatch.citation-receipt.json and docs/study-swarm/seat-instrument.fulltext-check.json.",
+        "sentence": "fixtures/golden.txt is now also read by packages/propose/propose.test.js.",
         "subjects": [
-          "docs/study-swarm/seat-instrument.dispatch.md",
-          "docs/study-swarm/seat-instrument.dispatch.citation-receipt.json",
-          "docs/study-swarm/seat-instrument.fulltext-check.json"
+          "fixtures/golden.txt",
+          "packages/propose/propose.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/ is now also read by harness/sweep.test.js.",
+        "sentence": "fixtures/roles/ is now read by harness/restore.test.js, packages/propose/propose.test.js, packages/propose/record.test.js and packages/tick/roles.test.js.",
         "subjects": [
-          "fixtures/",
-          "harness/sweep.test.js"
+          "fixtures/roles/",
+          "harness/restore.test.js",
+          "packages/propose/propose.test.js",
+          "packages/propose/record.test.js",
+          "packages/tick/roles.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "And 11 more new writers and readers of places.",
+        "sentence": "And 18 more new writers and readers of places.",
         "subjects": []
       },
       {
         "kind": "sequence",
-        "sentence": "In harness/bundle.mjs, bundle failure gained a step, bundle dir, before write bundle.",
+        "sentence": "packages/propose/propose.test.js now starts at probe session; it started at fresh.",
         "subjects": [
-          "harness/bundle.mjs"
+          "packages/propose/propose.test.js"
         ]
       },
       {
         "kind": "sequence",
-        "sentence": "harness/restore.test.js now starts at planted rerun; it started at restores at.",
+        "sentence": "In packages/tick/tick.js, create tick gained a step, least label, after commit frame.",
         "subjects": [
-          "harness/restore.test.js"
+          "packages/tick/tick.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/tick.js, create tick gained a step, least label, after commit frame.",
+        "subjects": [
+          "packages/tick/tick.js"
+        ]
+      },
+      {
+        "kind": "part",
+        "sentence": "roles is a new part, drawn from `predicates/roles/**`.",
+        "subjects": [
+          "roles"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "15 files added and 58 changed content, across 10 parts.",
+        "sentence": "31 files added, 3 removed and 19 changed content, across 7 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "de71607c02455b7e9f01b7d62b885962c3dbb60c",
-      "generatedAt": "2026-09-25T16:31:11.374Z"
+      "commit": "d25073e4ca0fb29e439787f95b5e86cd35334f4e",
+      "generatedAt": "2026-09-26T05:31:34.606Z"
     },
     "unchanged": false
   },
   "changesTogether": [
-    {
-      "a": "packages/propose/prompt.js",
-      "b": "packages/propose/propose.test.js",
-      "either": 7,
-      "partLabels": [
-        "propose",
-        "propose"
-      ],
-      "parts": [
-        "propose",
-        "propose"
-      ],
-      "relation": "inside",
-      "shared": 6
-    },
-    {
-      "a": "packages/propose/propose.test.js",
-      "b": "packages/propose/seat.js",
-      "either": 7,
-      "partLabels": [
-        "propose",
-        "propose"
-      ],
-      "parts": [
-        "propose",
-        "propose"
-      ],
-      "relation": "inside",
-      "shared": 6
-    },
     {
       "a": "harness/bundle.test.js",
       "b": "harness/corpus.mjs",
@@ -230,7 +220,7 @@
     {
       "a": "packages/propose/prompt.js",
       "b": "packages/propose/seat.js",
-      "either": 8,
+      "either": 11,
       "partLabels": [
         "propose",
         "propose"
@@ -240,12 +230,12 @@
         "propose"
       ],
       "relation": "inside",
-      "shared": 6
+      "shared": 8
     },
     {
       "a": "packages/frame/types.d.ts",
       "b": "packages/tick/tick.js",
-      "either": 14,
+      "either": 16,
       "partLabels": [
         "frame",
         "tick"
@@ -255,18 +245,48 @@
         "tick"
       ],
       "relation": "b-imports-a",
-      "shared": 10
+      "shared": 11
+    },
+    {
+      "a": "packages/host/host.test.js",
+      "b": "packages/host/session.js",
+      "either": 12,
+      "partLabels": [
+        "host",
+        "host"
+      ],
+      "parts": [
+        "host",
+        "host"
+      ],
+      "relation": "inside",
+      "shared": 8
+    },
+    {
+      "a": "packages/propose/bin/propose.js",
+      "b": "packages/propose/seat.js",
+      "either": 12,
+      "partLabels": [
+        "propose",
+        "propose"
+      ],
+      "parts": [
+        "propose",
+        "propose"
+      ],
+      "relation": "inside",
+      "shared": 8
     }
   ],
   "changesTogetherNote": [
     "1 file changed together with its own test, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
-    "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
+    "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "d25073e4ca0fb29e439787f95b5e86cd35334f4e",
+  "commit": "8d78f1e127fe4566355293724eb7baceefed49e0",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (92 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "16 parts, mostly JavaScript (99 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -282,6 +302,7 @@
         "harness/product-run.mjs",
         "harness/product-scene.mjs",
         "harness/replay-to.mjs",
+        "harness/role-session.mjs",
         "harness/solver-scene.mjs",
         "harness/trace-line.mjs",
         "harness/verbs-scene.mjs",
@@ -299,7 +320,7 @@
         "tools/review.mjs",
         "tools/verdicts.js"
       ],
-      "checksCount": 28,
+      "checksCount": 29,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
       "landings": [
@@ -324,7 +345,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 33
+          "files": 34
         },
         {
           "boundary": "host",
@@ -349,7 +370,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 23
+          "files": 29
         }
       ],
       "runs": [
@@ -375,8 +396,11 @@
         "packages/host/host.test.js",
         "packages/load/load.test.js",
         "packages/propose/propose.test.js",
+        "packages/propose/record.test.js",
+        "packages/tick/gate.test.js",
         "packages/tick/minds.test.js",
         "packages/tick/order.test.js",
+        "packages/tick/roles.test.js",
         "packages/tick/scene.test.js",
         "packages/tick/tick.test.js",
         "packages/tick/verbs.test.js",
@@ -388,7 +412,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 34,
+      "runsCount": 37,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -429,7 +453,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 14
+          "files": 18
         },
         {
           "boundary": "frame",
@@ -478,6 +502,45 @@
       "checks": [],
       "checksCount": 0,
       "file": "package.json",
+      "id": "package.json#propose",
+      "kind": "command",
+      "landings": [],
+      "name": "propose",
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "propose",
+          "depth": 0,
+          "files": 7
+        },
+        {
+          "boundary": "tick",
+          "depth": 1,
+          "files": 14
+        },
+        {
+          "boundary": "frame",
+          "depth": 2,
+          "files": 2
+        },
+        {
+          "boundary": "harness",
+          "depth": 2,
+          "files": 1
+        }
+      ],
+      "runs": [
+        "packages/propose/bin/propose.js"
+      ],
+      "runsCount": 1,
+      "sends": [],
+      "stages": [],
+      "triggers": []
+    },
+    {
+      "checks": [],
+      "checksCount": 0,
+      "file": "package.json",
       "id": "package.json#host",
       "kind": "command",
       "landings": [],
@@ -492,7 +555,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 10
+          "files": 14
         },
         {
           "boundary": "frame",
@@ -529,7 +592,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 14
+          "files": 18
         },
         {
           "boundary": "frame",
@@ -539,40 +602,6 @@
       ],
       "runs": [
         "packages/load/bin/load.js"
-      ],
-      "runsCount": 1,
-      "sends": [],
-      "stages": [],
-      "triggers": []
-    },
-    {
-      "checks": [],
-      "checksCount": 0,
-      "file": "package.json",
-      "id": "package.json#propose",
-      "kind": "command",
-      "landings": [],
-      "name": "propose",
-      "pushes": false,
-      "reach": [
-        {
-          "boundary": "propose",
-          "depth": 0,
-          "files": 8
-        },
-        {
-          "boundary": "tick",
-          "depth": 1,
-          "files": 9
-        },
-        {
-          "boundary": "frame",
-          "depth": 2,
-          "files": 2
-        }
-      ],
-      "runs": [
-        "packages/propose/bin/propose.js"
       ],
       "runsCount": 1,
       "sends": [],
@@ -605,7 +634,7 @@
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 6
+          "files": 7
         }
       ],
       "runs": [
@@ -630,7 +659,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 9
+          "files": 13
         },
         {
           "boundary": "frame",
@@ -662,7 +691,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 15
+          "files": 19
         },
         {
           "boundary": "frame",
@@ -679,24 +708,8 @@
       "triggers": []
     }
   ],
-  "duplicates": [
-    {
-      "files": [
-        "packages/propose/scene.js",
-        "packages/tick/scene.js"
-      ],
-      "name": "reachedGoal",
-      "partLabels": [
-        "propose",
-        "tick"
-      ],
-      "parts": [
-        "propose",
-        "tick"
-      ]
-    }
-  ],
-  "duplicatesLead": "These are candidates from names and call order, not a judgement.",
+  "duplicates": [],
+  "duplicatesLead": null,
   "duplicatesNote": [],
   "edges": [
     {
@@ -723,6 +736,11 @@
       "from": "load",
       "fromTests": false,
       "to": "tick"
+    },
+    {
+      "from": "propose",
+      "fromTests": false,
+      "to": "harness"
     },
     {
       "from": "propose",
@@ -774,13 +792,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T05:31:34.606Z",
+  "generatedAt": "2026-09-26T06:50:17.517Z",
   "limits": [
     "14 import sites could not be resolved.",
-    "2 writes and 2 reads use paths built at run time and are not named here.",
+    "2 writes and 3 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "12 writes and 25 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "21 commands are built at run time and not followed, 18 of them in tests.",
+    "14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "31 commands are built at run time and not followed, 28 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -795,13 +813,14 @@
     "intents": "intents",
     "load": "load",
     "propose": "propose",
+    "roles": "roles",
     "root": "the repository root",
     "solver": "solver",
     "tick": "tick",
     "workflows": "workflows",
     "worlds": "worlds"
   },
-  "parts": 15,
+  "parts": 16,
   "readers": [],
   "repo": "mcp-tool-shop-org/si-rpg-engine",
   "sequences": [
@@ -1119,7 +1138,7 @@
       ]
     },
     {
-      "entry": "fresh",
+      "entry": "probeSession",
       "file": "packages/propose/propose.test.js",
       "inner": [
         {
@@ -1170,25 +1189,122 @@
               "part": "frame",
               "partLabel": "frame",
               "phrase": "commit frame"
+            },
+            {
+              "name": "leastLabel",
+              "part": null,
+              "partLabel": null,
+              "phrase": "least label"
+            }
+          ]
+        },
+        {
+          "file": "packages/propose/seat.js",
+          "name": "runSession",
+          "part": "propose",
+          "partLabel": "propose",
+          "phrase": "run session",
+          "steps": [
+            {
+              "name": "templateSlots",
+              "part": "propose",
+              "partLabel": "propose",
+              "phrase": "template slots"
+            },
+            {
+              "name": "frame",
+              "part": null,
+              "partLabel": null,
+              "phrase": "frame"
+            },
+            {
+              "name": "renderTemplate",
+              "part": "propose",
+              "partLabel": "propose",
+              "phrase": "render template"
+            },
+            {
+              "name": "beliefKeys",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "belief keys"
+            },
+            {
+              "name": "buildSchema",
+              "part": "propose",
+              "partLabel": "propose",
+              "phrase": "build schema"
+            },
+            {
+              "name": "observe",
+              "part": null,
+              "partLabel": null,
+              "phrase": "observe"
+            },
+            {
+              "name": "ask",
+              "part": null,
+              "partLabel": null,
+              "phrase": "ask"
+            },
+            {
+              "name": "whileOut",
+              "part": null,
+              "partLabel": null,
+              "phrase": "while out"
+            },
+            {
+              "count": 4,
+              "name": null,
+              "part": "propose",
+              "partLabel": "propose",
+              "phrase": "record"
+            }
+          ]
+        },
+        {
+          "file": "packages/tick/tick.js",
+          "name": "settle",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "settle",
+          "steps": [
+            {
+              "name": "idle",
+              "part": null,
+              "partLabel": null,
+              "phrase": "idle"
+            },
+            {
+              "name": "advance",
+              "part": null,
+              "partLabel": null,
+              "phrase": "advance"
             }
           ]
         }
       ],
       "part": "propose",
       "partLabel": "propose",
-      "phrase": "fresh",
+      "phrase": "probe session",
       "steps": [
+        {
+          "name": "loadRoles",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "load roles"
+        },
+        {
+          "name": "scratchWorld",
+          "part": "propose",
+          "partLabel": "propose",
+          "phrase": "scratch world"
+        },
         {
           "name": "loadIntentRules",
           "part": "tick",
           "partLabel": "tick",
           "phrase": "load intent rules"
-        },
-        {
-          "name": "fixtureWorld",
-          "part": "tick",
-          "partLabel": "tick",
-          "phrase": "fixture world"
         },
         {
           "name": "createWorld",
@@ -1201,6 +1317,134 @@
           "part": "tick",
           "partLabel": "tick",
           "phrase": "create memory"
+        },
+        {
+          "name": "createTick",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create tick"
+        },
+        {
+          "name": "onTick",
+          "part": null,
+          "partLabel": null,
+          "phrase": "on tick"
+        },
+        {
+          "name": "runSession",
+          "part": "propose",
+          "partLabel": "propose",
+          "phrase": "run session"
+        },
+        {
+          "name": "settle",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "settle"
+        },
+        {
+          "name": "writeSession",
+          "part": "propose",
+          "partLabel": "propose",
+          "phrase": "write session"
+        }
+      ]
+    },
+    {
+      "entry": "roleTick",
+      "file": "packages/tick/gate.test.js",
+      "inner": [
+        {
+          "file": "packages/tick/tick.js",
+          "name": "createTick",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create tick",
+          "steps": [
+            {
+              "name": "createHasher",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "create hasher"
+            },
+            {
+              "name": "installMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "install minds"
+            },
+            {
+              "name": "mixLoad",
+              "part": null,
+              "partLabel": null,
+              "phrase": "mix load"
+            },
+            {
+              "name": "mixMinds",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "mix minds"
+            },
+            {
+              "name": "snapshot",
+              "part": null,
+              "partLabel": null,
+              "phrase": "snapshot"
+            },
+            {
+              "name": "u32",
+              "part": null,
+              "partLabel": null,
+              "phrase": "u 32"
+            },
+            {
+              "name": "commitFrame",
+              "part": "frame",
+              "partLabel": "frame",
+              "phrase": "commit frame"
+            },
+            {
+              "name": "leastLabel",
+              "part": null,
+              "partLabel": null,
+              "phrase": "least label"
+            }
+          ]
+        }
+      ],
+      "part": "tick",
+      "partLabel": "tick",
+      "phrase": "role tick",
+      "steps": [
+        {
+          "name": "catalogOf",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "catalog of"
+        },
+        {
+          "name": "loadIntentRules",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "load intent rules"
+        },
+        {
+          "name": "createMemory",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create memory"
+        },
+        {
+          "name": "fixtureWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "fixture world"
+        },
+        {
+          "name": "createWorld",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "create world"
         },
         {
           "name": "createTick",
@@ -1262,6 +1506,12 @@
               "part": "frame",
               "partLabel": "frame",
               "phrase": "commit frame"
+            },
+            {
+              "name": "leastLabel",
+              "part": null,
+              "partLabel": null,
+              "phrase": "least label"
             }
           ]
         }
@@ -1348,6 +1598,12 @@
               "part": "frame",
               "partLabel": "frame",
               "phrase": "commit frame"
+            },
+            {
+              "name": "leastLabel",
+              "part": null,
+              "partLabel": null,
+              "phrase": "least label"
             }
           ]
         }
@@ -1527,14 +1783,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 28,
+  "testFiles": 31,
   "testedBy": {
-    "frame": 13,
+    "frame": 14,
     "host": 1,
     "load": 4,
-    "propose": 1,
+    "propose": 2,
     "solver": 1,
-    "tick": 21
+    "tick": 24
   },
   "unnamedWrites": 2,
   "unread": [],

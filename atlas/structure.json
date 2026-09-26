@@ -335,6 +335,74 @@
           "path": "fixtures/push-play-log.json"
         },
         {
+          "hash": "f991cfd04bdb0462841c0028f2d2e556c83dc7d55699c05514e259756c808954",
+          "path": "fixtures/roles/index.json"
+        },
+        {
+          "hash": "4c569cade119d759fc42f0bf629112b714ddbe3502650640d10c83b9e2564d29",
+          "path": "fixtures/roles/probe.json"
+        },
+        {
+          "hash": "9ca7bd60a2b7b17dd0f8276673a41d730f1f99341d1242376b8779f55431d505",
+          "path": "fixtures/roles/probe.txt"
+        },
+        {
+          "hash": "0873db82627304bc5669b27ddbc296c547f22b4cd36bd49716fa1b18bd97ecd6",
+          "path": "fixtures/sessions/probe-fixture/change.diff"
+        },
+        {
+          "hash": "7d5ef54515400f9ba601fbcdf7f9b2b407ecd648218a00bae1a761a0e2ed9421",
+          "path": "fixtures/sessions/probe-fixture/dispatch.txt"
+        },
+        {
+          "hash": "d5880236c0d17253e74ca3f2bd4023fe01b16b2f1d5e590a15e115e42c837ed9",
+          "path": "fixtures/sessions/probe-fixture/records/101007ae3cfdc17954f9aabdc469cea3020ac87789ff0fa5d1d215e35611762a.json"
+        },
+        {
+          "hash": "29c4734b2bab52f9c09eee76e5f9de5ce32cceadf73a7cd3779a56be90d0df17",
+          "path": "fixtures/sessions/probe-fixture/records/4c47d798508ced421d2ac97cfc026737f821e95b102ea11e0016354618a94895.json"
+        },
+        {
+          "hash": "c59ba2c1df6a975bfa18f2107c5e3cb2c5271e42a83c0ddd2e04e1d7101922aa",
+          "path": "fixtures/sessions/probe-fixture/records/af4e3bfb006e12ff3458b43646da06888b25288fec4bdf5d9fa297f21e39b41d.json"
+        },
+        {
+          "hash": "7c1accc3436e03210a2cde042bce68a73ba7cbdde1dc051cc41b3dcfdd6110a8",
+          "path": "fixtures/sessions/probe-fixture/session.json"
+        },
+        {
+          "hash": "2ec673df28ae56dec3340e14091f57eb091a4c5bce70f296f05601bf768d0a6f",
+          "path": "fixtures/sessions/probe-fixture/spec.json"
+        },
+        {
+          "hash": "f1cffbb93e8b6f7dcf95b859dd5e0d3cf90244f219ac96d5afaefcc5d40c23b7",
+          "path": "fixtures/sessions/probe-steer/change.diff"
+        },
+        {
+          "hash": "a3bebfdfe36365923289716bb9f015034cd68d67543b621a59fe54b7089302d1",
+          "path": "fixtures/sessions/probe-steer/dispatch.txt"
+        },
+        {
+          "hash": "5762a5e98fe7c60be70e97a4b096b614618b8160fc11c267bca0bd325a34225e",
+          "path": "fixtures/sessions/probe-steer/records/41507de67a25b3c536354bf5f7a6050d7e4c2b54e9b8ea6f7e9dab9b31915a1b.json"
+        },
+        {
+          "hash": "214ce54a1e03303a85b905d9151ca283d049cb95e78a6073daad1dbde3cdbf21",
+          "path": "fixtures/sessions/probe-steer/records/70cdc3bfad60b2c9f4ebe848b8d40ab1eee38bed459bf327eaba6c320d187e7e.json"
+        },
+        {
+          "hash": "94684e804ba3d45fd0bd735547a2fabc9f9b1a3087893e41d2d345720ff137ef",
+          "path": "fixtures/sessions/probe-steer/records/77a899b48296cb51d7363bd58c41375db1631faff5b31398f6e6d99664b7b03a.json"
+        },
+        {
+          "hash": "2793a5f70b7353b047bfb2f4b4fce0c58ae24dba120fbe0e5420547b1777a9db",
+          "path": "fixtures/sessions/probe-steer/session.json"
+        },
+        {
+          "hash": "08caefe84df203194d2896959653b716a5695abba133b8f24de378f6692e8cab",
+          "path": "fixtures/sessions/probe-steer/spec.json"
+        },
+        {
           "hash": "4fdc354c5f72d7a30d83494d68a715a6d9d313b7dc5dd139847bd89187008378",
           "path": "fixtures/shape-traversal.json"
         },
@@ -405,7 +473,7 @@
           "path": "packages/frame/hash.js"
         },
         {
-          "hash": "d0bcabee5ea129ab6b043f32813e7445c362109cc5be34a99be5155ad43d4158",
+          "hash": "4444c7a23814d39e23045bd41aaea4b5f3c8e3a1c0bd45db21805d9b624e1bc5",
           "path": "packages/frame/types.d.ts"
         }
       ],
@@ -416,7 +484,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 13,
+      "testedBy": 14,
       "unresolvedSites": 0
     },
     {
@@ -2413,16 +2481,18 @@
         {
           "entry": "plantedRerun",
           "entryRule": 1,
-          "hash": "0524a419336a8745ca8a5055d2c66dcc534bf5b0705a2a38e085b2617d3cd579",
+          "hash": "f8367203e4f503f8d3a16fa90cf9816156d20f96780be72926d3f0f0039eae17",
           "importsFiles": [
             "harness/bundle.mjs",
             "harness/events.mjs",
             "harness/replay-to.mjs",
+            "harness/role-session.mjs",
             "harness/trace-line.mjs",
             "harness/verbs-scene.mjs",
             "packages/frame/hash.js",
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
+            "packages/tick/roles.js",
             "packages/tick/tick.js",
             "packages/tick/world.js"
           ],
@@ -2431,14 +2501,14 @@
             {
               "calls": [
                 {
-                  "line": 91,
+                  "line": 111,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 95,
+                  "line": 115,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -2453,7 +2523,7 @@
             {
               "calls": [
                 {
-                  "line": 112,
+                  "line": 132,
                   "name": "contacts",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2468,7 +2538,7 @@
             {
               "calls": [
                 {
-                  "line": 120,
+                  "line": 140,
                   "name": "asleep",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2483,14 +2553,14 @@
             {
               "calls": [
                 {
-                  "line": 130,
+                  "line": 150,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   }
                 },
                 {
-                  "line": 112,
+                  "line": 132,
                   "name": "contacts",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2498,7 +2568,7 @@
                   "via": "contacts"
                 },
                 {
-                  "line": 120,
+                  "line": 140,
                   "name": "asleep",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2506,14 +2576,14 @@
                   "via": "asleep"
                 },
                 {
-                  "line": 134,
+                  "line": 154,
                   "name": "solverClasses",
                   "target": {
                     "file": "harness/events.mjs"
                   }
                 },
                 {
-                  "line": 154,
+                  "line": 174,
                   "name": "switched",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2528,25 +2598,25 @@
             {
               "calls": [
                 {
-                  "line": 207,
+                  "line": 227,
                   "name": "line",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 208,
+                  "line": 228,
                   "name": "advance",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 209,
+                  "line": 229,
                   "name": "line",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 196,
+                  "line": 216,
                   "name": "endLine",
                   "target": {
                     "file": "harness/trace-line.mjs"
@@ -2561,17 +2631,17 @@
             {
               "calls": [
                 {
-                  "line": 207,
+                  "line": 227,
                   "name": "line",
                   "target": null
                 },
                 {
-                  "line": 208,
+                  "line": 228,
                   "name": "advance",
                   "target": null
                 },
                 {
-                  "line": 209,
+                  "line": 229,
                   "name": "line",
                   "target": null
                 }
@@ -2584,7 +2654,7 @@
             {
               "calls": [
                 {
-                  "line": 230,
+                  "line": 250,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2599,7 +2669,7 @@
             {
               "calls": [
                 {
-                  "line": 91,
+                  "line": 111,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -2607,7 +2677,7 @@
                   "via": "evict"
                 },
                 {
-                  "line": 95,
+                  "line": 115,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -2615,39 +2685,39 @@
                   "via": "evict"
                 },
                 {
-                  "line": 281,
+                  "line": 301,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
                   }
                 },
                 {
-                  "line": 207,
+                  "line": 227,
                   "name": "line",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 208,
+                  "line": 228,
                   "name": "advance",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 209,
+                  "line": 229,
                   "name": "line",
                   "target": null,
                   "via": "rerunLines"
                 },
                 {
-                  "line": 282,
+                  "line": 302,
                   "name": "expectIdentical",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 230,
+                  "line": 250,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2655,7 +2725,7 @@
                   "via": "savesAt"
                 },
                 {
-                  "line": 296,
+                  "line": 316,
                   "name": "expectIdentical",
                   "target": {
                     "file": "harness/bundle.mjs"
@@ -2670,7 +2740,7 @@
             {
               "calls": [
                 {
-                  "line": 344,
+                  "line": 364,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2685,22 +2755,22 @@
             {
               "calls": [
                 {
-                  "line": 394,
+                  "line": 414,
                   "name": "line",
                   "target": null
                 },
                 {
-                  "line": 398,
+                  "line": 418,
                   "name": "advance",
                   "target": null
                 },
                 {
-                  "line": 405,
+                  "line": 425,
                   "name": "line",
                   "target": null
                 },
                 {
-                  "line": 407,
+                  "line": 427,
                   "name": "endLine",
                   "target": {
                     "file": "harness/trace-line.mjs"
@@ -2733,7 +2803,7 @@
                       }
                     }
                   ],
-                  "line": 130,
+                  "line": 150,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2753,7 +2823,7 @@
                       "target": null
                     }
                   ],
-                  "line": 112,
+                  "line": 132,
                   "name": "contacts",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2768,7 +2838,7 @@
                       "target": null
                     }
                   ],
-                  "line": 120,
+                  "line": 140,
                   "name": "asleep",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2786,7 +2856,7 @@
                       }
                     }
                   ],
-                  "line": 134,
+                  "line": 154,
                   "name": "solverClasses",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2794,7 +2864,7 @@
                   "via": "wholeRun"
                 },
                 {
-                  "line": 154,
+                  "line": 174,
                   "name": "switched",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2820,7 +2890,7 @@
                       }
                     }
                   ],
-                  "line": 344,
+                  "line": 364,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2828,7 +2898,7 @@
                   "via": "ownSaves"
                 },
                 {
-                  "line": 91,
+                  "line": 111,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -2836,7 +2906,7 @@
                   "via": "evict"
                 },
                 {
-                  "line": 95,
+                  "line": 115,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -2844,32 +2914,32 @@
                   "via": "evict"
                 },
                 {
-                  "line": 426,
+                  "line": 446,
                   "name": "endLine",
                   "target": {
                     "file": "harness/trace-line.mjs"
                   }
                 },
                 {
-                  "line": 394,
+                  "line": 414,
                   "name": "line",
                   "target": null,
                   "via": "rerunCaught"
                 },
                 {
-                  "line": 398,
+                  "line": 418,
                   "name": "advance",
                   "target": null,
                   "via": "rerunCaught"
                 },
                 {
-                  "line": 405,
+                  "line": 425,
                   "name": "line",
                   "target": null,
                   "via": "rerunCaught"
                 },
                 {
-                  "line": 407,
+                  "line": 427,
                   "name": "endLine",
                   "target": {
                     "file": "harness/trace-line.mjs"
@@ -2885,7 +2955,7 @@
             {
               "calls": [
                 {
-                  "line": 435,
+                  "line": 455,
                   "name": "playVerbs",
                   "target": {
                     "file": "harness/verbs-scene.mjs"
@@ -2900,28 +2970,28 @@
             {
               "calls": [
                 {
-                  "line": 494,
+                  "line": 514,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 495,
+                  "line": 515,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
                   }
                 },
                 {
-                  "line": 496,
+                  "line": 516,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
                   }
                 },
                 {
-                  "line": 506,
+                  "line": 526,
                   "name": "settle",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -2936,7 +3006,166 @@
             {
               "calls": [
                 {
-                  "line": 130,
+                  "line": 649,
+                  "name": "loadRoles",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 655,
+                  "name": "catalogOf",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 666,
+                  "name": "catalogFromLog",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 700,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 701,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 701,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "line": 701,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                },
+                {
+                  "line": 725,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "roleSession"
+            },
+            {
+              "calls": [
+                {
+                  "line": 758,
+                  "name": "roleSessionTo",
+                  "target": {
+                    "file": "harness/role-session.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "roleWhole"
+            },
+            {
+              "calls": [
+                {
+                  "line": 774,
+                  "name": "roleSessionTo",
+                  "target": {
+                    "file": "harness/role-session.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "roleSaves"
+            },
+            {
+              "calls": [
+                {
+                  "line": 774,
+                  "name": "roleSessionTo",
+                  "target": {
+                    "file": "harness/role-session.mjs"
+                  },
+                  "via": "roleSaves"
+                },
+                {
+                  "line": 803,
+                  "name": "endLine",
+                  "target": {
+                    "file": "harness/trace-line.mjs"
+                  }
+                },
+                {
+                  "line": 111,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  },
+                  "via": "evict"
+                },
+                {
+                  "line": 115,
+                  "name": "createHasher",
+                  "target": {
+                    "file": "packages/frame/hash.js"
+                  },
+                  "via": "evict"
+                },
+                {
+                  "line": 414,
+                  "name": "line",
+                  "target": null,
+                  "via": "rerunCaught"
+                },
+                {
+                  "line": 418,
+                  "name": "advance",
+                  "target": null,
+                  "via": "rerunCaught"
+                },
+                {
+                  "line": 425,
+                  "name": "line",
+                  "target": null,
+                  "via": "rerunCaught"
+                },
+                {
+                  "line": 427,
+                  "name": "endLine",
+                  "target": {
+                    "file": "harness/trace-line.mjs"
+                  },
+                  "via": "rerunCaught"
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "rolePlanted"
+            },
+            {
+              "calls": [
+                {
+                  "line": 150,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2944,7 +3173,7 @@
                   "via": "wholeRun"
                 },
                 {
-                  "line": 112,
+                  "line": 132,
                   "name": "contacts",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2952,7 +3181,7 @@
                   "via": "contacts"
                 },
                 {
-                  "line": 120,
+                  "line": 140,
                   "name": "asleep",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2960,7 +3189,7 @@
                   "via": "asleep"
                 },
                 {
-                  "line": 134,
+                  "line": 154,
                   "name": "solverClasses",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2968,7 +3197,7 @@
                   "via": "wholeRun"
                 },
                 {
-                  "line": 154,
+                  "line": 174,
                   "name": "switched",
                   "target": {
                     "file": "harness/events.mjs"
@@ -2976,7 +3205,7 @@
                   "via": "wholeRun"
                 },
                 {
-                  "line": 710,
+                  "line": 1041,
                   "name": "replayTo",
                   "target": {
                     "file": "harness/replay-to.mjs"
@@ -2987,6 +3216,117 @@
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
               "name": "stackCase"
+            }
+          ]
+        },
+        {
+          "entry": "roleSessionRun",
+          "entryRule": 4,
+          "exports": [
+            "roleSessionRun",
+            "roleSessionTo"
+          ],
+          "hash": "8aaf5f1b8626a58be2c75bd64ac9c1e48a2107734b1934ebc2ff47b1ff36fc5b",
+          "importsFiles": [
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/roles.js",
+            "packages/tick/tick.js",
+            "packages/tick/trace-line.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/role-session.mjs",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 40,
+                  "name": "catalogFromLog",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 44,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 45,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "line": 46,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "line": 47,
+                  "name": "createRestorableTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "roleSessionRun"
+            },
+            {
+              "calls": [
+                {
+                  "line": 40,
+                  "name": "catalogFromLog",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  },
+                  "via": "roleSessionRun"
+                },
+                {
+                  "line": 44,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  },
+                  "via": "roleSessionRun"
+                },
+                {
+                  "line": 45,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  },
+                  "via": "roleSessionRun"
+                },
+                {
+                  "line": 46,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  },
+                  "via": "roleSessionRun"
+                },
+                {
+                  "line": 47,
+                  "name": "createRestorableTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  },
+                  "via": "roleSessionRun"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "roleSessionTo"
             }
           ]
         },
@@ -3598,7 +3938,7 @@
       "outsideReads": 7,
       "outsideWrites": 4,
       "role": "test",
-      "testedBy": 14,
+      "testedBy": 15,
       "unresolvedSites": 8
     },
     {
@@ -4164,9 +4504,9 @@
       "unresolvedSites": 0
     },
     {
-      "dynamicReads": 0,
-      "dynamicSpawns": 0,
-      "dynamicSpawnsInTests": 0,
+      "dynamicReads": 1,
+      "dynamicSpawns": 8,
+      "dynamicSpawnsInTests": 8,
       "dynamicWrites": 0,
       "entryPoints": [
         "packages/propose/bin/propose.js"
@@ -4174,18 +4514,16 @@
       "externals": 0,
       "files": [
         {
-          "entry": "oneRun",
+          "entry": "driftReport",
           "entryRule": 1,
-          "hash": "70178e0472008e965fab975e2f186be50770f95756d53ea3657246863bfaa55c",
+          "hash": "a425ce70cdae8c123242c19e8f5acbd9a13d5548bb3a10756cf788269b19b566",
           "importsFiles": [
             "packages/propose/ollama.js",
-            "packages/propose/oracle.js",
-            "packages/propose/scene.js",
+            "packages/propose/record.js",
             "packages/propose/seat.js",
-            "packages/tick/fixture.js",
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
-            "packages/tick/replay.js",
+            "packages/tick/roles.js",
             "packages/tick/tick.js",
             "packages/tick/world.js",
             "packages/tool/guard.js"
@@ -4195,298 +4533,121 @@
             {
               "calls": [
                 {
-                  "line": 63,
-                  "name": "proposeWorld",
+                  "line": 228,
+                  "name": "readSession",
                   "target": {
-                    "file": "packages/propose/scene.js"
+                    "file": "packages/propose/record.js"
                   }
-                },
-                {
-                  "line": 63,
-                  "name": "createWorld",
-                  "target": {
-                    "file": "packages/tick/world.js"
-                  }
-                },
-                {
-                  "line": 66,
-                  "name": "createMemory",
-                  "target": {
-                    "file": "packages/tick/memory.js"
-                  }
-                },
-                {
-                  "line": 61,
-                  "name": "createTick",
-                  "target": {
-                    "file": "packages/tick/tick.js"
-                  }
-                }
-              ],
-              "exported": false,
-              "invokedAtTopLevel": false,
-              "isDefaultExport": false,
-              "name": "fresh"
-            },
-            {
-              "calls": [
-                {
-                  "line": 63,
-                  "name": "proposeWorld",
-                  "target": {
-                    "file": "packages/propose/scene.js"
-                  },
-                  "via": "fresh"
-                },
-                {
-                  "line": 63,
-                  "name": "createWorld",
-                  "target": {
-                    "file": "packages/tick/world.js"
-                  },
-                  "via": "fresh"
-                },
-                {
-                  "line": 66,
-                  "name": "createMemory",
-                  "target": {
-                    "file": "packages/tick/memory.js"
-                  },
-                  "via": "fresh"
                 },
                 {
                   "inner": [
                     {
-                      "line": 79,
-                      "name": "createHasher",
-                      "target": {
-                        "file": "packages/frame/hash.js"
-                      },
-                      "via": "buildTick"
+                      "line": 282,
+                      "name": "observe",
+                      "target": null
                     },
                     {
-                      "line": 99,
-                      "name": "installMinds",
-                      "target": {
-                        "file": "packages/tick/minds.js"
-                      },
-                      "via": "buildTick"
-                    },
-                    {
-                      "line": 102,
-                      "name": "mixLoad",
-                      "target": null,
-                      "via": "buildTick"
-                    },
-                    {
-                      "line": 104,
-                      "name": "mixMinds",
-                      "target": {
-                        "file": "packages/tick/minds.js"
-                      },
-                      "via": "buildTick"
-                    },
-                    {
-                      "line": 118,
-                      "name": "snapshot",
-                      "target": null,
-                      "via": "mixSnapshot"
-                    },
-                    {
-                      "line": 122,
-                      "name": "u32",
-                      "target": null,
-                      "via": "mixSnapshot"
-                    },
-                    {
-                      "line": 108,
-                      "name": "commitFrame",
-                      "target": {
-                        "file": "packages/frame/frame.js"
-                      },
-                      "via": "buildTick"
-                    }
-                  ],
-                  "line": 61,
-                  "name": "createTick",
-                  "target": {
-                    "file": "packages/tick/tick.js"
-                  },
-                  "via": "fresh"
-                },
-                {
-                  "inner": [
-                    {
-                      "line": 75,
-                      "name": "proposalSchema",
-                      "target": {
-                        "file": "packages/propose/schema.js"
-                      }
-                    },
-                    {
-                      "line": 83,
-                      "name": "goalText",
-                      "target": {
-                        "file": "packages/propose/scene.js"
-                      }
-                    },
-                    {
-                      "line": 84,
-                      "name": "obstacleText",
-                      "target": {
-                        "file": "packages/propose/scene.js"
-                      }
-                    },
-                    {
-                      "line": 77,
-                      "name": "proposalPrompt",
-                      "target": {
-                        "file": "packages/propose/prompt.js"
-                      }
-                    },
-                    {
-                      "line": 89,
+                      "line": 284,
                       "name": "ask",
                       "target": null
                     },
                     {
-                      "line": 90,
-                      "name": "readProposal",
-                      "target": {
-                        "file": "packages/propose/parse.js"
-                      }
-                    },
-                    {
-                      "line": 115,
-                      "name": "settle",
-                      "target": {
-                        "file": "packages/tick/tick.js"
-                      }
+                      "line": 286,
+                      "name": "whileOut",
+                      "target": null
                     }
                   ],
-                  "line": 75,
-                  "name": "runSeat",
+                  "line": 240,
+                  "name": "askWithin",
                   "target": {
                     "file": "packages/propose/seat.js"
                   }
                 },
                 {
-                  "line": 86,
-                  "name": "proposeWorld",
-                  "target": {
-                    "file": "packages/propose/scene.js"
-                  }
-                },
-                {
                   "inner": [
                     {
-                      "line": 38,
-                      "name": "createWorld",
+                      "line": 392,
+                      "name": "readRoleOutput",
                       "target": {
-                        "file": "packages/tick/world.js"
+                        "file": "packages/propose/parse.js"
                       }
                     },
                     {
-                      "line": 41,
-                      "name": "createMemory",
+                      "line": 395,
+                      "name": "canonical",
                       "target": {
-                        "file": "packages/tick/memory.js"
-                      }
-                    },
-                    {
-                      "line": 36,
-                      "name": "createTick",
-                      "target": {
-                        "file": "packages/tick/tick.js"
-                      }
-                    },
-                    {
-                      "line": 65,
-                      "name": "settle",
-                      "target": {
-                        "file": "packages/tick/tick.js"
+                        "file": "packages/tick/canonical.js"
                       }
                     }
                   ],
-                  "line": 84,
-                  "name": "replay",
+                  "line": 241,
+                  "name": "driftOf",
                   "target": {
-                    "file": "packages/tick/replay.js"
-                  }
-                },
-                {
-                  "line": 99,
-                  "name": "attemptsToGoal",
-                  "target": {
-                    "file": "packages/propose/scene.js"
+                    "file": "packages/propose/record.js"
                   }
                 }
               ],
               "exported": false,
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
-              "name": "oneRun"
+              "name": "driftReport"
             }
           ]
         },
         {
-          "hash": "b011acfc2146ef6a5cad66dff3ff90c9d36f1bcf18004ebe53570322edfa4cc0",
-          "path": "packages/propose/model.json"
-        },
-        {
           "exports": [
             "askOllama",
-            "pinnedRun"
+            "gpuSeen",
+            "modelSeen",
+            "observeOllama",
+            "settingsSeen"
           ],
-          "hash": "fe4a6a27d17370389e400af1b1a8bd77c24dc49ed0da3b216d12b06cf809af75",
+          "hash": "58003c2449a672be2d0beee2fb6dee09d41c03507a0f0a19c8d5af1940be5fa4",
           "path": "packages/propose/ollama.js"
         },
         {
           "exports": [
-            "oracleSearch"
+            "readRoleOutput",
+            "stampProposal"
           ],
-          "hash": "87b240f8a2b4a9bbc9f2830084036bd72f0c34a291553ef7dc9f8a787d4c4f7c",
-          "importsFiles": [
-            "packages/propose/scene.js",
-            "packages/tick/fixture.js",
-            "packages/tick/memory.js",
-            "packages/tick/predicates.js",
-            "packages/tick/tick.js",
-            "packages/tick/world.js"
-          ],
-          "path": "packages/propose/oracle.js"
-        },
-        {
-          "exports": [
-            "assignBodyId",
-            "readProposal",
-            "stamp"
-          ],
-          "hash": "5ad90769d5709f4990ebbb770ef5ebb1ed8c2e5ae6062aafd4f83de577367310",
+          "hash": "0ef8a913b0c98747176f543c40604068043b58a588535c1be179adc7fc25ca7f",
           "path": "packages/propose/parse.js"
         },
         {
           "exports": [
-            "proposalPrompt"
+            "accessText",
+            "catalogText",
+            "feedbackText",
+            "npcMindPrompt",
+            "npcMindState",
+            "renderTemplate",
+            "templateSlots",
+            "worldText"
           ],
-          "hash": "2caa05f69905a87b25b451fe112ece3da22e85a2b0bd978a28534a50bd6d84f5",
+          "hash": "3e8107f87c5eb790c0b1a565b37c92155e4725082b448a17c55b86d0ac3cd42f",
+          "importsFiles": [
+            "packages/tick/roles.js",
+            "packages/tick/subject.js"
+          ],
           "path": "packages/propose/prompt.js"
         },
         {
-          "entry": "fresh",
+          "entry": "probeSession",
           "entryRule": 1,
-          "hash": "0028185a821dcf3958e57262f1e51316d9c15391f9c35d128157f8cc12e60b33",
+          "exports": [
+            "submitUses"
+          ],
+          "hash": "bbdece1f9c7c4456d628cd95b1b16e3a6f6685431caa418473ffec8f8b32b540",
           "importsFiles": [
-            "packages/propose/oracle.js",
             "packages/propose/parse.js",
             "packages/propose/prompt.js",
-            "packages/propose/scene.js",
+            "packages/propose/record.js",
             "packages/propose/schema.js",
             "packages/propose/seat.js",
             "packages/tick/fixture.js",
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
-            "packages/tick/replay.js",
+            "packages/tick/roles.js",
             "packages/tick/tick.js",
             "packages/tick/world.js"
           ],
@@ -4495,37 +4656,78 @@
             {
               "calls": [
                 {
-                  "line": 17,
+                  "line": 37,
+                  "name": "loadRoles",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "probe"
+            },
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 104,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      },
+                      "via": "manifestHash"
+                    }
+                  ],
+                  "line": 37,
+                  "name": "loadRoles",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  },
+                  "via": "probe"
+                },
+                {
+                  "inner": [
+                    {
+                      "branch": "spec === 'product'",
+                      "line": 79,
+                      "name": "productInit",
+                      "target": {
+                        "file": "harness/product-scene.mjs"
+                      }
+                    },
+                    {
+                      "line": 125,
+                      "name": "validateScene",
+                      "target": {
+                        "file": "packages/tick/scene.js"
+                      }
+                    }
+                  ],
+                  "line": 96,
+                  "name": "scratchWorld",
+                  "target": {
+                    "file": "packages/propose/seat.js"
+                  }
+                },
+                {
+                  "line": 100,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "inner": [
-                    {
-                      "line": 11,
-                      "name": "fixtureColliders",
-                      "target": {
-                        "file": "packages/tick/world.js"
-                      }
-                    }
-                  ],
-                  "line": 20,
-                  "name": "fixtureWorld",
-                  "target": {
-                    "file": "packages/tick/fixture.js"
-                  }
-                },
-                {
-                  "line": 20,
+                  "line": 101,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 23,
+                  "line": 102,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
@@ -4534,7 +4736,7 @@
                 {
                   "inner": [
                     {
-                      "line": 79,
+                      "line": 109,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
@@ -4542,7 +4744,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 99,
+                      "line": 141,
                       "name": "installMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -4550,13 +4752,13 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 102,
+                      "line": 144,
                       "name": "mixLoad",
                       "target": null,
                       "via": "buildTick"
                     },
                     {
-                      "line": 104,
+                      "line": 146,
                       "name": "mixMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -4564,70 +4766,565 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 118,
+                      "line": 205,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 122,
+                      "line": 209,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 108,
+                      "line": 150,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
                       },
                       "via": "buildTick"
+                    },
+                    {
+                      "line": 156,
+                      "name": "leastLabel",
+                      "target": null,
+                      "via": "mindLabels"
                     }
                   ],
-                  "line": 18,
+                  "line": 103,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
+                  }
+                },
+                {
+                  "line": 108,
+                  "name": "onTick",
+                  "target": null
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 204,
+                      "name": "templateSlots",
+                      "target": {
+                        "file": "packages/propose/prompt.js"
+                      },
+                      "via": "sessionRefusal"
+                    },
+                    {
+                      "line": 328,
+                      "name": "frame",
+                      "target": null
+                    },
+                    {
+                      "line": 337,
+                      "name": "renderTemplate",
+                      "target": {
+                        "file": "packages/propose/prompt.js"
+                      }
+                    },
+                    {
+                      "line": 238,
+                      "name": "beliefKeys",
+                      "target": {
+                        "file": "packages/tick/beliefs.js"
+                      },
+                      "via": "schemaContext"
+                    },
+                    {
+                      "line": 338,
+                      "name": "buildSchema",
+                      "target": {
+                        "file": "packages/propose/schema.js"
+                      }
+                    },
+                    {
+                      "line": 282,
+                      "name": "observe",
+                      "target": null,
+                      "via": "askWithin"
+                    },
+                    {
+                      "line": 284,
+                      "name": "ask",
+                      "target": null,
+                      "via": "askWithin"
+                    },
+                    {
+                      "line": 286,
+                      "name": "whileOut",
+                      "target": null,
+                      "via": "askWithin"
+                    },
+                    {
+                      "line": 369,
+                      "name": "promptHash",
+                      "target": {
+                        "file": "packages/propose/record.js"
+                      }
+                    },
+                    {
+                      "line": 370,
+                      "name": "schemaHash",
+                      "target": {
+                        "file": "packages/propose/record.js"
+                      }
+                    },
+                    {
+                      "line": 376,
+                      "name": "outputHash",
+                      "target": {
+                        "file": "packages/propose/record.js"
+                      }
+                    },
+                    {
+                      "line": 378,
+                      "name": "cutOffTiming",
+                      "target": {
+                        "file": "packages/propose/record.js"
+                      }
+                    }
+                  ],
+                  "innerTruncated": true,
+                  "line": 111,
+                  "name": "runSession",
+                  "target": {
+                    "file": "packages/propose/seat.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 903,
+                      "name": "idle",
+                      "target": null
+                    },
+                    {
+                      "line": 904,
+                      "name": "advance",
+                      "target": null
+                    }
+                  ],
+                  "line": 125,
+                  "name": "settle",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 103,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      },
+                      "via": "recordKey"
+                    },
+                    {
+                      "line": 103,
+                      "name": "sha256",
+                      "target": {
+                        "file": "packages/tick/roles.js"
+                      },
+                      "via": "recordKey"
+                    }
+                  ],
+                  "line": 127,
+                  "name": "writeSession",
+                  "target": {
+                    "file": "packages/propose/record.js"
                   }
                 }
               ],
               "exported": false,
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
-              "name": "fresh"
+              "name": "probeSession"
+            }
+          ]
+        },
+        {
+          "entry": "verifySession",
+          "entryRule": 4,
+          "exports": [
+            "cutOffTiming",
+            "driftOf",
+            "outputHash",
+            "promptHash",
+            "readSession",
+            "recordKey",
+            "schemaHash",
+            "verifySession",
+            "writeSession"
+          ],
+          "hash": "fbd59f504ee55cff968949ec6aedce44df4f0fbdb8c5bb1b896a83c7d6e6fbf9",
+          "importsFiles": [
+            "packages/propose/parse.js",
+            "packages/tick/canonical.js",
+            "packages/tick/predicates.js",
+            "packages/tick/replay.js",
+            "packages/tick/roles.js"
+          ],
+          "path": "packages/propose/record.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 103,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  }
+                },
+                {
+                  "line": 103,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "recordKey"
+            },
+            {
+              "calls": [
+                {
+                  "line": 111,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  }
+                },
+                {
+                  "line": 111,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "promptHash"
+            },
+            {
+              "calls": [
+                {
+                  "line": 119,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  }
+                },
+                {
+                  "line": 119,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "schemaHash"
+            },
+            {
+              "calls": [
+                {
+                  "line": 127,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "outputHash"
+            },
+            {
+              "calls": [
+                {
+                  "line": 103,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  },
+                  "via": "recordKey"
+                },
+                {
+                  "line": 103,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  },
+                  "via": "recordKey"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "writeSession"
+            },
+            {
+              "calls": [
+                {
+                  "line": 203,
+                  "name": "manifestHash",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 208,
+                  "name": "validateManifest",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 103,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  },
+                  "via": "recordKey"
+                },
+                {
+                  "line": 103,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  },
+                  "via": "recordKey"
+                },
+                {
+                  "line": 111,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  },
+                  "via": "promptHash"
+                },
+                {
+                  "line": 111,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  },
+                  "via": "promptHash"
+                },
+                {
+                  "line": 119,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  },
+                  "via": "schemaHash"
+                },
+                {
+                  "line": 119,
+                  "name": "sha256",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  },
+                  "via": "schemaHash"
+                },
+                {
+                  "line": 259,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  }
+                },
+                {
+                  "line": 266,
+                  "name": "readRoleOutput",
+                  "target": {
+                    "file": "packages/propose/parse.js"
+                  }
+                },
+                {
+                  "line": 321,
+                  "name": "stampProposal",
+                  "target": {
+                    "file": "packages/propose/parse.js"
+                  }
+                },
+                {
+                  "line": 322,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  }
+                },
+                {
+                  "line": 333,
+                  "name": "catalogFromLog",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 337,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 340,
+                  "name": "replay",
+                  "target": {
+                    "file": "packages/tick/replay.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "verifySession"
+            },
+            {
+              "calls": [
+                {
+                  "line": 392,
+                  "name": "readRoleOutput",
+                  "target": {
+                    "file": "packages/propose/parse.js"
+                  }
+                },
+                {
+                  "line": 395,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "driftOf"
+            }
+          ]
+        },
+        {
+          "entry": "rekey",
+          "entryRule": 1,
+          "hash": "8a4782ec026155a6f5c87743757834c3e7792a3a58e032fde893f0ecc74855b3",
+          "importsFiles": [
+            "packages/propose/parse.js",
+            "packages/propose/record.js",
+            "packages/tick/gate.js",
+            "packages/tick/predicates.js",
+            "packages/tick/roles.js"
+          ],
+          "path": "packages/propose/record.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 103,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      }
+                    },
+                    {
+                      "line": 103,
+                      "name": "sha256",
+                      "target": {
+                        "file": "packages/tick/roles.js"
+                      }
+                    }
+                  ],
+                  "line": 82,
+                  "name": "recordKey",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "rekey"
+            },
+            {
+              "calls": [
+                {
+                  "line": 106,
+                  "name": "verifySession",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "red"
+            },
+            {
+              "calls": [
+                {
+                  "line": 113,
+                  "name": "readSession",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "firstAdmitted"
             }
           ]
         },
         {
           "exports": [
-            "attemptsToGoal",
-            "goalText",
-            "obstacleText",
-            "proposeWorld",
-            "reachedGoal"
+            "buildSchema",
+            "roleProposalSchema"
           ],
-          "hash": "7979ab73d07b40022ef5029d06b2263c5d9e5ae6e57d6deea60cc4fa241ec202",
-          "path": "packages/propose/scene.js"
-        },
-        {
-          "exports": [
-            "proposalSchema"
+          "hash": "d4c2d48cbeec314ef3e198f704a1afd9138d1759ced87f1f9fe42793fc683d77",
+          "importsFiles": [
+            "packages/tick/memory.js",
+            "packages/tick/roles.js"
           ],
-          "hash": "3adbb77458b081be1d37f612d6f39e25f6697980c3b41fc0dd69bc76cc52dbf1",
           "path": "packages/propose/schema.js"
         },
         {
-          "entry": "runSeat",
+          "entry": "runSession",
           "entryRule": 4,
           "exports": [
-            "runSeat"
+            "askWithin",
+            "runSession",
+            "scratchWorld",
+            "sessionRefusal",
+            "submitAsRole"
           ],
-          "hash": "a3471529eda66bc552c5ca0330692c6bcfb983ca16c82f325dd8f7e68dba8e30",
+          "hash": "14ebfe01332b97bb6956d0bc5bfefb11a3c3f88fafe19be646844436e6662395",
           "importsFiles": [
+            "harness/product-scene.mjs",
             "packages/propose/parse.js",
             "packages/propose/prompt.js",
-            "packages/propose/scene.js",
+            "packages/propose/record.js",
             "packages/propose/schema.js",
+            "packages/tick/beliefs.js",
+            "packages/tick/scene.js",
             "packages/tick/tick.js"
           ],
           "path": "packages/propose/seat.js",
@@ -4635,47 +5332,209 @@
             {
               "calls": [
                 {
-                  "line": 75,
-                  "name": "proposalSchema",
+                  "line": 61,
+                  "name": "submit",
+                  "target": null
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "submitAsRole"
+            },
+            {
+              "calls": [
+                {
+                  "branch": "spec === 'product'",
+                  "line": 79,
+                  "name": "productInit",
                   "target": {
-                    "file": "packages/propose/schema.js"
+                    "file": "harness/product-scene.mjs"
                   }
                 },
                 {
-                  "line": 83,
-                  "name": "goalText",
+                  "line": 125,
+                  "name": "validateScene",
                   "target": {
-                    "file": "packages/propose/scene.js"
+                    "file": "packages/tick/scene.js"
                   }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "scratchWorld"
+            },
+            {
+              "calls": [
+                {
+                  "line": 204,
+                  "name": "templateSlots",
+                  "target": {
+                    "file": "packages/propose/prompt.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "sessionRefusal"
+            },
+            {
+              "calls": [
+                {
+                  "line": 238,
+                  "name": "beliefKeys",
+                  "target": {
+                    "file": "packages/tick/beliefs.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "schemaContext"
+            },
+            {
+              "calls": [
+                {
+                  "line": 282,
+                  "name": "observe",
+                  "target": null
                 },
                 {
-                  "line": 84,
-                  "name": "obstacleText",
-                  "target": {
-                    "file": "packages/propose/scene.js"
-                  }
+                  "line": 284,
+                  "name": "ask",
+                  "target": null
                 },
                 {
-                  "line": 77,
-                  "name": "proposalPrompt",
+                  "line": 286,
+                  "name": "whileOut",
+                  "target": null
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "askWithin"
+            },
+            {
+              "calls": [
+                {
+                  "line": 204,
+                  "name": "templateSlots",
+                  "target": {
+                    "file": "packages/propose/prompt.js"
+                  },
+                  "via": "sessionRefusal"
+                },
+                {
+                  "line": 328,
+                  "name": "frame",
+                  "target": null
+                },
+                {
+                  "line": 337,
+                  "name": "renderTemplate",
                   "target": {
                     "file": "packages/propose/prompt.js"
                   }
                 },
                 {
-                  "line": 89,
-                  "name": "ask",
-                  "target": null
+                  "line": 238,
+                  "name": "beliefKeys",
+                  "target": {
+                    "file": "packages/tick/beliefs.js"
+                  },
+                  "via": "schemaContext"
                 },
                 {
-                  "line": 90,
-                  "name": "readProposal",
+                  "line": 338,
+                  "name": "buildSchema",
+                  "target": {
+                    "file": "packages/propose/schema.js"
+                  }
+                },
+                {
+                  "line": 282,
+                  "name": "observe",
+                  "target": null,
+                  "via": "askWithin"
+                },
+                {
+                  "line": 284,
+                  "name": "ask",
+                  "target": null,
+                  "via": "askWithin"
+                },
+                {
+                  "line": 286,
+                  "name": "whileOut",
+                  "target": null,
+                  "via": "askWithin"
+                },
+                {
+                  "line": 369,
+                  "name": "promptHash",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                },
+                {
+                  "line": 370,
+                  "name": "schemaHash",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                },
+                {
+                  "line": 376,
+                  "name": "outputHash",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                },
+                {
+                  "line": 378,
+                  "name": "cutOffTiming",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                },
+                {
+                  "line": 380,
+                  "name": "recordKey",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                },
+                {
+                  "line": 398,
+                  "name": "readRoleOutput",
                   "target": {
                     "file": "packages/propose/parse.js"
                   }
                 },
                 {
-                  "line": 115,
+                  "line": 417,
+                  "name": "frame",
+                  "target": null
+                },
+                {
+                  "line": 418,
+                  "name": "stampProposal",
+                  "target": {
+                    "file": "packages/propose/parse.js"
+                  }
+                },
+                {
+                  "line": 61,
+                  "name": "submit",
+                  "target": null,
+                  "via": "submitAsRole"
+                },
+                {
+                  "line": 423,
                   "name": "settle",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -4685,7 +5544,7 @@
               "exported": true,
               "invokedAtTopLevel": false,
               "isDefaultExport": false,
-              "name": "runSeat"
+              "name": "runSession"
             }
           ]
         }
@@ -4696,9 +5555,51 @@
       "importConfidence": "full",
       "name": "propose",
       "origin": "authored",
-      "outsideWrites": 1,
+      "outsideReads": 9,
+      "outsideWrites": 3,
       "role": "code",
-      "testedBy": 1,
+      "testedBy": 2,
+      "unresolvedSites": 0
+    },
+    {
+      "dynamicReads": 0,
+      "dynamicSpawns": 0,
+      "dynamicSpawnsInTests": 0,
+      "dynamicWrites": 0,
+      "entryPoints": [
+        "predicates/roles/index.json"
+      ],
+      "externals": 0,
+      "files": [
+        {
+          "hash": "eeaf6fe4eb4c74836b93c8cfe6da9c80e72e055f79d0b5b51f9b5c1bd2e77ab3",
+          "path": "predicates/roles/index.json"
+        },
+        {
+          "hash": "ad9f741665b2e94d2a7971637e2074e62acd099d5e16bbdaf35f73dee8ac93e3",
+          "path": "predicates/roles/npc-mind.json"
+        },
+        {
+          "hash": "07aef842ce0c418b283fa8589079fe963ec2deb6872239b04fcc78cebad58493",
+          "path": "predicates/roles/npc-mind.txt"
+        },
+        {
+          "hash": "f6f7a33beed96eac22f92bd70f218677c3ee259d944bbef9a33c3c608398b3a6",
+          "path": "predicates/roles/test-instrument.json"
+        },
+        {
+          "hash": "90506e5d6bfc571a18dcfdaa1cc5c6d584f44405121810a4ec48d8e187e89bb6",
+          "path": "predicates/roles/test-instrument.txt"
+        }
+      ],
+      "globs": [
+        "predicates/roles/**"
+      ],
+      "importConfidence": "full",
+      "name": "roles",
+      "origin": "authored",
+      "role": "data",
+      "testedBy": 0,
       "unresolvedSites": 0
     },
     {
@@ -4770,7 +5671,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "03d7e99d29ac45763d89844f6a937a7b4d37fafdd9618e3f8283be58052df2b6",
+          "hash": "fe7e50559c4794111e20d63802984815c26b4cc6faf5ac49493d39a9a23c47d3",
           "path": "package.json"
         },
         {
@@ -5451,8 +6352,8 @@
     },
     {
       "dynamicReads": 1,
-      "dynamicSpawns": 3,
-      "dynamicSpawnsInTests": 3,
+      "dynamicSpawns": 5,
+      "dynamicSpawnsInTests": 5,
       "dynamicWrites": 0,
       "entryPoints": [
         "packages/tick/bin/play.js",
@@ -5545,8 +6446,9 @@
             "beliefKeys",
             "beliefRefusal"
           ],
-          "hash": "b2257e583b5081afe2b96f2e6f213bcc9e47fc84317ba070b64728090e5ed2c7",
+          "hash": "e6c9a26332e58b4cd8401423c82f30dcbe4e9471520146ee263a6a09fa841f83",
           "importsFiles": [
+            "packages/tick/memory.js",
             "packages/tick/subject.js"
           ],
           "path": "packages/tick/beliefs.js"
@@ -5566,7 +6468,7 @@
         {
           "entry": "isWorld",
           "entryRule": 1,
-          "hash": "f019623e9ece16a7c1389d7791e829d5a5ff9b3a9a4175af033f93f8cc9d015c",
+          "hash": "888a174a56a147fd6f95d46edc2504ea042fcf783f0cfdc7cb7c9792c0e972a6",
           "importsFiles": [
             "packages/tick/bundle.js",
             "packages/tick/fixture.js",
@@ -5741,6 +6643,13 @@
         },
         {
           "exports": [
+            "canonical"
+          ],
+          "hash": "03bbdf29d156771da0c10815bc1f206b2a43550a8e6b2f82b4d96a8de11e9ec9",
+          "path": "packages/tick/canonical.js"
+        },
+        {
+          "exports": [
             "compareLines",
             "compareTraces",
             "describe",
@@ -5781,11 +6690,207 @@
         },
         {
           "exports": [
+            "beliefLabel",
+            "budgetRefusal",
+            "freshnessRefusal",
+            "provenanceProblem",
+            "roleRefusal"
+          ],
+          "hash": "b6ab94f4c8aada249ab61b03c0c5f345f027ec5a4f65108471a0f3c91a1642c8",
+          "importsFiles": [
+            "packages/tick/roles.js",
+            "packages/tick/trust.js"
+          ],
+          "path": "packages/tick/gate.js"
+        },
+        {
+          "entry": "roleTick",
+          "entryRule": 1,
+          "hash": "30f12fe4b529c5fd2dde3232e298a9ffd94b85e82e089901878b63618ee5dce4",
+          "importsFiles": [
+            "packages/tick/beliefs.js",
+            "packages/tick/fixture.js",
+            "packages/tick/gate.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/replay.js",
+            "packages/tick/roles.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/tick/gate.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 102,
+                  "name": "fixtureWorld",
+                  "target": {
+                    "file": "packages/tick/fixture.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "crateWorld"
+            },
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 104,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      },
+                      "via": "manifestHash"
+                    }
+                  ],
+                  "line": 112,
+                  "name": "catalogOf",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 116,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                },
+                {
+                  "line": 117,
+                  "name": "createMemory",
+                  "target": {
+                    "file": "packages/tick/memory.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 11,
+                      "name": "fixtureColliders",
+                      "target": {
+                        "file": "packages/tick/world.js"
+                      }
+                    }
+                  ],
+                  "line": 118,
+                  "name": "fixtureWorld",
+                  "target": {
+                    "file": "packages/tick/fixture.js"
+                  }
+                },
+                {
+                  "line": 118,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 109,
+                      "name": "createHasher",
+                      "target": {
+                        "file": "packages/frame/hash.js"
+                      },
+                      "via": "buildTick"
+                    },
+                    {
+                      "line": 141,
+                      "name": "installMinds",
+                      "target": {
+                        "file": "packages/tick/minds.js"
+                      },
+                      "via": "buildTick"
+                    },
+                    {
+                      "line": 144,
+                      "name": "mixLoad",
+                      "target": null,
+                      "via": "buildTick"
+                    },
+                    {
+                      "line": 146,
+                      "name": "mixMinds",
+                      "target": {
+                        "file": "packages/tick/minds.js"
+                      },
+                      "via": "buildTick"
+                    },
+                    {
+                      "line": 205,
+                      "name": "snapshot",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 209,
+                      "name": "u32",
+                      "target": null,
+                      "via": "mixSnapshot"
+                    },
+                    {
+                      "line": 150,
+                      "name": "commitFrame",
+                      "target": {
+                        "file": "packages/frame/frame.js"
+                      },
+                      "via": "buildTick"
+                    },
+                    {
+                      "line": 156,
+                      "name": "leastLabel",
+                      "target": null,
+                      "via": "mindLabels"
+                    }
+                  ],
+                  "line": 119,
+                  "name": "createTick",
+                  "target": {
+                    "file": "packages/tick/tick.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "roleTick"
+            }
+          ]
+        },
+        {
+          "exports": [
             "createMemory",
             "memorySaveProblem"
           ],
-          "hash": "95f309c07115c43bd230ad58ae155e4ac84dda4a92fe467b2f3055be0ae60987",
-          "path": "packages/tick/memory.js"
+          "hash": "af008527c43c55a6effc62d83a97181fa5c3e37c36b764b8e76b40a1fd6d2630",
+          "importsFiles": [
+            "packages/tick/trust.js"
+          ],
+          "path": "packages/tick/memory.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 281,
+                  "name": "isLabel",
+                  "target": {
+                    "file": "packages/tick/trust.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "isBelief"
+            }
+          ]
         },
         {
           "exports": [
@@ -5797,16 +6902,17 @@
             "restoreMinds",
             "saveMinds"
           ],
-          "hash": "32bf865d41d82123e67d0d3f0a812bd59051a2214646407a04bfc1cc40b44471",
+          "hash": "1eed0ec3314973ef2af4c97613625ce62d5fdc55a4cfaa59a59568ed243a82b7",
           "importsFiles": [
-            "packages/tick/subject.js"
+            "packages/tick/subject.js",
+            "packages/tick/trust.js"
           ],
           "path": "packages/tick/minds.js"
         },
         {
           "entry": "minded",
           "entryRule": 1,
-          "hash": "3bf22a957b595ca1f7c29bf242cfeb203299af3b06c50f628995bcacade8e8a7",
+          "hash": "32a979d62a84c70a709210dddecba923ca016f91660451f8c2e2abf5da60693e",
           "importsFiles": [
             "harness/minds-scene.mjs",
             "packages/frame/hash.js",
@@ -5814,6 +6920,7 @@
             "packages/tick/predicates.js",
             "packages/tick/scene.js",
             "packages/tick/tick.js",
+            "packages/tick/trust.js",
             "packages/tick/world.js"
           ],
           "path": "packages/tick/minds.test.js",
@@ -5838,7 +6945,7 @@
                       "via": "validateBelief"
                     }
                   ],
-                  "line": 21,
+                  "line": 22,
                   "name": "validateScene",
                   "target": {
                     "file": "packages/tick/scene.js"
@@ -5907,7 +7014,7 @@
                 {
                   "inner": [
                     {
-                      "line": 79,
+                      "line": 109,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
@@ -5915,7 +7022,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 99,
+                      "line": 141,
                       "name": "installMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -5923,13 +7030,13 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 102,
+                      "line": 144,
                       "name": "mixLoad",
                       "target": null,
                       "via": "buildTick"
                     },
                     {
-                      "line": 104,
+                      "line": 146,
                       "name": "mixMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -5937,24 +7044,30 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 118,
+                      "line": 205,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 122,
+                      "line": 209,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 108,
+                      "line": 150,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
                       },
                       "via": "buildTick"
+                    },
+                    {
+                      "line": 156,
+                      "name": "leastLabel",
+                      "target": null,
+                      "via": "mindLabels"
                     }
                   ],
                   "line": 38,
@@ -6279,54 +7392,145 @@
           ]
         },
         {
-          "entry": "replay",
-          "entryRule": 3,
           "exports": [
             "replay"
           ],
-          "hash": "439db77841e14186e62b6ebb8fd93ee154f0e55f202f8d12c22a72570d737bca",
+          "hash": "cd2374c0eb7a289c98070cb7f40636c4ed0114c8f3a96238ee29fdc1e9684c59",
           "importsFiles": [
             "packages/tick/memory.js",
+            "packages/tick/roles.js",
             "packages/tick/tick.js",
             "packages/tick/world.js"
           ],
-          "path": "packages/tick/replay.js",
+          "path": "packages/tick/replay.js"
+        },
+        {
+          "entry": "manifestHash",
+          "entryRule": 4,
+          "exports": [
+            "catalogFromLog",
+            "catalogOf",
+            "classifyChange",
+            "derive",
+            "findRole",
+            "lf",
+            "loadRoles",
+            "manifestHash",
+            "propertiesText",
+            "sha256",
+            "templateHash",
+            "validateManifest"
+          ],
+          "hash": "fce005fbb004bbee7c7b95cfffd2532d788e912f145f6700aa121591d3ece611",
+          "importsFiles": [
+            "packages/tick/canonical.js"
+          ],
+          "path": "packages/tick/roles.js",
           "sequences": [
             {
               "calls": [
                 {
-                  "line": 38,
-                  "name": "createWorld",
+                  "line": 104,
+                  "name": "canonical",
                   "target": {
-                    "file": "packages/tick/world.js"
-                  }
-                },
-                {
-                  "line": 41,
-                  "name": "createMemory",
-                  "target": {
-                    "file": "packages/tick/memory.js"
-                  }
-                },
-                {
-                  "line": 36,
-                  "name": "createTick",
-                  "target": {
-                    "file": "packages/tick/tick.js"
-                  }
-                },
-                {
-                  "line": 65,
-                  "name": "settle",
-                  "target": {
-                    "file": "packages/tick/tick.js"
+                    "file": "packages/tick/canonical.js"
                   }
                 }
               ],
               "exported": true,
               "invokedAtTopLevel": false,
               "isDefaultExport": false,
-              "name": "replay"
+              "name": "manifestHash"
+            },
+            {
+              "calls": [
+                {
+                  "line": 104,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  },
+                  "via": "manifestHash"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "catalogOf"
+            },
+            {
+              "calls": [
+                {
+                  "line": 104,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  },
+                  "via": "manifestHash"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "loadRoles"
+            },
+            {
+              "calls": [
+                {
+                  "line": 104,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  },
+                  "via": "manifestHash"
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "catalogFromLog"
+            },
+            {
+              "calls": [
+                {
+                  "line": 732,
+                  "name": "canonical",
+                  "target": {
+                    "file": "packages/tick/canonical.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "classifyChange"
+            }
+          ]
+        },
+        {
+          "entry": "refusal",
+          "entryRule": 1,
+          "hash": "d7c8ba86d6b877ee47ac48377565e736aa6bc51e6c3fa1508210d7ddfa9a7ab8",
+          "importsFiles": [
+            "packages/tick/canonical.js",
+            "packages/tick/roles.js"
+          ],
+          "path": "packages/tick/roles.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 38,
+                  "name": "validateManifest",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "refusal"
             }
           ]
         },
@@ -6334,7 +7538,7 @@
           "exports": [
             "replayTo"
           ],
-          "hash": "a8e034a457b523047e167c1b3697034397af15adc7308e1bf88a2206cbe38e4b",
+          "hash": "80a7d7bb86f6e97596a0bd4f83800be9c017c6552f870bafc132e56648df06d7",
           "importsFiles": [
             "packages/tick/memory.js",
             "packages/tick/predicates.js",
@@ -6521,21 +7725,25 @@
             "createTick",
             "settle"
           ],
-          "hash": "9488781b9e569960f3bafcc8bb8496408a0d1d96132b813c80dae9449cb1a9f8",
+          "hash": "d283269601a1d4970ae2bd6deae36d18cf6e1deee244726f5981d960f017b432",
           "importsFiles": [
             "packages/frame/frame.js",
             "packages/frame/hash.js",
             "packages/tick/beliefs.js",
+            "packages/tick/canonical.js",
+            "packages/tick/gate.js",
             "packages/tick/memory.js",
             "packages/tick/minds.js",
-            "packages/tick/predicates.js"
+            "packages/tick/predicates.js",
+            "packages/tick/roles.js",
+            "packages/tick/trust.js"
           ],
           "path": "packages/tick/tick.js",
           "sequences": [
             {
               "calls": [
                 {
-                  "line": 79,
+                  "line": 109,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -6543,7 +7751,7 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 99,
+                  "line": 141,
                   "name": "installMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -6551,13 +7759,13 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 102,
+                  "line": 144,
                   "name": "mixLoad",
                   "target": null,
                   "via": "buildTick"
                 },
                 {
-                  "line": 104,
+                  "line": 146,
                   "name": "mixMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -6565,24 +7773,30 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 118,
+                  "line": 205,
                   "name": "snapshot",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 122,
+                  "line": 209,
                   "name": "u32",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 108,
+                  "line": 150,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
                   },
                   "via": "buildTick"
+                },
+                {
+                  "line": 156,
+                  "name": "leastLabel",
+                  "target": null,
+                  "via": "mindLabels"
                 }
               ],
               "exported": true,
@@ -6593,7 +7807,7 @@
             {
               "calls": [
                 {
-                  "line": 79,
+                  "line": 109,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
@@ -6601,7 +7815,7 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 99,
+                  "line": 141,
                   "name": "installMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -6609,13 +7823,13 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 102,
+                  "line": 144,
                   "name": "mixLoad",
                   "target": null,
                   "via": "buildTick"
                 },
                 {
-                  "line": 104,
+                  "line": 146,
                   "name": "mixMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
@@ -6623,24 +7837,30 @@
                   "via": "buildTick"
                 },
                 {
-                  "line": 118,
+                  "line": 205,
                   "name": "snapshot",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 122,
+                  "line": 209,
                   "name": "u32",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 108,
+                  "line": 150,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
                   },
                   "via": "buildTick"
+                },
+                {
+                  "line": 156,
+                  "name": "leastLabel",
+                  "target": null,
+                  "via": "mindLabels"
                 }
               ],
               "exported": true,
@@ -6651,49 +7871,55 @@
             {
               "calls": [
                 {
-                  "line": 79,
+                  "line": 109,
                   "name": "createHasher",
                   "target": {
                     "file": "packages/frame/hash.js"
                   }
                 },
                 {
-                  "line": 99,
+                  "line": 141,
                   "name": "installMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
                   }
                 },
                 {
-                  "line": 102,
+                  "line": 144,
                   "name": "mixLoad",
                   "target": null
                 },
                 {
-                  "line": 104,
+                  "line": 146,
                   "name": "mixMinds",
                   "target": {
                     "file": "packages/tick/minds.js"
                   }
                 },
                 {
-                  "line": 118,
+                  "line": 205,
                   "name": "snapshot",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 122,
+                  "line": 209,
                   "name": "u32",
                   "target": null,
                   "via": "mixSnapshot"
                 },
                 {
-                  "line": 108,
+                  "line": 150,
                   "name": "commitFrame",
                   "target": {
                     "file": "packages/frame/frame.js"
                   }
+                },
+                {
+                  "line": 156,
+                  "name": "leastLabel",
+                  "target": null,
+                  "via": "mindLabels"
                 }
               ],
               "exported": false,
@@ -6704,12 +7930,12 @@
             {
               "calls": [
                 {
-                  "line": 611,
+                  "line": 903,
                   "name": "idle",
                   "target": null
                 },
                 {
-                  "line": 612,
+                  "line": 904,
                   "name": "advance",
                   "target": null
                 }
@@ -6724,7 +7950,7 @@
         {
           "entry": "fresh",
           "entryRule": 1,
-          "hash": "e21a4ed6edbfe8d3f94d77aa7b11d31c8426f01d47e421deb6c9191022f5e56c",
+          "hash": "4065563b29b98b14a9cd782d3ad02dd406308e69b74a27980d939ee89ad16bea",
           "importsFiles": [
             "harness/behaviour.mjs",
             "packages/tick/fixture.js",
@@ -6733,6 +7959,7 @@
             "packages/tick/replay.js",
             "packages/tick/scene.js",
             "packages/tick/tick.js",
+            "packages/tick/trust.js",
             "packages/tick/world.js"
           ],
           "path": "packages/tick/tick.test.js",
@@ -6749,28 +7976,28 @@
                       }
                     }
                   ],
-                  "line": 23,
+                  "line": 24,
                   "name": "fixtureWorld",
                   "target": {
                     "file": "packages/tick/fixture.js"
                   }
                 },
                 {
-                  "line": 23,
+                  "line": 24,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
                   }
                 },
                 {
-                  "line": 23,
+                  "line": 24,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "line": 23,
+                  "line": 24,
                   "name": "createMemory",
                   "target": {
                     "file": "packages/tick/memory.js"
@@ -6779,7 +8006,7 @@
                 {
                   "inner": [
                     {
-                      "line": 79,
+                      "line": 109,
                       "name": "createHasher",
                       "target": {
                         "file": "packages/frame/hash.js"
@@ -6787,7 +8014,7 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 99,
+                      "line": 141,
                       "name": "installMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -6795,13 +8022,13 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 102,
+                      "line": 144,
                       "name": "mixLoad",
                       "target": null,
                       "via": "buildTick"
                     },
                     {
-                      "line": 104,
+                      "line": 146,
                       "name": "mixMinds",
                       "target": {
                         "file": "packages/tick/minds.js"
@@ -6809,27 +8036,33 @@
                       "via": "buildTick"
                     },
                     {
-                      "line": 118,
+                      "line": 205,
                       "name": "snapshot",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 122,
+                      "line": 209,
                       "name": "u32",
                       "target": null,
                       "via": "mixSnapshot"
                     },
                     {
-                      "line": 108,
+                      "line": 150,
                       "name": "commitFrame",
                       "target": {
                         "file": "packages/frame/frame.js"
                       },
                       "via": "buildTick"
+                    },
+                    {
+                      "line": 156,
+                      "name": "leastLabel",
+                      "target": null,
+                      "via": "mindLabels"
                     }
                   ],
-                  "line": 23,
+                  "line": 24,
                   "name": "createTick",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -6844,12 +8077,12 @@
             {
               "calls": [
                 {
-                  "line": 28,
+                  "line": 29,
                   "name": "frame",
                   "target": null
                 },
                 {
-                  "line": 28,
+                  "line": 29,
                   "name": "submit",
                   "target": null
                 }
@@ -6862,7 +8095,7 @@
             {
               "calls": [
                 {
-                  "line": 287,
+                  "line": 288,
                   "name": "validateScene",
                   "target": {
                     "file": "packages/tick/scene.js"
@@ -6890,6 +8123,16 @@
             "packages/frame/hash.js"
           ],
           "path": "packages/tick/trace-line.js"
+        },
+        {
+          "exports": [
+            "isLabel",
+            "labelFields",
+            "labelRank",
+            "lowerLabel"
+          ],
+          "hash": "35449d71e9226e0585293e3a77a38928cad57f8ac64b006459279eac939406ac",
+          "path": "packages/tick/trust.js"
         },
         {
           "hash": "31bed245ec2392f4c5c69a4403c29124da6818ead6ad333302bf5bbdf216f3b1",
@@ -6925,10 +8168,10 @@
       "importConfidence": "full",
       "name": "tick",
       "origin": "authored",
-      "outsideReads": 12,
+      "outsideReads": 19,
       "outsideWrites": 3,
       "role": "code",
-      "testedBy": 21,
+      "testedBy": 24,
       "unresolvedSites": 4
     },
     {
@@ -6994,7 +8237,7 @@
   ],
   "doors": [
     {
-      "checksCount": 28,
+      "checksCount": 29,
       "commands": [
         {
           "job": "engines",
@@ -7138,7 +8381,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 33
+          "files": 34
         },
         {
           "boundary": "host",
@@ -7163,7 +8406,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 23
+          "files": 29
         }
       ],
       "readers": [
@@ -7314,6 +8557,13 @@
         },
         {
           "job": "engines",
+          "matched": true,
+          "path": "harness/role-session.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
           "path": "harness/sim.mjs",
           "runKind": "checks"
         },
@@ -7451,6 +8701,11 @@
           "runKind": "executes"
         },
         {
+          "job": "engines",
+          "path": "packages/propose/record.test.js",
+          "runKind": "executes"
+        },
+        {
           "directory": true,
           "job": "engines",
           "matched": true,
@@ -7460,12 +8715,22 @@
         },
         {
           "job": "engines",
+          "path": "packages/tick/gate.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "packages/tick/minds.test.js",
           "runKind": "executes"
         },
         {
           "job": "engines",
           "path": "packages/tick/order.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "packages/tick/roles.test.js",
           "runKind": "executes"
         },
         {
@@ -7560,7 +8825,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 62,
+      "runsCount": 66,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -7696,7 +8961,7 @@
             "file": "packages/tick/admit-world.js",
             "from": "harness/corpus.mjs"
           },
-          "files": 14
+          "files": 18
         },
         {
           "boundary": "frame",
@@ -7869,7 +9134,7 @@
             "file": "packages/tick/scene.js",
             "from": "packages/host/bin/host.js"
           },
-          "files": 10
+          "files": 14
         },
         {
           "boundary": "frame",
@@ -7932,7 +9197,7 @@
             "file": "packages/tick/bundle.js",
             "from": "packages/load/bin/load.js"
           },
-          "files": 14
+          "files": 18
         },
         {
           "boundary": "frame",
@@ -7983,7 +9248,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 9
+          "files": 13
         },
         {
           "boundary": "frame",
@@ -8034,16 +9299,16 @@
         {
           "boundary": "propose",
           "depth": 0,
-          "files": 8
+          "files": 7
         },
         {
           "boundary": "tick",
           "depth": 1,
           "enters": {
-            "file": "packages/tick/tick.js",
+            "file": "packages/tick/roles.js",
             "from": "packages/propose/bin/propose.js"
           },
-          "files": 9
+          "files": 14
         },
         {
           "boundary": "frame",
@@ -8053,6 +9318,15 @@
             "from": "packages/tick/tick.js"
           },
           "files": 2
+        },
+        {
+          "boundary": "harness",
+          "depth": 2,
+          "enters": {
+            "file": "harness/product-scene.mjs",
+            "from": "packages/propose/seat.js"
+          },
+          "files": 1
         }
       ],
       "readers": [],
@@ -8097,7 +9371,7 @@
         {
           "boundary": "tick",
           "depth": 0,
-          "files": 15
+          "files": 19
         },
         {
           "boundary": "frame",
@@ -8169,7 +9443,7 @@
             "file": "packages/tick/memory.js",
             "from": "harness/sim.mjs"
           },
-          "files": 6
+          "files": 7
         }
       ],
       "readers": [
@@ -8234,6 +9508,13 @@
           "confidence": "ast",
           "fromTests": true,
           "target": "fixtures/golden.txt"
+        },
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true,
+          "target": "fixtures/golden.txt"
         }
       ],
       "runs": [
@@ -8294,6 +9575,11 @@
     {
       "from": "propose",
       "kind": "file",
+      "to": "harness"
+    },
+    {
+      "from": "propose",
+      "kind": "file",
       "to": "tick"
     },
     {
@@ -8315,8 +9601,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "d25073e4ca0fb29e439787f95b5e86cd35334f4e",
-    "tracked": 256
+    "commit": "8d78f1e127fe4566355293724eb7baceefed49e0",
+    "tracked": 284
   },
   "landings": [
     {
@@ -8457,6 +9743,12 @@
         {
           "by": "harness/switch.test.js",
           "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
           "confidence": "ast",
           "fromTests": true
         },
@@ -8707,6 +9999,12 @@
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "fixtures/golden.txt",
@@ -8745,6 +10043,90 @@
         }
       ],
       "target": "fixtures/push-play-log.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/restore.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/roles.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/roles",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "existsSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "readdirSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/sessions",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/sessions/probe-fixture/spec.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/gate.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/roles.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/sessions/probe-steer",
       "writers": []
     },
     {
@@ -9130,17 +10512,79 @@
     {
       "readers": [
         {
-          "by": "packages/propose/bin/propose.js",
-          "call": "readFileSync",
-          "confidence": "ast"
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         },
         {
-          "by": "packages/propose/ollama.js",
-          "call": "readFileSync",
-          "confidence": "ast"
+          "by": "packages/propose/propose.test.js",
+          "call": "readdirSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "statSync",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
-      "target": "packages/propose/model.json",
+      "target": "packages/propose",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/propose/bin/propose.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/propose/parse.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/propose/record.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/propose/seat.js",
       "writers": []
     },
     {
@@ -9198,6 +10642,18 @@
           "confidence": "text"
         },
         {
+          "by": "packages/propose/record.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/gate.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/tick.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -9229,6 +10685,18 @@
         }
       ],
       "target": "packages/tick/predicates.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/tick/replay.js",
       "writers": []
     },
     {
@@ -9337,6 +10805,12 @@
           "fromTests": true
         },
         {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/verbs.test.js",
           "call": "readFileSync",
           "confidence": "ast",
@@ -9362,6 +10836,88 @@
         }
       ],
       "target": "predicates/intents/push.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/roles.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "packages/tick/roles.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "predicates/roles",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/roles.js",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "predicates/roles/index.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/roles.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/roles.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "predicates/roles/npc-mind.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "predicates/roles/npc-mind.txt",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/tick/roles.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/tick/roles.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "predicates/roles/test-instrument.json",
       "writers": []
     },
     {
@@ -9713,6 +11269,12 @@
           "fromTests": true
         },
         {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/minds.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -9769,6 +11331,12 @@
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "packages/propose/propose.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "worlds/index.json",
@@ -9778,7 +11346,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 28,
+  "testFiles": 31,
   "unassigned": [
     {
       "exports": [
