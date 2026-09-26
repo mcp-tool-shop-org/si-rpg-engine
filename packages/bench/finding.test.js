@@ -163,6 +163,22 @@ test('a comparison in the checker flipped from < to <= at a boundary the sweep l
   const bundle = JSON.parse(readFileSync(join(r.out, d.bundle), 'utf8'));
   assert.equal(bundle.run, 'log');
   assert.equal(bundle.failure.block, d.rungs[2].block);
+  // The sweep's part of the report: the anchor among those it reached, with
+  // its changed line reached and its mark, and its rungs counted from its
+  // records.
+  const sweep = r.report.proposers.sweep;
+  assert.ok(sweep.anchorsReached.includes(a.id));
+  assert.deepEqual(sweep.linesReached[a.id], a.lines.map((/** @type {number[]} */ range) => range[0]));
+  assert.equal(sweep.observable[a.id], 'observable');
+  const own = r.records.filter((x) => x.proposer === 'sweep');
+  assert.deepEqual(sweep.rungs, {
+    head0: own.filter((x) => !x.rungs[0].head.ok).length,
+    base0: own.filter((x) => x.rungs[0].head.ok && !x.rungs[0].base.ok).length,
+    reached: own.filter((x) => x.rungs[1]).length,
+    differ: own.filter((x) => x.rungs[2]).length,
+    fail: own.filter((x) => x.rungs[3] && Object.values(x.rungs[3].failures).some(Boolean)).length,
+    catches: own.filter((x) => x.rungs[3] && x.rungs[3].catch).length,
+  });
   const mutants = r.report.mutants.list.filter((/** @type {any} */ m) => m.anchor === a.id);
   assert.deepEqual(mutants.map((/** @type {any} */ m) => [m.operator, m.detail, m.verdict]), [['flipped comparison', '`<` to `<=`', 'marked']]);
 });

@@ -123,6 +123,9 @@ test('a log control input runs on both trees, and its recorded hashes match the 
   assert.ok(match.notes.includes('its recorded hashes match the head\'s run'));
   const other = runs.mismatch.records[0];
   assert.ok(other.recorded.includes('2'));
+  // Rung 2 compares the trees' runs with each other, never with the
+  // recording: the two clean trees agree though the recording does not.
+  assert.equal(other.rungs[2], null);
   assert.ok(other.notes.some((/** @type {string} */ n) => /^its recorded hashes do not match the head's run, first at tick 0: the bundle is from another build$/.test(n)), JSON.stringify(other.notes));
 });
 
