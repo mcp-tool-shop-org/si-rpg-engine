@@ -16,7 +16,9 @@
 // and the product scene, and shows a save that omits one field goes red. They
 // are on the tick createRestorableTick makes, not the one createTick makes:
 // restore writes body records, and a tick handed to a host has no method that
-// writes geometry (packages/tick/tick.test.js, the host boundary).
+// writes geometry (packages/tick/tick.test.js, the host boundary). A restore
+// checks the whole save before it writes anything, the committed frame record
+// by record as the world checks its own records (#83).
 //
 // A role's proposal (T7a) carries provenance: submit(proposal, provenance).
 // The role gate (gate.js) checks it against the role's manifest, its
@@ -47,6 +49,9 @@ import { AUTHORED, isLabel, labelFields } from './trust.js';
 
 /** A frame's hash: sixteen lowercase hex digits (frame/hash.js). */
 const FRAME_HASH = /^[0-9a-f]{16}$/;
+
+/** The numbers in a committed frame's body record, beside its id: what commitFrame (frame/frame.js) copies. */
+const FRAME_RECORD = /** @type {const} */ (['x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz', 'hx', 'hy', 'hz']);
 
 /**
  * @typedef {import('../frame/types.js').Proposal} Proposal
@@ -760,6 +765,36 @@ function buildTick(init) {
   }
 
   /**
+   * Why a saved frame's body records are not the ones the tick committed, or
+   * null (#83). They are checked as the world checks its own saved records:
+   * one record per body of this world, in the world's order, each with its
+   * body's id and every number commitFrame copies. A body drafted at the saved
+   * tick is in the world and not yet in the frame, which the next quantum
+   * commits, so the frame holds every body of this world but those the saved
+   * log drafted at that tick.
+   * @param {any} saved a save whose frame and log have their shape
+   * @returns {string | null}
+   */
+  function frameProblem(saved) {
+    const drafted = saved.log.filter((/** @type {any} */ entry) => entry.tick === saved.tick && entry.proposal.kind === 'body').length;
+    const committed = world.bodies.length - drafted;
+    const records = saved.frame.bodies;
+    if (records.length !== committed) {
+      return 'the frame does not have the ' + committed + ' bodies of this world' + (drafted > 0 ? ' before the ' + drafted + ' drafted at tick ' + saved.tick : '');
+    }
+    for (let i = 0; i < committed; i = i + 1) {
+      const from = records[i];
+      if (!from || typeof from !== 'object' || from.id !== world.bodies[i].id) {
+        return 'frame record ' + i + ' is ' + (from && typeof from === 'object' ? from.id : String(from)) + ' in the save and ' + world.bodies[i].id + ' here';
+      }
+      if (!FRAME_RECORD.every((field) => typeof from[field] === 'number')) {
+        return 'frame record ' + i + ' (' + from.id + ') is not a record of numbers';
+      }
+    }
+    return null;
+  }
+
+  /**
    * Whether a value is a scheduled action as submit writes one.
    * @param {any} action
    */
@@ -772,8 +807,9 @@ function buildTick(init) {
 
   /**
    * Why a value is not a save of this tick, or null. It checks the whole
-   * save, the world's part with the world's own check, so restore changes
-   * nothing until nothing it reads can fail.
+   * save, the committed frame record by record and the world's part with the
+   * world's own check, so restore changes nothing until nothing it reads can
+   * fail.
    * @param {any} saved
    * @returns {string | null}
    */
@@ -810,6 +846,12 @@ function buildTick(init) {
     }
     if (!Array.isArray(saved.log) || !saved.log.every((/** @type {any} */ entry) => entry && Number.isInteger(entry.tick) && typeof entry.hash === 'string' && entry.proposal && typeof entry.proposal === 'object')) {
       return 'the log is entries with a tick, a hash, and a proposal';
+    }
+    // After the log's shape: the log says which bodies were drafted since the
+    // frame was committed.
+    const framed = frameProblem(saved);
+    if (framed !== null) {
+      return framed;
     }
     const cited = logProvenanceProblem(saved.log);
     if (cited !== null) {
