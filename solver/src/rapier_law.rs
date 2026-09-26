@@ -1057,6 +1057,13 @@ pub extern "C" fn solver_rebuilds() -> u32 {
 // red finds the branch on exactly Rapier's stalled quanta, the flat walk keeps
 // its stride, the step is climbed in four directions and a tilted `up` refuses
 // it, and the costs are printed.
+//
+// F3, the character's push, after it: every law run in fixtures/law-runs/
+// replays to the product binary's digest, the control test holds the copy of
+// the impulse routine with its change off to Rapier's routine bit for bit, its
+// red finds the change only where two dynamic colliders are near the
+// character in red room A, the guard bounds how fast a push may leave a body,
+// and the costs are printed.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2415,5 +2422,824 @@ mod tests {
             (m.spent, m.calls)
         }));
         assert!(rapier > 0.0 && off > 0.0 && on > 0.0);
+    }
+
+    // -----------------------------------------------------------------------
+    // F3: the character's push goes through the engine's copy of Rapier's
+    // impulse routine, solver/src/impulses.rs, with upstream's change, Rapier's
+    // #1004 (docs/dispatch-f3-character-push.md).
+    //
+    // The law runs. fixtures/law-runs/ holds the product scene, every
+    // behaviour fixture run on the product law, and every fixture with a push
+    // (fixtures/push/) as the law receives them: the records the load wrote,
+    // and before each quantum what the tick wrote differently from what the
+    // law left (harness/law-runs.mjs, which harness/push.test.js holds to the
+    // tick). `replay` steps one through the law. Pushed by the law's own push,
+    // each must reproduce its file's digest of every quantum's records and
+    // snapshot, which makes it the product binary's run bit for bit.
+    //
+    // Pin 4, the control test. Rapier's own routine, the copy with the change
+    // off, and the copy with the change on are given the same world before
+    // every push of the flat walks, the ten course cases, the step from 80
+    // starts, the verb fixture's capsule carry as F2 replays it, and every law
+    // run. The copy with the change off must leave the bodies as Rapier's
+    // routine does, compared whole; the copy with the change on may act only
+    // on a quantum on which a collision had two or more dynamic colliders near
+    // the character, within the box the routine gathers from. Rapier's result
+    // moves the world, so every run is the run main makes. Run whole, the law
+    // pushing through the copy with the change off keeps every quantum with
+    // the law pushing through Rapier's routine. On red room A the change is
+    // the test's red: it acts on each of the quanta 42 to 53 that have the
+    // crate and the shade near the walker and on no other, pushes differently
+    // from 45, and the law parts from Rapier's routine there.
+    //
+    // Pin 5 at the law: through Rapier's routine the replay of red room A is
+    // main's binary's run, every quantum's records and snapshot, and the
+    // crate leaves quantum 53 at 26.06416630354704.
+    //
+    // Pin 6, the guard: no body leaves a push, or ends the quantum's step,
+    // faster than PUSH_MULTIPLE times the speed its character is driven at,
+    // over every law run; red room A through Rapier's routine exceeds it, first
+    // at quantum 53. The bound it sits above is measured too: the engine's
+    // smallest crate, struck square and listed twice among the character's
+    // collisions, leaves the law's push at 6.3751 times the character's speed.
+    //
+    // Pin 8: the time per quantum of the push through the copy and through
+    // Rapier's routine, on red room A and the product scene, printed.
+
+    use crate::impulses::Impulses;
+    use rapier3d_f64::parry::bounding_volume::BoundingVolume;
+    use rapier3d_f64::parry::query::ShapeCastStatus;
+    use rapier3d_f64::pipeline::QueryPipelineMut;
+
+    /// How many times the speed its character is driven at a body may leave
+    /// a push with, and still have after the quantum's step (pin 6).
+    ///
+    /// Below it: #1004 removes the overwrite, not the amplifier. Rapier's
+    /// impulse sizes each contact point's push with the body's linear mass
+    /// alone, so an ordinary push overshoots, and 0.36.0 keeps that ratio until
+    /// it is fixed on its own. The engine's smallest crate struck square on its
+    /// face leaves the push at 6.3751 times the character's speed along the
+    /// normal when the move lists it twice or more among its collisions, and
+    /// 4.5747 when it lists it once: the knowledge base's measurement on
+    /// rapier3d-f64 0.36.0 (6.375 and 4.575), which
+    /// a_crate_listed_twice_among_the_collisions_leaves_the_push_at_about_six_and_a_half_times_the_pushers_speed_under_the_guard
+    /// reproduces through the law's push. Eight is 1.25 times that. Over every
+    /// law run the highest is lower, 3.7008 as the push leaves the body (the
+    /// crate of the verb fixture's carry at quantum 88, as the walker reaches it
+    /// to pick it up) and 2.8785 after the step, 2.16 times under eight.
+    ///
+    /// Above it: through Rapier's 0.35.3 routine red room A's crate leaves the
+    /// push at quantum 53 at 25.2731 times its pusher's speed, and 26.0642
+    /// after the step, 3.16 times eight.
+    const PUSH_MULTIPLE: f64 = 8.0;
+
+    /// A law run as harness/law-runs.mjs writes it: every double as its bit
+    /// pattern, bodies and slots from 0, quanta from 1.
+    struct LawRun {
+        name: String,
+        quanta: usize,
+        shape: u32,
+        rows: u32,
+        cols: u32,
+        cell: f64,
+        colliders: Vec<[f64; COLLIDER_STRIDE]>,
+        heights: Vec<f64>,
+        ids: Vec<String>,
+        bodies: Vec<[f64; BODY_STRIDE]>,
+        /// (first quantum, last quantum, carried body, actor)
+        pins: Vec<(usize, usize, usize, usize)>,
+        /// (quantum, body, slot, value), in quantum order
+        edits: Vec<(usize, usize, usize, f64)>,
+        finals: Vec<[f64; BODY_STRIDE]>,
+        digest: String,
+    }
+
+    fn bit_word(word: &str) -> f64 {
+        f64::from_bits(u64::from_str_radix(word, 16).unwrap_or_else(|e| panic!("{word} is not a bit pattern: {e}")))
+    }
+
+    fn bit_record<const N: usize>(words: &[&str]) -> [f64; N] {
+        assert_eq!(words.len(), N, "a record of {N} values has {}", words.len());
+        let mut out = [0.0; N];
+        for (value, word) in out.iter_mut().zip(words) {
+            *value = bit_word(word);
+        }
+        out
+    }
+
+    fn parse_law_run(text: &str) -> LawRun {
+        let mut run = LawRun {
+            name: String::new(),
+            quanta: 0,
+            shape: 0,
+            rows: 0,
+            cols: 0,
+            cell: 0.0,
+            colliders: Vec::new(),
+            heights: Vec::new(),
+            ids: Vec::new(),
+            bodies: Vec::new(),
+            pins: Vec::new(),
+            edits: Vec::new(),
+            finals: Vec::new(),
+            digest: String::new(),
+        };
+        let count = |word: &str| -> usize { word.parse().unwrap_or_else(|e| panic!("{word} is not a count: {e}")) };
+        for line in text.lines() {
+            let words: Vec<&str> = line.split_whitespace().collect();
+            match words.first().copied() {
+                Some("run") => {
+                    run.name = words[1].to_string();
+                    run.quanta = count(words[2]);
+                    run.shape = count(words[3]) as u32;
+                    run.rows = count(words[4]) as u32;
+                    run.cols = count(words[5]) as u32;
+                    run.cell = bit_word(words[6]);
+                }
+                Some("collider") => run.colliders.push(bit_record(&words[1..])),
+                Some("heights") => run.heights = words[1..].iter().map(|w| bit_word(w)).collect(),
+                Some("body") => {
+                    run.ids.push(words[1].to_string());
+                    run.bodies.push(bit_record(&words[2..]));
+                }
+                Some("pin") => run.pins.push((count(words[1]), count(words[2]), count(words[3]), count(words[4]))),
+                Some("edit") => run.edits.push((count(words[1]), count(words[2]), count(words[3]), bit_word(words[4]))),
+                Some("final") => run.finals.push(bit_record(&words[2..])),
+                Some("digest") => run.digest = words[1].to_string(),
+                None => {}
+                Some(other) => panic!("a law run has no line that starts {other}"),
+            }
+        }
+        assert!(run.edits.windows(2).all(|w| w[0].0 <= w[1].0), "{}: the edits are not in quantum order", run.name);
+        run
+    }
+
+    /// Every law run in fixtures/law-runs/, in file order.
+    fn law_runs() -> Vec<LawRun> {
+        let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../fixtures/law-runs");
+        let mut files: Vec<std::path::PathBuf> = std::fs::read_dir(dir)
+            .unwrap_or_else(|e| panic!("{dir}: {e}"))
+            .map(|entry| entry.expect("a directory entry").path())
+            .filter(|path| path.extension().is_some_and(|x| x == "txt"))
+            .collect();
+        files.sort();
+        files.iter().map(|path| parse_law_run(&std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{}: {e}", path.display())))).collect()
+    }
+
+    fn law_run(name: &str) -> LawRun {
+        law_runs().into_iter().find(|run| run.name == name).unwrap_or_else(|| panic!("fixtures/law-runs/ has no run {name}"))
+    }
+
+    /// packages/frame/hash.js's byte stream: two FNV-1a lanes; of every eight
+    /// bytes a call gives it, the first four feed lane 0 and the last four
+    /// lane 1.
+    struct Lanes(u32, u32);
+
+    impl Lanes {
+        fn new() -> Lanes {
+            Lanes(0x811c_9dc5, 0x811c_9dc5)
+        }
+
+        fn bytes(&mut self, data: &[u8]) {
+            for (i, &byte) in data.iter().enumerate() {
+                if i & 4 == 0 {
+                    self.0 = (self.0 ^ byte as u32).wrapping_mul(0x0100_0193);
+                } else {
+                    self.1 = (self.1 ^ byte as u32).wrapping_mul(0x0100_0193);
+                }
+            }
+        }
+
+        fn digest(&self) -> String {
+            format!("{:08x}{:08x}", self.0, self.1)
+        }
+    }
+
+    /// The first `n` body records, as the solver's buffer holds them.
+    fn record_bytes(n: usize) -> Vec<u8> {
+        (0..n).flat_map(|i| body_at(i)).flat_map(f64::to_le_bytes).collect()
+    }
+
+    /// The pose the tick's pinCarried gives a carried body on its actor: the
+    /// actor's x and z, its y plus both half-heights, no velocity, no rotation.
+    fn pin_carried(body: usize, actor: usize) {
+        let a = body_at(actor);
+        let c = body_at(body);
+        let pose = [a[0], a[1] + a[HY] + c[HY], a[2], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0];
+        for (slot, value) in pose.iter().enumerate() {
+            set_slot(body, slot, *value);
+        }
+    }
+
+    /// Steps a law run through the law with `mover` and `pusher` as a new
+    /// world: the load's records, then before each quantum its pins and its
+    /// edits, then the step. `before` sees the pusher and the quantum about to
+    /// be stepped; `after` sees the pusher and the quantum once it has stepped. Returns each
+    /// quantum's digest of its records and snapshot, and the run's digest over
+    /// all of them, as harness/law-runs.mjs computes it.
+    fn replay<M: Mover, P: Pusher>(
+        turn: &mut u32,
+        run: &LawRun,
+        mover: &mut M,
+        pusher: &mut P,
+        mut before: impl FnMut(&mut P, usize),
+        mut after: impl FnMut(&mut P, usize),
+    ) -> (Vec<String>, String) {
+        *turn += 1;
+        for (i, b) in run.bodies.iter().enumerate() {
+            set_body(i, *b);
+        }
+        for (j, c) in run.colliders.iter().enumerate() {
+            set_collider(j, *c);
+        }
+        set_heights(&run.heights);
+        let (n, m) = (run.bodies.len() as u32, run.colliders.len() as u32);
+        assert_eq!(ensure(*turn, n, m, run.rows, run.cols, run.cell, run.shape), Ok(Load::Built), "{}", run.name);
+        let mut lanes = Lanes::new();
+        let mut quanta = Vec::with_capacity(run.quanta);
+        let mut edits = run.edits.iter().peekable();
+        for q in 1..=run.quanta {
+            for &(first, last, body, actor) in &run.pins {
+                if first <= q && q <= last {
+                    pin_carried(body, actor);
+                }
+            }
+            while let Some(&&(at, i, slot, value)) = edits.peek() {
+                if at != q {
+                    break;
+                }
+                set_slot(i, slot, value);
+                edits.next();
+            }
+            before(pusher, q);
+            assert_eq!(step_law(*turn, n, m, run.rows, run.cols, run.cell, run.shape, mover, pusher), Ok(()), "{} at quantum {q}", run.name);
+            let records = record_bytes(run.bodies.len());
+            let snap = snapshot();
+            let mut one = Lanes::new();
+            one.bytes(&records);
+            one.bytes(&snap);
+            quanta.push(one.digest());
+            lanes.bytes(&records);
+            lanes.bytes(&snap);
+            after(pusher, q);
+        }
+        (quanta, lanes.digest())
+    }
+
+    /// The first quantum, counted from 1, at which two runs' digests differ.
+    fn parting(a: &[String], b: &[String]) -> Option<usize> {
+        a.iter().zip(b.iter()).position(|(x, y)| x != y).map(|q| q + 1)
+    }
+
+    /// Every record and snapshot of a run driven by `drive_pushed`, one
+    /// digest a quantum.
+    fn driven_hashes<P: Pusher>(turn: &mut u32, run: &Run, pusher: &mut P) -> Vec<String> {
+        let mut out = Vec::new();
+        let n = run.bodies.len();
+        drive_pushed(turn, run, &mut Stride, pusher, |_, _, _| {}, |_| {
+            let mut one = Lanes::new();
+            one.bytes(&record_bytes(n));
+            one.bytes(&snapshot());
+            out.push(one.digest());
+        });
+        out
+    }
+
+    /// Rapier's own routine, alone.
+    struct RapierRoutine;
+
+    impl Pusher for RapierRoutine {
+        fn push(&mut self, controller: &KinematicCharacterController, dt: f64, queries: &mut QueryPipelineMut, character_shape: &dyn Shape, character_mass: f64, collisions: &[CharacterCollision]) {
+            controller.solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions);
+        }
+    }
+
+    /// The copy with the change off, alone.
+    struct CopyOff;
+
+    impl Pusher for CopyOff {
+        fn push(&mut self, controller: &KinematicCharacterController, dt: f64, queries: &mut QueryPipelineMut, character_shape: &dyn Shape, character_mass: f64, collisions: &[CharacterCollision]) {
+            Impulses::<false>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions);
+        }
+    }
+
+    /// The dynamic colliders the routine gathers for one collision: those
+    /// whose box in the query tree meets the character's box at the
+    /// collision, loosened by the prediction distance, and whose body is
+    /// dynamic. Two or more is where the change applies.
+    fn dynamic_near(controller: &KinematicCharacterController, queries: &QueryPipelineMut, character_shape: &dyn Shape, collision: &CharacterCollision) -> usize {
+        let extents = character_shape.compute_local_aabb().extents();
+        let up_extent = extents.dot(controller.up.abs());
+        let offset = match controller.offset {
+            CharacterLength::Relative(x) => up_extent * x,
+            CharacterLength::Absolute(x) => x,
+        };
+        let aabb = character_shape.compute_aabb(&collision.character_pos).loosened(offset + 0.05);
+        queries
+            .as_ref()
+            .intersect_aabb_conservative(aabb)
+            .filter(|(_, collider)| collider.parent().and_then(|parent| queries.bodies.get(parent)).is_some_and(|body| body.is_dynamic()))
+            .count()
+    }
+
+    /// Where two Debug texts first differ, with some of each around it.
+    fn text_difference(want: &str, got: &str) -> String {
+        let at = want.bytes().zip(got.bytes()).position(|(a, b)| a != b).unwrap_or(want.len().min(got.len()));
+        let from = at.saturating_sub(160);
+        let window = |s: &str| s.get(from..(at + 160).min(s.len())).unwrap_or("").to_string();
+        format!("at byte {at}:\nRapier: ...{}...\nthe copy: ...{}...", window(want), window(got))
+    }
+
+    /// Rapier's own routine, the copy with the change off, and the copy with
+    /// the change on, given the same world before each push; Rapier's result
+    /// moves the world. After each push the three body sets are compared
+    /// whole, by their Debug text: every body's velocities, activation, and
+    /// change flags, and the set's list of modified bodies. It keeps the first
+    /// push where the copy with the change off parts from Rapier, the quanta
+    /// where the copy with the change on leaves the set differently and where
+    /// it leaves some body's velocities differently, the quanta on which a
+    /// collision had two or more dynamic colliders near the character, and how
+    /// many collisions had one or more.
+    #[derive(Default)]
+    struct PushControl {
+        run: String,
+        quantum: usize,
+        calls: usize,
+        near: usize,
+        two: Vec<usize>,
+        parted: Option<String>,
+        changed: Vec<usize>,
+        moved: Vec<usize>,
+    }
+
+    impl Pusher for PushControl {
+        fn push(&mut self, controller: &KinematicCharacterController, dt: f64, queries: &mut QueryPipelineMut, character_shape: &dyn Shape, character_mass: f64, collisions: &[CharacterCollision]) {
+            self.calls += 1;
+            for collision in collisions {
+                let near = dynamic_near(controller, queries, character_shape, collision);
+                if near > 0 {
+                    self.near += 1;
+                }
+                if near > 1 && self.two.last() != Some(&self.quantum) {
+                    self.two.push(self.quantum);
+                }
+            }
+            let colliders = queries.colliders.clone();
+            let mut off = queries.bodies.clone();
+            let mut on = queries.bodies.clone();
+            controller.solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions);
+            let mut off_colliders = colliders.clone();
+            let mut aside = QueryPipelineMut { dispatcher: queries.dispatcher, bvh: queries.bvh, bodies: &mut off, colliders: &mut off_colliders, filter: queries.filter };
+            Impulses::<false>(controller).solve_character_collision_impulses(dt, &mut aside, character_shape, character_mass, collisions);
+            let mut on_colliders = colliders;
+            let mut aside = QueryPipelineMut { dispatcher: queries.dispatcher, bvh: queries.bvh, bodies: &mut on, colliders: &mut on_colliders, filter: queries.filter };
+            Impulses::<true>(controller).solve_character_collision_impulses(dt, &mut aside, character_shape, character_mass, collisions);
+            let want = format!("{:?}", queries.bodies);
+            let got = format!("{off:?}");
+            if self.parted.is_none() && got != want {
+                self.parted = Some(format!("{} quantum {}: the copy with the change off left the bodies differently from Rapier's routine, {}", self.run, self.quantum, text_difference(&want, &got)));
+            }
+            if format!("{on:?}") != want && self.changed.last() != Some(&self.quantum) {
+                self.changed.push(self.quantum);
+            }
+            let velocities = |set: &RigidBodySet| -> Vec<u64> { set.iter().flat_map(|(_, b)| [b.linvel().x, b.linvel().y, b.linvel().z, b.angvel().x, b.angvel().y, b.angvel().z].map(f64::to_bits)).collect() };
+            if velocities(&on) != velocities(queries.bodies) && self.moved.last() != Some(&self.quantum) {
+                self.moved.push(self.quantum);
+            }
+        }
+    }
+
+    /// The fastest a guarded run found: the speed as a multiple of its
+    /// pusher's, the speed, the quantum, and the body.
+    #[derive(Clone, Debug)]
+    struct Fastest {
+        multiple: f64,
+        speed: f64,
+        quantum: usize,
+        id: String,
+    }
+
+    impl Fastest {
+        fn keep(slot: &mut Option<Fastest>, multiple: f64, speed: f64, quantum: usize, id: &str) {
+            if slot.as_ref().is_none_or(|f| multiple > f.multiple) {
+                *slot = Some(Fastest { multiple, speed, quantum, id: id.to_string() });
+            }
+        }
+    }
+
+    /// A pusher, watched (pin 6). Before it runs, the velocities of every
+    /// dynamic body; after, each body whose velocities it changed, with its
+    /// speed as the push leaves it, as a multiple of the speed its character
+    /// is driven at this quantum: the horizontal speed of the driven record.
+    /// After the quantum's step, the same bodies' speeds again. It keeps the
+    /// fastest of each.
+    struct Guarded<P: Pusher> {
+        inner: P,
+        driven: f64,
+        quantum: usize,
+        pushes: usize,
+        pushed: Vec<(RigidBodyHandle, f64)>,
+        left: Option<Fastest>,
+        stepped: Option<Fastest>,
+        /// The first body over the bound, as the push leaves it or after the step.
+        over: Option<Fastest>,
+    }
+
+    impl<P: Pusher> Guarded<P> {
+        fn new(inner: P) -> Guarded<P> {
+            Guarded { inner, driven: 0.0, quantum: 0, pushes: 0, pushed: Vec::new(), left: None, stepped: None, over: None }
+        }
+
+        /// The quantum about to be stepped, and the speed of the fastest
+        /// driven character in the records, which is the one pushing when
+        /// there is one.
+        fn before(&mut self, q: usize, n: usize) {
+            self.quantum = q;
+            self.pushed.clear();
+            self.driven = (0..n)
+                .map(body_at)
+                .filter(|b| mode(b[DRIVEN]) == Ok(Mode::Kinematic))
+                .map(|b| (b[3] * b[3] + b[5] * b[5]).sqrt())
+                .fold(0.0, f64::max);
+        }
+
+        /// After the step: names the bodies this quantum pushed, while their
+        /// handles are the loaded world's, and reads their speeds again.
+        fn after(&mut self, ids: &[String]) {
+            let solver = unsafe { &*(&raw const SOLVER) };
+            let loaded = solver.loaded.as_ref().expect("a loaded world");
+            for &(handle, speed) in &self.pushed {
+                let id = loaded.handles.iter().position(|h| *h == Some(handle)).map_or_else(|| format!("{handle:?}"), |i| ids[i].clone());
+                Fastest::keep(&mut self.left, speed / self.driven, speed, self.quantum, &id);
+                if self.over.is_none() && speed / self.driven > PUSH_MULTIPLE {
+                    self.over = Some(Fastest { multiple: speed / self.driven, speed, quantum: self.quantum, id: id.clone() });
+                }
+                if let Some(body) = loaded.world.bodies.get(handle) {
+                    let speed = body.linvel().length();
+                    Fastest::keep(&mut self.stepped, speed / self.driven, speed, self.quantum, &id);
+                    if self.over.is_none() && speed / self.driven > PUSH_MULTIPLE {
+                        self.over = Some(Fastest { multiple: speed / self.driven, speed, quantum: self.quantum, id: id.clone() });
+                    }
+                }
+            }
+        }
+    }
+
+    impl<P: Pusher> Pusher for Guarded<P> {
+        fn push(&mut self, controller: &KinematicCharacterController, dt: f64, queries: &mut QueryPipelineMut, character_shape: &dyn Shape, character_mass: f64, collisions: &[CharacterCollision]) {
+            let words = |b: &RigidBody| [b.linvel().x, b.linvel().y, b.linvel().z, b.angvel().x, b.angvel().y, b.angvel().z].map(f64::to_bits);
+            let was: Vec<(RigidBodyHandle, [u64; 6])> = queries.bodies.iter().filter(|(_, b)| b.is_dynamic()).map(|(h, b)| (h, words(b))).collect();
+            self.inner.push(controller, dt, queries, character_shape, character_mass, collisions);
+            for (handle, before) in was {
+                let Some(body) = queries.bodies.get(handle) else {
+                    continue;
+                };
+                if words(body) == before {
+                    continue;
+                }
+                self.pushes += 1;
+                self.pushed.retain(|(h, _)| *h != handle);
+                self.pushed.push((handle, body.linvel().length()));
+            }
+        }
+    }
+
+    /// The fastest a guarded replay of the run found as the push leaves a
+    /// body and after the step, printed.
+    fn guarded<P: Pusher>(turn: &mut u32, run: &LawRun, inner: P, law: &str) -> (Option<Fastest>, Option<Fastest>, Option<Fastest>) {
+        let mut guard = Guarded::new(inner);
+        let n = run.bodies.len();
+        replay(turn, run, &mut Stride, &mut guard, |g, q| g.before(q, n), |g, _| g.after(&run.ids));
+        match (&guard.left, &guard.stepped) {
+            (Some(left), Some(stepped)) => println!(
+                "{}, {law}: {} pushes; the fastest leaves a push at {:.6}, {:.4} times its pusher's speed ({} at quantum {}), and after the step {:.6}, {:.4} times ({} at quantum {})",
+                run.name, guard.pushes, left.speed, left.multiple, left.id, left.quantum, stepped.speed, stepped.multiple, stepped.id, stepped.quantum
+            ),
+            _ => println!("{}, {law}: no body pushed", run.name),
+        }
+        (guard.left, guard.stepped, guard.over)
+    }
+
+    // Every law run is the product binary's run: stepped through the law as
+    // the export steps it, each reproduces its file's digest and final
+    // records, bit for bit.
+    #[test]
+    fn each_law_run_replays_through_the_law_to_the_product_binarys_digest() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let runs = law_runs();
+        let names: Vec<&str> = runs.iter().map(|run| run.name.as_str()).collect();
+        assert!(names.contains(&"product-scene") && names.contains(&"red-room-a"), "fixtures/law-runs/ holds {names:?}");
+        for run in &runs {
+            let (_, digest) = replay(&mut turn, run, &mut Stride, &mut Shove, |_, _| {}, |_, _| {});
+            for (i, want) in run.finals.iter().enumerate() {
+                assert_eq!(body_at(i).map(f64::to_bits), want.map(f64::to_bits), "{}: body {} ended elsewhere than the product binary left it", run.name, run.ids[i]);
+            }
+            assert_eq!(digest, run.digest, "{}: the replay is not the product binary's run", run.name);
+            println!("{}: {} quanta, {} edits, {} pins, digest {digest}", run.name, run.quanta, run.edits.len(), run.pins.len());
+        }
+    }
+
+    // Pin 4.
+    #[test]
+    fn the_copy_with_its_change_off_pushes_as_rapiers_routine_does_bit_for_bit() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let judge = |control: &PushControl| {
+            assert_eq!(control.parted, None, "the copy with its change off parted from Rapier's routine");
+            let outside: Vec<&usize> = control.changed.iter().filter(|q| !control.two.contains(q)).collect();
+            assert!(outside.is_empty(), "{}: the change acted on quanta without two dynamic colliders near the character: {outside:?}", control.run);
+            assert!(control.moved.iter().all(|q| control.changed.contains(q)));
+        };
+        let mut runs: Vec<Run> = vec![flat_walk(0.0), flat_walk(MILLION)];
+        runs.extend(course());
+        for direction in 0..STEP_DIRECTIONS.len() {
+            for k in 0..STEP_STARTS {
+                runs.push(step_run(direction, k));
+            }
+        }
+        runs.push(capsule_carry().0);
+        let mut scan = (0, 0);
+        for run in &runs {
+            let mut control = PushControl { run: run.name.clone(), ..PushControl::default() };
+            drive_pushed(&mut turn, run, &mut Stride, &mut control, |_, c, q| c.quantum = q, |_| {});
+            if run.name.starts_with("the 0.29 step") {
+                scan = (scan.0 + 1, scan.1 + control.near);
+            } else {
+                println!(
+                    "{}: {} pushes, {} collisions with a dynamic collider near, {} quanta with two or more; the change acts on {} quanta",
+                    run.name, control.calls, control.near, control.two.len(), control.changed.len()
+                );
+            }
+            judge(&control);
+            assert!(control.calls > 0, "{} made no push", run.name);
+            let rapier = driven_hashes(&mut turn, run, &mut RapierRoutine);
+            let off = driven_hashes(&mut turn, run, &mut CopyOff);
+            assert_eq!(parting(&off, &rapier), None, "{}: the law pushing through the copy with its change off parted from the law pushing through Rapier's routine", run.name);
+        }
+        println!("the 0.29 step from {} starts: {} collisions with a dynamic collider near", scan.0, scan.1);
+        for run in law_runs() {
+            let mut control = PushControl { run: run.name.clone(), ..PushControl::default() };
+            let (_, digest) = replay(&mut turn, &run, &mut Stride, &mut control, |c, q| c.quantum = q, |_, _| {});
+            println!(
+                "{}: {} pushes, {} collisions with a dynamic collider near, {} quanta with two or more ({:?}); the change acts on {} quanta and changes velocities on {}, first {:?}",
+                run.name, control.calls, control.near, control.two.len(), control.two.first().zip(control.two.last()), control.changed.len(), control.moved.len(), control.moved.first()
+            );
+            judge(&control);
+            let (rapier, rapier_digest) = replay(&mut turn, &run, &mut Stride, &mut RapierRoutine, |_, _| {}, |_, _| {});
+            let (off, _) = replay(&mut turn, &run, &mut Stride, &mut CopyOff, |_, _| {}, |_, _| {});
+            assert_eq!(parting(&off, &rapier), None, "{}: the law pushing through the copy with its change off parted from the law pushing through Rapier's routine", run.name);
+            assert_eq!(digest, rapier_digest);
+            // Where no quantum has two dynamic colliders near the walker, main's
+            // run is the product binary's, bit for bit, so no golden can move.
+            if control.two.is_empty() {
+                assert_eq!(digest, run.digest, "{}: main's run is not the product binary's, with no quantum the change applies to", run.name);
+            }
+        }
+    }
+
+    // Pin 4's red, and pin 5 at the law, on red room A.
+    #[test]
+    fn the_change_parts_from_rapiers_routine_in_red_room_a_only_where_two_dynamic_colliders_are_near() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let run = law_run("red-room-a");
+        let crate_at = run.ids.iter().position(|id| id == "crate").expect("red room A has a crate");
+        let mut control = PushControl { run: run.name.clone(), ..PushControl::default() };
+        let mut launch = None;
+        replay(&mut turn, &run, &mut Stride, &mut control, |c, q| c.quantum = q, |_, q| {
+            let b = body_at(crate_at);
+            let speed = (b[3] * b[3] + b[4] * b[4] + b[5] * b[5]).sqrt();
+            if launch.is_none() && speed > 10.0 {
+                launch = Some((q, speed));
+            }
+        });
+        println!(
+            "red room A through Rapier's routine: {} collisions with a dynamic collider near, quanta {:?} with two or more; the crate first exceeds 10 units a second at {:?}; the change acts on quanta {:?} and changes velocities on {:?}",
+            control.near, control.two, launch, control.changed, control.moved
+        );
+        let two: Vec<usize> = (42..=53).collect();
+        assert_eq!(control.parted, None);
+        assert_eq!(control.near, 208, "collisions with a dynamic collider near the walker");
+        assert_eq!(control.two, two, "the quanta with the crate and the shade near the walker");
+        // On every one of them the change gathers the shade's manifold as its
+        // own, which marks the shade modified in the body set; on 42 to 44
+        // none of its points is within the prediction distance, so no
+        // velocity differs, and from 45 the crate is pushed at its own points.
+        assert_eq!(control.changed, two, "the quanta the change acts on");
+        assert_eq!(control.moved, (45..=53).collect::<Vec<usize>>(), "the quanta the change pushes differently");
+        assert_eq!(launch, Some((53, 26.06416630354704)), "through Rapier's routine the crate does not leave quantum 53 as main's binary records it");
+        let (rapier, rapier_digest) = replay(&mut turn, &run, &mut Stride, &mut RapierRoutine, |_, _| {}, |_, _| {});
+        // harness/law-runs.mjs, run on main's binary at 5d6bbea, records red
+        // room A with the same load and edits as this file and this digest.
+        assert_eq!(rapier_digest, "bade6b0b91814181", "through Rapier's routine the replay is not main's binary's run");
+        let (off, _) = replay(&mut turn, &run, &mut Stride, &mut CopyOff, |_, _| {}, |_, _| {});
+        let (on, digest) = replay(&mut turn, &run, &mut Stride, &mut Shove, |_, _| {}, |_, _| {});
+        assert_eq!(parting(&off, &rapier), None, "the law pushing through the copy with its change off parted from the law pushing through Rapier's routine");
+        assert_eq!(parting(&on, &rapier), Some(45), "the law's own push did not part from Rapier's routine at 45");
+        assert_eq!(digest, run.digest);
+    }
+
+    // Pin 6, the guard, and its red.
+    #[test]
+    fn no_body_leaves_a_push_faster_than_eight_times_its_pushers_speed_and_through_rapiers_routine_red_room_a_does() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let mut highest: Option<(Fastest, String)> = None;
+        let mut highest_stepped: Option<(Fastest, String)> = None;
+        let mut pushing = Vec::new();
+        for run in law_runs() {
+            let (left, stepped, over) = guarded(&mut turn, &run, Shove, "the law's push");
+            assert!(over.is_none(), "{}: {:?} is above {PUSH_MULTIPLE} times its pusher's speed", run.name, over);
+            if let Some(f) = left {
+                pushing.push(run.name.clone());
+                if highest.as_ref().is_none_or(|h| f.multiple > h.0.multiple) {
+                    highest = Some((f, run.name.clone()));
+                }
+            }
+            if let Some(f) = stepped {
+                if highest_stepped.as_ref().is_none_or(|h| f.multiple > h.0.multiple) {
+                    highest_stepped = Some((f, run.name.clone()));
+                }
+            }
+        }
+        let (f, at) = highest.expect("no law run pushed a body, so the guard measured nothing");
+        let (s, s_at) = highest_stepped.expect("a pushed body");
+        println!("the law runs that push a body: {pushing:?}");
+        println!(
+            "through the law's push the highest multiple as a push leaves a body is {:.4} ({at}, {} at quantum {}), and after the step {:.4} ({s_at}, {} at quantum {}); the guard allows {PUSH_MULTIPLE}, headroom {:.2}",
+            f.multiple, f.id, f.quantum, s.multiple, s.id, s.quantum, PUSH_MULTIPLE / f.multiple.max(s.multiple)
+        );
+        assert!(pushing.contains(&"red-room-a".to_string()) && pushing.len() >= 2, "the guard pushed too few runs to measure: {pushing:?}");
+        let (red, red_stepped, over) = guarded(&mut turn, &law_run("red-room-a"), RapierRoutine, "Rapier's routine");
+        let (red, red_stepped) = (red.expect("red room A pushed no body"), red_stepped.expect("a pushed body"));
+        let over = over.expect("through Rapier's routine red room A stays under the guard, so the guard cannot go red");
+        println!(
+            "the guard's red: through Rapier's routine {} first goes over at quantum {}, {:.4} times its pusher's speed; the fastest leaves a push at {:.4} times ({} at quantum {}), and after the step {:.4} times",
+            over.id, over.quantum, over.multiple, red.multiple, red.id, red.quantum, red_stepped.multiple
+        );
+        assert!(red.multiple > PUSH_MULTIPLE && red_stepped.multiple > PUSH_MULTIPLE);
+    }
+
+    /// The speed the law's push gives the engine's smallest crate at rest,
+    /// struck square on its face by the 0.25 box character, with that one
+    /// collision listed `listed` times among the character's collisions, as a
+    /// move that meets the crate more than once lists it: the crate's speed
+    /// as the push leaves it, over the speed the character moves along the
+    /// normal, through the copy with the change on and through Rapier's own
+    /// routine, which agree with one dynamic collider in range.
+    fn square_push(listed: usize) -> (f64, f64) {
+        let settings = controller();
+        let character = character_shape(0, Vector::new(0.25, 0.25, 0.25));
+        // The crate of the verb and minds fixtures and red room A, built as the
+        // law builds a dynamic body, with its face SKIN beyond the character's.
+        let record = [0.25 + SKIN + 0.12, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.12, 0.2, 0.12, 0.0];
+        // The character meets the crate as its move starts, so the whole
+        // quantum's travel remains: the push is to move the crate at 1.
+        let speed = 1.0;
+        let collision = CharacterCollision {
+            handle: ColliderHandle::invalid(),
+            character_pos: Pose::IDENTITY,
+            translation_applied: Vector::ZERO,
+            translation_remaining: Vector::new(speed * DT, 0.0, 0.0),
+            hit: ShapeCastHit {
+                time_of_impact: 0.0,
+                witness1: Vector::new(0.25, 0.0, 0.0),
+                witness2: Vector::new(-0.12, 0.0, 0.0),
+                normal1: Vector::new(1.0, 0.0, 0.0),
+                normal2: Vector::new(-1.0, 0.0, 0.0),
+                status: ShapeCastStatus::Converged,
+            },
+        };
+        let collisions = vec![collision; listed];
+        let mut speeds = [0.0; 2];
+        for (k, speed_out) in speeds.iter_mut().enumerate() {
+            let mut world = PhysicsWorld::new();
+            let (body, co) = body_for(&record, false, 0).expect("the crate's record");
+            let (handle, _) = world.insert(body, co);
+            warm_broadphase(&mut world);
+            let PhysicsWorld { broad_phase, narrow_phase, bodies, colliders, .. } = &mut world;
+            let mut query = broad_phase.as_query_pipeline_mut(narrow_phase.query_dispatcher(), bodies, colliders, QueryFilter::new());
+            if k == 0 {
+                Impulses::<true>(&settings).solve_character_collision_impulses(DT, &mut query, &*character, 1.0, &collisions);
+            } else {
+                settings.solve_character_collision_impulses(DT, &mut query, &*character, 1.0, &collisions);
+            }
+            assert_eq!(world.bodies[handle].mass(), 0.12 * 0.2 * 0.12 * 8.0, "the crate is not the engine's");
+            *speed_out = world.bodies[handle].linvel().length() / speed;
+        }
+        (speeds[0], speeds[1])
+    }
+
+    // Pin 6's measured bound. #1004 removes the overwrite, not the amplifier:
+    // Rapier's impulse sizes each contact point's push with the crate's
+    // linear mass alone and re-reads the point's velocity after each one, so
+    // the crate leaves faster than the character that pushed it. Listed once,
+    // the square push gives it about 4.6 times the character's speed along
+    // the normal; listed twice or more, about 6.4, and no more with further
+    // listings. The knowledge base measured the same on rapier3d-f64 0.36.0,
+    // which carries #1004: 4.575 and 6.375. PUSH_MULTIPLE sits above that.
+    #[test]
+    fn a_crate_listed_twice_among_the_collisions_leaves_the_push_at_about_six_and_a_half_times_the_pushers_speed_under_the_guard() {
+        let _turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let mut multiples = Vec::new();
+        for listed in 1..=5 {
+            let (copy, rapier) = square_push(listed);
+            println!("the square push listed {listed} times: the crate leaves at {copy:.4} times the character's speed along the normal through the law's push, {rapier:.4} through Rapier's routine");
+            assert_eq!(copy.to_bits(), rapier.to_bits(), "with one dynamic collider in range the copy and Rapier's routine push alike");
+            multiples.push(copy);
+        }
+        assert!((multiples[0] - 4.575).abs() < 0.001, "listed once the crate leaves at {}, not the measured 4.575", multiples[0]);
+        for (i, m) in multiples.iter().enumerate().skip(1) {
+            assert!((m - 6.375).abs() < 0.001, "listed {} times the crate leaves at {m}, not the measured 6.375", i + 1);
+        }
+        let highest = multiples.iter().copied().fold(0.0, f64::max);
+        assert!(highest < PUSH_MULTIPLE, "the square push leaves the crate at {highest}, above the guard's {PUSH_MULTIPLE}");
+        println!("the highest is {highest:.4}; the guard's {PUSH_MULTIPLE} leaves {:.2} of headroom over it", PUSH_MULTIPLE / highest);
+    }
+
+    /// A pusher, timed.
+    struct TimedPush<P: Pusher> {
+        inner: P,
+        spent: Duration,
+    }
+
+    impl<P: Pusher> Pusher for TimedPush<P> {
+        fn push(&mut self, controller: &KinematicCharacterController, dt: f64, queries: &mut QueryPipelineMut, character_shape: &dyn Shape, character_mass: f64, collisions: &[CharacterCollision]) {
+            let start = Instant::now();
+            self.inner.push(controller, dt, queries, character_shape, character_mass, collisions);
+            self.spent += start.elapsed();
+        }
+    }
+
+    /// Rapier's routine, the copy with its change off, and the copy with its
+    /// change on, each timed on the same world before every push; Rapier's
+    /// result moves the world.
+    #[derive(Default)]
+    struct SideBySide {
+        spent: [Duration; 3],
+    }
+
+    impl Pusher for SideBySide {
+        fn push(&mut self, controller: &KinematicCharacterController, dt: f64, queries: &mut QueryPipelineMut, character_shape: &dyn Shape, character_mass: f64, collisions: &[CharacterCollision]) {
+            let mut off = queries.bodies.clone();
+            let mut on = queries.bodies.clone();
+            let mut off_colliders = queries.colliders.clone();
+            let mut on_colliders = queries.colliders.clone();
+            let start = Instant::now();
+            controller.solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions);
+            self.spent[0] += start.elapsed();
+            let mut aside = QueryPipelineMut { dispatcher: queries.dispatcher, bvh: queries.bvh, bodies: &mut off, colliders: &mut off_colliders, filter: queries.filter };
+            let start = Instant::now();
+            Impulses::<false>(controller).solve_character_collision_impulses(dt, &mut aside, character_shape, character_mass, collisions);
+            self.spent[1] += start.elapsed();
+            let mut aside = QueryPipelineMut { dispatcher: queries.dispatcher, bvh: queries.bvh, bodies: &mut on, colliders: &mut on_colliders, filter: queries.filter };
+            let start = Instant::now();
+            Impulses::<true>(controller).solve_character_collision_impulses(dt, &mut aside, character_shape, character_mass, collisions);
+            self.spent[2] += start.elapsed();
+        }
+    }
+
+    // Pin 8: the costs on record. Each routine timed on the same world before
+    // every push of main's run, and each pushing its own run whole: through
+    // the law's push red room A is another run from quantum 45, in which the
+    // walker keeps pushing the shade.
+    #[test]
+    fn the_copy_costs_about_what_rapiers_routine_costs_a_quantum_on_red_room_a_and_the_product_scene() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let rounds = 7;
+        for name in ["red-room-a", "product-scene"] {
+            let run = law_run(name);
+            let mut same: Vec<[f64; 3]> = (0..rounds)
+                .map(|_| {
+                    let mut side = SideBySide::default();
+                    replay(&mut turn, &run, &mut Stride, &mut side, |_, _| {}, |_, _| {});
+                    side.spent.map(|d| d.as_secs_f64() * 1.0e6 / run.quanta as f64)
+                })
+                .collect();
+            for (k, label) in ["Rapier's routine", "the copy, change off", "the copy, change on (the law)"].iter().enumerate() {
+                same.sort_by(|a, b| a[k].total_cmp(&b[k]));
+                println!("{name}, {label}, on the same world before every push of main's run: median of {rounds} runs, {:.3} us a quantum (from {:.3} to {:.3})", same[rounds / 2][k], same[0][k], same[rounds - 1][k]);
+            }
+            let mut per_quantum = |label: &str, time: &mut dyn FnMut(&mut u32) -> Duration| {
+                let mut times: Vec<f64> = (0..rounds).map(|_| time(&mut turn).as_secs_f64() * 1.0e6 / run.quanta as f64).collect();
+                times.sort_by(|a, b| a.total_cmp(b));
+                println!("{name}, {label}: median of {rounds} runs of {} quanta, {:.3} us a quantum (from {:.3} to {:.3})", run.quanta, times[rounds / 2], times[0], times[rounds - 1]);
+                times[rounds / 2]
+            };
+            let rapier = per_quantum("Rapier's routine", &mut |turn| {
+                let mut timed = TimedPush { inner: RapierRoutine, spent: Duration::ZERO };
+                replay(turn, &run, &mut Stride, &mut timed, |_, _| {}, |_, _| {});
+                timed.spent
+            });
+            let off = per_quantum("the copy, change off", &mut |turn| {
+                let mut timed = TimedPush { inner: CopyOff, spent: Duration::ZERO };
+                replay(turn, &run, &mut Stride, &mut timed, |_, _| {}, |_, _| {});
+                timed.spent
+            });
+            let on = per_quantum("the copy, change on (the law)", &mut |turn| {
+                let mut timed = TimedPush { inner: Shove, spent: Duration::ZERO };
+                replay(turn, &run, &mut Stride, &mut timed, |_, _| {}, |_, _| {});
+                timed.spent
+            });
+            assert!(rapier > 0.0 && off > 0.0 && on > 0.0);
+        }
     }
 }
