@@ -523,7 +523,7 @@ test('a role\'s provenance is mixed into the running hash, and a role log carrie
   assert.match(command.stderr.trim(), new RegExp('^replay failed at entry 2: the log ends at tick ' + end.tick + ' with hash ' + end.hash));
 });
 
-test('a belief\'s strings are bounded by its key\'s maxLength, or by 120 characters, for the host and for a role', () => {
+test('a belief\'s string values are bounded by its key\'s maxLength, or by 120 characters, and its subject by 120, for the host and for a role', () => {
   const rules = loadIntentRules();
   const t = createTick({ seed: FIXTURE_SEED, world: createWorld(fixtureWorld(), 'reference'), rules: rules.rules, retired: rules.retired, memory: createMemory() });
   assert.ok(t.submit(moveTo(t.frame(), 2)).admitted);
@@ -532,11 +532,21 @@ test('a belief\'s strings are bounded by its key\'s maxLength, or by 120 charact
   assert.match(reason(t.submit({ kind: 'belief', subject: 'walker', key: 'note', value: long, confidence: 1, source: 'e1' })), /^belief value is 121 characters, over the bound of 120$/);
   assert.match(reason(t.submit({ kind: 'belief', subject: long, key: 'note', value: 'v', confidence: 1, source: 'e1' })), /belief subject is 121 characters/);
   assert.ok(t.submit({ kind: 'belief', subject: 'walker', key: 'note', value: 'w'.repeat(120), confidence: 1, source: 'e1' }).admitted, '120 characters are inside the bound');
+  // A key's maxLength bounds its values. A subject names a body or zone the
+  // world holds, no loader bounds an id's length, and it keeps 120.
   const world = createWorld(mindsWorld(), 'reference');
-  const table = { at: { subject: /** @type {const} */ ('body'), value: /** @type {const} */ ('zone'), maxLength: 3 } };
-  assert.equal(beliefRefusal(world, { subject: { body: 'walker' }, key: 'at', value: 'east' }, table), 'belief at subject is 6 characters, over the bound of 3');
-  const wide = { at: { subject: /** @type {const} */ ('body'), value: /** @type {const} */ ('zone'), maxLength: 8 } };
-  assert.equal(beliefRefusal(world, { subject: { body: 'walker' }, key: 'at', value: 'east' }, wide), null);
-  const named = createWorld({ ...mindsWorld(), bodies: [...mindsWorld().bodies, { id: 'x'.repeat(121), x: 3, y: 0.25, z: 1, vx: 0, vy: 0, vz: 0, hx: 0.1, hy: 0.1, hz: 0.1 }] }, 'reference');
-  assert.match(String(beliefRefusal(named, { subject: { body: 'x'.repeat(121) }, key: 'at', value: 'east' })), /over the bound of 120/);
+  /** @param {number} maxLength */
+  const at = (maxLength) => ({ at: { subject: /** @type {const} */ ('body'), value: /** @type {const} */ ('zone'), maxLength } });
+  assert.equal(beliefRefusal(world, { subject: { body: 'walker' }, key: 'at', value: 'east' }, at(3)), 'belief at value is 4 characters, over the bound of 3');
+  assert.equal(beliefRefusal(world, { subject: { body: 'walker' }, key: 'at', value: 'east' }, at(4)), null, 'a subject of 6 characters is not held to a maxLength of 4, which bounds values');
+  const longIds = createWorld({
+    ...mindsWorld(),
+    bodies: [...mindsWorld().bodies, { id: 'x'.repeat(121), x: 3, y: 0.25, z: 1, vx: 0, vy: 0, vz: 0, hx: 0.1, hy: 0.1, hz: 0.1 }],
+    zones: [...mindsWorld().zones, { id: 'z'.repeat(150), minX: 3.5, maxX: 4, minY: -1, maxY: 3, minZ: -2, maxZ: 2 }],
+  }, 'reference');
+  assert.equal(beliefRefusal(longIds, { subject: { body: 'walker' }, key: 'at', value: 'z'.repeat(150) }, at(200)), null, 'a value of 150 characters inside a maxLength of 200');
+  assert.equal(beliefRefusal(longIds, { subject: { body: 'walker' }, key: 'at', value: 'z'.repeat(150) }), 'belief at value is 150 characters, over the bound of 120', 'where the key declares none, a value keeps 120');
+  assert.equal(beliefRefusal(longIds, { subject: { body: 'x'.repeat(121) }, key: 'at', value: 'east' }, at(200)), 'belief at subject is 121 characters, over the bound of 120', 'a subject keeps 120 whatever its key declares');
+  assert.equal(beliefRefusal(longIds, { subject: { body: 'x'.repeat(121) }, key: 'at', value: 'east' }), 'belief at subject is 121 characters, over the bound of 120');
+  assert.equal(beliefRefusal(longIds, { subject: { body: 'x'.repeat(121) }, key: 'at', value: 'east' }, at(4)), 'belief at subject is 121 characters, over the bound of 120', 'nor is a subject held to a narrower maxLength');
 });

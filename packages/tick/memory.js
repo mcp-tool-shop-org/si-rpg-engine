@@ -14,8 +14,10 @@ import { labelFields, labelRank } from './trust.js';
  */
 
 /**
- * The longest string a belief may hold where its key declares no bound
- * (T7a pin 5): free text cannot grow in a mind and flow into later prompts.
+ * The longest string a belief may hold where nothing narrower bounds it (T7a
+ * pin 5): a mind belief's value where its key declares no maxLength, a mind
+ * belief's subject whatever its key declares, and each string of an unscoped
+ * belief. Free text cannot grow in a mind and flow into later prompts.
  */
 export const BELIEF_TEXT_LIMIT = 120;
 
