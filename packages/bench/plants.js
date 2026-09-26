@@ -51,6 +51,7 @@ export const NEUTRAL = {
   imported: [
     { file: 'packages/tick/predicates.js', from: 'import { DT } from \'./world.js\';', to: 'import { DT as QUANTUM } from \'./world.js\';' },
     { file: 'packages/tick/predicates.js', from: 'Math.ceil(distance / rule.speed / DT)', to: 'Math.ceil(distance / rule.speed / QUANTUM)' },
+    { file: 'packages/tick/predicates.js', from: 'speed * DT * RELEASE_MARGIN_STEPS', to: 'speed * QUANTUM * RELEASE_MARGIN_STEPS' },
   ],
   exported: [{ file: 'packages/tick/world.js', from: 'export const DT = 1 / 64;', to: 'export const DT = 0.015625;' }],
   // A changed line no operator applies to: a call's two arguments swapped.
