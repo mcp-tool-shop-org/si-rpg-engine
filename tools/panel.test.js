@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PANEL, BUDGET_LIMIT, panelProblems, choose } from './panel.js';
+import { PANEL, BUDGET_LIMIT, OLLAMA_CONCURRENCY, panelProblems, choose } from './panel.js';
 
 test('the shipped panel is sound: every seat has a transport, a model, a family of its own, and a budget within its limit', () => {
   assert.deepEqual(panelProblems(PANEL), []);
@@ -30,7 +30,10 @@ test('a budget over the transport limit, an unknown transport, and a repeated fa
 });
 
 test('choose takes the seats not on standby by default, and named families without regard to case', () => {
-  assert.deepEqual(choose(PANEL, undefined).seats.map((s) => s.family), ['xAI', 'Google', 'Moonshot', 'Z.ai']);
+  assert.deepEqual(choose(PANEL, undefined).seats.map((s) => s.family), ['xAI', 'Google', 'Moonshot', 'Z.ai', 'DeepSeek', 'NVIDIA', 'MiniMax']);
+  const withStandby = [...PANEL, { via: /** @type {const} */ ('ollama'), model: 'x:cloud', family: 'Spare', maxTokens: 1000, standby: true }];
+  assert.equal(choose(withStandby, undefined).seats.some((s) => s.family === 'Spare'), false, 'a standby seat is left out by default');
+  assert.deepEqual(choose(withStandby, 'spare').seats.map((s) => s.family), ['Spare']);
   const named = choose(PANEL, 'google, deepseek');
   assert.deepEqual(named.seats.map((s) => s.family), ['Google', 'DeepSeek']);
   assert.deepEqual(named.unknown, []);
@@ -40,4 +43,15 @@ test('choose reports a family that matches no seat, so a misspelt name stops the
   const r = choose(PANEL, 'Google,Gemni');
   assert.deepEqual(r.seats.map((s) => s.family), ['Google']);
   assert.deepEqual(r.unknown, ['Gemni']);
+});
+
+test('a think setting is one Ollama understands, and only on an Ollama seat', () => {
+  assert.deepEqual(panelProblems([{ via: 'ollama', model: 'm', family: 'M', maxTokens: 1000, think: 'extreme' }]), ['m: think must be true, false, high, medium, or low']);
+  assert.deepEqual(panelProblems([{ via: 'openrouter', model: 'o', family: 'O', maxTokens: 1000, think: 'high' }]), ['o: think is an Ollama setting']);
+  assert.deepEqual(panelProblems([{ via: 'ollama', model: 'n', family: 'N', maxTokens: 1000, think: 'high' }]), []);
+});
+
+test('the Ollama seats run at once, up to the plan\'s concurrency, which covers the whole panel', () => {
+  assert.ok(Number.isInteger(OLLAMA_CONCURRENCY) && OLLAMA_CONCURRENCY >= 1);
+  assert.ok(PANEL.filter((s) => s.via === 'ollama').length <= OLLAMA_CONCURRENCY);
 });
