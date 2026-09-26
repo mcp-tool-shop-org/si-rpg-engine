@@ -21,8 +21,8 @@ import { FIXTURE_SEED } from '../tick/fixture.js';
 import { createTick, settle } from '../tick/tick.js';
 import { createWorld } from '../tick/world.js';
 import { readRoleOutput, stampProposal } from './parse.js';
-import { npcMindPrompt, npcMindState, renderTemplate } from './prompt.js';
-import { cutOffTiming, driftOf, verifySession, writeSession } from './record.js';
+import { feedbackText, npcMindPrompt, npcMindState, renderTemplate } from './prompt.js';
+import { callRead, cutOffTiming, driftOf, failedTiming, verifySession, writeSession } from './record.js';
 import { buildSchema, roleProposalSchema } from './schema.js';
 import { runSession, scratchWorld, sessionRefusal, submitAsRole } from './seat.js';
 
@@ -1356,7 +1356,10 @@ test('propose lists the roles, their status, and their derived properties', () =
     'npc-mind frozen live properties A C label hearsay no decision recorded',
   ]);
   const tests = spawnSync(process.execPath, ['--import', noModel(), 'packages/propose/bin/propose.js', '--catalog', 'fixtures/roles'], { encoding: 'utf8' });
-  assert.equal(tests.stdout.trim(), 'probe thawed scratch properties A C label untrusted decided by the coordinator on 2026-09-25');
+  assert.deepEqual(tests.stdout.trim().split('\n'), [
+    'probe thawed scratch properties A C label untrusted decided by the coordinator on 2026-09-25',
+    'instrument-copy thawed scratch properties A C label untrusted decided by the coordinator on 2026-09-26',
+  ]);
 });
 
 test('propose --role refuses a frozen role, and a live one, with exit 2 before any model call', () => {
@@ -1452,4 +1455,70 @@ test('the drift report says whether a reissued output is the same bytes and the 
   assert.equal(driftOf('k', record, null, entry.manifest).same, false, 'no output is drift');
   assert.equal(manifestHash(entry.manifest), entry.hash);
   assert.ok(catalogOf([entry.manifest]).ok);
+});
+
+test('a failed record whose time is over its budget fails verification and names the record', async () => {
+  const { dir } = await probeSession({
+    calls: 1,
+    client: {
+      observe: async (name, pin) => observed(name, pin),
+      ask: async () => {
+        throw new Error('the server reset the call');
+      },
+      loaded: async () => null,
+    },
+  });
+  const file = readdirSync(join(dir, 'records'))[0];
+  const key = file.replace(/\.json$/, '');
+  const record = JSON.parse(readFileSync(join(dir, 'records', file), 'utf8'));
+  record.timing = failedTiming(120001);
+  writeFileSync(join(dir, 'records', file), JSON.stringify(record, null, 2) + '\n');
+  const checked = verifySession(dir);
+  assert.ok(checked.failures.some((line) => line.includes('record ' + key) && line.includes('120001 ms') && line.includes('over the budget of 120 s')), checked.failures.join('\n'));
+});
+
+test('a drift of a record that read no model says so and does not ask the server', async () => {
+  const { dir, entry } = await probeSession({
+    calls: 1,
+    client: fakeClient([JSON.stringify({ notes: 'kept', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1, z: 0 } } })]),
+  });
+  const file = readdirSync(join(dir, 'records'))[0];
+  const record = JSON.parse(readFileSync(join(dir, 'records', file), 'utf8'));
+  record.model = 'unread';
+  record.output = '{"notes":"kept"}';
+  writeFileSync(join(dir, 'records', file), JSON.stringify(record, null, 2) + '\n');
+  const session = JSON.parse(readFileSync(join(dir, 'session.json'), 'utf8'));
+  session.manifests[entry.hash].model = null;
+  writeFileSync(join(dir, 'session.json'), JSON.stringify(session, null, 2) + '\n');
+  const run = spawnSync(process.execPath, ['--import', noModel(), 'packages/propose/bin/propose.js', '--drift', dir], { encoding: 'utf8' });
+  assert.notEqual(run.status, 9, run.stderr);
+  assert.equal(run.stderr.includes('a model was called'), false, run.stderr);
+  assert.match(run.stdout, /the record read no model/);
+});
+
+test('a failed call names a model change with the failure, and a reading of the pin leaves the failure alone', () => {
+  const { entry } = probe();
+  const pin = /** @type {{ digest: string }} */ (entry.manifest.model).digest;
+  const other = 'ab'.repeat(32);
+  /** @type {import('./record.js').CallRecord2} */
+  const same = {
+    record: 2, session: 's', call: 0, role: 'probe', manifest: entry.hash, request: /** @type {any} */ ({}), prompt: '', schema: '', timeoutMs: 1,
+    model: 'unread', server: { version: 'test', loadedBefore: { name: 'qwen2.5:7b', model: 'qwen2.5:7b', digest: pin, size: 1, size_vram: 1, context_length: 1 }, loaded: null },
+    client: { environment: {}, callsAtOnce: 1 }, gpu: 'unread', failure: 'the server reset the call', output: null, outputSha256: null, timing: failedTiming(3),
+  };
+  assert.deepEqual(callRead(same, entry.manifest), { read: 'call-failed', reason: 'the server reset the call' });
+  const changed = { ...same, server: { ...same.server, loadedBefore: { name: 'qwen2.5:7b', model: 'qwen2.5:7b', digest: other, size: 1, size_vram: 1, context_length: 1 } } };
+  const read = callRead(changed, entry.manifest);
+  assert.equal(read.read, 'call-failed');
+  assert.equal(read.reason, 'the server reset the call; the server held ' + other + ' loaded before the call, not the pin');
+});
+
+test('feedback names the anchors a call reached and the rungs the ladder recorded', () => {
+  const text = feedbackText([{
+    call: 0, proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1, z: 0 } }, read: 'ok', admitted: false, reason: 'the checker refused it', at: null,
+    anchors: ['a-move'], rungs: ['0 head ok', '1 not reached'],
+  }]);
+  assert.match(text, /the checker refused it/);
+  assert.match(text, /it reached a-move/);
+  assert.match(text, /rungs 0 head ok, 1 not reached/);
 });

@@ -1097,12 +1097,15 @@ function grammarInit(a) {
 }
 
 /**
- * The key a witness's saves are stored under.
+ * The key a witness's saves are stored under. It hashes the world with the
+ * witness and its end tick, the same way the orchestrator's witnessKey does,
+ * so two worlds that share a witness do not share a save.
+ * @param {any} world
  * @param {Entry[]} witness
  * @param {number} witnessEnd
  */
-function witnessKey(witness, witnessEnd) {
-  return createHash('sha1').update(JSON.stringify([witness, witnessEnd])).digest('hex');
+function witnessKey(world, witness, witnessEnd) {
+  return createHash('sha1').update(JSON.stringify([world, witness, witnessEnd])).digest('hex');
 }
 
 /**
@@ -1120,7 +1123,7 @@ function grammarNext() {
       g.sequence = { cell, step: 0, witness: cell.witness.slice(), witnessEnd: cell.tick };
     }
     const q = g.sequence;
-    const reached = reachWitness({ world: g.input.world, seed: g.input.seed, entries: q.witness, witness: q.witness.length, witnessEnd: q.witnessEnd, key: witnessKey(q.witness, q.witnessEnd) });
+    const reached = reachWitness({ world: g.input.world, seed: g.input.seed, entries: q.witness, witness: q.witness.length, witnessEnd: q.witnessEnd, key: witnessKey(g.input.world, q.witness, q.witnessEnd) });
     const s = reached.s;
     if (s.failure) {
       g.sequence = null;
@@ -1185,7 +1188,7 @@ function grammarNext() {
       // first time the process reaches it.
       q.witness = entries;
       q.witnessEnd = s.tick.frame().tick;
-      const key = witnessKey(q.witness, q.witnessEnd);
+      const key = witnessKey(g.input.world, q.witness, q.witnessEnd);
       if (!saves.has(key)) {
         saves.set(key, {
           tag: { process: cfg().processId, tree: cfg().tree, build: cfg().build },
@@ -1231,6 +1234,36 @@ async function handle(message) {
       return grammarInit(a);
     case 'grammar-next':
       return grammarNext();
+    case 'model-open': {
+      if (!mods.model) {
+        throw new Refusal('the model proposer is not loaded in this process');
+      }
+      const opened = await mods.model.openModel(a);
+      if (!opened.refused) {
+        begin('model');
+      }
+      return opened;
+    }
+    case 'model-step':
+      if (!mods.model) {
+        throw new Refusal('the model proposer is not loaded in this process');
+      }
+      return mods.model.stepModel();
+    case 'model-note':
+      if (!mods.model) {
+        throw new Refusal('the model proposer is not loaded in this process');
+      }
+      return mods.model.noteModel(a);
+    case 'model-close': {
+      if (!mods.model) {
+        throw new Refusal('the model proposer is not loaded in this process');
+      }
+      try {
+        return await mods.model.closeModel(a);
+      } finally {
+        end();
+      }
+    }
     case 'open-run':
       begin(a.name || 'a planted run');
       return { live };
@@ -1334,6 +1367,8 @@ async function init(a) {
       mods.productScene = await load('harness/product-scene.mjs');
     } else if (extra === 'suite') {
       mods.suite = await load('packages/load/suite.js');
+    } else if (extra === 'model') {
+      mods.model = await load('packages/bench/model.js');
     } else if (extra.startsWith('file:')) {
       await import(extra);
     }

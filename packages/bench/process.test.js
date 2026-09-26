@@ -212,6 +212,34 @@ test('the grammar draws from the verbs that reached an anchor at its share, only
   assert.deepEqual(ran.hashes, third.hashes, 'the run from the load hashes as the grammar\'s did');
 });
 
+test('two worlds whose first cells share an empty witness do not share a save', async () => {
+  const p = await proc({ name: 'sweep', tree: head, build: 'product', modules: ['sweep'] });
+  const otherWorld = JSON.parse(JSON.stringify(room.world));
+  const crate = otherWorld.bodies.find((/** @type {{ id: string, x: number }} */ body) => body.id === 'crate');
+  crate.x = crate.x + 0.1;
+  const other = { ...room, name: room.name + '-other', world: otherWorld };
+  const cell = { key: 'load', actor: 'walker', tick: 0, witness: [] };
+  /**
+   * @param {any} input
+   */
+  const draw = async (input) => {
+    await p.call('grammar-init', { seed: 1, share: 1, pitch: 0.5, steps: 1, cells: [cell], input, reachedVerbs: ['move'] });
+    const made = await p.call('grammar-next', {});
+    assert.ok(made && made.candidate, JSON.stringify(made));
+    return made.candidate;
+  };
+  await draw(room);
+  const second = await draw(other);
+  const h = await proc({ name: 'head', tree: head, build: 'product' });
+  const fresh = await h.call('candidate', {
+    world: other.world, seed: other.seed,
+    entries: second.witness.concat([second.intent]),
+    witness: second.witness.length, witnessEnd: second.witnessEnd,
+    key: null, restoreCheck: false, window: false,
+  });
+  assert.deepEqual(fresh.hashes, second.hashes, 'the second world is drawn from its own load, not restored from the first world\'s save');
+});
+
 test('paths compare without case on Windows and macOS and by case elsewhere, in the bench and in each process\'s working-directory check and resolve hook alike', async () => {
   assert.equal(FOLD_CASE, process.platform === 'win32' || process.platform === 'darwin');
   // The rule, each way, on any platform.
