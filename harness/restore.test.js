@@ -35,11 +35,13 @@
 // with the solver evicted, and the rest is rerun, twice in a row. A save that
 // leaves out one field is planted for the hasher's lanes, an action in
 // flight, a mind's memory, the minds' sight, and the quanta owed to a body
-// draft and a belief admitted at one tick, and each is caught by the diff.
-// Those saves hold the solver's image in the sparse in-process form (pin 2),
-// so the same tests prove its restore traces identically; the digest it is
-// checked by is held to the byte loop it replaced, and the sparse restore
-// refuses what the dense one refuses.
+// draft and a belief admitted at one tick, and each is caught by the diff. A
+// save with a field out of shape anywhere in it, to the last sight record, is
+// refused before anything changes, and the run traces on as if no restore had
+// been tried. Those saves hold the solver's image in the sparse in-process
+// form (pin 2), so the same tests prove its restore traces identically; the
+// digest it is checked by is held to the byte loop it replaced, and the
+// sparse restore refuses what the dense one refuses.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -518,22 +520,89 @@ test('a save taken while a quantum is owed restores it into a run that has gone 
   assert.equal(block[1], 'length', block.join('\n'));
 });
 
-test('a save of another tick, or one with a field out of shape, is refused and changes nothing', () => {
+test('a save of another tick, or one with a field out of shape anywhere in it, is refused and changes nothing', () => {
   const { spec, point } = carryCase();
   const whole = wholeRun(spec);
   const { run, saves } = ownSaves(spec, [point], whole.lines);
   const saved = /** @type {any} */ (saves.get(point));
+  const moving = saved.tick.actions[0];
+  const first = saved.tick.world.bodies[0];
   const before = run.line();
   for (const [planted, reason] of /** @type {Array<[any, RegExp]>} */ ([
     [{ ...saved, tick: { ...saved.tick, seed: saved.tick.seed + 1 } }, /restore refused: the save is of a tick seeded/],
     [{ ...saved, tick: { ...saved.tick, lanes: [1] } }, /restore refused: the lanes are two whole numbers/],
     [{ ...saved, tick: { ...saved.tick, frame: { ...saved.tick.frame, tick: saved.tick.tick + 1 } } }, /restore refused: the frame is the committed frame at the saved tick/],
     [{ ...saved, tick: { ...saved.tick, actions: [['walker', { effect: 'drive', remaining: 0 }]] } }, /restore refused: the actions are actor ids/],
+    [{ ...saved, tick: { ...saved.tick, actions: [[moving[0], { ...moving[1], aimX: 'east' }]] } }, /restore refused: the actions are actor ids/],
+    [{ ...saved, tick: { ...saved.tick, actions: [['nobody', moving[1]]] } }, /restore refused: the actions are actor ids/],
+    [{ ...saved, tick: { ...saved.tick, pending: -1 } }, /restore refused: the quanta owed are a whole number/],
+    [{ ...saved, tick: { ...saved.tick, minds: { ...saved.tick.minds, sight: [['walker', []]] } } }, /restore refused: the minds' sight is /],
     [{ ...saved, tick: { ...saved.tick, memory: undefined } }, /restore refused: the memory is/],
+    [{ ...saved, tick: { ...saved.tick, memory: { ...saved.tick.memory, episodes: saved.tick.memory.episodes.concat([{ id: 'e9', tick: 'soon', kind: 'intent', detail: 'move walker' }]) } } }, /restore refused: the memory's episodes are /],
+    [{ ...saved, tick: { ...saved.tick, memory: { ...saved.tick.memory, beliefs: [{ id: 'b1', subject: 's', key: 'k', value: 'v', confidence: 2, source: 'e1' }] } } }, /restore refused: the memory's beliefs are /],
     [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, bodies: [] } } }, /restore refused: the save does not have the 2 bodies of this world/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, bodies: [{ ...first, y: 'up' }].concat(saved.tick.world.bodies.slice(1)) } } }, /restore refused: body 0 \(walker\) is not a record of numbers/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, lifted: ['nobody'] } } }, /restore refused: the lifted bodies are body ids of this world/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, carried: [['walker']] } } }, /restore refused: the carried bodies are /],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, worldId: 'this one' } } }, /restore refused: the world id is a whole number/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, image: null } } }, /restore refused: a product world restores from an image/],
   ])) {
     assert.throws(() => run.restore(planted), reason);
     assert.equal(run.line(), before, 'a refused restore changes nothing');
+  }
+});
+
+/**
+ * The minds' part of a run's save: the tick's for a log, the session's for
+ * the product scene.
+ * @param {any} saved
+ * @param {any} [minds] when given, the save with these minds in place of its own
+ */
+function mindsOf(saved, minds) {
+  if ('next' in saved) {
+    return minds === undefined ? saved.tick.minds : { ...saved, tick: { ...saved.tick, minds } };
+  }
+  return minds === undefined ? saved.minds : { ...saved, minds };
+}
+
+test('a save with one malformed sight entry is refused before the restore changes anything, and the run traces on exactly as if no restore had been tried', (t) => {
+  for (const [name, spec] of /** @type {Array<[string, ReplaySpec]>} */ ([
+    ['behavior-minds', { seed: minds.seed, world: minds.world, log: minds.log }],
+    ['the product scene', { scene: 'product' }],
+  ])) {
+    const whole = wholeRun(spec);
+    const end = whole.lines.length - 1;
+    const point = Math.floor(end / 3);
+    const later = Math.floor((2 * end) / 3);
+    // The run saves itself at the point and goes on to `later`, where each
+    // planted save is tried: a restore that took one would move it back.
+    const run = replayTo(spec, point);
+    const saved = /** @type {any} */ (run.save());
+    const kept = mindsOf(saved);
+    assert.ok(kept.sight.length > 0 && kept.sight[0][1].length > 1, name + ': the save carries what a mind has seen');
+    while (run.tick < later) {
+      run.advance();
+    }
+    const [mind, seen] = kept.sight[0];
+    const [body, record] = seen[0];
+    /** @param {any} entry the one malformed entry, in place of the first */
+    const plant = (entry) => mindsOf(saved, { ...kept, sight: [entry].concat(kept.sight.slice(1)) });
+    const before = run.line();
+    const plants = [
+      // These two threw inside the minds' restore, after the world's.
+      plant(null),
+      plant([mind, null]),
+      plant([mind, [[body, { ...record, inSight: 'yes' }]].concat(seen.slice(1))]),
+      plant([mind, [[body, { ...record, zone: 7 }]].concat(seen.slice(1))]),
+      plant([mind, [['nobody', record]].concat(seen.slice(1))]),
+      plant(['nobody', seen]),
+    ];
+    for (const planted of plants) {
+      assert.throws(() => run.restore(planted), /^Error: restore refused: the minds' sight is /);
+      assert.equal(run.line(), before, name + ': a refused restore changes nothing');
+    }
+    assert.equal(diff(whole.lines.concat([endLine(whole.lines.length)]), rerun(whole.lines, run)), 'identical\n', name);
+    t.diagnostic(name + ': saved at ' + point + ', ' + plants.length + ' malformed sight entries refused at ' + later + ', and the run traced on to ' + end + ' identically');
   }
 });
 

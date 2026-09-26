@@ -153,7 +153,8 @@ export function playSession(spec) {
       return { tick, hash, lanes: hasher.lanes(), world: world.saveSparse() };
     },
     /**
-     * Puts back a save; the world refuses first, and then nothing has changed.
+     * Puts back a save. Every part of it is checked before the world's
+     * restore writes anything, so a refused restore changes nothing.
      * @param {PlaySave} saved
      */
     restore(saved) {
@@ -270,12 +271,14 @@ export function productSession(options) {
       return { tick, hash, ok, lanes: h.lanes(), world: world.saveSparse(), minds: saveMinds(world), memory: memory.save() };
     },
     /**
-     * Puts back a save; the world refuses first, and then nothing has changed.
+     * Puts back a save. Every part of it is checked before the world's
+     * restore writes anything, the minds and the memory to their last record,
+     * so a refused restore changes nothing and none stops halfway.
      * @param {ProductSave} saved
      */
     restore(saved) {
       const why = sessionSaveProblem(saved) || mindsSaveProblem(world, saved.minds) || memorySaveProblem(saved.memory);
-      if (why !== null || typeof saved.ok !== 'boolean' || saved.tick > steps) {
+      if (why !== null || typeof saved.ok !== 'boolean' || (saved.hash !== null && typeof saved.hash !== 'string') || saved.tick > steps) {
         throw new Error('restore refused: ' + (why || 'the save is not a quantum of this run'));
       }
       world.restore(saved.world);

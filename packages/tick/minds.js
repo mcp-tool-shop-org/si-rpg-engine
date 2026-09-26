@@ -211,7 +211,10 @@ export function saveMinds(world) {
 }
 
 /**
- * Why a value is not a save of these minds, or null.
+ * Why a value is not a save of these minds, or null. It checks everything
+ * restoreMinds reads, to the last sight record, so a save it passes restores
+ * without throwing: a restore checks the whole save before it changes
+ * anything, and one that threw partway would leave a run half restored.
  * @param {ReturnType<import('./world.js').createWorld>} world
  * @param {any} saved
  * @returns {string | null}
@@ -224,11 +227,28 @@ export function mindsSaveProblem(world, saved) {
   if (saved.met.length !== minds.length || minds.some((mind, m) => !Array.isArray(saved.met[m]) || saved.met[m].length !== mind.goals.length)) {
     return 'the save has ' + saved.met.length + ' minds\' goals; this world has ' + minds.length + ' minds';
   }
+  if (saved.met.some((/** @type {unknown[]} */ goals) => goals.some((met) => met !== null && !(Number.isInteger(met) && /** @type {number} */ (met) >= 0)))) {
+    return 'each goal is met at a whole-numbered quantum, or null';
+  }
+  for (const entry of saved.sight) {
+    const fits = Array.isArray(entry) && entry.length === 2 && minds.some((mind) => mind.body === entry[0]) && Array.isArray(entry[1])
+      && entry[1].every((/** @type {unknown} */ seen) => {
+        if (!Array.isArray(seen) || seen.length !== 2 || typeof seen[0] !== 'string' || !world.body(seen[0])) {
+          return false;
+        }
+        const record = seen[1];
+        return Boolean(record) && typeof record === 'object' && typeof record.inSight === 'boolean' && (record.zone === null || typeof record.zone === 'string');
+      });
+    if (!fits) {
+      return 'the minds\' sight is what each mind of this world has seen: for each body of this world, whether it is in sight, and its zone or null';
+    }
+  }
   return null;
 }
 
 /**
- * Puts back what saveMinds took. The caller checks it with mindsSaveProblem first.
+ * Puts back what saveMinds took. The caller checks it with mindsSaveProblem
+ * first, which is what makes this unable to throw.
  * @param {ReturnType<import('./world.js').createWorld>} world
  * @param {MindsSave} saved
  */

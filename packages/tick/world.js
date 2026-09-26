@@ -12,6 +12,9 @@ export const MAX_SPEED = 2;
 // action. Zero stops a pushed body. A driven body is left alone.
 export const UNDRIVEN_DRAG = 0;
 
+/** The number fields of a saved body record, each written back by restore. */
+const RECORD = /** @type {const} */ (['x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz']);
+
 /**
  * @typedef {import('../frame/types.js').Body} Body
  * @typedef {import('../frame/types.js').StaticCollider} StaticCollider
@@ -602,25 +605,58 @@ export function createWorld(init, law) {
   }
 
   /**
+   * Why a value is not a save of this world, or null. It checks everything
+   * restore reads but the image's bytes, which the solver glue checks before
+   * it writes anything, so restore changes nothing until it cannot fail. A
+   * tick or a session checks the rest of its save the same way first.
+   * @param {any} saved
+   * @returns {string | null}
+   */
+  function restoreProblem(saved) {
+    if (!saved || typeof saved !== 'object' || !Array.isArray(saved.bodies) || saved.bodies.length !== bodies.length) {
+      return 'the save does not have the ' + bodies.length + ' bodies of this world';
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const from = saved.bodies[i];
+      if (!from || typeof from !== 'object' || from.id !== bodies[i].id) {
+        return 'body ' + i + ' is ' + (from && typeof from === 'object' ? from.id : String(from)) + ' in the save and ' + bodies[i].id + ' here';
+      }
+      if (!RECORD.every((field) => typeof from[field] === 'number') || !(from.solverMode === null || typeof from.solverMode === 'number')) {
+        return 'body ' + i + ' (' + from.id + ') is not a record of numbers';
+      }
+    }
+    const ids = new Set(bodies.map((b) => b.id));
+    if (!Array.isArray(saved.lifted) || !saved.lifted.every((/** @type {unknown} */ id) => typeof id === 'string' && ids.has(id))) {
+      return 'the lifted bodies are body ids of this world';
+    }
+    if (!Array.isArray(saved.carried) || !saved.carried.every((/** @type {unknown} */ pair) => Array.isArray(pair) && pair.length === 2 && ids.has(pair[0]) && ids.has(pair[1]))) {
+      return 'the carried bodies are pairs of body ids of this world, each an actor and the body it carries';
+    }
+    if (!Number.isInteger(saved.worldId) || saved.worldId < 0) {
+      return 'the world id is a whole number';
+    }
+    if (chosen === 'product' && (!saved.image || typeof saved.image !== 'object')) {
+      return 'a product world restores from an image';
+    }
+    return null;
+  }
+
+  /**
    * Puts a save back, from save() or saveSparse(): the solver image first,
    * then the records and the sets. Throws with the reason when the save is
    * not of this world or the image is refused; nothing has changed then.
    * @param {WorldSave | SparseWorldSave} saved
    */
   function restore(saved) {
-    if (!saved || !Array.isArray(saved.bodies) || saved.bodies.length !== bodies.length) {
-      throw new Error('restore refused: the save does not have the ' + bodies.length + ' bodies of this world');
-    }
-    for (let i = 0; i < bodies.length; i = i + 1) {
-      if (saved.bodies[i].id !== bodies[i].id) {
-        throw new Error('restore refused: body ' + i + ' is ' + saved.bodies[i].id + ' in the save and ' + bodies[i].id + ' here');
-      }
+    const why = restoreProblem(saved);
+    if (why !== null) {
+      throw new Error('restore refused: ' + why);
     }
     if (chosen === 'product') {
-      const image = saved.image;
-      const put = !image ? false : 'pages' in image ? restoreSparse(image) : restoreImage(image);
+      const image = /** @type {SolverImage | SparseSolverImage} */ (saved.image);
+      const put = 'pages' in image ? restoreSparse(image) : restoreImage(image);
       if (!put) {
-        throw new Error('restore refused: ' + (image ? imageRefusal() : 'a product world restores from an image'));
+        throw new Error('restore refused: ' + imageRefusal());
       }
       productId = saved.worldId;
       hold(productId);
@@ -958,7 +994,7 @@ export function createWorld(init, law) {
     mindsInstalled: false,
     minds,
     name,
-    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, saveSparse, restore, zoneOf, zoneIndex, law: chosen,
+    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, saveSparse, restoreProblem, restore, zoneOf, zoneIndex, law: chosen,
     lifted, carry, release, sleeping, holds, supportAt, linkIndex,
     /**
      * @param {string} mind

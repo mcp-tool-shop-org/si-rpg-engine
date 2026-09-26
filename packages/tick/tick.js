@@ -491,7 +491,20 @@ function buildTick(init) {
   }
 
   /**
-   * Why a value is not a save of this tick, or null.
+   * Whether a value is a scheduled action as submit writes one.
+   * @param {any} action
+   */
+  function isAction(action) {
+    return Boolean(action) && typeof action === 'object' && Number.isInteger(action.remaining) && action.remaining >= 1
+      && typeof action.effect === 'string' && Number.isInteger(action.riseQuanta) && action.riseQuanta >= 0
+      && typeof action.aimX === 'number' && typeof action.aimZ === 'number'
+      && (action.otherId === null || typeof action.otherId === 'string') && typeof action.speed === 'number';
+  }
+
+  /**
+   * Why a value is not a save of this tick, or null. It checks the whole
+   * save, the world's part with the world's own check, so restore changes
+   * nothing until nothing it reads can fail.
    * @param {any} saved
    * @returns {string | null}
    */
@@ -511,7 +524,8 @@ function buildTick(init) {
     if (!saved.frame || typeof saved.frame !== 'object' || saved.frame.tick !== saved.tick || typeof saved.frame.hash !== 'string' || !Array.isArray(saved.frame.bodies)) {
       return 'the frame is the committed frame at the saved tick';
     }
-    if (!Array.isArray(saved.actions) || !saved.actions.every((/** @type {any} */ entry) => Array.isArray(entry) && entry.length === 2 && typeof entry[0] === 'string' && entry[1] && Number.isInteger(entry[1].remaining) && entry[1].remaining >= 1 && typeof entry[1].effect === 'string')) {
+    if (!Array.isArray(saved.actions) || !saved.actions.every((/** @type {any} */ entry) => Array.isArray(entry) && entry.length === 2 && typeof entry[0] === 'string' && world.body(entry[0]) !== undefined && isAction(entry[1]))
+      || new Set(saved.actions.map((/** @type {any[]} */ entry) => entry[0])).size !== saved.actions.length) {
       return 'the actions are actor ids, each with an action and its quanta still to run';
     }
     if (!Number.isInteger(saved.pending) || saved.pending < 0) {
@@ -528,20 +542,20 @@ function buildTick(init) {
     if (!Array.isArray(saved.log) || !saved.log.every((/** @type {any} */ entry) => entry && Number.isInteger(entry.tick) && typeof entry.hash === 'string' && entry.proposal && typeof entry.proposal === 'object')) {
       return 'the log is entries with a tick, a hash, and a proposal';
     }
-    if (!saved.world || typeof saved.world !== 'object') {
-      return 'the save has no world';
-    }
-    return null;
+    return world.restoreProblem(saved.world);
   }
 
   /**
    * Puts back a save this tick, or one built from the same world file and
-   * seed, took. The world is restored first; it refuses an image of another
-   * binary, one whose bytes do not match its digest, or a save of other
-   * bodies, and then nothing has changed. After it, the tick is where it was
-   * when saved: its next quantum hashes on from the saved lanes, its actions
-   * resume with the quanta they had left, and its log is the saved log. The
-   * restore does not draw: the attached hosts see the next committed frame.
+   * seed, took. The whole save is checked first, every field restore reads,
+   * the world's included; then the world is restored, which refuses an image
+   * of another binary or one whose bytes do not match its digest before it
+   * writes anything. A refused restore changes nothing, and past the world's
+   * restore nothing can fail, so no restore stops halfway. After it, the tick
+   * is where it was when saved: its next quantum hashes on from the saved
+   * lanes, its actions resume with the quanta they had left, it owes the
+   * quanta it owed, and its log is the saved log. The restore does not draw:
+   * the attached hosts see the next committed frame.
    * @param {TickSave} saved
    */
   function restore(saved) {
