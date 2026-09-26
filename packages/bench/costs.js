@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Pin 10's costs, measured by hand for each planted change of pin 9:
 //
-//   node packages/bench/costs.js [--out <file.md>]
+//   node packages/bench/costs.js [--out <file.md>] [--only <planted change>]
 //
 // Each planted change runs once, in fresh copies of this checkout, with the
 // finding tests' budgets over the room, both proposers, and the mutants on:
@@ -11,7 +11,8 @@
 //   - the grammar's candidates per second, over its ladder's time;
 //   - the ladder's time per candidate on each tree, from each process's calls;
 //   - the coverage build's cost per build, from scratch in a fresh tree, and
-//     per quantum, its process's time per quantum beside the head's;
+//     per quantum, its process's time per quantum beside the base's product
+//     build, neither taking V8's coverage, and the head's, which takes it;
 //   - the mutants' time, with the law tree's reference build and each rebuild
 //     counted apart from the runs.
 // It prints a markdown table and, with --out, writes it. The bench chooses no
@@ -82,7 +83,8 @@ async function main(argv) {
     // One run at a time, so no other run shares the host while one is timed.
     /** @type {Array<{ p: typeof PLANTS[number], report: any, head: string }>} */
     const results = [];
-    for (const p of PLANTS) {
+    const only = argv.indexOf('--only') >= 0 ? argv[argv.indexOf('--only') + 1] : null;
+    for (const p of PLANTS.filter((x) => only === null || x.name === only)) {
       const built = !p.edits.some((e) => e.file.startsWith('solver/'));
       const head = copyCheckout(dir, p.name.replace(/\W+/g, '-') + '-head', { built });
       const base = copyCheckout(dir, p.name.replace(/\W+/g, '-') + '-base', { built });
@@ -98,7 +100,7 @@ async function main(argv) {
       results.push({ p, report, head });
       process.stderr.write(p.name + ' ran\n');
     }
-    rows.push('| planted change | sweep with reach | sweep without | grammar candidates per second | ladder per candidate: head, base, coverage | coverage build | coverage per quantum, beside the head\'s | mutants: runs, reference build, rebuilds |');
+    rows.push('| planted change | sweep with reach | sweep without | grammar candidates per second | ladder per candidate: head, base, coverage | coverage build | coverage per quantum, beside the base\'s and the head\'s | mutants: runs, reference build, rebuilds |');
     rows.push('| --- | --- | --- | --- | --- | --- | --- | --- |');
     for (const { p, report, head } of results) {
       const env = report.environment;
@@ -123,7 +125,7 @@ async function main(argv) {
         (grammarRan / (grammarMs / 1000)).toFixed(2) + ' (' + grammarRan + ' in ' + s(grammarMs) + ')',
         [per('head'), per('base'), per('head coverage')].join(', '),
         report.coverage.made ? s(env.times['coverage build']) + ' from scratch' : 'none: no law anchor',
-        report.coverage.made ? perQuantum('head coverage') + ' beside ' + perQuantum('head') + '; mapping ' + (env.mapping.ms / env.mapping.windows).toFixed(0) + ' ms a window over ' + env.mapping.windows : '-',
+        report.coverage.made ? perQuantum('head coverage') + ' beside ' + perQuantum('base') + ' and ' + perQuantum('head') + '; mapping ' + (env.mapping.ms / env.mapping.windows).toFixed(0) + ' ms a window over ' + env.mapping.windows : '-',
         report.mutants.list.length + ' in ' + s(mutantRuns) + (env.lawReferenceMs !== undefined ? '; reference ' + s(env.lawReferenceMs) + '; rebuilds ' + rebuilds.length + ', ' + (rebuilds.reduce((a, b) => a + /** @type {number} */ (b), 0) / Math.max(1, rebuilds.length) / 1000).toFixed(1) + ' s each' : ''),
       ].join(' | ') + ' |');
     }
