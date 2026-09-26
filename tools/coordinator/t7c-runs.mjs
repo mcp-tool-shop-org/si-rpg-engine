@@ -96,11 +96,13 @@ function fileDiff(base, head, file) {
 function plan(dir) {
   /** @type {Array<{ name: string, bar: string, base: string, head: string, diff: string, dispatch: string, worlds: any[], controls: any[], calls?: number, twin: boolean }>} */
   const runs = [];
-  const clean = copyCheckout(dir, 'clean');
+  // The bench refuses one tree as both sides, so each side is its own copy.
+  const cleanBase = copyCheckout(dir, 'clean-base');
+  const cleanHead = copyCheckout(dir, 'clean-head');
   for (const name of SAFETY) {
     const from = join('fixtures', 'sessions', 'instrument-copy', name);
     runs.push({
-      name: 'safety-' + name, bar: 'safety', base: clean, head: clean,
+      name: 'safety-' + name, bar: 'safety', base: cleanBase, head: cleanHead,
       diff: resolve(from, 'change.diff'), dispatch: readFileSync(join(from, 'dispatch.txt'), 'utf8').trim(),
       worlds: ROOM, controls: [], calls: SAFETY_CALLS, twin: true,
     });
