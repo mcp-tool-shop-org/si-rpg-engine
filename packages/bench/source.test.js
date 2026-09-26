@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { GRAMMAR_PITCH, GRAMMAR_SHARE } from './bench.js';
 import { COVERAGE_FLAGS } from './build.js';
 import { PITCHES, PLANTS, SHARES, choose } from './measure.js';
-import { scratch, removeScratch } from './plant.js';
+import { scratch, teardown } from './plant.js';
 import { listFiles, makeWorktree, removeWorktree, treeCommit, treeDigest } from './trees.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -21,11 +21,11 @@ const dir = scratch('source');
 /** @type {string[]} */
 const worktrees = [];
 
-after(() => {
+after(async () => {
   for (const tree of worktrees) {
     removeWorktree(root, tree);
   }
-  removeScratch(dir);
+  await teardown(dir);
 });
 
 /**

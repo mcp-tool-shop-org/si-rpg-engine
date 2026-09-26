@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { readAnchors } from './anchors.js';
 import { runBench } from './bench.js';
 import { MUTANT_CAP, OPERATORS, makeMutants, numberMutants } from './mutants.js';
-import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
+import { copyCheckout, plant, scratch, teardown } from './plant.js';
 import { EARLY_RETURN, EVERY_PLANT, MUTANT_LINES, SKEW, apply } from './plants.js';
 
 const dir = scratch('mutants');
@@ -65,7 +65,7 @@ before(async () => {
   records = readFileSync(join(out, 'records.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line));
 });
 
-after(() => removeScratch(dir));
+after(() => teardown(dir));
 
 /**
  * The mutants made on the line that reads a text, in order.

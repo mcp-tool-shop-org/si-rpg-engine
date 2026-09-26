@@ -65,6 +65,21 @@ import { listFiles } from './trees.js';
  * @typedef {{ anchors: Anchor[], notAimed: NotAimed[], worlds: WorldDiffers[], changedFiles: string[] }} AnchorSet
  */
 
+/**
+ * The offset a deletion left in the head's text: the end of the head's line
+ * before the deleted lines, where that line's newline sits; at the head's
+ * start for a deletion before its first line; and at the text's end for one
+ * after a last line with no newline, which has no line start after it.
+ * @param {{ text: string, lineStarts: number[] }} head
+ * @param {number} h the head's 0-based line the deleted lines sat before
+ */
+export function deletionPoint(head, h) {
+  if (h === 0) {
+    return 0;
+  }
+  return h < head.lineStarts.length ? head.lineStarts[h] - 1 : head.text.length;
+}
+
 /** Why each kind the bench does not aim at is not aimed. */
 export const NOT_AIMED = {
   beliefs: 'a belief key: both proposers here propose intents, and T7c\'s roles propose beliefs',
@@ -603,7 +618,7 @@ function jsAnchors(file, baseText, headText, scans) {
     if (hunk.head[0] === hunk.head[1]) {
       // A deletion: the point it left is the end of the head's line before it.
       const h = hunk.head[0];
-      const point = h === 0 ? 0 : head.lineStarts[h] - 1;
+      const point = deletionPoint(head, h);
       const a = anchor('deletion', file, 'deleted ' + (hunk.base[0] + 1) + '-' + hunk.base[1] + ' of the base');
       a.side = 'base';
       a.approximate = true;
@@ -745,7 +760,7 @@ function lawAnchors(file, baseText, headText, rust) {
     }
     if (hunk.head[0] === hunk.head[1]) {
       const h = hunk.head[0];
-      const point = h === 0 ? 0 : head.lineStarts[h] - 1;
+      const point = deletionPoint(head, h);
       const pointLine = lineOf(head.lineStarts, point);
       const a = anchor('law-deletion', file, 'deleted ' + (hunk.base[0] + 1) + '-' + hunk.base[1] + ' of the base');
       a.side = 'base';
@@ -759,7 +774,10 @@ function lawAnchors(file, baseText, headText, rust) {
       } else if (base) {
         const from = base.lineStarts[hunk.base[0]];
         const to = hunk.base[1] < base.lineStarts.length ? base.lineStarts[hunk.base[1]] : base.text.length;
-        const declared = Array.from(new Set(base.items.filter((it) => it.start < to && it.end > from && it.kind !== 'impl' && it.kind !== 'mod').flatMap((it) => it.names)));
+        // The items it declared, and the functions that began in it: a whole
+        // fn deleted takes its name, as a deleted JS function does.
+        const declared = Array.from(new Set(base.items.filter((it) => it.start < to && it.end > from && it.kind !== 'impl' && it.kind !== 'mod').flatMap((it) => it.names)
+          .concat(base.functions.filter((fn) => fn.start >= from && fn.start < to).map((fn) => fn.name))));
         a.identifiers = declared;
         const still = declared.filter((id) => names(head, id));
         if (declared.length > 0 && still.length === 0) {

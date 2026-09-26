@@ -18,7 +18,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { CANARY, runBench } from './bench.js';
 import { buildCoverage, coverageDir, glueBytes, productGlue, sha256 } from './build.js';
-import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
+import { copyCheckout, leaks, plant, scratch, teardown } from './plant.js';
 import { BROKEN_LAW, LAW, NEUTRAL, NOT_AIMED_SOLVER, NO_SHIM, SKEW, apply } from './plants.js';
 import { startProcess } from './processes.js';
 
@@ -107,7 +107,7 @@ before(async () => {
   });
 });
 
-after(() => removeScratch(dir));
+after(() => teardown(dir));
 
 /**
  * @param {string} prefix
@@ -153,8 +153,9 @@ test('a const in the law, written again at its value: anchored through the funct
   assert.match(r.environment.binaries.coverage, /^[0-9a-f]{64}$/);
   for (const m of mutants) {
     assert.equal(m.kind, 'law');
+    // The record names the build; its digest is in the environment block only.
     assert.equal(m.build, 'the head\'s coverage build');
-    assert.deepEqual(m.comparedWith, { build: 'head coverage', digest: r.environment.binaries.coverage });
+    assert.ok(!JSON.stringify(m).includes(r.environment.binaries.coverage), 'no digest in the record');
     assert.equal(m.verdict, 'caught');
     assert.notEqual(r.environment.binaries.lawMutants[m.id], r.environment.binaries.lawReference);
   }
@@ -313,4 +314,15 @@ test('a base whose solver/ does not compile stops the bench with the reason', as
   apply(plant, lawBase, BROKEN_LAW);
   const r = await runBench({ base: lawBase, head: lawHead, out: join(dir, 'broken-out'), seed: 5, worlds: ROOM, budgets: SMALL, proposers: { grammar: false }, mutants: { enabled: false } });
   assert.match(r.refused, /^the base tree's own build of solver\/ failed \(status \d+\): .*mismatched types/s);
+});
+
+test('nothing outside the environment block holds a path or a digest that block holds, in any law run\'s report or its summary, whatever the run found or refused', () => {
+  for (const out of ['law-out', 'skew-out', 'restore-out', 'equal-out', 'flag-out', 'broken-out']) {
+    const leaked = leaks(join(dir, out));
+    assert.ok(leaked.held > 0, out);
+    assert.deepEqual(leaked.found, [], out);
+  }
+  // The law run's environment block holds the digests the records name.
+  assert.match(runs.law.environment.binaries.coverage, /^[0-9a-f]{64}$/);
+  assert.match(runs.law.environment.binaries.lawReference, /^[0-9a-f]{64}$/);
 });

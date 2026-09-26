@@ -13,7 +13,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { runBench } from './bench.js';
 import { copyProduct } from './build.js';
-import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
+import { copyCheckout, leaks, plant, scratch, teardown } from './plant.js';
 import { FINDING, apply } from './plants.js';
 import { STALL_GRID, differenceKeys, lateGain } from './report.js';
 import { makeWorktree, removeWorktree } from './trees.js';
@@ -80,11 +80,11 @@ before(async () => {
   [runs.match, runs.mismatch, runs.swapOne, runs.swapOther, runs.detA, runs.detB] = made;
 });
 
-after(() => {
+after(async () => {
   for (const tree of worktrees) {
     removeWorktree(checkout, tree);
   }
-  removeScratch(dir);
+  await teardown(dir);
 });
 
 test('a change to the hasher makes every candidate differ at tick 0, in the snapshot digest the hasher also makes, and the report shows one flood line in place of the list', () => {
@@ -217,6 +217,22 @@ test('two runs with one seed, from git worktrees at different paths, give equal 
   };
   assert.deepEqual(outside(a), outside(b));
   assert.ok(a.proposers.grammar.ran > 0 && a.mutants.list.length > 0, 'the grammar and the mutants ran, and agree too');
+  // The report is the JSON file and its markdown summary: the two summaries
+  // agree too, up to their environment sections, which close them.
+  const summary = (/** @type {string} */ out) => {
+    const text = readFileSync(join(out, 'report.md'), 'utf8');
+    const at = text.indexOf('\n## Environment\n');
+    assert.ok(at > 0 && !text.slice(0, at).includes('## Environment'), 'one environment section, at the end');
+    return text.slice(0, at);
+  };
+  assert.equal(summary(runs.detA.out), summary(runs.detB.out));
+  assert.ok(summary(runs.detA.out).startsWith('# Bench report\n\nSeed 11. '));
+  // Nor does either hold a path or a digest its environment block holds.
+  for (const r of [runs.detA, runs.detB]) {
+    const leaked = leaks(r.out);
+    assert.ok(leaked.held > 0);
+    assert.deepEqual(leaked.found, []);
+  }
 });
 
 test('two admission differences on one verb, refused on the same tree, count as one new difference for the stall, and one on another verb as a second', () => {

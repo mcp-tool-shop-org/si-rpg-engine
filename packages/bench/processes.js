@@ -10,6 +10,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FOLD_CASE, pathKey } from './trees.js';
 
 const RUNNER = join(dirname(fileURLToPath(import.meta.url)), 'runner.js');
 
@@ -28,6 +29,52 @@ export class BenchRefusal extends Error {}
 let counter = 0;
 
 /**
+ * Every child started and not yet exited, with its name: what stopAll stops.
+ * @type {Set<{ child: import('node:child_process').ChildProcess, name: string }>}
+ */
+const children = new Set();
+
+/**
+ * Stops every process still running. Each is let go first, its channel
+ * closed, which a runner waiting for its next message exits on; one that has
+ * not exited after a short, bounded wait is killed. A test's teardown calls
+ * it before it removes its scratch directory, so a test that goes red with a
+ * process still open, as one that expected a refusal and got a process does,
+ * holds neither the directory nor the test file open. Resolves with the names
+ * of the processes it killed.
+ * @param {number} [wait] milliseconds to wait before killing, and again after
+ * @returns {Promise<string[]>}
+ */
+export async function stopAll(wait = 2000) {
+  /** @type {string[]} */
+  const killed = [];
+  /** @param {number} ms */
+  const pause = (ms) => new Promise((done) => setTimeout(done, ms));
+  await Promise.all(Array.from(children).map(async (entry) => {
+    const { child, name } = entry;
+    const gone = () => child.exitCode !== null || child.signalCode !== null;
+    const exited = new Promise((done) => {
+      if (gone()) {
+        done(undefined);
+      } else {
+        child.once('exit', () => done(undefined));
+      }
+    });
+    if (child.connected) {
+      child.disconnect();
+    }
+    await Promise.race([exited, pause(wait)]);
+    if (!gone()) {
+      killed.push(name);
+      child.kill('SIGKILL');
+      await Promise.race([exited, pause(wait)]);
+    }
+    children.delete(entry);
+  }));
+  return killed;
+}
+
+/**
  * Starts a process on a tree. Resolves when its tree's modules have loaded,
  * with what init reported; rejects with the reason when they did not.
  * @param {{
@@ -36,9 +83,10 @@ let counter = 0;
  *   counters?: { addr: number, size: number } | null,
  *   probes?: Array<{ file: string, offsets: number[] }>,
  *   modules?: string[], plant?: Record<string, unknown>,
- *   cwd?: string
+ *   cwd?: string, foldCase?: boolean
  * }} options cwd: a working directory other than the tree's root, which the
- *   process refuses; only a test asks for one
+ *   process refuses; only a test asks for one. foldCase: the path rule the
+ *   process applies, FOLD_CASE unless a test hands it the other
  * @returns {Promise<Proc>}
  */
 export async function startProcess(options) {
@@ -54,6 +102,9 @@ export async function startProcess(options) {
     serialization: 'advanced',
     env: { ...process.env, NODE_OPTIONS: '' },
   });
+  const entry = { child, name: options.name };
+  children.add(entry);
+  child.once('exit', () => children.delete(entry));
   let stderr = '';
   /** @type {import('node:stream').Readable} */ (child.stderr).on('data', (chunk) => {
     stderr = (stderr + chunk.toString()).slice(-20000);
@@ -136,6 +187,7 @@ export async function startProcess(options) {
       probes: options.probes || [],
       modules: options.modules || [],
       plant: options.plant || {},
+      foldCase: typeof options.foldCase === 'boolean' ? options.foldCase : FOLD_CASE,
     });
   } catch (error) {
     await proc.close();
@@ -145,11 +197,13 @@ export async function startProcess(options) {
 }
 
 /**
- * The process model's own refusal: two trees in one process.
+ * The process model's own refusal: two trees in one process. Two paths are
+ * one tree when the path rule says they name one place.
  * @param {string[]} trees
+ * @param {boolean} [fold]
  */
-export function oneTreePerProcess(trees) {
-  const distinct = Array.from(new Set(trees.map((tree) => resolve(tree).toLowerCase())));
+export function oneTreePerProcess(trees, fold = FOLD_CASE) {
+  const distinct = Array.from(new Set(trees.map((tree) => pathKey(tree, fold))));
   if (distinct.length > 1) {
     throw new BenchRefusal('refused: ' + distinct.length + ' trees in one process; each tree runs in a fresh process of its own, with its root as the working directory (pin 2)');
   }

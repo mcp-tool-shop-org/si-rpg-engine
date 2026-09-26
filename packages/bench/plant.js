@@ -6,8 +6,9 @@
 
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import { copyProduct } from './build.js';
+import { stopAll } from './processes.js';
 import { copyTree } from './trees.js';
 
 /** The checkout the tests run in. */
@@ -27,6 +28,64 @@ export function scratch(name) {
  */
 export function removeScratch(dir) {
   rmSync(dir, { recursive: true, force: true, maxRetries: 8, retryDelay: 250 });
+}
+
+/**
+ * A test file's teardown: every process still running is stopped, after a
+ * short, bounded wait (processes.js, stopAll), and then the scratch directory
+ * is removed. A test that went red with a process still open, as one that
+ * expected a refusal and got a process does, cannot hold the directory, or
+ * the test file, open after it.
+ * @param {string} dir
+ */
+export async function teardown(dir) {
+  await stopAll();
+  removeScratch(dir);
+}
+
+/**
+ * What of a run's environment block appears outside it (pin 2): every path
+ * and every digest the block holds, sought in the rest of report.json and in
+ * report.md up to its environment section, as written and with forward
+ * slashes.
+ * @param {string} out the run's out directory
+ * @returns {{ held: number, found: string[] }} how many the block holds, and each one found outside
+ */
+export function leaks(out) {
+  const report = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
+  const text = readFileSync(join(out, 'report.md'), 'utf8');
+  const at = text.indexOf('\n## Environment\n');
+  const summary = at >= 0 ? text.slice(0, at) : text;
+  const { environment, ...rest } = report;
+  const json = JSON.stringify(rest);
+  /** @type {Set<string>} */
+  const held = new Set();
+  /** @param {unknown} value */
+  const collect = (value) => {
+    if (typeof value === 'string') {
+      if (/^[0-9a-f]{40}$|^[0-9a-f]{64}$/.test(value) || (value.length > 3 && isAbsolute(value))) {
+        held.add(value);
+      }
+    } else if (value && typeof value === 'object') {
+      for (const inner of Object.values(value)) {
+        collect(inner);
+      }
+    }
+  };
+  collect(environment);
+  /** @type {string[]} */
+  const found = [];
+  for (const value of held) {
+    for (const form of new Set([value, value.replace(/\\/g, '/')])) {
+      if (json.includes(JSON.stringify(form).slice(1, -1))) {
+        found.push('report.json holds ' + form);
+      }
+      if (summary.includes(form)) {
+        found.push('report.md holds ' + form);
+      }
+    }
+  }
+  return { held: held.size, found };
 }
 
 /**

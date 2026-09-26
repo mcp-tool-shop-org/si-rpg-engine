@@ -64,7 +64,8 @@ const RUNAWAY = 4096;
  *   counters: { addr: number, size: number } | null,
  *   probes: Array<{ file: string, offsets: number[] }>,
  *   modules: string[],
- *   plant: Record<string, unknown>
+ *   plant: Record<string, unknown>,
+ *   foldCase: boolean
  * }} Config
  */
 
@@ -91,22 +92,32 @@ let grammar = null;
 class Refusal extends Error {}
 
 /**
+ * A path as the process compares it, by the rule the orchestrator hands it at
+ * init (packages/bench/trees.js, FOLD_CASE): resolved, and lowercased only
+ * where that rule folds case, on Windows and macOS.
+ * @param {string} path
+ */
+function pathKey(path) {
+  const at = resolve(path);
+  return cfg().foldCase ? at.toLowerCase() : at;
+}
+
+/**
  * @param {string} a
  * @param {string} b
  */
 function samePath(a, b) {
-  const x = resolve(a);
-  const y = resolve(b);
-  return process.platform === 'win32' ? x.toLowerCase() === y.toLowerCase() : x === y;
+  return pathKey(a) === pathKey(b);
 }
 
 /**
+ * Whether a path lies inside the tree, by the same rule.
  * @param {string} tree
  * @param {string} path
  */
 function inside(tree, path) {
-  const root = process.platform === 'win32' ? resolve(tree).toLowerCase() : resolve(tree);
-  const at = process.platform === 'win32' ? resolve(path).toLowerCase() : resolve(path);
+  const root = pathKey(tree);
+  const at = pathKey(path);
   return at === root || at.startsWith(root.endsWith(sep) ? root : root + sep);
 }
 
@@ -1266,6 +1277,7 @@ async function init(a) {
   config = {
     processId: a.processId, tree: resolve(a.tree), build: a.build, coverage: Boolean(a.coverage),
     redirect: a.redirect || null, counters: a.counters || null, probes: a.probes || [], modules: a.modules || [], plant: a.plant || {},
+    foldCase: a.foldCase === true,
   };
   const c = config;
   checkCwd();
@@ -1334,7 +1346,7 @@ async function init(a) {
       throw new Refusal('the counters at ' + c.counters.addr + ' of ' + c.counters.size + ' bytes lie outside the ' + bytes + ' bytes of the solver\'s memory');
     }
   }
-  return { pid: process.pid, loaded: loadedModules.slice(), refused: refusedModules.slice(), load: loadWindow, binary: mods.glue.binaryDigest() };
+  return { pid: process.pid, loaded: loadedModules.slice(), refused: refusedModules.slice(), load: loadWindow, binary: mods.glue.binaryDigest(), foldCase: c.foldCase };
 }
 
 /** @type {Promise<unknown>} */

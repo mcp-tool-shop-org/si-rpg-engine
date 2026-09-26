@@ -201,12 +201,42 @@ export function syncTree(from, to) {
 }
 
 /**
- * Whether a path lies inside a tree: the tree itself or below it.
+ * Whether paths compare without case: on Windows and macOS, whose default
+ * filesystems do not tell case apart. Elsewhere two paths that differ only by
+ * case are two trees. Every process takes this rule at init and applies it in
+ * its resolve hook, so the bench and its processes compare paths one way.
+ */
+export const FOLD_CASE = process.platform === 'win32' || process.platform === 'darwin';
+
+/**
+ * A path as the rule compares it: resolved, and lowercased only where the
+ * rule folds case.
+ * @param {string} path
+ * @param {boolean} [fold]
+ */
+export function pathKey(path, fold = FOLD_CASE) {
+  const at = resolve(path);
+  return fold ? at.toLowerCase() : at;
+}
+
+/**
+ * Whether two paths name one place, by the rule.
+ * @param {string} a
+ * @param {string} b
+ * @param {boolean} [fold]
+ */
+export function samePath(a, b, fold = FOLD_CASE) {
+  return pathKey(a, fold) === pathKey(b, fold);
+}
+
+/**
+ * Whether a path lies inside a tree, the tree itself or below it, by the rule.
  * @param {string} tree
  * @param {string} path
+ * @param {boolean} [fold]
  */
-export function inside(tree, path) {
-  const root = resolve(tree).toLowerCase();
-  const at = resolve(path).toLowerCase();
+export function inside(tree, path, fold = FOLD_CASE) {
+  const root = pathKey(tree, fold);
+  const at = pathKey(path, fold);
   return at === root || at.startsWith(root.endsWith(sep) ? root : root + sep);
 }

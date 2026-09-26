@@ -13,7 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runBench } from './bench.js';
-import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
+import { copyCheckout, plant, scratch, teardown } from './plant.js';
 import { FINDING, HAZARD_FLIP, PUSH_FIRST, apply } from './plants.js';
 
 const dir = scratch('finding');
@@ -65,7 +65,7 @@ before(async () => {
   [runs.rule, runs.ruleInBase, runs.comparison, runs.stepHeight, runs.push, runs.ruleFlag] = made;
 });
 
-after(() => removeScratch(dir));
+after(() => teardown(dir));
 
 /**
  * @param {Run} r

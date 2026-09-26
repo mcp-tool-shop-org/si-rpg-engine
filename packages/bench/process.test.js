@@ -9,10 +9,11 @@
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { runBench } from './bench.js';
-import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
-import { startProcess } from './processes.js';
+import { copyCheckout, plant, scratch, teardown } from './plant.js';
+import { oneTreePerProcess, startProcess } from './processes.js';
+import { FOLD_CASE, inside, samePath } from './trees.js';
 
 const dir = scratch('process');
 /** @type {string} */
@@ -48,7 +49,7 @@ before(async () => {
 
 after(async () => {
   await Promise.all(open.map((p) => p.close()));
-  removeScratch(dir);
+  await teardown(dir);
 });
 
 /**
@@ -209,4 +210,41 @@ test('the grammar draws from the verbs that reached an anchor at its share, only
   const h = await proc({ name: 'head', tree: head, build: 'product' });
   const ran = await h.call('candidate', { world: room.world, seed: room.seed, entries: third.witness.concat([third.intent]), witness: third.witness.length, witnessEnd: third.witnessEnd, key: null, restoreCheck: false, window: false });
   assert.deepEqual(ran.hashes, third.hashes, 'the run from the load hashes as the grammar\'s did');
+});
+
+test('paths compare without case on Windows and macOS and by case elsewhere, in the bench and in each process\'s working-directory check and resolve hook alike', async () => {
+  assert.equal(FOLD_CASE, process.platform === 'win32' || process.platform === 'darwin');
+  // The rule, each way, on any platform.
+  const upper = resolve(dir, 'Tree');
+  const lower = resolve(dir, 'tree');
+  assert.equal(samePath(upper, lower, false), false);
+  assert.equal(samePath(upper, lower, true), true);
+  assert.equal(inside(upper, join(lower, 'x.js'), false), false);
+  assert.equal(inside(upper, join(lower, 'x.js'), true), true);
+  assert.throws(() => oneTreePerProcess([upper, lower], false), /refused: 2 trees in one process/);
+  oneTreePerProcess([upper, lower], true);
+  // A process takes the bench's rule at init and applies it.
+  const p = await proc({ name: 'head', tree: head, build: 'product' });
+  assert.equal(p.init.foldCase, FOLD_CASE);
+  if (FOLD_CASE) {
+    // Here a tree named in another case is the same tree: a process whose
+    // working directory has the tree's own case starts, and one handed the
+    // other rule refuses that working directory as another tree's.
+    const shouted = head.toUpperCase();
+    assert.notEqual(shouted, head);
+    const q = await proc({ name: 'shouted', tree: shouted, cwd: head, build: 'product' });
+    assert.equal(q.init.foldCase, true);
+    await assert.rejects(proc({ name: 'shouted', tree: shouted, cwd: head, build: 'product', foldCase: false }), /is not this process's tree/);
+  } else {
+    // Here a directory beside the tree, named as the tree but for case, is
+    // outside it: a module there is refused, and a process handed the other
+    // rule would take it as the tree's own.
+    const cased = copyCheckout(dir, 'Cased');
+    mkdirSync(join(dir, 'cased'), { recursive: true });
+    writeFileSync(join(dir, 'cased', 'planted.js'), 'export const planted = 1;\n');
+    plant(cased, 'packages/tick/canonical.js', '\nexport function canonical(', '\nimport \'../../../cased/planted.js\';\nexport function canonical(');
+    await assert.rejects(proc({ name: 'cased', tree: cased, build: 'product' }), /cased\/planted\.js lies outside this process's tree/);
+    const q = await proc({ name: 'cased', tree: cased, build: 'product', foldCase: true });
+    assert.ok(q.init.loaded.some((/** @type {string} */ url) => url.endsWith('/cased/planted.js')));
+  }
 });

@@ -9,10 +9,11 @@
 
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { deletionPoint, readAnchors } from './anchors.js';
 import { runBench } from './bench.js';
-import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
+import { copyCheckout, plant, scratch, teardown } from './plant.js';
 import { BASE_FIXTURE, NEUTRAL, NOT_AIMED, apply } from './plants.js';
 import { productGlue } from './build.js';
 
@@ -47,7 +48,7 @@ before(async () => {
   records = readFileSync(join(dir, 'out', 'records.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
 });
 
-after(() => removeScratch(dir));
+after(() => teardown(dir));
 
 /**
  * The report's anchor whose id starts with a prefix; exactly one.
@@ -310,4 +311,43 @@ test('the access map holds pin 5\'s shape: each anchor aimed at once, each entry
   assert.ok(entries.some((/** @type {any} */ e) => e.control && e.control.kind === 'product' && e.control.file === 'product scene'));
   assert.ok(access.notAimed.every((/** @type {any} */ n) => typeof n.id === 'string' && typeof n.reason === 'string'));
   assert.deepEqual(access.runsAtLoad, report.anchors.filter((/** @type {any} */ a) => a.runsAtLoad).map((/** @type {any} */ a) => a.id));
+});
+
+test('a deletion after the last line of a head file with no final newline leaves its point at the text\'s end, in JS and in the law, and its anchor is the top-level deletion it is', () => {
+  // The point, directly: after a final newline it is that newline; with none,
+  // there is no line start after the last line, and it is the text's end.
+  const bare = { text: 'a\nbb', lineStarts: [0, 2] };
+  const ended = { text: 'a\nbb\n', lineStarts: [0, 2, 5] };
+  assert.equal(deletionPoint(bare, 0), 0);
+  assert.equal(deletionPoint(bare, 1), 1);
+  assert.equal(deletionPoint(bare, 2), 4);
+  assert.equal(deletionPoint(ended, 2), 4);
+  // Through the anchors: a JS file and a law file, each losing its last
+  // function, the head's text left without a final newline.
+  /** @type {Record<string, [string, string]>} */
+  const files = {
+    'packages/tick/planted.js': ['export function f() {\n  return 1;\n}\nexport function g() {\n  return 2;\n}\n', 'export function f() {\n  return 1;\n}'],
+    'solver/src/planted.rs': ['pub fn f() -> i32 {\n    1\n}\npub fn g() -> i32 {\n    2\n}\n', 'pub fn f() -> i32 {\n    1\n}'],
+  };
+  const trees = { base: join(dir, 'no-newline', 'base'), head: join(dir, 'no-newline', 'head') };
+  for (const [file, [base, head]] of Object.entries(files)) {
+    for (const [tree, text] of [[trees.base, base], [trees.head, head]]) {
+      mkdirSync(dirname(join(tree, file)), { recursive: true });
+      writeFileSync(join(tree, file), text);
+    }
+  }
+  const list = Object.keys(files).sort();
+  const set = readAnchors(trees.base, trees.head, { baseFiles: list, headFiles: list });
+  const js = set.anchors.find((a) => a.kind === 'deletion' && a.file === 'packages/tick/planted.js');
+  const law = set.anchors.find((a) => a.kind === 'law-deletion' && a.file === 'solver/src/planted.rs');
+  for (const a of [js, law]) {
+    assert.ok(a, JSON.stringify(set.anchors.map((x) => x.id)));
+    assert.deepEqual(a.lines, [[4, 6]]);
+    assert.deepEqual(a.identifiers, ['g']);
+    assert.equal(a.removed, true);
+    assert.equal(a.why, 'removed; reach not measurable');
+    /** @param {any} v @returns {number[]} */
+    const numbers = (v) => (typeof v === 'number' ? [v] : v && typeof v === 'object' ? Object.values(v).flatMap(numbers) : []);
+    assert.ok(numbers(a).every(Number.isFinite), a.id);
+  }
 });

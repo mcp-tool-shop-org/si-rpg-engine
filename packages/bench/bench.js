@@ -41,7 +41,7 @@ import { BenchRefusal, oneTreePerProcess, startProcess } from './processes.js';
 import { coverageInfo, lineStats, mapWindow, normalize, countAt, regionAt } from './profile.js';
 import { lawSources, mappedLines, probeTable, reachOf } from './reach.js';
 import { describeDifference, floods, lateGain, markdown } from './report.js';
-import { copyTree, listFiles, syncTree, treeCommit, treeDigest } from './trees.js';
+import { copyTree, listFiles, samePath, syncTree, treeCommit, treeDigest } from './trees.js';
 
 /**
  * The grammar's share of draws that take a verb that reached an anchor, and
@@ -203,8 +203,9 @@ export async function runBench(options) {
   writeFileSync(join(out, 'records.jsonl'), '');
   try {
     // 1. Trees and anchors.
-    if (head.toLowerCase() === base.toLowerCase()) {
-      throw new BenchRefusal('the base and the head are one tree: ' + head);
+    if (samePath(head, base)) {
+      environment.trees = { head: { path: head }, base: { path: base } };
+      throw new BenchRefusal('the base and the head are one tree, the one the environment block names');
     }
     if (plant.oneProcess) {
       oneTreePerProcess([head, base]);
@@ -936,9 +937,10 @@ export async function runBench(options) {
     await Promise.all(procs.map((p) => p.close()));
   }
   environment.times.total = Object.values(times).reduce((sum, t) => sum + t, 0);
-  writeFileSync(join(out, 'report.json'), JSON.stringify(report, null, 1) + '\n');
-  writeFileSync(join(out, 'report.md'), markdown(report));
-  return report;
+  const written = withoutPaths(report, [[work, '<work>'], [out, '<out>'], [head, '<head>'], [base, '<base>']]);
+  writeFileSync(join(out, 'report.json'), JSON.stringify(written, null, 1) + '\n');
+  writeFileSync(join(out, 'report.md'), markdown(written));
+  return written;
 }
 
 /**
@@ -966,6 +968,49 @@ function frameAgreement(a, b) {
   return again >= 0
     ? 'the states agree again from tick ' + again + ' to the last frame, tick ' + (n - 1) + ', and the running hash carries the difference on'
     : 'the states still differ at the last frame, tick ' + (n - 1);
+}
+
+/**
+ * The report with every path the environment block holds named instead,
+ * everywhere outside that block (pin 2): a refusal's words, a build's, or a
+ * mutant's that name a tree, the work or the out directory say `<head>`,
+ * `<base>`, `<work>`, or `<out>`, so two runs with one seed from trees at
+ * different paths give one report outside the environment block. The block
+ * itself keeps the paths. Longer paths are named first, so the work directory
+ * inside the out directory is `<work>`.
+ * @param {any} report
+ * @param {Array<[string, string]>} named each path and its name
+ */
+export function withoutPaths(report, named) {
+  /** @type {Array<[string, string]>} */
+  const forms = [];
+  for (const [path, name] of named) {
+    for (const form of [path, path.replace(/\\/g, '/')]) {
+      if (form.length > 3 && !forms.some(([f]) => f === form)) {
+        forms.push([form, name]);
+      }
+    }
+  }
+  forms.sort((a, b) => b[0].length - a[0].length);
+  /** @param {any} value @returns {any} */
+  const walk = (value) => {
+    if (typeof value === 'string') {
+      let s = value;
+      for (const [form, name] of forms) {
+        s = s.split(form).join(name);
+      }
+      return s;
+    }
+    if (Array.isArray(value)) {
+      return value.map(walk);
+    }
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, walk(v)]));
+    }
+    return value;
+  };
+  const { environment, ...rest } = report;
+  return { ...walk(rest), environment };
 }
 
 /**
@@ -1307,10 +1352,12 @@ async function runMutants(mutants, ctx) {
     /** @type {any} */
     const result = {
       id: m.id, anchor: m.anchor, file: m.file, line: m.line, operator: m.operator, detail: m.detail, kind: m.kind, marked: m.marked, verdict: '', why: '', separatedBy: null,
-      // What its runs are compared with (pin 7): a law mutant's with the head's
-      // coverage build, like with like, and a JS mutant's with the head's product build.
+      // What its runs are compared with (pin 7), by name: a law mutant's with
+      // the head's coverage build, like with like, and a JS mutant's with the
+      // head's product build. Their digests are in the environment block, as
+      // binaries.coverage and binaries.head, and only there: a coverage build's
+      // digest moves with the tree's path.
       build: m.kind === 'law' ? 'the head\'s coverage build' : 'the head\'s product build',
-      comparedWith: m.kind === 'law' ? { build: 'head coverage', digest: ctx.environment.binaries.coverage || null } : { build: 'head product', digest: ctx.environment.binaries.head },
     };
     const anchor = /** @type {Anchor} */ (ctx.anchors.find((a) => a.id === m.anchor));
     const lineReached = /** @type {Set<number>} */ (ctx.linesReached.get(m.anchor)).has(m.line)

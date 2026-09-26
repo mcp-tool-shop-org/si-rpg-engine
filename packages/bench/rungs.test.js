@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runBench } from './bench.js';
-import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
+import { copyCheckout, plant, scratch, teardown } from './plant.js';
 import { FINDING, apply } from './plants.js';
 
 const dir = scratch('rungs');
@@ -50,7 +50,7 @@ before(async () => {
   names.forEach((name, i) => { runs[name] = made[i]; });
 });
 
-after(() => removeScratch(dir));
+after(() => teardown(dir));
 
 test('a planted restore that drops one saved field, in the head, fails rung 0 on the head: the candidate is a finding of the tick or the restore, and none of its rungs 1 to 3 is recorded', () => {
   const r = runs.dropHead;
