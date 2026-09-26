@@ -1,7 +1,8 @@
 // The engine's copy of Rapier's character push: the routine
 // `KinematicCharacterController::solve_character_collision_impulses` and the
-// private function it calls for one collision, with one change, which is
-// upstream's own (F3, docs/dispatch-f3-character-push.md).
+// private function it calls for one collision, with two changes: upstream's
+// own (F3, docs/dispatch-f3-character-push.md), and the push's mass (F5,
+// docs/dispatch-f5-push-mass.md), which Rapier has not fixed.
 //
 // Source. rapier3d-f64 0.35.3, src/control/character_controller.rs, from the
 // crate as published: the methods solve_character_collision_impulses (lines
@@ -15,47 +16,46 @@
 // Crozet <sebcrozet@dimforge.com>, and Dimforge publishes Rapier
 // (https://github.com/dimforge/rapier). This file is licensed under the Apache
 // License, Version 2.0, whose text is solver/LICENSE-APACHE-2.0; solver/NOTICE
-// names this file and the change. The rest of the repository is MIT.
+// names this file and both changes. The rest of the repository is MIT.
 //
 // Modified by si-rpg-engine, 2026-09-26. What differs from the source:
 //
-// - The one change, which is Rapier's: pull request dimforge/rapier#1004
-//   (commit bd7a2f2e, released in rapier 0.36.0). Each dynamic collider's
-//   contact manifolds are computed into a Vec of their own, which is cleared
-//   for each collider, and then moved onto the shared list with that
-//   collider's body, normal, and pose. At 0.35.3 every collider in range
-//   shares the one list, and the routine assumes parry only appends to it.
-//   For a convex pair parry computes into the list's first manifold instead,
-//   so when two dynamic bodies are near the character the second body's call
-//   overwrites the first body's manifold and adds none. The first body is
-//   then pushed at the second body's contact points, placed through its own
-//   pose, along its own normal. The Rust knowledge base traced a crate the
-//   law launched at 162.7 units a second to that overwrite (readouts,
-//   rust-knowledge wave 3, requests/squeeze-launch.md). Where one dynamic
-//   collider is in range, both forms compute the same impulses.
-//   The change is the const parameter SEPARATE: the law runs the copy with it
-//   on (Shove below), and only the tests run it off.
+// - Rapier's own fix, pull request dimforge/rapier#1004 (commit bd7a2f2e,
+//   released in 0.36.0), as the const parameter SEPARATE. Each dynamic
+//   collider's contact manifolds are computed into a Vec of their own, then
+//   moved onto the shared list with that collider's body, normal, and pose.
+//   At 0.35.3 the colliders share one list, and for a convex pair parry writes
+//   into its first manifold instead of appending, so with two dynamic bodies
+//   near the character the first is pushed at the second's contact points
+//   (readouts, rust-knowledge wave 3, requests/squeeze-launch.md).
+// - The push's mass, as the const parameter EFFECTIVE. Rapier has the defect as
+//   dimforge/rapier#1020, open at 0.36.0. Its mass ratio for each contact
+//   point, m·M/(m+M), counts the body's linear mass only, so a push off the
+//   centre of mass, which also turns the body, overshoots the point's velocity
+//   by 1 + k·m·M/(m+M), where k = (r×n)·I⁻¹(r×n). With EFFECTIVE the ratio is
+//   the effective mass at the point, mass_ratio / (1 + k·mass_ratio), with r,
+//   n, and I⁻¹ from RigidBody::mass_properties; with k exactly 0 it is the
+//   source's bit for bit (readouts, wave 3, requests/push-mass.md).
 // - Rapier's public API only. The methods live on `Impulses`, which wraps a
 //   `KinematicCharacterController` and reads its fields through `Deref`, so
 //   `self.up` and `self.offset` read as in the source. CharacterLength::eval
 //   and predict_ground are private, so `length(self.offset, x)` stands for
-//   `self.offset.eval(x)` and predict_ground is written here with its body.
-//   utils::inv is crate-private, so `inv` is written here with its body.
-//   Collider's `parent` field is crate-private, so `collider.parent()`, which
-//   returns the handle that field holds, stands for `collider.parent` with
-//   `parent.handle` for its uses.
-// - The `#[profiling::function]` attributes are gone. Every statement that
-//   computes is the source's, in the source's order.
+//   `self.offset.eval(x)` and predict_ground is written here with its body;
+//   utils::inv is crate-private, and `inv` is written here with its body too.
+//   Collider's `parent` field is crate-private, so `collider.parent()`, the
+//   handle that field holds, stands for `collider.parent` and `parent.handle`.
+// - The `#[profiling::function]` attributes are gone. Apart from the two
+//   changes, every statement that computes is the source's, in its order.
 //
-// The control test (the end of solver/src/rapier_law.rs, `cargo test --release`)
-// runs the law with Rapier's own routine and this copy with the change off side
-// by side over the flat walks, the character course, the verb fixture's capsule
-// carry, the product scene, and the red room, and requires every quantum to
-// match bit for bit; with the change on, the copy may differ only on a quantum
-// with two or more dynamic colliders near the character. A bump of
-// rapier3d-f64 reruns it before anything else (solver/FLAGS.md). A bump to
-// 0.36.0 or later, which carries #1004, deletes this file, and the law calls
-// Rapier's routine again.
+// The law runs the copy with both changes on (Shove below); only the tests run
+// either off. The control test (the end of solver/src/rapier_law.rs) gives
+// Rapier's routine and the copy the same world before every push of the flat
+// walks, the course, the capsule carry, and every law run: with both off the
+// copy is Rapier's bit for bit, SEPARATE acts only where two dynamic colliders
+// are near the character, and EFFECTIVE on every push of a dynamic body and
+// nowhere else. A bump of rapier3d-f64 reruns it first (solver/FLAGS.md). A
+// version that carries #1004 retires SEPARATE, one that fixes #1020 is measured
+// against EFFECTIVE, and the file goes when neither change is left.
 
 use core::ops::Deref;
 
@@ -81,7 +81,7 @@ pub(crate) trait Pusher {
     );
 }
 
-/// The law's push: the copy with upstream's change on.
+/// The law's push: the copy with both changes on.
 pub(crate) struct Shove;
 
 impl Pusher for Shove {
@@ -94,16 +94,16 @@ impl Pusher for Shove {
         character_mass: Real,
         collisions: &[CharacterCollision],
     ) {
-        Impulses::<true>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions)
+        Impulses::<true, true>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions)
     }
 }
 
 /// Rapier's controller settings, pushing through the copy of its routine.
-/// SEPARATE is upstream's change: true in the law, false only in the tests,
-/// which is how the copy is held to Rapier's own routine.
-pub(crate) struct Impulses<'c, const SEPARATE: bool>(pub(crate) &'c KinematicCharacterController);
+/// SEPARATE is #1004 and EFFECTIVE the push's mass: true in the law, and false
+/// only in the tests, which is how each is held to what it changes.
+pub(crate) struct Impulses<'c, const SEPARATE: bool, const EFFECTIVE: bool = false>(pub(crate) &'c KinematicCharacterController);
 
-impl<const SEPARATE: bool> Deref for Impulses<'_, SEPARATE> {
+impl<const SEPARATE: bool, const EFFECTIVE: bool> Deref for Impulses<'_, SEPARATE, EFFECTIVE> {
     type Target = KinematicCharacterController;
 
     fn deref(&self) -> &KinematicCharacterController {
@@ -131,7 +131,7 @@ fn inv(val: Real) -> Real {
     }
 }
 
-impl<const SEPARATE: bool> Impulses<'_, SEPARATE> {
+impl<const SEPARATE: bool, const EFFECTIVE: bool> Impulses<'_, SEPARATE, EFFECTIVE> {
     fn predict_ground(&self, up_extends: Real) -> Real {
         length(self.offset, up_extends) + 0.05
     }
@@ -251,6 +251,19 @@ impl<const SEPARATE: bool> Impulses<'_, SEPARATE> {
                         - body.velocity_at_point(contact_point))
                     .dot(manifold.data.normal);
                     let mass_ratio = body_mass * character_mass / (body_mass + character_mass);
+                    // EFFECTIVE (rapier#1020): the effective mass at the point,
+                    // 1 / (1/m + 1/M + k), which counts the turn the impulse
+                    // gives the body. apply_impulse_at_point turns it by
+                    // effective_world_inv_inertia * ((point - world_com) x impulse),
+                    // so k is (r x n) . I^-1 (r x n) with those two values.
+                    let mass_ratio = if EFFECTIVE {
+                        let mprops = body.mass_properties();
+                        let rn = (contact_point - mprops.world_com).cross(manifold.data.normal);
+                        let k = rn.dot(mprops.effective_world_inv_inertia * rn);
+                        mass_ratio / (1.0 + k * mass_ratio)
+                    } else {
+                        mass_ratio
+                    };
 
                     body.apply_impulse_at_point(
                         manifold.data.normal * delta_vel_per_contact.max(0.0) * mass_ratio,

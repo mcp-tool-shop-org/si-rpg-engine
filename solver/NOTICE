@@ -61,6 +61,18 @@ What si-rpg-engine changed, 2026-09-26:
   it; for a convex pair parry writes into the vec's first manifold instead,
   so with two dynamic bodies near the character the second body's manifold
   replaces the first's, and the first body is pushed at the second's points.
+- The push's mass, which Rapier has not fixed. The report upstream is
+  https://github.com/dimforge/rapier/issues/1020, open at rapier 0.36.0.
+  For each contact point Rapier's routine sizes the impulse with the two
+  bodies' linear masses only, m*M/(m+M), and leaves out the pushed body's
+  rotation. A push at a point off the body's centre of mass turns it as well
+  as moving it, so the impulse overshoots the velocity it aims for, and for a
+  light body pushed far from its centre it launches the body. The copy sizes
+  the impulse with the effective mass at the point, 1/(1/m + 1/M + k), where
+  k = (r x n) . I^-1 (r x n) for the point's offset r from the body's world
+  centre of mass, the contact normal n, and the body's world inverse inertia
+  I^-1, all read from the body's public mass properties. With k exactly 0 the
+  ratio is Rapier's bit for bit.
 - The routine is adapted to Rapier's public API: its methods live on a
   wrapper of KinematicCharacterController, the bodies of a private method and
   a crate-private function are local functions, and a crate-private field is
