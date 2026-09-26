@@ -11,7 +11,7 @@ sidebar:
 |---|---|
 | `0` | Success |
 | `1` | Refused, with a one-line reason on stderr |
-| `2` | Usage error, a frozen instrument, or an unexpected failure (one line on stderr; `--debug` prints the stack) |
+| `2` | Usage error, a frozen role, or an unexpected failure (one line on stderr; `--debug` prints the stack) |
 
 ## Commands
 
@@ -35,15 +35,15 @@ Moves a verb from the rules list to the retired list in the index.
 
 ### `load world <world.json>`
 
-Validates the world, runs its hazards on the product law, and writes its load hash to `worlds/index.json`. Prints the hash on success.
+Validates the world, runs its hazards on the product law, sweeps its reachable states (see [World files](../world-files/)), and writes its load hash to `worlds/index.json`. Prints the hash on success, and the sweep's report on stderr. A zone nothing reaches, a body carried out of the world, or a throw refuses the world with exit 1.
 
 ### `host [--world <world.json>] [--port N] [--log out.json]`
 
 Serves the debug view on `127.0.0.1`, port 4173 by default. Without `--world` it serves the fixture room. Refuses a world that is not in the index or whose file no longer hashes to its entry. `--log` writes the play as a log.
 
-### `propose [--unfreeze] [--out <file>]`
+### `propose [--catalog <dir>]`, `propose --role <name> --spec <spec.json>`, `propose --drift <session>`
 
-The proposer instrument. Frozen: exits 2 without `--unfreeze`. When unfrozen it asks a pinned local model, through Ollama at `127.0.0.1:11434`, to propose into a fresh tick under a grammar built from the catalog and the frame, and refuses to report unless its own preconditions hold.
+The seat, the only code that calls a model. Without `--role` it lists the roles in `predicates/roles/`, or in `--catalog`, each with its status, its world, the Rule of Two properties the loader derived, and its trust label. With `--role` it refuses a frozen role, or one that acts in a live world, with exit 2 before any model client loads. For a thawed scratch role it runs the session the spec names through Ollama at `127.0.0.1:11434`, and writes `session.json` and one record per call beside the spec. `--drift` reissues a recorded session's calls and reports how far the new outputs drift from the recorded ones; it runs by hand on a GPU and exits 0 whatever it finds. Both declared roles are frozen.
 
 ### `write-golden`
 

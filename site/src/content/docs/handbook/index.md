@@ -19,7 +19,8 @@ Three JavaScript engines, V8, SpiderMonkey, and JavaScriptCore, print the same h
 - Give a body a mind that sees, writes beliefs citing what it saw, and refuses a belief that rests on older evidence.
 - Record a play, replay it anywhere, and fail on the first hash that differs.
 - Find the first step, body, and value where two runs part, from a trace of every step in exact bits.
-- Save a world and restore it, by replaying its inputs or by copying the physics module's memory, and prove the rerun exact.
+- Save a world and restore it, by replaying its inputs, by copying the physics module's memory, or by the tick's own save, and prove the rerun exact.
+- Sweep a world's reachable states before it is admitted, and refuse a zone nothing reaches or a body pushed out of the world.
 - Watch the committed frames in a debug view on your own machine.
 
 ## Where to start

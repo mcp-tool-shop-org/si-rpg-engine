@@ -10,7 +10,8 @@ sidebar:
 The engine runs locally. It is a set of Node commands over plain ES modules and one WebAssembly binary built from the `solver/` crate.
 
 - **Files.** Every command changes to the repository root before it reads or writes. It touches world files under `worlds/`, verb drafts and hazard scenarios under `predicates/`, fixtures and goldens under `fixtures/`, and any log you ask a command to write with `--log` or `--out`. Nothing outside the checkout is read or written.
-- **Network.** `host` binds `127.0.0.1` only, on port 4173 unless `--port` says otherwise. No other command opens a socket. The frozen `propose` instrument, once a person unfreezes it, talks to a local Ollama server at `127.0.0.1:11434` and nowhere else.
+- **Network.** `host` binds `127.0.0.1` only, on port 4173 unless `--port` says otherwise. No other command opens a socket but `propose --role`, which talks to a local Ollama server at `127.0.0.1:11434` and nowhere else, and only for a role whose manifest is thawed to act in a scratch world; it refuses every other role with exit 2 before any model client loads. Both declared roles are frozen.
+- **Model output.** A model proposes only through a role, and the tick's role gate holds each proposal to the role's manifest. A belief keeps the least trust of what formed it, free text is never parsed for an action, and every call is recorded and checked in CI without a model.
 - **Secrets.** None are read, stored, or transmitted.
 - **Telemetry.** None is collected or sent.
 

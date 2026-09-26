@@ -29,6 +29,8 @@ When an engine leaves the golden, CI traces the scene under node and under that 
 
 A world restores two ways: by replaying its accepted inputs up to a step, and by copying the physics module's whole linear memory and putting it back. Neither writes into the physics engine's internal state. The restore tests save each fixture and the product scene at several steps chosen from its own run (just after the first contact, the first sleep, and the first wake where the run has them, and at a third and two thirds of the way), restore, run on, and require the trace to match the uninterrupted run from that step to the end. The memory image is restored twice in a row to show a restore is repeatable, and a separate test shows that without the image, a solver evicted and reloaded does not rerun the same, so the image is what carries the state. The restores also straddle every step on which a body switches between moving on its own and being driven, or is picked up or put down, and each reruns identically.
 
+The tick's own save restores without any replay. Each fixture and the product scene is saved at the same chosen steps, restored twice into a run that has since gone on elsewhere, and traced on identically. So is a live role session, whose save carries the role gate's window of frames and admission ticks. A planted save missing any one field goes red, one for each: the hasher's lanes, a scheduled action, a mind's memory, the quanta owed, the gate's window, its labels, and its admission ticks. A malformed save is refused before anything is written, and the run then traces on as if no restore had been tried.
+
 A restore is refused, with a test for each, when the image came from another binary, has the wrong length, has a changed byte, or was taken while a call was still running. A planted one-velocity difference after a restore is caught by the trace, so the restore tests cannot pass vacuously.
 
 ## A failure you can hand over
@@ -36,6 +38,15 @@ A restore is refused, with a test for each, when the image came from another bin
 Any failing check that has a world and a log writes a bundle: the seed, the world, the accepted inputs, the hashes up to the failure, and optionally the physics module's memory, stored as only the pages in use. `npx replay <bundle>` reproduces it in one command and prints the same first difference. A bundle recorded on an older build still replays and compares every hash; only its stored memory image is skipped, and a fresh one is taken and restored instead, so a bundle stays useful across builds and fails only when the physics itself has changed.
 
 A scheduled job runs every week, and on demand, far longer than a pull request can: every bundle in `fixtures/corpus/`, every behaviour fixture, every log, and the product scene run to 100,000 steps with memory restores at ten points chosen from its own contacts, sleeps, and wakes. On a failure it opens an issue with the first difference and attaches the bundles; it never pushes a change. A defect that is fixed keeps its bundle in the corpus, so it stays fixed.
+
+## A world explored before it runs
+
+The sweep's tests are closed rooms in `fixtures/sweep/`, each walled past the climb's reach so it shows one check:
+- a zone walled in on four sides is refused by name, and admitted with a witness once one wall is gone;
+- a zone on a plateau above the climb is refused, and admitted with a climbing witness when it is low enough;
+- a gap in the floor is refused with a bundle whose replay reproduces the fall.
+
+Every zone's witness replays from the load to the sweep's own hashes, which is the check that exploring by restore explores the real world and not a copy that drifted. Two sweeps of one world give the same archive, witnesses, and verdicts. A test-only plant that throws after a push is refused with its bundle, and `replay` reproduces the throw.
 
 ## What the world did, not only its fingerprint
 
@@ -67,6 +78,10 @@ A counter in the physics module counts every world it builds. In the product sce
 ## The compiled physics
 
 `solver/lint.mjs` decodes the binary instruction by instruction and refuses it if it contains a relaxed-SIMD instruction, whose result a host may choose; a `memory.grow` or `table.grow`; a memory that can grow; a start function; a passive data or element segment; or any of `memory.init`, `data.drop`, `table.init`, and `elem.drop`. An instruction it cannot decode is itself a refusal. Each refusal has a test with a small planted module. A test at the limits packs 64 bodies into contact against 64 static colliders for 1,000 steps without running out of memory, and a crush test shows a world too dense for the fixed memory stops rather than growing it.
+
+## A model's calls, checked without the model
+
+Every call a role makes to a model is recorded: the rendered prompt, every sampling option, the schema's hash, the model's digest as the server reports it at call time, the server's version and settings, the GPU, the output, and its hash. CI has no GPU and calls no model. Over each committed session it recomputes every record's key and checks each model digest against the pin in the manifest the record cites. It checks each output against its hash and against the log entry that cites it, parses the output again with the seat's own parser and requires the proposal the log admitted, and checks every call against its role's budgets. It replays the session's log to the same step hashes, and fails on a missing record rather than call a model. A planted record for each check goes red. Two sessions are committed, three calls each of a test-only role in `worlds/crate-and-door.json`. One was run with a change written to steer the model, and its proposals stayed inside the role's manifest. When the rails were built, each of the 51 was removed in turn, and each removal turned a test red.
 
 ## Content
 

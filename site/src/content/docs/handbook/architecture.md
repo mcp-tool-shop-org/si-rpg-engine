@@ -37,7 +37,9 @@ World files and verb drafts are validated at load and run against hazard suites 
 
 ## The proposer and the checker
 
-A language model may propose intents, typed beliefs, and body drafts. Each class has a hand-authored predicate that admits or refuses: an intent must name an admitted verb, cite the newest frame's hash, and pass the swept segment test with the actor's half-extents against every collider; a belief must cite an admitted episode and may supersede only with the withdrawing episode named; a body draft must not overlap anything. The model never commits. The instrument that runs a model, `propose`, is frozen for this phase.
+Every proposal has a hand-authored predicate that admits or refuses it: an intent must name an admitted verb, cite the newest frame's hash, and pass the swept segment test with the actor's half-extents against every collider; a belief must cite an admitted episode and may supersede only with the withdrawing episode named; a body draft must not overlap anything. Nothing proposed commits itself.
+
+A language model proposes only through a role: a manifest in `predicates/roles/` that says what the role reads, what it may propose (intents and beliefs, never body drafts), where its proposals act, and which model, prompt, and schema it uses, each pinned by hash. The loader derives from the role's inputs whether it reads untrusted input, reads private data in a live world, and changes state, and refuses a role that would do all three. The tick's role gate stands beside the verb predicates. It holds each proposal to its role's manifest and to the body its instance speaks for. It admits a late proposal only within the role's window, and only if every predicate passes on the world as it is when the proposal arrives. A belief a role forms takes the lower of the role's own trust and the least trusted belief in the minds it read, so trust cannot be raised by passing text through a role. The log records each role admission's provenance, and a log carries the manifests it cites, so replay gates it against the manifest it was recorded under and never calls a model. Both declared roles, `test-instrument` and `npc-mind`, are frozen.
 
 ## The host boundary
 
@@ -51,7 +53,7 @@ The host receives frozen committed frames and returns intents stamped with the n
 | `packages/tick` | the world, the tick, predicates, memory, minds, replay, scene loading, the `play` and `replay` commands |
 | `packages/load` | verb compilation, the hazard suite, the `load` command |
 | `packages/host` | the session, the server, the debug view, the `host` command |
-| `packages/propose` | the frozen proposer instrument |
+| `packages/propose` | the seat: the only code that calls a model, its records, and the `propose` command |
 | `packages/tool` | the command guard every bin shares |
 | `solver/` | the Rust crate, its build scripts, the allocator, and the binary lint |
 | `predicates/` | admitted verbs, hazard scenarios, belief keys |
