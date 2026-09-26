@@ -1225,7 +1225,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "3d0d3dc12decf51e35ce81383f1b138bbab13fb0195748e8ab6cb955b1cd526c",
+          "hash": "251b7b0d11a63b8e78304783744ed262475713f1f4e78ff9fafb513db071868e",
           "path": "docs/HANDOFF.md"
         },
         {
@@ -1245,7 +1245,7 @@
           "path": "docs/atlas-design.md"
         },
         {
-          "hash": "6ec99c346bef861e3735a319d5b3f99ff5e71a6972aced30bd88d0c4d08d92dd",
+          "hash": "bc5c806559ac3cfb470c05f4ba0695baa5bd0f31a895c465cc0b698ddfdd7020",
           "path": "docs/consult-brief-01.md"
         },
         {
@@ -1261,15 +1261,15 @@
           "path": "docs/consult-brief-physics-01.md"
         },
         {
-          "hash": "193abea1cde4709cffb65219a08b01dfb71b7b4ff547f7f490f078fdb2341d59",
+          "hash": "bd0357e0bd3fad3655bd61b8955d98b57aa5124451469627b95b27f32aa3ae1d",
           "path": "docs/consult-reply-claude-01.md"
         },
         {
-          "hash": "cc408de92e37c7d4c2413f82925031531220ff33d46a493b4b8dfdd3b2c0bc46",
+          "hash": "6d9be18b2e3f1d5869621e04f1889eeeb787728c9e07b6a2b6bdecad4871f42e",
           "path": "docs/consult-reply-claude-02.md"
         },
         {
-          "hash": "ee0969f2d3f083d63ad99cd94224d403a5d46ac42f1f1dd3c0a3244158108d36",
+          "hash": "a60b3f3f413b3178c4b24ca35a7a78b12819e2b4a228ac1ae6f4144cb106a14d",
           "path": "docs/consult-reply-claude-atlas-01.md"
         },
         {
@@ -1285,7 +1285,7 @@
           "path": "docs/consult-reply-fable-t7b-01.md"
         },
         {
-          "hash": "7578181994b72d50723e9517c20eb22ac7aa10be33b2c46ff2e3cca920a82459",
+          "hash": "2c7dacb2ac7ba27ed2e4622ef341e8b382130b60ee755f493d00dc2952132291",
           "path": "docs/consult-reply-gemini-01.md"
         },
         {
@@ -1295,6 +1295,10 @@
         {
           "hash": "c412039f287ed8e8dc8040e60e27ac91c6aa476c94a092fcf9ee24d2ac0aedde",
           "path": "docs/consult-reply-grok-e2-solver.md"
+        },
+        {
+          "hash": "f493828ce28cbf2e657e425c7313733e73bad64389f0acb1337e81926f1ce57e",
+          "path": "docs/dispatch-113-ci-trees.md"
         },
         {
           "hash": "8f4261d163efdf172538e63a2dccb02dc2a6565e33133ebf6400a8344474fdf9",
@@ -1405,6 +1409,10 @@
           "path": "docs/dispatch-t7b-instrument-bench.md"
         },
         {
+          "hash": "f992f273f10cc144f89bdbbf38aee1f3749a9d873071b9ac860f5d1d01dfa455",
+          "path": "docs/dispatch-t7c-model.md"
+        },
+        {
           "hash": "86bca3d8e5ee4dd0b827089d1c230cb431d5ca4b00104ca3f1b70743eaae2e57",
           "path": "docs/rust-kb-answers.md"
         },
@@ -1413,11 +1421,11 @@
           "path": "docs/rust-kb-requests.md"
         },
         {
-          "hash": "64cdee834df343cff0d2651a27f22da0cb454627de5fbe182a067977f3508e17",
+          "hash": "559febb00fdd9bb10ceafdb69bd3b7c67ee013c3fdb149aaa6b77a352e659863",
           "path": "docs/study-swarm/consult-02.dispatch.citation-receipt.json"
         },
         {
-          "hash": "a95ff0183284c0ad677631be54a361d7cde9f6e33e416b425a506dc8ac3634c3",
+          "hash": "e3ea920ad0685f5dda0aa0445b7b6347c58a14b7d50583738d4678d3dd6f01b2",
           "path": "docs/study-swarm/consult-02.dispatch.md"
         },
         {
@@ -1449,11 +1457,11 @@
           "path": "docs/study-swarm/seat-instrument.fulltext-check.json"
         },
         {
-          "hash": "0331203b7505a9047ac3c95263a0c0f808a3e16b99e65dd2b90c3f3ee876157d",
+          "hash": "b3e11ed1473ef4af6ddee0ef2bc12c7a3b39fdba5f2fcec514c10e47792889ae",
           "path": "docs/study-swarm/si-rpg-engine.citation-receipt.json"
         },
         {
-          "hash": "6e1c8f0346eb348486400d201ca0029341beaf52a78a635b4110b3d8ec9e3f4c",
+          "hash": "6355daacbebd3488b217af7d17446ece88e36c233cf77219633cf892ef353ce8",
           "path": "docs/study-swarm/si-rpg-engine.dispatch.md"
         },
         {
@@ -7253,7 +7261,7 @@
           "path": "CHANGELOG.md"
         },
         {
-          "hash": "5ae6b3c8f446f0a7cb95176e4dadb91b68aaffb16b3be09f64f5de248b6a973a",
+          "hash": "367e5141e4f5884e5791c4021f33a9faa958840a5decf44e1b273a87aad1c459",
           "path": "LICENSE"
         },
         {
@@ -7289,7 +7297,7 @@
           "path": "README.zh.md"
         },
         {
-          "hash": "a7a2123f3be85c96121136adf6b8d52943c8321142a6cf1d7fdfc07993e8e1c9",
+          "hash": "1b88810d7b1831c73ba9102dbcc41000870b1e0e28732efb95a2013c3c0980c1",
           "path": "SCORECARD.md"
         },
         {
@@ -11641,8 +11649,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "c5d702911af4b72e32a230b56e285818783115cb",
-    "tracked": 355
+    "commit": "19cf8c89a04c8d972168e91a5a8c82e3ba8e2a23",
+    "tracked": 357
   },
   "landings": [
     {
