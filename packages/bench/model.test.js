@@ -12,7 +12,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { runBench } from './bench.js';
 import { copyCheckout, leaks, scratch, teardown } from './plant.js';
-import { cutReport, lateGain, stallIndex, withinCost } from './report.js';
+import { cutReport, lateGain, newFindings, stallIndex, withinCost } from './report.js';
 
 const dir = scratch('model');
 const ROOM = [{ file: 'fixtures/bench/room.json' }];
@@ -102,6 +102,31 @@ test('the model starts after eight admitted candidates with nothing new, and arm
   assert.ok(before < 7 || taken.slice(0, -1).reduce((sum, record) => sum + record.cost.restores, 0) < 2, 'the candidate that crosses is included');
   assert.equal(stopped.cost.quanta, 3);
   assert.deepEqual(withinCost(records, 0, 0), []);
+});
+
+test('an arm\'s new findings are the lines and difference keys its admitted candidates reached that nothing before the start point did, each counted once', () => {
+  /**
+   * @param {string} id
+   * @param {boolean} admitted
+   * @param {Record<string, number[]>} lines
+   * @param {any} difference
+   */
+  const rec = (id, admitted, lines, difference) => ({
+    id, admittedOnHead: admitted, lines, anchors: ['js:packages/tick/predicates.js:admitMove:'],
+    rungs: { 2: difference, 3: null }, cost: { quanta: 1, restores: 0 },
+  });
+  const trace = { kind: 'trace', body: 'crate', field: 'y' };
+  const before = /** @type {any[]} */ ([rec('g0', true, { a: [10, 11] }, null)]);
+  const arm = /** @type {any[]} */ ([
+    rec('m0', false, { a: [99] }, trace),
+    rec('m1', true, { a: [10] }, null),
+    rec('m2', true, { a: [12] }, trace),
+    rec('m3', true, { a: [12] }, trace),
+  ]);
+  const found = newFindings(before, arm);
+  assert.deepEqual(found.lines, ['a:12'], 'a refused candidate counts nothing, and a line reached before the start point is not new');
+  assert.deepEqual(found.differences, ['trace|js:packages/tick/predicates.js:admitMove:|crate|y']);
+  assert.deepEqual(newFindings(arm.slice(2), arm.slice(3)), { lines: [], differences: [] }, 'what the records before the start point reached is not new');
 });
 
 test('a line after the environment section is refused by the cut and by leaks', () => {
