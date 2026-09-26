@@ -24,9 +24,9 @@
       "unresolvedSites": 0
     },
     {
-      "dynamicReads": 5,
-      "dynamicSpawns": 5,
-      "dynamicSpawnsInTests": 2,
+      "dynamicReads": 6,
+      "dynamicSpawns": 7,
+      "dynamicSpawnsInTests": 4,
       "dynamicWrites": 1,
       "entryPoints": [
         "packages/bench/bin/bench.js"
@@ -59,7 +59,7 @@
             "withoutPaths",
             "witnessKey"
           ],
-          "hash": "add66a9e9cdd09758e02d7665e8ffffa420b1fb19ff995772e9fa4a077cd48c0",
+          "hash": "b4a04abe324383fa135a26d8f96bcf0f88731e1ed1eb57280b2583b3c00fb24e",
           "importsFiles": [
             "packages/bench/anchors.js",
             "packages/bench/build.js",
@@ -76,168 +76,168 @@
             {
               "calls": [
                 {
-                  "line": 206,
+                  "line": 248,
                   "name": "samePath",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 211,
+                  "line": 253,
                   "name": "oneTreePerProcess",
                   "target": {
                     "file": "packages/bench/processes.js"
                   }
                 },
                 {
-                  "line": 213,
+                  "line": 255,
                   "name": "listFiles",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 215,
+                  "line": 257,
                   "name": "readAnchors",
                   "target": {
                     "file": "packages/bench/anchors.js"
                   }
                 },
                 {
-                  "line": 217,
+                  "line": 259,
                   "name": "treeCommit",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 217,
+                  "line": 259,
                   "name": "treeDigest",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 218,
+                  "line": 260,
                   "name": "treeCommit",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 218,
+                  "line": 260,
                   "name": "treeDigest",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 230,
+                  "line": 272,
                   "name": "productGlue",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 231,
+                  "line": 273,
                   "name": "buildProduct",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 233,
+                  "line": 275,
                   "name": "copyProduct",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 236,
+                  "line": 278,
                   "name": "buildProduct",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 240,
+                  "line": 282,
                   "name": "productGlue",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 240,
+                  "line": 282,
                   "name": "glueBytes",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 240,
+                  "line": 282,
                   "name": "sha256",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 241,
+                  "line": 283,
                   "name": "productGlue",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 241,
+                  "line": 283,
                   "name": "glueBytes",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 241,
+                  "line": 283,
                   "name": "sha256",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 243,
+                  "line": 285,
                   "name": "productGlue",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 250,
+                  "line": 292,
                   "name": "llvmTools",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 254,
+                  "line": 296,
                   "name": "buildCoverage",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 255,
+                  "line": 297,
                   "name": "coverageInfo",
                   "target": {
                     "file": "packages/bench/profile.js"
                   }
                 },
                 {
-                  "line": 265,
+                  "line": 307,
                   "name": "probeTable",
                   "target": {
                     "file": "packages/bench/reach.js"
                   }
                 },
                 {
-                  "line": 269,
+                  "line": 311,
                   "name": "productGlue",
                   "target": {
                     "file": "packages/bench/build.js"
@@ -253,7 +253,7 @@
             {
               "calls": [
                 {
-                  "line": 1022,
+                  "line": 1283,
                   "name": "charCodeAt",
                   "target": null
                 }
@@ -266,7 +266,7 @@
             {
               "calls": [
                 {
-                  "line": 1193,
+                  "line": 1454,
                   "name": "describeDifference",
                   "target": {
                     "file": "packages/bench/report.js"
@@ -281,21 +281,21 @@
             {
               "calls": [
                 {
-                  "line": 1258,
+                  "line": 1519,
                   "name": "floods",
                   "target": {
                     "file": "packages/bench/report.js"
                   }
                 },
                 {
-                  "line": 1292,
+                  "line": 1553,
                   "name": "describeDifference",
                   "target": {
                     "file": "packages/bench/report.js"
                   }
                 },
                 {
-                  "line": 1294,
+                  "line": 1555,
                   "name": "lateGain",
                   "target": {
                     "file": "packages/bench/report.js"
@@ -310,42 +310,42 @@
             {
               "calls": [
                 {
-                  "line": 1372,
+                  "line": 1633,
                   "name": "syncTree",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 1373,
+                  "line": 1634,
                   "name": "copyProduct",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 1379,
+                  "line": 1640,
                   "name": "seedCoverage",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 1380,
+                  "line": 1641,
                   "name": "buildCoverage",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 1416,
+                  "line": 1677,
                   "name": "productGlue",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 1461,
+                  "line": 1723,
                   "name": "startProcess",
                   "target": {
                     "file": "packages/bench/processes.js"
@@ -353,21 +353,21 @@
                   "via": "separate"
                 },
                 {
-                  "line": 1427,
+                  "line": 1688,
                   "name": "copyTree",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 1429,
+                  "line": 1690,
                   "name": "copyProduct",
                   "target": {
                     "file": "packages/bench/build.js"
                   }
                 },
                 {
-                  "line": 1433,
+                  "line": 1694,
                   "name": "productGlue",
                   "target": {
                     "file": "packages/bench/build.js"
@@ -382,7 +382,7 @@
             {
               "calls": [
                 {
-                  "line": 1461,
+                  "line": 1723,
                   "name": "startProcess",
                   "target": {
                     "file": "packages/bench/processes.js"
@@ -399,7 +399,7 @@
         {
           "entry": "value",
           "entryRule": 1,
-          "hash": "5c727a7cead2e2730bfb99d841f778453a2bf3225a120a235948aa399cc468f9",
+          "hash": "e16d8ed49c63be3b14b16152c8440b0f77ba380e952c2796181927fa2a2f3790",
           "importsFiles": [
             "packages/bench/anchors.js",
             "packages/bench/bench.js",
@@ -478,14 +478,14 @@
                 {
                   "inner": [
                     {
-                      "line": 110,
+                      "line": 114,
                       "name": "copyTree",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 112,
+                      "line": 116,
                       "name": "copyProduct",
                       "target": {
                         "file": "packages/bench/build.js"
@@ -546,84 +546,84 @@
                 {
                   "inner": [
                     {
-                      "line": 206,
+                      "line": 248,
                       "name": "samePath",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 211,
+                      "line": 253,
                       "name": "oneTreePerProcess",
                       "target": {
                         "file": "packages/bench/processes.js"
                       }
                     },
                     {
-                      "line": 213,
+                      "line": 255,
                       "name": "listFiles",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 215,
+                      "line": 257,
                       "name": "readAnchors",
                       "target": {
                         "file": "packages/bench/anchors.js"
                       }
                     },
                     {
-                      "line": 217,
+                      "line": 259,
                       "name": "treeCommit",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 217,
+                      "line": 259,
                       "name": "treeDigest",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 218,
+                      "line": 260,
                       "name": "treeCommit",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 218,
+                      "line": 260,
                       "name": "treeDigest",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 230,
+                      "line": 272,
                       "name": "productGlue",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 231,
+                      "line": 273,
                       "name": "buildProduct",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 233,
+                      "line": 275,
                       "name": "copyProduct",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 236,
+                      "line": 278,
                       "name": "buildProduct",
                       "target": {
                         "file": "packages/bench/build.js"
@@ -670,6 +670,142 @@
             "packages/bench/plants.js"
           ],
           "path": "packages/bench/measure.js"
+        },
+        {
+          "exports": [
+            "closeModel",
+            "noteModel",
+            "openModel",
+            "stepModel"
+          ],
+          "hash": "12e9ca3b71c8c3e786a95863e4163e718aad2f77568bcdb5d09326a9a736f4d6",
+          "importsFiles": [
+            "packages/propose/ollama.js",
+            "packages/propose/parse.js",
+            "packages/propose/record.js",
+            "packages/propose/seat.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/roles.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "packages/bench/model.js"
+        },
+        {
+          "entry": "bench",
+          "entryRule": 1,
+          "hash": "16204021a0a40a17f86bfc28265c40b3135f6b7f44c17f2fa5cf097fc0e4b056",
+          "importsFiles": [
+            "packages/bench/bench.js",
+            "packages/bench/plant.js",
+            "packages/bench/report.js"
+          ],
+          "path": "packages/bench/model.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 248,
+                      "name": "samePath",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 253,
+                      "name": "oneTreePerProcess",
+                      "target": {
+                        "file": "packages/bench/processes.js"
+                      }
+                    },
+                    {
+                      "line": 255,
+                      "name": "listFiles",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 257,
+                      "name": "readAnchors",
+                      "target": {
+                        "file": "packages/bench/anchors.js"
+                      }
+                    },
+                    {
+                      "line": 259,
+                      "name": "treeCommit",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 259,
+                      "name": "treeDigest",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 260,
+                      "name": "treeCommit",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 260,
+                      "name": "treeDigest",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 272,
+                      "name": "productGlue",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    },
+                    {
+                      "line": 273,
+                      "name": "buildProduct",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    },
+                    {
+                      "line": 275,
+                      "name": "copyProduct",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    },
+                    {
+                      "line": 278,
+                      "name": "buildProduct",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    }
+                  ],
+                  "innerTruncated": true,
+                  "line": 36,
+                  "name": "runBench",
+                  "target": {
+                    "file": "packages/bench/bench.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "bench"
+            }
+          ]
         },
         {
           "exports": [
@@ -727,10 +863,11 @@
             "teardown",
             "write"
           ],
-          "hash": "c690a9a003f075815a2ea70633b74dd8ead68cc8302daef776487e19fdc1ef10",
+          "hash": "b661c87aa73640794c1303fd87c3b48540d2440cf64fb240feaf5f4414a93b7e",
           "importsFiles": [
             "packages/bench/build.js",
             "packages/bench/processes.js",
+            "packages/bench/report.js",
             "packages/bench/trees.js"
           ],
           "path": "packages/bench/plant.js",
@@ -738,7 +875,7 @@
             {
               "calls": [
                 {
-                  "line": 42,
+                  "line": 43,
                   "name": "stopAll",
                   "target": {
                     "file": "packages/bench/processes.js"
@@ -753,14 +890,29 @@
             {
               "calls": [
                 {
-                  "line": 110,
+                  "line": 68,
+                  "name": "cutReport",
+                  "target": {
+                    "file": "packages/bench/report.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "leaks"
+            },
+            {
+              "calls": [
+                {
+                  "line": 114,
                   "name": "copyTree",
                   "target": {
                     "file": "packages/bench/trees.js"
                   }
                 },
                 {
-                  "line": 112,
+                  "line": 116,
                   "name": "copyProduct",
                   "target": {
                     "file": "packages/bench/build.js"
@@ -784,7 +936,7 @@
         {
           "entry": "proc",
           "entryRule": 1,
-          "hash": "e2ed145d3b8e4599cc0a9425feb3ab1f5612e106c9df0cf49f43f6bdaa52cf21",
+          "hash": "1fc68f5a4848174c2d7a38a76bb16ebccbf20ec3b20d023302150192c0905f67",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/plant.js",
@@ -871,19 +1023,23 @@
         },
         {
           "exports": [
+            "cutReport",
             "describeDifference",
             "differenceKeys",
             "floods",
             "lateGain",
-            "markdown"
+            "markdown",
+            "newFindings",
+            "stallIndex",
+            "withinCost"
           ],
-          "hash": "bbd0a36543233b80a0ce77a496576e79d337db5e38f5bc4e846a7fb6dc9c9cbc",
+          "hash": "821793d0c0957d6d318933931af764df52411033f586a9adcf28a4923db6b3cc",
           "path": "packages/bench/report.js"
         },
         {
           "entry": "bench",
           "entryRule": 1,
-          "hash": "d1d26a6f85e903cb749eec4c7e7a2dff97c76db21c880841798d3cf98f93cb81",
+          "hash": "65a7c6cbecd65ff30bb5f039c818c0892a3994f6c254cbe42b3be0f9b8fdf310",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/build.js",
@@ -899,84 +1055,84 @@
                 {
                   "inner": [
                     {
-                      "line": 206,
+                      "line": 248,
                       "name": "samePath",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 211,
+                      "line": 253,
                       "name": "oneTreePerProcess",
                       "target": {
                         "file": "packages/bench/processes.js"
                       }
                     },
                     {
-                      "line": 213,
+                      "line": 255,
                       "name": "listFiles",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 215,
+                      "line": 257,
                       "name": "readAnchors",
                       "target": {
                         "file": "packages/bench/anchors.js"
                       }
                     },
                     {
-                      "line": 217,
+                      "line": 259,
                       "name": "treeCommit",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 217,
+                      "line": 259,
                       "name": "treeDigest",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 218,
+                      "line": 260,
                       "name": "treeCommit",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 218,
+                      "line": 260,
                       "name": "treeDigest",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 230,
+                      "line": 272,
                       "name": "productGlue",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 231,
+                      "line": 273,
                       "name": "buildProduct",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 233,
+                      "line": 275,
                       "name": "copyProduct",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 236,
+                      "line": 278,
                       "name": "buildProduct",
                       "target": {
                         "file": "packages/bench/build.js"
@@ -1014,14 +1170,14 @@
                 {
                   "inner": [
                     {
-                      "line": 110,
+                      "line": 114,
                       "name": "copyTree",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 112,
+                      "line": 116,
                       "name": "copyProduct",
                       "target": {
                         "file": "packages/bench/build.js"
@@ -1052,84 +1208,84 @@
                 {
                   "inner": [
                     {
-                      "line": 206,
+                      "line": 248,
                       "name": "samePath",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 211,
+                      "line": 253,
                       "name": "oneTreePerProcess",
                       "target": {
                         "file": "packages/bench/processes.js"
                       }
                     },
                     {
-                      "line": 213,
+                      "line": 255,
                       "name": "listFiles",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 215,
+                      "line": 257,
                       "name": "readAnchors",
                       "target": {
                         "file": "packages/bench/anchors.js"
                       }
                     },
                     {
-                      "line": 217,
+                      "line": 259,
                       "name": "treeCommit",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 217,
+                      "line": 259,
                       "name": "treeDigest",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 218,
+                      "line": 260,
                       "name": "treeCommit",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 218,
+                      "line": 260,
                       "name": "treeDigest",
                       "target": {
                         "file": "packages/bench/trees.js"
                       }
                     },
                     {
-                      "line": 230,
+                      "line": 272,
                       "name": "productGlue",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 231,
+                      "line": 273,
                       "name": "buildProduct",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 233,
+                      "line": 275,
                       "name": "copyProduct",
                       "target": {
                         "file": "packages/bench/build.js"
                       }
                     },
                     {
-                      "line": 236,
+                      "line": 278,
                       "name": "buildProduct",
                       "target": {
                         "file": "packages/bench/build.js"
@@ -1152,7 +1308,7 @@
           ]
         },
         {
-          "hash": "7fd1e560ea9ccad5c60309017dc9bb70db9bd311afcbcbac4488b8593f87f899",
+          "hash": "59f37e98e8afc7de22a28d1b1eebcff29f6e04065f770eb679b12d8e41a68130",
           "path": "packages/bench/runner.js"
         },
         {
@@ -1182,7 +1338,7 @@
         {
           "entry": "importsOf",
           "entryRule": 1,
-          "hash": "f1c6f1bb66f8c5534b8d81837e7328df48a1989069e7cdf728e57dcc5c77be2d",
+          "hash": "c6803b83b3f4e99194dae5dfb6e8f3f78ada60be33d1d4e2b02f99c304462db2",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/build.js",
@@ -1218,10 +1374,10 @@
       "importConfidence": "full",
       "name": "bench",
       "origin": "authored",
-      "outsideReads": 60,
-      "outsideWrites": 35,
+      "outsideReads": 62,
+      "outsideWrites": 37,
       "role": "code",
-      "testedBy": 9,
+      "testedBy": 10,
       "unresolvedSites": 3
     },
     {
@@ -1684,8 +1840,12 @@
           "path": "fixtures/push/red-room-a.json"
         },
         {
-          "hash": "f991cfd04bdb0462841c0028f2d2e556c83dc7d55699c05514e259756c808954",
+          "hash": "3fb70de264f7e21d8727750cfd44a39990e046b0e2d84f0b218086be6963d351",
           "path": "fixtures/roles/index.json"
+        },
+        {
+          "hash": "405daa337a8a0bf51520d0a6744ec1ac28cf12b4eb192c1748b8582427fb6fcb",
+          "path": "fixtures/roles/instrument-copy.json"
         },
         {
           "hash": "4c569cade119d759fc42f0bf629112b714ddbe3502650640d10c83b9e2564d29",
@@ -1694,6 +1854,10 @@
         {
           "hash": "9ca7bd60a2b7b17dd0f8276673a41d730f1f99341d1242376b8779f55431d505",
           "path": "fixtures/roles/probe.txt"
+        },
+        {
+          "hash": "90506e5d6bfc571a18dcfdaa1cc5c6d584f44405121810a4ec48d8e187e89bb6",
+          "path": "fixtures/roles/test-instrument.txt"
         },
         {
           "hash": "0873db82627304bc5669b27ddbc296c547f22b4cd36bd49716fa1b18bd97ecd6",
@@ -6049,8 +6213,8 @@
     },
     {
       "dynamicReads": 1,
-      "dynamicSpawns": 9,
-      "dynamicSpawnsInTests": 9,
+      "dynamicSpawns": 10,
+      "dynamicSpawnsInTests": 10,
       "dynamicWrites": 0,
       "entryPoints": [
         "packages/propose/bin/propose.js"
@@ -6060,7 +6224,7 @@
         {
           "entry": "driftReport",
           "entryRule": 1,
-          "hash": "2202da83b949244b41883b60093fc66320eb600b622918f9ceb64fd405a7095e",
+          "hash": "d6b8361969703d036293b72c840d6ab25c35af012b8cc92021b7c41b1a673573",
           "importsFiles": [
             "packages/propose/ollama.js",
             "packages/propose/record.js",
@@ -6084,13 +6248,6 @@
                   }
                 },
                 {
-                  "line": 230,
-                  "name": "ollamaClient",
-                  "target": {
-                    "file": "packages/propose/ollama.js"
-                  }
-                },
-                {
                   "line": 238,
                   "name": "digestOf",
                   "target": {
@@ -6098,32 +6255,39 @@
                   }
                 },
                 {
+                  "line": 251,
+                  "name": "ollamaClient",
+                  "target": {
+                    "file": "packages/propose/ollama.js"
+                  }
+                },
+                {
                   "inner": [
                     {
-                      "line": 339,
+                      "line": 341,
                       "name": "observe",
                       "target": null,
                       "via": "readBefore"
                     },
                     {
-                      "line": 360,
+                      "line": 362,
                       "name": "ask",
                       "target": null,
                       "via": "asked"
                     },
                     {
-                      "line": 415,
+                      "line": 417,
                       "name": "whileOut",
                       "target": null
                     },
                     {
-                      "line": 375,
+                      "line": 377,
                       "name": "loaded",
                       "target": null,
                       "via": "loadedAfter"
                     }
                   ],
-                  "line": 240,
+                  "line": 253,
                   "name": "askWithin",
                   "target": {
                     "file": "packages/propose/seat.js"
@@ -6132,21 +6296,21 @@
                 {
                   "inner": [
                     {
-                      "line": 638,
+                      "line": 642,
                       "name": "readRoleOutput",
                       "target": {
                         "file": "packages/propose/parse.js"
                       }
                     },
                     {
-                      "line": 641,
+                      "line": 645,
                       "name": "canonical",
                       "target": {
                         "file": "packages/tick/canonical.js"
                       }
                     }
                   ],
-                  "line": 241,
+                  "line": 254,
                   "name": "driftOf",
                   "target": {
                     "file": "packages/propose/record.js"
@@ -6188,7 +6352,7 @@
             "templateSlots",
             "worldText"
           ],
-          "hash": "3e8107f87c5eb790c0b1a565b37c92155e4725082b448a17c55b86d0ac3cd42f",
+          "hash": "db0a678f371cf0d944b09f26b6437aee0e765a37daa23a2b4d68af630dd3566a",
           "importsFiles": [
             "packages/tick/roles.js",
             "packages/tick/subject.js"
@@ -6201,7 +6365,7 @@
           "exports": [
             "submitUses"
           ],
-          "hash": "2c7ecaf2922bc7e0587dc84118ae68337d39cf3ca0143149b1d67acd631c779a",
+          "hash": "ba4ce2cac582f126f014cee34bae2823d81b5357dc80b1ee5e7766d7bcfd31b2",
           "importsFiles": [
             "packages/propose/ollama.js",
             "packages/propose/parse.js",
@@ -6371,7 +6535,7 @@
                 {
                   "inner": [
                     {
-                      "line": 216,
+                      "line": 218,
                       "name": "templateSlots",
                       "target": {
                         "file": "packages/propose/prompt.js"
@@ -6379,19 +6543,19 @@
                       "via": "sessionRefusal"
                     },
                     {
-                      "line": 468,
+                      "line": 470,
                       "name": "frame",
                       "target": null
                     },
                     {
-                      "line": 477,
+                      "line": 479,
                       "name": "renderTemplate",
                       "target": {
                         "file": "packages/propose/prompt.js"
                       }
                     },
                     {
-                      "line": 250,
+                      "line": 252,
                       "name": "beliefKeys",
                       "target": {
                         "file": "packages/tick/beliefs.js"
@@ -6399,52 +6563,52 @@
                       "via": "schemaContext"
                     },
                     {
-                      "line": 478,
+                      "line": 480,
                       "name": "buildSchema",
                       "target": {
                         "file": "packages/propose/schema.js"
                       }
                     },
                     {
-                      "line": 339,
+                      "line": 341,
                       "name": "observe",
                       "target": null,
                       "via": "readBefore"
                     },
                     {
-                      "line": 360,
+                      "line": 362,
                       "name": "ask",
                       "target": null,
                       "via": "asked"
                     },
                     {
-                      "line": 415,
+                      "line": 417,
                       "name": "whileOut",
                       "target": null,
                       "via": "askWithin"
                     },
                     {
-                      "line": 375,
+                      "line": 377,
                       "name": "loaded",
                       "target": null,
                       "via": "loadedAfter"
                     },
                     {
-                      "line": 509,
+                      "line": 511,
                       "name": "promptHash",
                       "target": {
                         "file": "packages/propose/record.js"
                       }
                     },
                     {
-                      "line": 510,
+                      "line": 512,
                       "name": "schemaHash",
                       "target": {
                         "file": "packages/propose/record.js"
                       }
                     },
                     {
-                      "line": 518,
+                      "line": 520,
                       "name": "outputHash",
                       "target": {
                         "file": "packages/propose/record.js"
@@ -6528,7 +6692,7 @@
             "verifySession",
             "writeSession"
           ],
-          "hash": "ac748a0bad5de4b227fcec704fe93b34027dc77390d468267990331b64722e79",
+          "hash": "86e6e0f316033cc4448ec4b5a110ba58ac380232083074cd99aa0985fbb969ca",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/tick/canonical.js",
@@ -6622,7 +6786,7 @@
             {
               "calls": [
                 {
-                  "line": 270,
+                  "line": 274,
                   "name": "readRoleOutput",
                   "target": {
                     "file": "packages/propose/parse.js"
@@ -6661,14 +6825,14 @@
             {
               "calls": [
                 {
-                  "line": 353,
+                  "line": 357,
                   "name": "manifestHash",
                   "target": {
                     "file": "packages/tick/roles.js"
                   }
                 },
                 {
-                  "line": 358,
+                  "line": 362,
                   "name": "validateManifest",
                   "target": {
                     "file": "packages/tick/roles.js"
@@ -6723,49 +6887,49 @@
                   "via": "schemaHash"
                 },
                 {
-                  "line": 423,
+                  "line": 427,
                   "name": "canonical",
                   "target": {
                     "file": "packages/tick/canonical.js"
                   }
                 },
                 {
-                  "line": 438,
+                  "line": 442,
                   "name": "readRoleOutput",
                   "target": {
                     "file": "packages/propose/parse.js"
                   }
                 },
                 {
-                  "line": 567,
+                  "line": 571,
                   "name": "stampProposal",
                   "target": {
                     "file": "packages/propose/parse.js"
                   }
                 },
                 {
-                  "line": 568,
+                  "line": 572,
                   "name": "canonical",
                   "target": {
                     "file": "packages/tick/canonical.js"
                   }
                 },
                 {
-                  "line": 579,
+                  "line": 583,
                   "name": "catalogFromLog",
                   "target": {
                     "file": "packages/tick/roles.js"
                   }
                 },
                 {
-                  "line": 583,
+                  "line": 587,
                   "name": "loadIntentRules",
                   "target": {
                     "file": "packages/tick/predicates.js"
                   }
                 },
                 {
-                  "line": 586,
+                  "line": 590,
                   "name": "replay",
                   "target": {
                     "file": "packages/tick/replay.js"
@@ -6780,14 +6944,14 @@
             {
               "calls": [
                 {
-                  "line": 638,
+                  "line": 642,
                   "name": "readRoleOutput",
                   "target": {
                     "file": "packages/propose/parse.js"
                   }
                 },
                 {
-                  "line": 641,
+                  "line": 645,
                   "name": "canonical",
                   "target": {
                     "file": "packages/tick/canonical.js"
@@ -6804,7 +6968,7 @@
         {
           "entry": "rekey",
           "entryRule": 1,
-          "hash": "f874fd53b0e09657afd8b9303ec10e075981510ef41bd850106cfc30b3dec51d",
+          "hash": "af6495291e99d4378b2cb0c1bfbe4bf52d81c406ce7e50b56b5897f95e7bfefd",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/propose/record.js",
@@ -6899,7 +7063,7 @@
             "sessionRefusal",
             "submitAsRole"
           ],
-          "hash": "8f548e795bd1d46340ea8ead241a1989d33da8ef79138be123b06f4a7af30111",
+          "hash": "821f4a968135628535b04ea8f4bb2870d6debf0b46ead9ad5fe1823be259185a",
           "importsFiles": [
             "harness/product-scene.mjs",
             "packages/propose/parse.js",
@@ -6951,7 +7115,7 @@
             {
               "calls": [
                 {
-                  "line": 216,
+                  "line": 218,
                   "name": "templateSlots",
                   "target": {
                     "file": "packages/propose/prompt.js"
@@ -6966,7 +7130,7 @@
             {
               "calls": [
                 {
-                  "line": 250,
+                  "line": 252,
                   "name": "beliefKeys",
                   "target": {
                     "file": "packages/tick/beliefs.js"
@@ -6981,7 +7145,7 @@
             {
               "calls": [
                 {
-                  "line": 339,
+                  "line": 341,
                   "name": "observe",
                   "target": null
                 }
@@ -6994,7 +7158,7 @@
             {
               "calls": [
                 {
-                  "line": 360,
+                  "line": 362,
                   "name": "ask",
                   "target": null
                 }
@@ -7007,7 +7171,7 @@
             {
               "calls": [
                 {
-                  "line": 375,
+                  "line": 377,
                   "name": "loaded",
                   "target": null
                 }
@@ -7020,24 +7184,24 @@
             {
               "calls": [
                 {
-                  "line": 339,
+                  "line": 341,
                   "name": "observe",
                   "target": null,
                   "via": "readBefore"
                 },
                 {
-                  "line": 360,
+                  "line": 362,
                   "name": "ask",
                   "target": null,
                   "via": "asked"
                 },
                 {
-                  "line": 415,
+                  "line": 417,
                   "name": "whileOut",
                   "target": null
                 },
                 {
-                  "line": 375,
+                  "line": 377,
                   "name": "loaded",
                   "target": null,
                   "via": "loadedAfter"
@@ -7051,7 +7215,7 @@
             {
               "calls": [
                 {
-                  "line": 216,
+                  "line": 218,
                   "name": "templateSlots",
                   "target": {
                     "file": "packages/propose/prompt.js"
@@ -7059,19 +7223,19 @@
                   "via": "sessionRefusal"
                 },
                 {
-                  "line": 468,
+                  "line": 470,
                   "name": "frame",
                   "target": null
                 },
                 {
-                  "line": 477,
+                  "line": 479,
                   "name": "renderTemplate",
                   "target": {
                     "file": "packages/propose/prompt.js"
                   }
                 },
                 {
-                  "line": 250,
+                  "line": 252,
                   "name": "beliefKeys",
                   "target": {
                     "file": "packages/tick/beliefs.js"
@@ -7079,99 +7243,99 @@
                   "via": "schemaContext"
                 },
                 {
-                  "line": 478,
+                  "line": 480,
                   "name": "buildSchema",
                   "target": {
                     "file": "packages/propose/schema.js"
                   }
                 },
                 {
-                  "line": 339,
+                  "line": 341,
                   "name": "observe",
                   "target": null,
                   "via": "readBefore"
                 },
                 {
-                  "line": 360,
+                  "line": 362,
                   "name": "ask",
                   "target": null,
                   "via": "asked"
                 },
                 {
-                  "line": 415,
+                  "line": 417,
                   "name": "whileOut",
                   "target": null,
                   "via": "askWithin"
                 },
                 {
-                  "line": 375,
+                  "line": 377,
                   "name": "loaded",
                   "target": null,
                   "via": "loadedAfter"
                 },
                 {
-                  "line": 509,
+                  "line": 511,
                   "name": "promptHash",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 510,
+                  "line": 512,
                   "name": "schemaHash",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 518,
+                  "line": 520,
                   "name": "outputHash",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 520,
+                  "line": 522,
                   "name": "failedTiming",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 520,
+                  "line": 522,
                   "name": "cutOffTiming",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 522,
+                  "line": 524,
                   "name": "recordKey",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 525,
+                  "line": 527,
                   "name": "callRead",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 544,
+                  "line": 546,
                   "name": "digestOf",
                   "target": {
                     "file": "packages/propose/record.js"
                   }
                 },
                 {
-                  "line": 552,
+                  "line": 554,
                   "name": "frame",
                   "target": null
                 },
                 {
-                  "line": 553,
+                  "line": 555,
                   "name": "stampProposal",
                   "target": {
                     "file": "packages/propose/parse.js"
@@ -7184,7 +7348,7 @@
                   "via": "submitAsRole"
                 },
                 {
-                  "line": 558,
+                  "line": 560,
                   "name": "settle",
                   "target": {
                     "file": "packages/tick/tick.js"
@@ -7325,7 +7489,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "ff0f368ebe1a3650bd204d0adb05926d99c70708e4224f4a7be9609123bf9ea3",
+          "hash": "840c58fe142529d544f26514a1ffc80869e635db016e41dc3e4938da83ad8122",
           "path": "package.json"
         },
         {
@@ -10039,7 +10203,7 @@
       "outsideReads": 19,
       "outsideWrites": 3,
       "role": "code",
-      "testedBy": 34,
+      "testedBy": 35,
       "unresolvedSites": 4
     },
     {
@@ -10240,7 +10404,7 @@
         {
           "boundary": "bench",
           "depth": 0,
-          "files": 28
+          "files": 30
         },
         {
           "boundary": "fixtures",
@@ -10569,6 +10733,11 @@
         },
         {
           "job": "engines",
+          "path": "packages/bench/model.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
           "path": "packages/bench/mutants.test.js",
           "runKind": "executes"
         },
@@ -10792,7 +10961,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 80,
+      "runsCount": 81,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -11605,6 +11774,11 @@
   "edges": [
     {
       "from": "bench",
+      "kind": "file",
+      "to": "propose"
+    },
+    {
+      "from": "bench",
       "kind": "spawns",
       "to": "solver"
     },
@@ -11667,8 +11841,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "87768861148ae845f265b6d18a3ec4b1ace1ebed",
-    "tracked": 359
+    "commit": "1a1727210e24557f3b6b57f1d0c1c94adc5cf5d1",
+    "tracked": 363
   },
   "landings": [
     {
@@ -12020,6 +12194,18 @@
           "confidence": "ast"
         },
         {
+          "by": "packages/bench/model.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/bench/model.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/bench/mutants.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -12320,6 +12506,12 @@
           "confidence": "ast"
         },
         {
+          "by": "packages/bench/model.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/propose/propose.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -12339,6 +12531,42 @@
         }
       ],
       "target": "fixtures/roles",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/bench/model.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/roles/instrument-copy.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/bench/model.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/roles/probe.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/bench/model.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/roles/test-instrument.txt",
       "writers": []
     },
     {
@@ -12885,6 +13113,12 @@
           "fromTests": true
         },
         {
+          "by": "packages/bench/model.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/bench/source.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -12892,6 +13126,17 @@
         }
       ],
       "target": "packages/bench/bin/bench.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/bench/runner.js",
+          "call": "literal",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages/bench/model.js",
       "writers": []
     },
     {
@@ -13753,6 +13998,12 @@
     {
       "readers": [
         {
+          "by": "packages/bench/model.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "packages/tick/roles.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -13766,6 +14017,18 @@
         }
       ],
       "target": "predicates/roles/test-instrument.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/bench/model.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "predicates/roles/test-instrument.txt",
       "writers": []
     },
     {
@@ -14478,7 +14741,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 43,
+  "testFiles": 44,
   "unassigned": [
     {
       "exports": [

@@ -33,7 +33,7 @@
       "confidence": "low",
       "highWater": null,
       "name": "bench",
-      "qualifyingSourceCommits": 15,
+      "qualifyingSourceCommits": 16,
       "rebaseline": null
     },
     {
@@ -186,14 +186,16 @@
         "collapsed": false,
         "confidence": "low",
         "importsAndCoChanges": [],
-        "importsOnly": []
+        "importsOnly": [
+          "bench"
+        ]
       },
       "cohesion": 1,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "propose",
-      "qualifyingSourceCommits": 20,
+      "qualifyingSourceCommits": 21,
       "rebaseline": null
     },
     {
@@ -398,8 +400,8 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 104,
-        "lines": 3918,
+        "commits": 106,
+        "lines": 3972,
         "path": "atlas/README.md"
       },
       {
@@ -408,18 +410,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 104,
-        "lines": 15054,
+        "commits": 106,
+        "lines": 15150,
         "path": "atlas/page.json"
       },
       {
-        "commits": 104,
-        "lines": 24771,
+        "commits": 106,
+        "lines": 25623,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 104,
-        "lines": 55208,
+        "commits": 106,
+        "lines": 55844,
         "path": "atlas/structure.json"
       },
       {
@@ -968,9 +970,14 @@
         "path": "fixtures/push/red-room-a.json"
       },
       {
-        "commits": 2,
-        "lines": 10,
+        "commits": 3,
+        "lines": 13,
         "path": "fixtures/roles/index.json"
+      },
+      {
+        "commits": 1,
+        "lines": 71,
+        "path": "fixtures/roles/instrument-copy.json"
       },
       {
         "commits": 2,
@@ -981,6 +988,11 @@
         "commits": 2,
         "lines": 46,
         "path": "fixtures/roles/probe.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 23,
+        "path": "fixtures/roles/test-instrument.txt"
       },
       {
         "commits": 2,
@@ -1288,8 +1300,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 72,
-        "lines": 263,
+        "commits": 74,
+        "lines": 267,
         "path": "package.json"
       },
       {
@@ -1298,18 +1310,18 @@
         "path": "packages/bench/anchors.js"
       },
       {
-        "commits": 6,
-        "lines": 3136,
+        "commits": 7,
+        "lines": 3414,
         "path": "packages/bench/bench.js"
       },
       {
-        "commits": 2,
-        "lines": 294,
+        "commits": 3,
+        "lines": 308,
         "path": "packages/bench/bin/bench.js"
       },
       {
-        "commits": 4,
-        "lines": 537,
+        "commits": 5,
+        "lines": 640,
         "path": "packages/bench/build.js"
       },
       {
@@ -1318,8 +1330,8 @@
         "path": "packages/bench/costs.js"
       },
       {
-        "commits": 2,
-        "lines": 290,
+        "commits": 3,
+        "lines": 368,
         "path": "packages/bench/coverage.test.js"
       },
       {
@@ -1338,14 +1350,24 @@
         "path": "packages/bench/finding.test.js"
       },
       {
-        "commits": 6,
-        "lines": 726,
+        "commits": 7,
+        "lines": 770,
         "path": "packages/bench/law.test.js"
       },
       {
         "commits": 3,
         "lines": 320,
         "path": "packages/bench/measure.js"
+      },
+      {
+        "commits": 1,
+        "lines": 227,
+        "path": "packages/bench/model.js"
+      },
+      {
+        "commits": 1,
+        "lines": 299,
+        "path": "packages/bench/model.test.js"
       },
       {
         "commits": 5,
@@ -1363,8 +1385,8 @@
         "path": "packages/bench/neutral.test.js"
       },
       {
-        "commits": 4,
-        "lines": 318,
+        "commits": 5,
+        "lines": 326,
         "path": "packages/bench/plant.js"
       },
       {
@@ -1373,8 +1395,8 @@
         "path": "packages/bench/plants.js"
       },
       {
-        "commits": 3,
-        "lines": 508,
+        "commits": 4,
+        "lines": 536,
         "path": "packages/bench/process.test.js"
       },
       {
@@ -1393,13 +1415,13 @@
         "path": "packages/bench/reach.js"
       },
       {
-        "commits": 3,
-        "lines": 678,
+        "commits": 4,
+        "lines": 805,
         "path": "packages/bench/report.js"
       },
       {
-        "commits": 5,
-        "lines": 554,
+        "commits": 6,
+        "lines": 559,
         "path": "packages/bench/report.test.js"
       },
       {
@@ -1408,8 +1430,8 @@
         "path": "packages/bench/rungs.test.js"
       },
       {
-        "commits": 5,
-        "lines": 2770,
+        "commits": 6,
+        "lines": 2815,
         "path": "packages/bench/runner.js"
       },
       {
@@ -1423,8 +1445,8 @@
         "path": "packages/bench/scan-rust.js"
       },
       {
-        "commits": 5,
-        "lines": 310,
+        "commits": 7,
+        "lines": 335,
         "path": "packages/bench/source.test.js"
       },
       {
@@ -1513,8 +1535,8 @@
         "path": "packages/load/world.js"
       },
       {
-        "commits": 19,
-        "lines": 1466,
+        "commits": 20,
+        "lines": 1487,
         "path": "packages/propose/bin/propose.js"
       },
       {
@@ -1538,23 +1560,23 @@
         "path": "packages/propose/parse.js"
       },
       {
-        "commits": 17,
-        "lines": 704,
+        "commits": 18,
+        "lines": 730,
         "path": "packages/propose/prompt.js"
       },
       {
-        "commits": 24,
-        "lines": 3938,
+        "commits": 25,
+        "lines": 4013,
         "path": "packages/propose/propose.test.js"
       },
       {
-        "commits": 7,
-        "lines": 1438,
+        "commits": 8,
+        "lines": 1446,
         "path": "packages/propose/record.js"
       },
       {
-        "commits": 6,
-        "lines": 760,
+        "commits": 7,
+        "lines": 767,
         "path": "packages/propose/record.test.js"
       },
       {
@@ -1568,8 +1590,8 @@
         "path": "packages/propose/schema.js"
       },
       {
-        "commits": 20,
-        "lines": 2134,
+        "commits": 21,
+        "lines": 2146,
         "path": "packages/propose/seat.js"
       },
       {
@@ -2033,8 +2055,8 @@
         "path": "solver/build.mjs"
       },
       {
-        "commits": 8,
-        "lines": 77,
+        "commits": 9,
+        "lines": 78,
         "path": "solver/build.rs"
       },
       {
@@ -2168,9 +2190,9 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-26T20:56:27.953Z",
+  "generatedAt": "2026-09-26T21:13:44.930Z",
   "generatedFrom": {
-    "commit": "87768861148ae845f265b6d18a3ec4b1ace1ebed"
+    "commit": "1a1727210e24557f3b6b57f1d0c1c94adc5cf5d1"
   },
   "pairs": [
     {
@@ -2435,43 +2457,43 @@
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 61,
-      "shared": 61,
+      "either": 62,
+      "shared": 62,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 61,
-      "shared": 61,
+      "either": 62,
+      "shared": 62,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 61,
-      "shared": 61,
+      "either": 62,
+      "shared": 62,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 61,
-      "shared": 61,
+      "either": 62,
+      "shared": 62,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 61,
-      "shared": 61,
+      "either": 62,
+      "shared": 62,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 61,
-      "shared": 61,
+      "either": 62,
+      "shared": 62,
       "strength": 1
     },
     {
@@ -2519,23 +2541,37 @@
     {
       "a": "packages/bench/bench.js",
       "b": "packages/bench/law.test.js",
-      "either": 6,
+      "either": 7,
       "shared": 4,
-      "strength": 0.666667
+      "strength": 0.571429
     },
     {
       "a": "packages/bench/bench.js",
       "b": "packages/bench/neutral.test.js",
-      "either": 5,
+      "either": 6,
       "shared": 5,
-      "strength": 1
+      "strength": 0.833333
     },
     {
       "a": "packages/bench/bench.js",
-      "b": "packages/bench/plants.js",
-      "either": 8,
+      "b": "packages/bench/report.test.js",
+      "either": 7,
       "shared": 4,
-      "strength": 0.5
+      "strength": 0.571429
+    },
+    {
+      "a": "packages/bench/bench.js",
+      "b": "packages/bench/runner.js",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
+    },
+    {
+      "a": "packages/bench/bench.js",
+      "b": "packages/bench/source.test.js",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
     },
     {
       "a": "packages/bench/law.test.js",
@@ -2624,30 +2660,30 @@
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/prompt.js",
-      "either": 13,
-      "shared": 7,
-      "strength": 0.538462
+      "either": 14,
+      "shared": 8,
+      "strength": 0.571429
     },
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/propose.test.js",
-      "either": 17,
-      "shared": 10,
-      "strength": 0.588235
+      "either": 18,
+      "shared": 11,
+      "strength": 0.611111
     },
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/seat.js",
-      "either": 13,
-      "shared": 9,
-      "strength": 0.692308
+      "either": 14,
+      "shared": 10,
+      "strength": 0.714286
     },
     {
       "a": "packages/propose/parse.js",
       "b": "packages/propose/prompt.js",
-      "either": 9,
+      "either": 10,
       "shared": 5,
-      "strength": 0.555556
+      "strength": 0.5
     },
     {
       "a": "packages/propose/parse.js",
@@ -2658,24 +2694,38 @@
     },
     {
       "a": "packages/propose/prompt.js",
+      "b": "packages/propose/propose.test.js",
+      "either": 18,
+      "shared": 9,
+      "strength": 0.5
+    },
+    {
+      "a": "packages/propose/prompt.js",
       "b": "packages/propose/schema.js",
-      "either": 9,
+      "either": 10,
       "shared": 6,
-      "strength": 0.666667
+      "strength": 0.6
     },
     {
       "a": "packages/propose/prompt.js",
       "b": "packages/propose/seat.js",
-      "either": 12,
-      "shared": 8,
-      "strength": 0.666667
+      "either": 13,
+      "shared": 9,
+      "strength": 0.692308
     },
     {
       "a": "packages/propose/propose.test.js",
       "b": "packages/propose/seat.js",
-      "either": 17,
-      "shared": 10,
-      "strength": 0.588235
+      "either": 18,
+      "shared": 11,
+      "strength": 0.611111
+    },
+    {
+      "a": "packages/propose/record.js",
+      "b": "packages/propose/record.test.js",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
     },
     {
       "a": "packages/tick/scene.js",
@@ -2779,16 +2829,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-26T16:55:33-04:00",
-    "inScopeFiles": 364,
+    "headDate": "2026-09-26T17:12:14-04:00",
+    "inScopeFiles": 368,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 307,
+    "qualifyingCommits": 309,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-30T20:55:33.000Z",
+    "since": "2026-03-30T21:12:14.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
@@ -2802,7 +2852,7 @@
     ],
     "sourceFileReach": 20,
     "sourceFileRise": 25,
-    "sourceFilesReachingStrongFloor": 13,
+    "sourceFilesReachingStrongFloor": 14,
     "strength": 0.5,
     "windowDays": 180
   },

@@ -118,7 +118,10 @@ test('a finding on a control input is written as the input\'s own bundle, with t
 
 test('a log control input runs on both trees, and its recorded hashes match the head that recorded it; from another build it is reported as a mismatch', () => {
   const match = runs.match.records[0];
-  assert.deepEqual(match.control, { kind: 'log', file: logBundle });
+  assert.equal(match.control.kind, 'log');
+  assert.match(match.control.file, /^<control \d+>$/);
+  assert.equal(JSON.stringify(match).includes(logBundle), false);
+  assert.ok(runs.match.report.environment.paths.controls.includes(logBundle));
   assert.ok(match.recorded.includes('2'), 'compared: it ran on both trees');
   assert.ok(match.notes.includes('its recorded hashes match the head\'s run'));
   const other = runs.mismatch.records[0];

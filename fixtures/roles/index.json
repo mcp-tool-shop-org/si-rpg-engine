@@ -1,5 +1,6 @@
 {
   "roles": [
-    "probe.json"
+    "probe.json",
+    "instrument-copy.json"
   ]
 }

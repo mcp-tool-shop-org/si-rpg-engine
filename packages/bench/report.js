@@ -5,6 +5,9 @@
 /** The stall's reporting grid: the n of the grammar's stall, a grid and not a setting (pin 5). */
 export const STALL_GRID = [8, 16, 32, 64, 128];
 
+/** The stall at which the model starts: the one the grid measured, n of 8. */
+export const MODEL_STALL_N = 8;
+
 /**
  * @typedef {{
  *   kind: 'trace', tick: number, body: string, field: string, block: string
@@ -139,6 +142,117 @@ export function lateGain(records) {
       lateGain: { lines: after.reduce((sum, g) => sum + g.lines, 0), differences: after.reduce((sum, g) => sum + g.differences, 0) },
     };
   });
+}
+
+/**
+ * The record index where a proposer first goes n admitted candidates with no
+ * new changed line and no new difference, or null when the records end first.
+ * The model starts after that record. n of 8 is the stall the grid measured.
+ * @param {CandidateRecord[]} records
+ * @param {number} [n]
+ * @returns {number | null}
+ */
+export function stallIndex(records, n = MODEL_STALL_N) {
+  const row = lateGain(records).find((item) => item.n === n);
+  if (!row || row.stalledAt === null) {
+    return null;
+  }
+  const index = records.findIndex((record) => record.id === row.stalledAt);
+  return index < 0 ? null : index;
+}
+
+/**
+ * Candidates in order until their cost reaches the quanta and restores named,
+ * including the candidate that crosses. Nothing is taken when both are zero.
+ * @param {CandidateRecord[]} records
+ * @param {number} quanta
+ * @param {number} restores
+ */
+export function withinCost(records, quanta, restores) {
+  /** @type {CandidateRecord[]} */
+  const out = [];
+  if (quanta <= 0 && restores <= 0) {
+    return out;
+  }
+  let q = 0;
+  let r = 0;
+  for (const record of records) {
+    if (q >= quanta && r >= restores) {
+      break;
+    }
+    out.push(record);
+    q = q + record.cost.quanta;
+    r = r + record.cost.restores;
+  }
+  return out;
+}
+
+/**
+ * What an arm found that the records before the start point had not: new
+ * changed lines and new difference keys, from admitted candidates only.
+ * @param {CandidateRecord[]} before
+ * @param {CandidateRecord[]} arm
+ */
+export function newFindings(before, arm) {
+  /** @type {Set<string>} */
+  const lines = new Set();
+  /** @type {Set<string>} */
+  const keys = new Set();
+  for (const record of before) {
+    for (const [anchor, list] of Object.entries(record.lines || {})) {
+      for (const line of list) {
+        lines.add(anchor + ':' + line);
+      }
+    }
+    for (const key of differenceKeys(record)) {
+      keys.add(key);
+    }
+  }
+  /** @type {string[]} */
+  const newLines = [];
+  /** @type {string[]} */
+  const newKeys = [];
+  for (const record of arm) {
+    if (!record.admittedOnHead) {
+      continue;
+    }
+    for (const [anchor, list] of Object.entries(record.lines || {})) {
+      for (const line of list) {
+        const key = anchor + ':' + line;
+        if (!lines.has(key)) {
+          lines.add(key);
+          newLines.push(key);
+        }
+      }
+    }
+    for (const key of differenceKeys(record)) {
+      if (!keys.has(key)) {
+        keys.add(key);
+        newKeys.push(key);
+      }
+    }
+  }
+  return { lines: newLines, differences: newKeys };
+}
+
+/**
+ * The report body, up to the environment section, which ends the file. A line
+ * after that section is refused.
+ * @param {string} text
+ * @returns {{ ok: true, summary: string } | { ok: false, reason: string }}
+ */
+export function cutReport(text) {
+  const marker = '\n## Environment\n';
+  const at = text.indexOf(marker);
+  if (at < 0 || text.slice(0, at).includes('## Environment')) {
+    return { ok: false, reason: 'the environment section does not end the file' };
+  }
+  const after = text.slice(at + marker.length);
+  const close = after.lastIndexOf('```');
+  if (close < 0 || after.slice(close + 3).trim() !== '') {
+    return { ok: false, reason: 'a line follows the environment section, which ends the file' };
+  }
+  return { ok: true, summary: text.slice(0, at) };
 }
 
 /**
@@ -298,6 +412,19 @@ export function markdown(report) {
     out.push('');
     out.push('Late gain: ' + proposer.lateGain.map((/** @type {any} */ g) => 'n=' + g.n + ' ' + (g.stalledAt === null ? 'no stall' : 'stalled at ' + g.stalledAt + ', then ' + g.lateGain.lines + ' lines and ' + g.lateGain.differences + ' differences')).join('; ') + '.');
     out.push('');
+  }
+  if (Array.isArray(report.arms)) {
+    out.push('## Arms');
+    out.push('');
+    /** @param {string[]} items */
+    const listed = (items) => (items.length === 0 ? 'none' : items.join(', '));
+    for (const arm of report.arms) {
+      const where = arm.start.candidate === null ? 'the end of the grammar\'s budget' : arm.start.candidate;
+      out.push(arm.world + ': the model starts at ' + where + '.');
+      out.push('Arm M: ' + arm.M.calls + ' calls, ' + arm.M.quanta + ' quanta, ' + arm.M.restores + ' restores. New lines: ' + listed(arm.M.findings.lines) + '. New differences: ' + listed(arm.M.findings.differences) + '. Newly caught mutants: ' + listed(arm.M.findings.mutants) + '.');
+      out.push('Arm G: ' + arm.G.quanta + ' quanta, ' + arm.G.restores + ' restores' + (arm.G.extended ? ', extended past the grammar\'s budget' : '') + '. New lines: ' + listed(arm.G.findings.lines) + '. New differences: ' + listed(arm.G.findings.differences) + '. Newly caught mutants: ' + listed(arm.G.findings.mutants) + '.');
+      out.push('');
+    }
   }
   out.push('## Mutants');
   out.push('');

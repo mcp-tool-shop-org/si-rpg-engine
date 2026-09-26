@@ -56,14 +56,21 @@ function importsOf(at) {
  * @param {string} at the bench's directory
  */
 function forbidden(at) {
-  return importsOf(at).filter(({ specifier }) => {
+  return importsOf(at).filter(({ file, specifier }) => {
+    // The model proposer is the one file that imports packages/propose, and
+    // only the sweep process loads it, when a run names --model.
+    if (file === 'model.js') {
+      return false;
+    }
     const target = specifier.startsWith('.') ? resolve(at, specifier).replace(/\\/g, '/') : specifier;
     return /\/packages\/propose(\/|$)/.test(target) || /^(node:)?(http|https|http2|net|tls|dgram|dns)$/.test(specifier) || (!specifier.startsWith('.') && !specifier.startsWith('node:'));
   });
 }
 
-test('the bench imports nothing from packages/propose, reaches no network, and takes no module from outside the engine and node', () => {
-  assert.deepEqual(forbidden(here), []);
+test('the bench imports nothing from packages/propose except model.js, reaches no network, and takes no module from outside the engine and node', () => {
+  assert.deepEqual(forbidden(here).concat(forbidden(join(here, 'bin'))), []);
+  const imported = importsOf(here).concat(importsOf(join(here, 'bin')));
+  assert.equal(imported.some((item) => item.specifier.includes('model.js')), false, 'the runner loads model.js by path, and no file imports it');
   // The rule goes red on a planted import.
   const copy = join(dir, 'packages', 'bench');
   mkdirSync(copy, { recursive: true });

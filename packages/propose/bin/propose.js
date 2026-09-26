@@ -226,8 +226,8 @@ function readInput(folder, name) {
 async function driftReport(folder) {
   try {
     const { session, records } = readSession(folder);
-    const { ollamaClient } = await import('../ollama.js');
-    const client = ollamaClient();
+    /** @type {import('../seat.js').Client | null} */
+    let client = null;
     /** @type {object[]} */
     const report = [];
     for (const [key, record] of records) {
@@ -235,8 +235,21 @@ async function driftReport(folder) {
         continue;
       }
       const manifest = session.manifests[record.manifest];
-      const pin = manifest && manifest.model ? manifest.model.digest : String(digestOf(record));
-      // The seat's one deadline, as the session's own calls had.
+      if (digestOf(record) === null) {
+        report.push({ record: key, call: record.call, readNoModel: true, note: 'the record read no model' });
+        continue;
+      }
+      const pin = manifest && manifest.model ? manifest.model.digest : null;
+      if (pin === null) {
+        report.push({ record: key, call: record.call, readNoModel: true, note: 'the record read no model' });
+        continue;
+      }
+      // The seat's one deadline, as the session's own calls had. The client is
+      // made only once a record actually read a model.
+      if (client === null) {
+        const { ollamaClient } = await import('../ollama.js');
+        client = ollamaClient();
+      }
       const { reply, failure } = await askWithin(client, record.request, pin, record.timeoutMs);
       report.push({ ...driftOf(key, record, reply === null ? null : reply.output, manifest), failure });
     }

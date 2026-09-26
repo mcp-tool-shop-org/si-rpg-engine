@@ -18,6 +18,7 @@
 //         --sweep-quanta <n> --sweep-restores <n>    the sweep's budget per world
 //         --ladder-quanta <n> --ladder-restores <n>  each proposer's budget per world
 //         --no-sweep --no-grammar --no-mutants --cap <n>
+//         --model --diff <file> [--role <name>] [--catalog <dir>] [--model-calls <n>]
 //   bench replay <bundle> --tree <dir>
 //       submits an admission difference's log by tick on a tree, then the
 //       differing intent citing that tree's frame, and prints the tree's
@@ -32,7 +33,7 @@ import { startProcess } from '../processes.js';
 import { makeWorktree } from '../trees.js';
 import { guard } from '../../tool/guard.js';
 
-guard('bench trees <repo> <base-rev> <head-rev> <dir> | bench anchors --base <tree> --head <tree> | bench run --base <tree> --head <tree> --out <dir> [--seed n] [--world file]... [--product-scene] [--control bundle|product-scene]... [--sweep-quanta n] [--sweep-restores n] [--ladder-quanta n] [--ladder-restores n] [--no-sweep] [--no-grammar] [--no-mutants] [--cap n] | bench replay <bundle> --tree <dir>');
+guard('bench trees <repo> <base-rev> <head-rev> <dir> | bench anchors --base <tree> --head <tree> | bench run --base <tree> --head <tree> --out <dir> [--seed n] [--world file]... [--product-scene] [--control bundle|product-scene]... [--sweep-quanta n] [--sweep-restores n] [--ladder-quanta n] [--ladder-restores n] [--no-sweep] [--no-grammar] [--no-mutants] [--cap n] [--model] [--diff file] [--role name] [--catalog dir] [--model-calls n] | bench replay <bundle> --tree <dir>');
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -87,6 +88,10 @@ if (command === 'trees' && args.length >= 5) {
   const set = readAnchors(resolve(/** @type {string} */ (value('--base'))), resolve(/** @type {string} */ (value('--head'))));
   process.stdout.write(JSON.stringify(anchorsView(set), null, 1) + '\n');
 } else if (command === 'run' && value('--base') && value('--head') && value('--out')) {
+  if (args.includes('--model') && value('--diff') === null) {
+    process.stderr.write('refused: --model without --diff is refused\n');
+    process.exit(1);
+  }
   const worlds = values('--world').map((file) => ({ file }));
   if (args.includes('--product-scene')) {
     worlds.push(/** @type {any} */ ({ productScene: true }));
@@ -107,6 +112,13 @@ if (command === 'trees' && args.length >= 5) {
     },
     proposers: { sweep: !args.includes('--no-sweep'), grammar: !args.includes('--no-grammar') },
     mutants: { enabled: !args.includes('--no-mutants'), cap: number('--cap') },
+    model: args.includes('--model') ? {
+      enabled: true,
+      diff: /** @type {string} */ (value('--diff')),
+      role: value('--role') || undefined,
+      catalog: value('--catalog') || undefined,
+      calls: number('--model-calls'),
+    } : undefined,
     say: (line) => process.stderr.write(line + '\n'),
   });
   process.stdout.write(join(resolve(/** @type {string} */ (value('--out'))), 'report.md') + '\n');

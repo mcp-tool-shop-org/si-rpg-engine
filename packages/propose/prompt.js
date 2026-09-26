@@ -15,7 +15,7 @@ import { subjectText } from '../tick/subject.js';
  * @typedef {import('../frame/types.js').IntentRule} IntentRule
  * @typedef {import('../frame/types.js').Body} Body
  * @typedef {{ id: string, minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number }} Box
- * @typedef {{ call: number, proposal: object | null, read: string, admitted: boolean, reason: string | null, at: number | null }} Feedback
+ * @typedef {{ call: number, proposal: object | null, read: string, admitted: boolean, reason: string | null, at: number | null, anchors?: string[], rungs?: string[] }} Feedback
  * @typedef {{
  *   body: string,
  *   beliefs: Array<{ subject: string, key: string, value: string | number | boolean, confidence: number, label: string, heard?: string }>,
@@ -130,6 +130,23 @@ export function worldText(view) {
 }
 
 /**
+ * The anchors a call reached and the rungs the ladder recorded, after the
+ * checker's own sentence.
+ * @param {Feedback} item
+ */
+function reachedText(item) {
+  /** @type {string[]} */
+  const parts = [];
+  if (item.anchors && item.anchors.length > 0) {
+    parts.push('it reached ' + item.anchors.join(', '));
+  }
+  if (item.rungs && item.rungs.length > 0) {
+    parts.push('rungs ' + item.rungs.join(', '));
+  }
+  return parts.length === 0 ? '' : ' ' + parts.join('; ') + '.';
+}
+
+/**
  * The engine's own results for the calls before this one.
  * @param {ReadonlyArray<Feedback>} feedback
  */
@@ -139,14 +156,15 @@ export function feedbackText(feedback) {
   }
   return feedback.map((item) => {
     const head = '- Call ' + (item.call + 1);
+    const reached = reachedText(item);
     if (item.read !== 'ok' || item.proposal === null) {
-      return head + ': the reply could not be read (' + item.read + (item.reason ? ': ' + item.reason : '') + ').';
+      return head + ': the reply could not be read (' + item.read + (item.reason ? ': ' + item.reason : '') + ').' + reached;
     }
     const said = JSON.stringify(item.proposal);
     if (item.admitted) {
-      return head + ' proposed ' + said + ', and the checker admitted it at tick ' + item.at + '.';
+      return head + ' proposed ' + said + ', and the checker admitted it at tick ' + item.at + '.' + reached;
     }
-    return head + ' proposed ' + said + ', and the checker refused it: ' + item.reason + '.';
+    return head + ' proposed ' + said + ', and the checker refused it: ' + item.reason + '.' + reached;
   }).join('\n');
 }
 

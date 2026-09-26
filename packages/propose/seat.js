@@ -165,8 +165,10 @@ export async function scratchWorld(spec, root) {
  *   rules: Map<string, IntentRule>,
  *   inputs: { dispatch: string, diff: string, access: Record<string, string[]> },
  *   calls: number,
+ *   callStart?: number,
  *   lateQuanta: number,
  *   client: Client,
+ *   feedback?: Feedback[],
  *   timer?: (ms: number) => Promise<void>,
  * }} SessionInit
  */
@@ -456,11 +458,11 @@ export async function runSession(init) {
   const records = [];
   /** @type {CallLine[]} */
   const calls = [];
-  /** @type {Feedback[]} */
-  const feedback = [];
+  const feedback = init.feedback || [];
   /** @type {string | null} */
   let refused = null;
-  for (let call = 0; call < init.calls; call = call + 1) {
+  const callFrom = init.callStart || 0;
+  for (let call = callFrom; call < callFrom + init.calls; call = call + 1) {
     if (call >= budget.callsPerSession) {
       refused = 'the session asks for ' + init.calls + ' calls, and role ' + manifest.role + ' allows ' + budget.callsPerSession + ' a session';
       break;
@@ -532,7 +534,7 @@ export async function runSession(init) {
         refused = 'the session stops at call ' + call + ', which failed: ' + read.reason;
         break;
       }
-      feedback.push({ call, proposal: null, read: read.read, admitted: false, reason: read.reason, at: null });
+      feedback.push({ call, proposal: null, read: read.read, admitted: false, reason: read.reason, at: null, anchors: [], rungs: [] });
       continue;
     }
     /** @type {Provenance} */
@@ -554,7 +556,7 @@ export async function runSession(init) {
     line.admitted = admission.admitted;
     line.reason = admission.admitted ? null : admission.reason;
     line.at = admission.admitted ? at : null;
-    feedback.push({ call, proposal: read.proposal, read: 'ok', admitted: admission.admitted, reason: line.reason, at: line.at });
+    feedback.push({ call, proposal: read.proposal, read: 'ok', admitted: admission.admitted, reason: line.reason, at: line.at, anchors: [], rungs: [] });
     settle(tick);
   }
   return { records, calls, refused };
