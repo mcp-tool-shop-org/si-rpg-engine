@@ -4,8 +4,11 @@
 // running world (F1). The world is built from the records only at its first
 // load and when the world itself changes. A driven character moves through
 // the engine's copy of Rapier's character controller, kcc.rs, which adds one
-// branch for a floor normal parallel to `up` (F2). The box step in lib.rs is
-// a separate export.
+// branch for a floor normal parallel to `up` (F2), and pushes the dynamic
+// bodies it touched through the engine's copy of Rapier's impulse routine,
+// impulses.rs, which gathers each collider's contact manifolds into a vec of
+// their own, as Rapier's #1004 does (F3). The box step in lib.rs is a separate
+// export.
 //
 // Pins: rapier3d-f64, enhanced-determinism, f64, no SIMD feature, dt = 1/64,
 // sleep threshold = 32 quanta, rotations locked, contact clustering off so the
@@ -22,6 +25,7 @@ use rapier3d_f64::geometry::{ContactData, ContactPair};
 use rapier3d_f64::pipeline::CollisionPipeline;
 use rapier3d_f64::prelude::*;
 
+use crate::impulses::{Pusher, Shove};
 use crate::kcc::{Mover, Stride};
 use crate::{mode, Mode, Refusal};
 use crate::{BODIES, BODY_STRIDE, COLLIDERS, COLLIDER_STRIDE, DRIVEN, HX, HY, HZ, MAX_BODIES, MAX_COLLIDERS};
@@ -748,8 +752,12 @@ struct Plan {
 /// `mover` with the law's controller settings: the law passes `Stride`, the
 /// engine's copy of Rapier's controller with its branch on (kcc.rs, F2), and
 /// the control test at the end of this file passes Rapier's own controller
-/// beside the copy with the branch off. The collision impulses are Rapier's.
-fn integrate(loaded: &mut Loaded, mover: &mut impl Mover) -> Result<(), Refusal> {
+/// beside the copy with the branch off. The dynamic bodies each character
+/// touched are pushed through `pusher`, with the character mass of 1: the law
+/// passes `Shove`, the engine's copy of Rapier's impulse routine with
+/// upstream's change on (impulses.rs, F3), and the control test passes
+/// Rapier's own routine beside the copy with the change off.
+fn integrate(loaded: &mut Loaded, mover: &mut impl Mover, pusher: &mut impl Pusher) -> Result<(), Refusal> {
     let n = loaded.n_bodies;
     let mut plans: Vec<Plan> = Vec::new();
     let controller = loaded.controller;
@@ -822,7 +830,7 @@ fn integrate(loaded: &mut Loaded, mover: &mut impl Mover) -> Result<(), Refusal>
             colliders,
             filter,
         );
-        controller.solve_character_collision_impulses(DT, &mut query, &*shape, 1.0, &plan.collisions);
+        pusher.push(&controller, DT, &mut query, &*shape, 1.0, &plan.collisions);
     }
 
     loaded.world.step();
@@ -979,13 +987,13 @@ fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, 
     Ok(Load::Built)
 }
 
-/// The quantum `solver_step` runs, with the character's movement named: the
-/// export passes `Stride`; only the tests pass another.
-fn step_law(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, mover: &mut impl Mover) -> Result<(), Refusal> {
+/// The quantum `solver_step` runs, with the character's movement and push
+/// named: the export passes `Stride` and `Shove`; only the tests pass others.
+fn step_law(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, mover: &mut impl Mover, pusher: &mut impl Pusher) -> Result<(), Refusal> {
     ensure(world_id, n_bodies, n_colliders, rows, cols, cell, shape)?;
     let solver = unsafe { &mut *(&raw mut SOLVER) };
     let loaded = solver.loaded.as_mut().ok_or(Refusal::Unloaded)?;
-    integrate(loaded, mover)?;
+    integrate(loaded, mover, pusher)?;
     rebuild_snapshot(loaded, &mut solver.snapshot)
 }
 
@@ -999,7 +1007,7 @@ pub extern "C" fn solver_load(world_id: u32, n_bodies: u32, n_colliders: u32, ro
 
 #[unsafe(no_mangle)]
 pub extern "C" fn solver_step(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> u32 {
-    match step_law(world_id, n_bodies, n_colliders, rows, cols, cell, shape, &mut Stride) {
+    match step_law(world_id, n_bodies, n_colliders, rows, cols, cell, shape, &mut Stride, &mut Shove) {
         Ok(()) => 1,
         Err(_) => 0,
     }
@@ -2030,8 +2038,17 @@ mod tests {
     /// `before` sees the mover and the quantum about to be stepped, counted
     /// from 1 as the course counts its ticks; `after` sees the quantum once it
     /// has stepped. A load before the first step is what the first step's own
-    /// load would do.
-    fn drive<M: Mover>(turn: &mut u32, run: &Run, mover: &mut M, mut before: impl FnMut(&mut M, usize), mut after: impl FnMut(usize)) {
+    /// load would do. The push is the law's, `Shove` (F3); none of these runs
+    /// brings two dynamic colliders near a character, and F3's control test
+    /// holds the push to Rapier's routine bit for bit on each of them, so every
+    /// run is still the run main makes.
+    fn drive<M: Mover>(turn: &mut u32, run: &Run, mover: &mut M, mut before: impl FnMut(&mut M, usize), after: impl FnMut(usize)) {
+        drive_pushed(turn, run, mover, &mut Shove, |m, _, q| before(m, q), after);
+    }
+
+    /// `drive` with the push named: `before` sees the mover, the pusher, and
+    /// the quantum about to be stepped.
+    fn drive_pushed<M: Mover, P: Pusher>(turn: &mut u32, run: &Run, mover: &mut M, pusher: &mut P, mut before: impl FnMut(&mut M, &mut P, usize), mut after: impl FnMut(usize)) {
         *turn += 1;
         for (i, b) in run.bodies.iter().enumerate() {
             set_body(i, *b);
@@ -2050,8 +2067,8 @@ mod tests {
             if q > 0 {
                 run.edit(q);
             }
-            before(mover, q + 1);
-            assert_eq!(step_law(*turn, n, m, 0, 0, 0.0, run.shape, mover), Ok(()), "{} at quantum {}", run.name, q + 1);
+            before(mover, pusher, q + 1);
+            assert_eq!(step_law(*turn, n, m, 0, 0, 0.0, run.shape, mover, pusher), Ok(()), "{} at quantum {}", run.name, q + 1);
             after(q + 1);
         }
     }
