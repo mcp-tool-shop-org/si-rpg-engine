@@ -21,7 +21,7 @@ import { readRoleOutput, stampProposal } from './parse.js';
 import { npcMindPrompt, npcMindState, renderTemplate } from './prompt.js';
 import { cutOffTiming, driftOf, verifySession, writeSession } from './record.js';
 import { buildSchema, roleProposalSchema } from './schema.js';
-import { runSession, scratchWorld, submitAsRole } from './seat.js';
+import { runSession, scratchWorld, sessionRefusal, submitAsRole } from './seat.js';
 
 /**
  * @typedef {import('../tick/roles.js').RoleEntry} RoleEntry
@@ -87,11 +87,12 @@ function fakeClient(outputs, seen) {
 }
 
 /**
- * A scratch session of the probe role in the crate-and-door world.
- * @param {{ client: Client, calls: number, lateQuanta?: number, timer?: (ms: number) => Promise<void>, onTick?: (tick: ReturnType<typeof createTick>) => void }} options
+ * A scratch session of the probe role, or of `entry` in its place, in the crate-and-door world.
+ * @param {{ client: Client, calls: number, entry?: RoleEntry, lateQuanta?: number, timer?: (ms: number) => Promise<void>, onTick?: (tick: ReturnType<typeof createTick>) => void }} options
  */
 async function probeSession(options) {
-  const { catalog, entry } = probe();
+  const { catalog, entry: probeEntry } = probe();
+  const entry = options.entry || probeEntry;
   const built = await scratchWorld('worlds/crate-and-door.json', root);
   if (!built.ok) {
     throw new Error(built.reason);
@@ -826,6 +827,58 @@ test('propose --role refuses a frozen role, and a live one, with exit 2 before a
   const none = spawnSync(process.execPath, ['--import', hook, 'packages/propose/bin/propose.js', '--role', 'nobody'], { encoding: 'utf8' });
   assert.equal(none.status, 2);
   assert.match(none.stderr, /holds no role named nobody/);
+});
+
+test('a thawed scratch role the loader admits and the seat cannot render is refused with its reason, before any call and before the model\'s client loads', async () => {
+  const { entry } = probe();
+  /**
+   * The probe with other inputs and its own body as actor, as the loader
+   * admits it, with the probe's template in hand.
+   * @param {Array<{ name: string, source: import('../frame/types.js').RoleSource }>} inputs
+   * @returns {RoleEntry}
+   */
+  const shaped = (inputs) => {
+    const made = catalogOf([{ ...entry.manifest, inputs, outputs: { ...entry.manifest.outputs, actors: 'own-body' } }]);
+    assert.ok(made.ok, made.ok ? '' : made.reason);
+    const loaded = /** @type {RoleEntry} */ (made.ok ? made.catalog.byName.get('probe') : undefined);
+    return { ...loaded, template: entry.template };
+  };
+  let reads = 0;
+  let asks = 0;
+  /** @type {Client} */
+  const client = {
+    observe: async (name, pin) => {
+      reads = reads + 1;
+      return observed(name, pin);
+    },
+    ask: async () => {
+      asks = asks + 1;
+      return replied(null);
+    },
+  };
+  /** @type {Array<[Array<{ name: string, source: import('../frame/types.js').RoleSource }>, string]>} */
+  const cases = [
+    [[...entry.manifest.inputs, { name: 'own', source: 'mind' }], 'role probe reads mind as its input own, and the seat renders no mind in a scratch session'],
+    [[...entry.manifest.inputs, { name: 'sight', source: 'frame-in-sight' }], 'role probe reads frame-in-sight as its input sight, and the seat renders no frame-in-sight in a scratch session'],
+    [entry.manifest.inputs.map((input) => (input.name === 'feedback' ? { name: 'results', source: input.source } : input)), 'role probe\'s input results fills no slot in its template'],
+    [entry.manifest.inputs.filter((input) => input.name !== 'feedback'), 'role probe\'s template names {{feedback}}, and no input fills it'],
+  ];
+  for (const [inputs, why] of cases) {
+    const role = shaped(inputs);
+    assert.equal(sessionRefusal(role), why);
+    const { result } = await probeSession({ calls: 3, client, entry: role });
+    assert.deepEqual(result, { records: [], calls: [], refused: why }, 'refused as a session, not thrown');
+  }
+  assert.equal(reads + asks, 0, 'nothing was read from the server and no call was made');
+  assert.equal(sessionRefusal(entry), null, 'the probe as the catalog holds it runs');
+
+  const dir = mkdtempSync(join(tmpdir(), 'mind-roles-'));
+  cpSync('fixtures/roles', dir, { recursive: true });
+  const probeFile = JSON.parse(readFileSync(join(dir, 'probe.json'), 'utf8'));
+  writeFileSync(join(dir, 'probe.json'), JSON.stringify({ ...probeFile, inputs: [...probeFile.inputs, { name: 'own', source: 'mind' }], outputs: { ...probeFile.outputs, actors: 'own-body' } }));
+  const run = spawnSync(process.execPath, ['--import', noModel(), 'packages/propose/bin/propose.js', '--role', 'probe', '--catalog', dir, '--spec', 'fixtures/sessions/probe-fixture/spec.json'], { encoding: 'utf8' });
+  assert.equal(run.status, 2, run.stderr);
+  assert.equal(run.stderr.trim(), 'refusing to run: role probe reads mind as its input own, and the seat renders no mind in a scratch session');
 });
 
 test('the drift report says whether a reissued output is the same bytes and the same proposal', () => {

@@ -8,14 +8,15 @@
 // Without --role it lists the roles in the catalog, predicates/roles unless
 // --catalog names another, each with its status, its world, the Rule of Two
 // properties the loader derived, and its trust label. With --role it refuses
-// a frozen role, or one that acts in a live world, with exit 2 before any
-// model call: the model's client is not even loaded. For a thawed scratch role
-// it runs the session the spec names through the local Ollama at
-// 127.0.0.1:11434 and writes session.json and one record per call beside the
-// spec. --drift reissues a session's recorded calls and reports how far the
-// new outputs drift from the recorded ones. It runs only by hand, on a GPU, and
-// never blocks: it exits 0 whatever it finds. Neither CI nor npm test runs a
-// model; CI checks the records (packages/propose/record.test.js).
+// a role the seat cannot run, with its reason and exit 2, before any model
+// call: a frozen role, one that acts in a live world, or one whose inputs the
+// seat renders no prompt from. The model's client is not even loaded. For a
+// thawed scratch role it runs the session the spec names through the local
+// Ollama at 127.0.0.1:11434 and writes session.json and one record per call
+// beside the spec. --drift reissues a session's recorded calls and reports how
+// far the new outputs drift from the recorded ones. It runs only by hand, on a
+// GPU, and never blocks: it exits 0 whatever it finds. Neither CI nor npm test
+// runs a model; CI checks the records (packages/propose/record.test.js).
 
 import { readFileSync } from 'node:fs';
 import { chdir } from 'node:process';
@@ -28,7 +29,7 @@ import { createTick, settle } from '../../tick/tick.js';
 import { createWorld } from '../../tick/world.js';
 import { guard } from '../../tool/guard.js';
 import { driftOf, readSession, writeSession } from '../record.js';
-import { askWithin, runSession, scratchWorld } from '../seat.js';
+import { askWithin, runSession, scratchWorld, sessionRefusal } from '../seat.js';
 
 const USAGE = 'propose [--catalog <dir>] | propose --role <name> [--catalog <dir>] --spec <spec.json> | propose --drift <session>';
 guard(USAGE);
@@ -87,11 +88,9 @@ if (!entry) {
   refuse('refusing to run: ' + catalogDir + ' holds no role named ' + roleName);
 }
 const role = /** @type {import('../../tick/roles.js').RoleEntry} */ (entry);
-if (role.manifest.status !== 'thawed') {
-  refuse('refusing to run: role ' + roleName + ' is frozen');
-}
-if (role.manifest.world !== 'scratch') {
-  refuse('refusing to run: role ' + roleName + ' acts in a live world, and the seat runs only scratch sessions');
+const refusal = sessionRefusal(role);
+if (refusal !== null) {
+  refuse('refusing to run: ' + refusal);
 }
 
 const specArg = value('--spec');

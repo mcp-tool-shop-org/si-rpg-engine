@@ -21,7 +21,7 @@ import { beliefKeys } from '../tick/beliefs.js';
 import { validateScene } from '../tick/scene.js';
 import { settle } from '../tick/tick.js';
 import { readRoleOutput, stampProposal } from './parse.js';
-import { accessText, catalogText, feedbackText, renderTemplate, worldText } from './prompt.js';
+import { accessText, catalogText, feedbackText, renderTemplate, templateSlots, worldText } from './prompt.js';
 import { cutOffTiming, outputHash, promptHash, recordKey, schemaHash } from './record.js';
 import { buildSchema } from './schema.js';
 
@@ -160,29 +160,61 @@ export async function scratchWorld(spec, root) {
  */
 
 /**
- * One input's text, rendered from the engine's typed state or the session's files.
- * @param {RoleSource} source
- * @param {SessionInit} init
- * @param {Frame} frame
- * @param {ReadonlyArray<Feedback>} feedback
+ * @typedef {(init: SessionInit, frame: Frame, feedback: ReadonlyArray<Feedback>) => string} SourceText
  */
-function sourceText(source, init, frame, feedback) {
-  switch (source) {
-    case 'dispatch':
-      return init.inputs.dispatch.trim();
-    case 'diff':
-      return init.inputs.diff.trim();
-    case 'access':
-      return accessText(init.inputs.access);
-    case 'catalog':
-      return catalogText(init.rules);
-    case 'world':
-      return worldText({ bodies: frame.bodies, colliders: init.world.colliders, zones: init.world.zones || [], zoneOf: (id) => init.world.zoneOf(id) });
-    case 'feedback':
-      return feedbackText(feedback);
-    default:
-      throw new Error('the seat has no scratch source for ' + source);
+
+/**
+ * The text of each source the seat renders in a scratch session, from the
+ * engine's typed state or the session's files. The loader also admits a
+ * scratch own-body role that reads `mind` or `frame-in-sight`; the seat has
+ * no text for either in a scratch session yet, so a session of such a role is
+ * refused with its reason (sessionRefusal), before any call.
+ * @type {Partial<Record<RoleSource, SourceText>>}
+ */
+const SCRATCH_TEXT = {
+  dispatch: (init) => init.inputs.dispatch.trim(),
+  diff: (init) => init.inputs.diff.trim(),
+  access: (init) => accessText(init.inputs.access),
+  catalog: (init) => catalogText(init.rules),
+  world: (init, frame) => worldText({ bodies: frame.bodies, colliders: init.world.colliders, zones: init.world.zones || [], zoneOf: (id) => init.world.zoneOf(id) }),
+  feedback: (_init, _frame, feedback) => feedbackText(feedback),
+};
+
+/**
+ * Why the seat cannot run a session of this role, or null: a frozen role, a
+ * live one, a catalog with no template in hand, an input the seat renders no
+ * text for in a scratch session, or inputs and template slots that do not
+ * match one for one. The propose command refuses on it with exit 2 before the
+ * model's client is loaded, and runSession refuses on it before any call, so
+ * nothing the loader admits makes the seat throw where it should refuse.
+ * @param {RoleEntry} entry
+ * @returns {string | null}
+ */
+export function sessionRefusal(entry) {
+  const manifest = entry.manifest;
+  if (manifest.status !== 'thawed' || manifest.model === null) {
+    return 'role ' + manifest.role + ' is frozen';
   }
+  if (manifest.world !== 'scratch') {
+    return 'role ' + manifest.role + ' acts in a live world, and the seat runs only scratch sessions';
+  }
+  if (entry.template === null) {
+    return 'role ' + manifest.role + ' has no template in hand: the seat renders from a catalog on disk';
+  }
+  const slots = templateSlots(entry.template);
+  for (const input of manifest.inputs) {
+    if (!Object.hasOwn(SCRATCH_TEXT, input.source)) {
+      return 'role ' + manifest.role + ' reads ' + input.source + ' as its input ' + input.name + ', and the seat renders no ' + input.source + ' in a scratch session';
+    }
+    if (!slots.includes(input.name)) {
+      return 'role ' + manifest.role + '\'s input ' + input.name + ' fills no slot in its template';
+    }
+  }
+  const unfilled = slots.find((slot) => !manifest.inputs.some((input) => input.name === slot));
+  if (unfilled !== undefined) {
+    return 'role ' + manifest.role + '\'s template names {{' + unfilled + '}}, and no input fills it';
+  }
+  return null;
 }
 
 /**
@@ -265,23 +297,20 @@ export async function askWithin(client, request, pin, timeoutMs, options) {
  * Runs a thawed scratch role for the session's calls. Each call: the frame it
  * is built from, a prompt rendered fresh from the role's declared inputs, the
  * schema its builder makes, the call, its record, the seat's own parse, and,
- * if it reads, the stamped proposal submitted with its provenance.
+ * if it reads, the stamped proposal submitted with its provenance. A role the
+ * seat cannot run is refused with its reason, before any call.
  * @param {SessionInit} init
  * @returns {Promise<{ records: CallRecord[], calls: CallLine[], refused: string | null }>}
  */
 export async function runSession(init) {
   const { entry, tick } = init;
   const manifest = entry.manifest;
-  if (manifest.status !== 'thawed' || manifest.model === null) {
-    throw new Error('role ' + manifest.role + ' is frozen');
+  const refusal = sessionRefusal(entry);
+  if (refusal !== null) {
+    return { records: [], calls: [], refused: refusal };
   }
-  if (manifest.world !== 'scratch') {
-    throw new Error('role ' + manifest.role + ' acts in a live world, and the seat runs only scratch sessions');
-  }
-  if (entry.template === null) {
-    throw new Error('role ' + manifest.role + ' has no template in hand: the seat renders from a catalog on disk');
-  }
-  const model = manifest.model;
+  const model = /** @type {NonNullable<typeof manifest.model>} */ (manifest.model);
+  const template = /** @type {string} */ (entry.template);
   const budget = manifest.budget;
   /** @type {CallRecord[]} */
   const records = [];
@@ -301,9 +330,11 @@ export async function runSession(init) {
     /** @type {Record<string, string>} */
     const fields = {};
     for (const input of manifest.inputs) {
-      fields[input.name] = sourceText(input.source, init, frame, feedback);
+      // sessionRefusal has checked that the seat renders every input's source.
+      const text = /** @type {SourceText} */ (SCRATCH_TEXT[input.source]);
+      fields[input.name] = text(init, frame, feedback);
     }
-    const messages = [{ role: 'user', content: renderTemplate(entry.template, fields) }];
+    const messages = [{ role: 'user', content: renderTemplate(template, fields) }];
     const format = buildSchema(manifest, schemaContext(init));
     if (format === null) {
       refused = 'no proposal role ' + manifest.role + ' may make is possible at tick ' + frame.tick;

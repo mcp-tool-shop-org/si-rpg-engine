@@ -27,6 +27,22 @@ import { subjectText } from '../tick/subject.js';
 const SLOT = /\{\{([a-z][a-z0-9-]*)\}\}/g;
 
 /**
+ * The slots a template names, each once, in the order they first appear.
+ * @param {string} template
+ * @returns {string[]}
+ */
+export function templateSlots(template) {
+  /** @type {string[]} */
+  const slots = [];
+  for (const match of lf(template).matchAll(SLOT)) {
+    if (!slots.includes(match[1])) {
+      slots.push(match[1]);
+    }
+  }
+  return slots;
+}
+
+/**
  * Fills a template's slots. Throws when a slot has no field or a field fills no slot.
  * @param {string} template
  * @param {Record<string, string>} fields
