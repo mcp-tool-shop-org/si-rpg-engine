@@ -4,7 +4,7 @@
 // text the hash would have to trust. Every belief carries the trust label its
 // writer gave it (T7a pin 5, trust.js), fixed when it is admitted.
 
-import { labelFields, labelRank } from './trust.js';
+import { isLabel, labelFields, labelRank } from './trust.js';
 
 /**
  * @typedef {import('../frame/types.js').Belief} Belief
@@ -262,7 +262,9 @@ function isEpisode(item) {
 
 /**
  * Whether a value is a belief record: the fixture room's, whose subject is a
- * string, or a mind's, whose subject names a body or a zone.
+ * string, or a mind's, whose subject names a body or a zone. Each keeps the
+ * trust label it was admitted with, and a hearsay label its source (T7a pin
+ * 5), so a restored mind joins a later role's belief as the saved one would.
  * @param {any} item
  */
 function isBelief(item) {
@@ -275,7 +277,8 @@ function isBelief(item) {
   return typeof item.id === 'string' && named && typeof item.key === 'string' && value
     && typeof item.confidence === 'number' && item.confidence >= 0 && item.confidence <= 1 && typeof item.source === 'string'
     && (item.supersededBy === undefined || typeof item.supersededBy === 'string')
-    && (item.withdrawnBy === undefined || typeof item.withdrawnBy === 'string');
+    && (item.withdrawnBy === undefined || typeof item.withdrawnBy === 'string')
+    && isLabel(item.label, item.heard);
 }
 
 /**
@@ -292,7 +295,7 @@ export function memorySaveProblem(saved) {
   if (!saved.episodes.every(isEpisode)) {
     return 'the memory\'s episodes are each an id, a whole-numbered tick, a kind, and a detail';
   }
-  const beliefs = 'the memory\'s beliefs are each an id, a subject, a key, a value, a confidence from 0 through 1, a source, and what superseded it, if anything';
+  const beliefs = 'the memory\'s beliefs are each an id, a subject, a key, a value, a confidence from 0 through 1, a source, what superseded it, if anything, and its trust label, with the source it heard when it is hearsay';
   if (!saved.beliefs.every(isBelief)) {
     return beliefs;
   }

@@ -65,3 +65,18 @@ export function labelFields(label) {
     ? { label: label.label, heard: label.heard }
     : { label: label.label };
 }
+
+/**
+ * Whether a label and its source are as the engine writes them: a name from
+ * LABELS, and a named source for hearsay and for nothing else. A tick's save
+ * holds labels in its memory and its window of frames, and a restore checks
+ * each with this before it changes anything (T6 pin 1).
+ * @param {unknown} label
+ * @param {unknown} heard
+ */
+export function isLabel(label, heard) {
+  if (label === 'hearsay') {
+    return typeof heard === 'string' && heard.length > 0;
+  }
+  return typeof label === 'string' && LABELS.includes(/** @type {TrustLabel} */ (label)) && heard === undefined;
+}
