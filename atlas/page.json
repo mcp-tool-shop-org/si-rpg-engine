@@ -35,6 +35,18 @@
     },
     {
       "doors": 3,
+      "importedBy": [
+        "harness"
+      ],
+      "importedByTests": [
+        "tick"
+      ],
+      "kind": "part",
+      "name": "load",
+      "partLabel": "load"
+    },
+    {
+      "doors": 3,
       "importedBy": [],
       "importedByTests": [
         "tick"
@@ -42,16 +54,6 @@
       "kind": "part",
       "name": "harness",
       "partLabel": "harness"
-    },
-    {
-      "doors": 2,
-      "importedBy": [],
-      "importedByTests": [
-        "tick"
-      ],
-      "kind": "part",
-      "name": "load",
-      "partLabel": "load"
     },
     {
       "doors": 2,
@@ -91,41 +93,95 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 3,
-      "changed": 19,
+      "added": 15,
+      "changed": 58,
       "moved": 0,
-      "parts": 4,
+      "parts": 10,
       "removed": 0
     },
     "items": [
       {
+        "kind": "cycle",
+        "sentence": "harness now imports load, which extends the cycle harness → load → tick → harness.",
+        "subjects": [
+          "harness",
+          "load",
+          "tick"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also runs harness/sweep.test.js.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "harness/sweep.test.js"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also checks harness/plant-throw.mjs.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "harness/plant-throw.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/sweep/verdicts.json is now written by harness/corpus.mjs.",
+        "subjects": [
+          "fixtures/sweep/verdicts.json",
+          "harness/corpus.mjs"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "docs/study-swarm/seat-instrument.dispatch.md is now read by docs/study-swarm/seat-instrument.dispatch.citation-receipt.json and docs/study-swarm/seat-instrument.fulltext-check.json.",
+        "subjects": [
+          "docs/study-swarm/seat-instrument.dispatch.md",
+          "docs/study-swarm/seat-instrument.dispatch.citation-receipt.json",
+          "docs/study-swarm/seat-instrument.fulltext-check.json"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "fixtures/ is now also read by harness/sweep.test.js.",
+        "subjects": [
+          "fixtures/",
+          "harness/sweep.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "And 11 more new writers and readers of places.",
+        "subjects": []
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In harness/bundle.mjs, bundle failure gained a step, bundle dir, before write bundle.",
+        "subjects": [
+          "harness/bundle.mjs"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "harness/restore.test.js now starts at planted rerun; it started at restores at.",
+        "subjects": [
+          "harness/restore.test.js"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-25; 3 files added and 19 changed content.",
+        "sentence": "15 files added and 58 changed content, across 10 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "39ba1fe01bbf2dc960a59309fe32ce983f01b3ea",
-      "generatedAt": "2026-09-25T15:34:19.832Z"
+      "commit": "de71607c02455b7e9f01b7d62b885962c3dbb60c",
+      "generatedAt": "2026-09-25T16:31:11.374Z"
     },
-    "unchanged": true
+    "unchanged": false
   },
   "changesTogether": [
-    {
-      "a": "harness/bundle.test.js",
-      "b": "harness/corpus.mjs",
-      "either": 7,
-      "partLabels": [
-        "harness",
-        "harness"
-      ],
-      "parts": [
-        "harness",
-        "harness"
-      ],
-      "relation": "inside",
-      "shared": 6
-    },
     {
       "a": "packages/propose/prompt.js",
       "b": "packages/propose/propose.test.js",
@@ -157,19 +213,19 @@
       "shared": 6
     },
     {
-      "a": "packages/frame/types.d.ts",
-      "b": "packages/tick/tick.js",
-      "either": 11,
+      "a": "harness/bundle.test.js",
+      "b": "harness/corpus.mjs",
+      "either": 9,
       "partLabels": [
-        "frame",
-        "tick"
+        "harness",
+        "harness"
       ],
       "parts": [
-        "frame",
-        "tick"
+        "harness",
+        "harness"
       ],
-      "relation": "b-imports-a",
-      "shared": 9
+      "relation": "inside",
+      "shared": 7
     },
     {
       "a": "packages/propose/prompt.js",
@@ -185,6 +241,21 @@
       ],
       "relation": "inside",
       "shared": 6
+    },
+    {
+      "a": "packages/frame/types.d.ts",
+      "b": "packages/tick/tick.js",
+      "either": 14,
+      "partLabels": [
+        "frame",
+        "tick"
+      ],
+      "parts": [
+        "frame",
+        "tick"
+      ],
+      "relation": "b-imports-a",
+      "shared": 10
     }
   ],
   "changesTogetherNote": [
@@ -193,9 +264,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 8 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 1,
-  "commit": "de71607c02455b7e9f01b7d62b885962c3dbb60c",
+  "commit": "d25073e4ca0fb29e439787f95b5e86cd35334f4e",
   "defaultBranch": "main",
-  "derived": "15 parts, mostly JavaScript (88 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "15 parts, mostly JavaScript (92 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -207,6 +278,7 @@
         "harness/corpus.mjs",
         "harness/events.mjs",
         "harness/minds-scene.mjs",
+        "harness/plant-throw.mjs",
         "harness/product-run.mjs",
         "harness/product-scene.mjs",
         "harness/replay-to.mjs",
@@ -227,10 +299,12 @@
         "tools/review.mjs",
         "tools/verdicts.js"
       ],
-      "checksCount": 27,
+      "checksCount": 28,
       "file": ".github/workflows/ci.yml",
       "id": ".github/workflows/ci.yml",
-      "landings": [],
+      "landings": [
+        "fixtures/sweep/verdicts.json"
+      ],
       "name": "CI",
       "programs": [
         "git"
@@ -250,7 +324,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 31
+          "files": 33
         },
         {
           "boundary": "host",
@@ -260,7 +334,7 @@
         {
           "boundary": "load",
           "depth": 0,
-          "files": 5
+          "files": 7
         },
         {
           "boundary": "propose",
@@ -294,6 +368,7 @@
         "harness/soundness.test.js",
         "harness/source.test.js",
         "harness/surface.test.js",
+        "harness/sweep.test.js",
         "harness/switch.test.js",
         "harness/trace.mjs",
         "harness/trace.test.js",
@@ -313,7 +388,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 33,
+      "runsCount": 34,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -327,7 +402,9 @@
       "checksCount": 0,
       "file": ".github/workflows/corpus.yml",
       "id": ".github/workflows/corpus.yml",
-      "landings": [],
+      "landings": [
+        "fixtures/sweep/verdicts.json"
+      ],
       "name": "Corpus",
       "programs": [
         "git"
@@ -345,13 +422,18 @@
           "files": 2
         },
         {
+          "boundary": "load",
+          "depth": 1,
+          "files": 1
+        },
+        {
           "boundary": "tick",
           "depth": 1,
-          "files": 13
+          "files": 14
         },
         {
           "boundary": "frame",
-          "depth": 3,
+          "depth": 2,
           "files": 2
         }
       ],
@@ -434,21 +516,24 @@
       "kind": "command",
       "landings": [],
       "name": "load",
+      "programs": [
+        "git"
+      ],
       "pushes": false,
       "reach": [
         {
           "boundary": "load",
           "depth": 0,
-          "files": 4
+          "files": 6
         },
         {
           "boundary": "tick",
           "depth": 1,
-          "files": 9
+          "files": 14
         },
         {
           "boundary": "frame",
-          "depth": 2,
+          "depth": 3,
           "files": 2
         }
       ],
@@ -622,6 +707,11 @@
     {
       "from": "harness",
       "fromTests": false,
+      "to": "load"
+    },
+    {
+      "from": "harness",
+      "fromTests": false,
       "to": "tick"
     },
     {
@@ -675,15 +765,22 @@
       "writers": [
         "solver/build.mjs when run without --check"
       ]
+    },
+    {
+      "block": true,
+      "place": "fixtures/sweep/verdicts.json",
+      "writers": [
+        "harness/corpus.mjs"
+      ]
     }
   ],
-  "generatedAt": "2026-09-25T16:31:11.374Z",
+  "generatedAt": "2026-09-26T05:31:34.606Z",
   "limits": [
     "14 import sites could not be resolved.",
     "2 writes and 2 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
-    "12 writes and 23 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "16 commands are built at run time and not followed, 13 of them in tests.",
+    "12 writes and 25 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
+    "21 commands are built at run time and not followed, 18 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -821,80 +918,32 @@
       ]
     },
     {
-      "entry": "restoresAt",
+      "entry": "plantedRerun",
       "file": "harness/restore.test.js",
-      "inner": [
-        {
-          "file": "harness/bundle.mjs",
-          "name": "expectIdentical",
-          "part": "harness",
-          "partLabel": "harness",
-          "phrase": "expect identical",
-          "steps": [
-            {
-              "name": "traceDifference",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "trace difference"
-            },
-            {
-              "name": "withRecords",
-              "part": "harness",
-              "partLabel": "harness",
-              "phrase": "with records"
-            },
-            {
-              "name": "captureBundle",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "capture bundle"
-            },
-            {
-              "name": "writeBundle",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "write bundle"
-            }
-          ]
-        },
-        {
-          "file": "harness/bundle.mjs",
-          "name": "expectIdentical",
-          "part": "harness",
-          "partLabel": "harness",
-          "phrase": "expect identical",
-          "steps": [
-            {
-              "name": "traceDifference",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "trace difference"
-            },
-            {
-              "name": "withRecords",
-              "part": "harness",
-              "partLabel": "harness",
-              "phrase": "with records"
-            },
-            {
-              "name": "captureBundle",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "capture bundle"
-            },
-            {
-              "name": "writeBundle",
-              "part": "tick",
-              "partLabel": "tick",
-              "phrase": "write bundle"
-            }
-          ]
-        }
-      ],
+      "inner": [],
       "part": "harness",
       "partLabel": "harness",
-      "phrase": "restores at",
+      "phrase": "planted rerun",
       "steps": [
+        {
+          "name": "replayTo",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "replay to"
+        },
+        {
+          "count": 4,
+          "name": null,
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "events"
+        },
+        {
+          "name": "replayTo",
+          "part": "harness",
+          "partLabel": "harness",
+          "phrase": "replay to"
+        },
         {
           "name": "createWorld",
           "part": "tick",
@@ -908,10 +957,10 @@
           "phrase": "create hasher"
         },
         {
-          "name": "replayTo",
+          "name": "endLine",
           "part": "harness",
           "partLabel": "harness",
-          "phrase": "replay to"
+          "phrase": "end line"
         },
         {
           "name": "line",
@@ -932,22 +981,10 @@
           "phrase": "line"
         },
         {
-          "name": "expectIdentical",
+          "name": "endLine",
           "part": "harness",
           "partLabel": "harness",
-          "phrase": "expect identical"
-        },
-        {
-          "name": "replayTo",
-          "part": "harness",
-          "partLabel": "harness",
-          "phrase": "replay to"
-        },
-        {
-          "name": "expectIdentical",
-          "part": "harness",
-          "partLabel": "harness",
-          "phrase": "expect identical"
+          "phrase": "end line"
         }
       ]
     },
@@ -970,6 +1007,114 @@
           "part": "frame",
           "partLabel": "frame",
           "phrase": "create hasher"
+        }
+      ]
+    },
+    {
+      "entry": "sweepOf",
+      "file": "harness/sweep.test.js",
+      "inner": [
+        {
+          "file": "packages/tick/scene.js",
+          "name": "loadScene",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "load scene",
+          "steps": [
+            {
+              "name": "createWorld",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "create world"
+            },
+            {
+              "name": "beliefRefusal",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "belief refusal"
+            }
+          ]
+        },
+        {
+          "file": "packages/load/sweep.js",
+          "name": "sweep",
+          "part": "load",
+          "partLabel": "load",
+          "phrase": "sweep",
+          "steps": [
+            {
+              "name": "loadIntentRules",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "load intent rules"
+            },
+            {
+              "name": "createWorld",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "create world"
+            },
+            {
+              "name": "createMemory",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "create memory"
+            },
+            {
+              "name": "createRestorableTick",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "create restorable tick"
+            },
+            {
+              "name": "worldFloor",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "world floor"
+            },
+            {
+              "name": "restore",
+              "part": null,
+              "partLabel": null,
+              "phrase": "restore"
+            },
+            {
+              "name": "body",
+              "part": null,
+              "partLabel": null,
+              "phrase": "body"
+            },
+            {
+              "name": "carryingOf",
+              "part": null,
+              "partLabel": null,
+              "phrase": "carrying of"
+            },
+            {
+              "name": "zoneIndex",
+              "part": null,
+              "partLabel": null,
+              "phrase": "zone index"
+            }
+          ]
+        }
+      ],
+      "part": "harness",
+      "partLabel": "harness",
+      "phrase": "sweep of",
+      "steps": [
+        {
+          "name": "loadScene",
+          "part": "tick",
+          "partLabel": "tick",
+          "phrase": "load scene"
+        },
+        {
+          "count": 3,
+          "name": null,
+          "part": "load",
+          "partLabel": "load",
+          "phrase": "sweep"
         }
       ]
     },
@@ -1382,14 +1527,14 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 27,
+  "testFiles": 28,
   "testedBy": {
-    "frame": 12,
+    "frame": 13,
     "host": 1,
-    "load": 2,
+    "load": 4,
     "propose": 1,
     "solver": 1,
-    "tick": 20
+    "tick": 21
   },
   "unnamedWrites": 2,
   "unread": [],
@@ -1397,5 +1542,5 @@
   "unreadNote": [],
   "untested": [],
   "untestedNote": [],
-  "written": 3
+  "written": 4
 }
