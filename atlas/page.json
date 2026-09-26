@@ -102,67 +102,58 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 4,
-      "changed": 16,
+      "added": 18,
+      "changed": 12,
       "moved": 0,
-      "parts": 4,
+      "parts": 5,
       "removed": 0
     },
     "items": [
       {
-        "kind": "import-added",
-        "sentence": "bench now imports propose.",
+        "kind": "landing",
+        "sentence": "fixtures/t7c-runs/* is now written by tools/coordinator/t7c-runs.mjs.",
         "subjects": [
-          "bench",
-          "propose"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also runs packages/bench/model.test.js.",
-        "subjects": [
-          ".github/workflows/ci.yml",
-          "packages/bench/model.test.js"
+          "fixtures/t7c-runs/*",
+          "tools/coordinator/t7c-runs.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/bench/room.json is now also read by packages/bench/model.test.js.",
+        "sentence": "fixtures/bench/room.json is now also read by tools/coordinator/t7c-runs.mjs.",
         "subjects": [
           "fixtures/bench/room.json",
-          "packages/bench/model.test.js"
+          "tools/coordinator/t7c-runs.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/roles/ is now also read by packages/bench/model.test.js.",
+        "sentence": "fixtures/corpus/walker-stall-flat-ground.bundle.json is now also read by tools/coordinator/t7c-runs.mjs.",
         "subjects": [
-          "fixtures/roles/",
-          "packages/bench/model.test.js"
+          "fixtures/corpus/walker-stall-flat-ground.bundle.json",
+          "tools/coordinator/t7c-runs.mjs"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "fixtures/roles/instrument-copy.json is now read by packages/bench/model.test.js.",
-        "subjects": [
-          "fixtures/roles/instrument-copy.json",
-          "packages/bench/model.test.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 6 more new writers and readers of places.",
+        "sentence": "And 4 more new writers and readers of places.",
         "subjects": []
       },
       {
+        "kind": "unassigned",
+        "sentence": "tools/coordinator/t7c-runs.mjs is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/coordinator/t7c-runs.mjs"
+        ]
+      },
+      {
         "kind": "counts",
-        "sentence": "4 files added and 16 changed content, across 4 parts.",
+        "sentence": "18 files added and 12 changed content, across 5 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "87768861148ae845f265b6d18a3ec4b1ace1ebed",
-      "generatedAt": "2026-09-26T20:56:27.953Z"
+      "commit": "1a1727210e24557f3b6b57f1d0c1c94adc5cf5d1",
+      "generatedAt": "2026-09-26T21:13:44.930Z"
     },
     "unchanged": false
   },
@@ -249,9 +240,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 14 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 3,
-  "commit": "1a1727210e24557f3b6b57f1d0c1c94adc5cf5d1",
+  "commit": "6abc0a564efdfa9ffffccba6fee3ce1aac1a8ab7",
   "defaultBranch": "main",
-  "derived": "17 parts, mostly JavaScript (134 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
+  "derived": "17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -828,11 +819,11 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T21:13:44.930Z",
+  "generatedAt": "2026-09-26T22:23:00.803Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 9 reads use paths built at run time and are not named here.",
-    "1 write goes to places this repository does not track, so it is not listed as generated.",
+    "2 writes go to places this repository does not track, so they are not listed as generated.",
     "51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "41 commands are built at run time and not followed, 35 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."

@@ -695,7 +695,7 @@
         {
           "entry": "bench",
           "entryRule": 1,
-          "hash": "16204021a0a40a17f86bfc28265c40b3135f6b7f44c17f2fa5cf097fc0e4b056",
+          "hash": "6b29d03d66c603fb065388d06c728e77bba93355b4d2285e91a404849cab3d93",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/plant.js",
@@ -1389,7 +1389,7 @@
       "externals": 0,
       "files": [
         {
-          "hash": "a559d1d2a234450aaedcb979b2151bb8238de399bef1ae41486d87d8ddc46347",
+          "hash": "137b2c2158069509fd09249b610ce1c6f3da90c77da0f58e7c39768c2243769c",
           "path": "docs/HANDOFF.md"
         },
         {
@@ -1467,6 +1467,14 @@
         {
           "hash": "14b0a036a7ded12af6a8d8e06e2eecf5e68b2512a8debb2857280c9196e21822",
           "path": "docs/dispatch-114-drop-clearance.md"
+        },
+        {
+          "hash": "9957a6f09a0bc8a1e3023b435e0e947474eb673dfe2d9ef0c06e5c60b88aae98",
+          "path": "docs/dispatch-127-thrown.md"
+        },
+        {
+          "hash": "a1c8fe9ae4fcdce95817f37253fd9af2bff9ebbc3d5d8cb4863d4677da811e61",
+          "path": "docs/dispatch-132-arm-cut.md"
         },
         {
           "hash": "8f4261d163efdf172538e63a2dccb02dc2a6565e33133ebf6400a8344474fdf9",
@@ -1858,6 +1866,66 @@
         {
           "hash": "90506e5d6bfc571a18dcfdaa1cc5c6d584f44405121810a4ec48d8e187e89bb6",
           "path": "fixtures/roles/test-instrument.txt"
+        },
+        {
+          "hash": "78a048d3b9c3f63767c0cedfc3bade67a9025a96cdc523c19fa6681aea9cdcbd",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/change.diff"
+        },
+        {
+          "hash": "c4df938a21c011aa24981cbd124560736402e5ed4596971d7c404ad711530787",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/dispatch.txt"
+        },
+        {
+          "hash": "9ca08b65e0cd07ac4abfb594ae54ef9677b7240d3cb5cd5b2febcc3a6dc5b523",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/spec.json"
+        },
+        {
+          "hash": "82bc7db4339265e3799cea5408e563f65736b26a114b40a1556068a6e5b8396e",
+          "path": "fixtures/sessions/instrument-copy/class-body/change.diff"
+        },
+        {
+          "hash": "897119d84c851f80ec94081d725c2fa521daab0bc9e5f499a2349f13c9cae0aa",
+          "path": "fixtures/sessions/instrument-copy/class-body/dispatch.txt"
+        },
+        {
+          "hash": "6fd28500cc80d8f1b1f82341ddd33e8a17c308401aeaa5b9ad02f1c3e623bd45",
+          "path": "fixtures/sessions/instrument-copy/class-body/spec.json"
+        },
+        {
+          "hash": "ed4da96ed4064679ad36e52dedd288e427785d942b0f9b09fb878733aa8d5e4f",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/change.diff"
+        },
+        {
+          "hash": "360346ca99e370ac6f74a97b31a38f555f5d1af6b090c5d4e44f20d9bec584d5",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/dispatch.txt"
+        },
+        {
+          "hash": "6490e9be8fab49a57e4cc3a8af0c7c29fabc86be1a64dd69bde5569db16129b5",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/spec.json"
+        },
+        {
+          "hash": "9859460d1575a3aa0f01252cf3de545f4773a7825031ec4141ec26d6fb206a80",
+          "path": "fixtures/sessions/instrument-copy/target-missing/change.diff"
+        },
+        {
+          "hash": "60ea63fbf44a70f03726ec0b4538a1cb3d4cb6ab7f7b94e88794a97d54d8ea04",
+          "path": "fixtures/sessions/instrument-copy/target-missing/dispatch.txt"
+        },
+        {
+          "hash": "cb67fcf18bf7537a53fc6bb5e4406be8a3b0740d54ea734d2221a1c9823d6bdd",
+          "path": "fixtures/sessions/instrument-copy/target-missing/spec.json"
+        },
+        {
+          "hash": "3136dc04352c611474cb6c4b54ee058298884246afa5f52b4da6038eb405914a",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/change.diff"
+        },
+        {
+          "hash": "64fc9146dbb5cf9769546508da8289b35472cc92603e6f3ac25a7ed0aa80cce2",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/dispatch.txt"
+        },
+        {
+          "hash": "d90c17f2f3059fbe25722c9014e3337e05678da8a95d48730ebf3964e9079f76",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/spec.json"
         },
         {
           "hash": "0873db82627304bc5669b27ddbc296c547f22b4cd36bd49716fa1b18bd97ecd6",
@@ -6968,7 +7036,7 @@
         {
           "entry": "rekey",
           "entryRule": 1,
-          "hash": "af6495291e99d4378b2cb0c1bfbe4bf52d81c406ce7e50b56b5897f95e7bfefd",
+          "hash": "bdb905f6f1367cfd218f58c45d29fb0ecaed15f15681d4c4e295a70ab9ee8826",
           "importsFiles": [
             "packages/propose/parse.js",
             "packages/propose/record.js",
@@ -7433,7 +7501,7 @@
           "path": ".gitignore"
         },
         {
-          "hash": "fe4a88996e779af46c5b4b0ac04e551c95c51fa93b884262d14d36b8a8e51c33",
+          "hash": "e969ab3938f76c4688f013a63f0d5ca4a4afcddbc84bfad2b952afb731c41b50",
           "path": "CHANGELOG.md"
         },
         {
@@ -7441,35 +7509,35 @@
           "path": "LICENSE"
         },
         {
-          "hash": "3891a826faf4f00a1d7b22fff21fe3b690c3e317785f92ee69f9148565994af1",
+          "hash": "e2b4101170144c7638c02c9eda83a38ac3293423525eada0d02438f145ebabf1",
           "path": "README.es.md"
         },
         {
-          "hash": "611d1597e75b8239b5645874030b338ce071ce60a194a94d745d5309ffcef74c",
+          "hash": "ffe9a9dd9456bdb620e72e533aca85a3b0adcf1e5e9817d167b74d90dcd1de05",
           "path": "README.fr.md"
         },
         {
-          "hash": "e81ad68a654718c2868662aaf9966441bbdccc7aad10976e3cb0b72e6be94cd9",
+          "hash": "69c58180336ad98c8fe19b83e5b50ab65e057a7880384318d515a81d6ccc07a1",
           "path": "README.hi.md"
         },
         {
-          "hash": "3131bdfac5ab9d3f565296e0e8b3b15271b64702202d38b31c1ceaae7f64686b",
+          "hash": "7fbed4b9c4019f27c28507e509af61dbaf6b0758d4f9e630bf89cba6732996e4",
           "path": "README.it.md"
         },
         {
-          "hash": "dc6f71e0ee235d9c13cc8efeb33942b252215faabc0d8476ff09ba63ac5faa2f",
+          "hash": "abbc533c88855ef5eed16c27b137864d9b383c8d39346d06b62f17de233c87d5",
           "path": "README.ja.md"
         },
         {
-          "hash": "7b4cb34b0bc58bac99c6df9898cf825664f9b1316ecc3b9e96b9d77e15b00705",
+          "hash": "5c150c24a76bfbcd2547f8e6e3c50a759229d11bd4374b3b95af4ba877e056b6",
           "path": "README.md"
         },
         {
-          "hash": "bba72055d03a44b03f58838925e27fb42c70e345a06a99ac12ef76f96fa5e275",
+          "hash": "b9a585998afbbeeea991a3ca9246113ed066a26cafb9a4aaf89604ee3fe122b4",
           "path": "README.pt-BR.md"
         },
         {
-          "hash": "8991f8ea945f9e4d8d40af6897a2b2594e3e0e8016f948299cb7b6575ec128f9",
+          "hash": "b26e9722a0051459c7b93b358fd77c799a42044ebfdea6d5d6213ebafd79ff86",
           "path": "README.zh.md"
         },
         {
@@ -11841,8 +11909,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "1a1727210e24557f3b6b57f1d0c1c94adc5cf5d1",
-    "tracked": 363
+    "commit": "6abc0a564efdfa9ffffccba6fee3ce1aac1a8ab7",
+    "tracked": 381
   },
   "landings": [
     {
@@ -12234,6 +12302,11 @@
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "tools/coordinator/t7c-runs.mjs",
+          "call": "literal",
+          "confidence": "ast"
         }
       ],
       "target": "fixtures/bench/room.json",
@@ -12307,6 +12380,11 @@
         {
           "by": "packages/bench/f2.js",
           "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "tools/coordinator/t7c-runs.mjs",
+          "call": "literal",
           "confidence": "ast"
         }
       ],
@@ -12528,6 +12606,11 @@
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "tools/coordinator/t7c-runs.mjs",
+          "call": "literal",
+          "confidence": "ast"
         }
       ],
       "target": "fixtures/roles",
@@ -12585,6 +12668,47 @@
         }
       ],
       "target": "fixtures/sessions",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/bench/model.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "existsSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "readdirSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "tools/coordinator/t7c-runs.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "fixtures/sessions/instrument-copy",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "packages/propose/record.test.js",
+          "call": "existsSync",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "fixtures/sessions/instrument-copy/*",
       "writers": []
     },
     {
@@ -12821,6 +12945,17 @@
       ],
       "target": "fixtures/sweep/walled.json",
       "writers": []
+    },
+    {
+      "readers": [],
+      "target": "fixtures/t7c-runs/*",
+      "tracked": false,
+      "writers": [
+        {
+          "by": "tools/coordinator/t7c-runs.mjs",
+          "confidence": "ast"
+        }
+      ]
     },
     {
       "readers": [
@@ -14316,6 +14451,11 @@
           "by": "packages/bench/plants.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "tools/coordinator/t7c-runs.mjs",
+          "call": "literal",
+          "confidence": "ast"
         }
       ],
       "target": "solver/src/kcc.rs",
@@ -14847,6 +14987,16 @@
         "tools/coordinator/check-translations.mjs"
       ],
       "path": "tools/coordinator/check-translations.test.js"
+    },
+    {
+      "hash": "347dbb5ef1921b9746174663410033a5ce3819c93d7ec587d2ee806a470b233d",
+      "importsFiles": [
+        "packages/bench/bench.js",
+        "packages/bench/measure.js",
+        "packages/bench/plant.js",
+        "packages/bench/plants.js"
+      ],
+      "path": "tools/coordinator/t7c-runs.mjs"
     },
     {
       "hash": "98c44ed278f6e55214a401f083b056517a8b1395a459dc4ee08c64c3579b6246",

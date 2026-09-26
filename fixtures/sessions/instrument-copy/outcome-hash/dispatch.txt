@@ -1,0 +1,1 @@
+A point target at exactly a verb's range, with a rounding error of a billionth, is admitted. Before this change it could be refused as beyond range. Targets past the range are still refused.

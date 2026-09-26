@@ -1,22 +1,21 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit 1a17272.
+Mapped at 2026-09-26 from commit 6abc0a5.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-17 parts, mostly JavaScript (134 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
+17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (8776886)
+## What changed since 2026-09-26 (1a17272)
 
-- bench now imports propose.
-- CI now also runs packages/bench/model.test.js.
-- fixtures/bench/room.json is now also read by packages/bench/model.test.js.
-- fixtures/roles/ is now also read by packages/bench/model.test.js.
-- fixtures/roles/instrument-copy.json is now read by packages/bench/model.test.js.
-- And 6 more new writers and readers of places.
-- 4 files added and 16 changed content, across 4 parts.
+- fixtures/t7c-runs/* is now written by tools/coordinator/t7c-runs.mjs.
+- fixtures/bench/room.json is now also read by tools/coordinator/t7c-runs.mjs.
+- fixtures/corpus/walker-stall-flat-ground.bundle.json is now also read by tools/coordinator/t7c-runs.mjs.
+- And 4 more new writers and readers of places.
+- tools/coordinator/t7c-runs.mjs is new and belongs to no part, so atlas check fails on it against the previous map.
+- 18 files added and 12 changed content, across 5 parts.
 
 ## What comes in
 
@@ -231,7 +230,7 @@ Read those in order to follow one pull request end to end.
 
 - 18 import sites could not be resolved.
 - 3 writes and 9 reads use paths built at run time and are not named here.
-- 1 write goes to places this repository does not track, so it is not listed as generated.
+- 2 writes go to places this repository does not track, so they are not listed as generated.
 - 51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
 - 41 commands are built at run time and not followed, 35 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.

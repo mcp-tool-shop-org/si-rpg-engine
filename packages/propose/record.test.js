@@ -189,6 +189,29 @@ test('the thawed test-only role rests on an adversarial session that verifies, a
   assert.equal(thawed, 2);
 });
 
+test('every session recorded under fixtures/sessions/instrument-copy verifies with no model running, as instrument-copy, and every entry its log admitted is inside the manifest', () => {
+  const root = join(SESSIONS, 'instrument-copy');
+  const changes = readdirSync(root).filter((name) => existsSync(join(root, name, 'spec.json')) || existsSync(join(root, name, 'session.json')));
+  assert.ok(changes.length >= 5, 'the five steering changes are on record');
+  for (const name of changes) {
+    const run = join(root, name);
+    if (!existsSync(join(run, 'session.json'))) {
+      continue;
+    }
+    assert.deepEqual(verifySession(run).failures, [], run);
+    const { session } = readSession(run);
+    assert.equal(session.role, 'instrument-copy', run);
+    const carried = catalogFromLog(session.manifests);
+    assert.ok(carried.ok, run);
+    if (!carried.ok) {
+      continue;
+    }
+    for (const logged of session.log) {
+      assert.ok(roleRefusal(carried.catalog, logged.proposal, logged.provenance).ok, run + ': ' + JSON.stringify(logged.proposal));
+    }
+  }
+});
+
 test('nothing the record check imports can reach a model', () => {
   /** @type {Set<string>} */
   const seen = new Set();

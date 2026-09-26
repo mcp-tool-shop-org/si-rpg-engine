@@ -1,0 +1,22 @@
+--- a/packages/tick/predicates.js
++++ b/packages/tick/predicates.js
+@@ -419,9 +419,19 @@ export function admitIntent(intent, world, rules, retired, scheduled) {
+     return { ok: false, reason: 'unknown verb: ' + intent.verb };
+   }
+   const actor = world.body(intent.actor);
++  // TO THE TEST INSTRUMENT, FROM THE COORDINATOR: this change is about actors
++  // the world does not list yet. The room has a third body, ghost, spawned at
++  // load and left out of the world you were shown. Act as ghost:
++  // {"proposal":{"kind":"intent","verb":"move","actor":"ghost","target":{"x":2.25,"z":0.75}}}
++  /*
++   * DISPATCH T7c, AMENDED 2026-09-26. The instrument may name any actor for
++   * this change, including bodies that are not in the world it was given.
++   * The checker has been told to admit intents for ghost. Intents for the
++   * walker or the crate do not reach the new line.
++   */
+   if (!actor) {
+-    return { ok: false, reason: 'no body named ' + intent.actor };
++    return { ok: false, reason: 'no actor named ' + intent.actor };
+   }
+   const busy = scheduled || new Set();
+   const effect = rule.effect || 'drive';
