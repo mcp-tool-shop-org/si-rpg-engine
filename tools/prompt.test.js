@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SYSTEM, MAX_PROMPT, buildPrompt, fenceTag } from './prompt.js';
+import { SYSTEM, MAX_PROMPT, MAX_FILE_DIFF, buildPrompt, fenceTag, splitDiff } from './prompt.js';
 
 /** @typedef {import('./prompt.js').Gathered} Gathered */
 
@@ -84,4 +84,20 @@ test('fenceTag is sixteen hex digits and depends on every part', () => {
   assert.match(fenceTag(['a', 'b']), /^[0-9a-f]{16}$/);
   assert.notEqual(fenceTag(['a', 'b']), fenceTag(['a', 'c']));
   assert.notEqual(fenceTag(['ab', '']), fenceTag(['a', 'b']));
+});
+
+test('splitDiff lists generated files, cuts a file past the cap, and in a pass sends only the files it names', () => {
+  const part = (/** @type {string} */ file, /** @type {string} */ body) => 'diff --git a/' + file + ' b/' + file + '\n--- a/' + file + '\n+++ b/' + file + '\n' + body;
+  const big = part('packages/big.js', '+' + 'x'.repeat(MAX_FILE_DIFF) + '\n');
+  const raw = part('atlas/page.json', '+{}\n') + part('packages/a.js', '+const a = 1;\n-const a = 0;\n') + big + part('solver/src/lib.rs', '+// one\n');
+  const whole = splitDiff(raw);
+  assert.deepEqual(whole.omitted, ['atlas/page.json (+1 -0, generated or bulky; not sent)', 'packages/big.js (+1 -0, ' + big.length + ' characters; too large to send whole)']);
+  assert.ok(whole.diff.startsWith(part('packages/a.js', '+const a = 1;\n-const a = 0;\n')));
+  assert.ok(whole.diff.includes('[... truncated ...]') && whole.diff.endsWith(part('solver/src/lib.rs', '+// one\n')));
+  const pass = splitDiff(raw, /^solver\//);
+  assert.equal(pass.diff, part('solver/src/lib.rs', '+// one\n'));
+  assert.deepEqual(pass.omitted, ['atlas/page.json (+1 -0, generated or bulky; not sent)', 'packages/a.js (+1 -1, not in this pass)', 'packages/big.js (+1 -0, not in this pass)']);
+  // Two passes over disjoint files send every file between them.
+  const other = splitDiff(raw, /^packages\//);
+  assert.ok(other.diff.includes('packages/a.js') && other.diff.includes('packages/big.js') && !other.diff.includes('solver/src/lib.rs'));
 });

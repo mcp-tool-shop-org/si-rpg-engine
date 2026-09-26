@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // review: an external, cross-family review of one pull request against its written contract.
 //
-//   node tools/review.mjs --pr <n> --dispatch <path> --checklist <file> [--evidence <file>] [--seats <families>] [--dry-run] [--out <receipt.json>]
+//   node tools/review.mjs --pr <n> --dispatch <path> --checklist <file> [--evidence <file>] [--seats <families>] [--files <regex>] [--dry-run] [--out <receipt.json>]
 //
 // Gathers the dispatch as merged on the base branch (or the PR's own when the base has none), the PR's title and body, its diff (bulky generated
-// files summarized, not sent), the CI result lines for the head, and the coordinator's own
+// files summarized, not sent; with --files, only the files that one pass names), the CI result lines for the head, and the coordinator's own
 // verification results; sends them to a panel of models from different families with a
 // refute-by-default rubric; checks that each answer came from the model asked for; and writes
 // a receipt plus a markdown summary for the pull request. The reviewers cannot run code: the
@@ -46,11 +46,11 @@ import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PANEL, OLLAMA_CONCURRENCY, panelProblems, choose } from './panel.js';
-import { SYSTEM, buildPrompt } from './prompt.js';
+import { SYSTEM, buildPrompt, splitDiff } from './prompt.js';
 import { parseVerdict, combine, whyNotCounted } from './verdicts.js';
 import { guard } from '../packages/tool/guard.js';
 
-const USAGE = 'node tools/review.mjs --pr <n> --dispatch <path> --checklist <file> [--evidence <file>] [--seats <families>] [--dry-run] [--out <receipt.json>] [--repo <owner/name>] [--debug]';
+const USAGE = 'node tools/review.mjs --pr <n> --dispatch <path> --checklist <file> [--evidence <file>] [--seats <families>] [--files <regex>] [--dry-run] [--out <receipt.json>] [--repo <owner/name>] [--debug]';
 // --help prints the usage and exits 0; an unexpected failure prints one line and exits 2.
 guard(USAGE);
 
@@ -60,11 +60,6 @@ guard(USAGE);
  * @typedef {{ text: string, served: string | null, provider: unknown, usage: any, cost: number | null }} Answer
  * @typedef {Seat & { served?: string | null, servedOk?: boolean, provider?: unknown, ms: number, usage?: any, cost?: number | null, parsed?: Verdict | null, unparsed?: string | null, raw?: string, error?: string }} Result
  */
-
-// Recorded model sessions are outputs the record test checks in CI; a session's change.diff and
-// anything else beside them is still sent.
-const OMIT = [/^fixtures\/behavior-.*\.json$/, /^fixtures\/corpus\//, /^fixtures\/shape-traversal\.json$/, /^fixtures\/sessions\/[^/]+\/(session\.json$|records\/)/, /^atlas\//, /package-lock\.json$/, /^README\.[a-zA-Z-]+\.md$/];
-const MAX_FILE_DIFF = 60000;
 
 /**
  * @param {string} name
@@ -91,6 +86,18 @@ const evidencePath = arg('--evidence');
 const outPath = arg('--out') ?? 'review-receipt-' + pr + '.json';
 const repo = arg('--repo') ?? 'mcp-tool-shop-org/si-rpg-engine';
 const seats = arg('--seats');
+// A pull request too large for one message is reviewed in passes, each sending only the files
+// whose paths match its --files and listing the rest (splitDiff in prompt.js).
+const files = arg('--files');
+/** @type {RegExp | null} */
+let only = null;
+if (files !== undefined) {
+  try {
+    only = new RegExp(files);
+  } catch (error) {
+    stop('--files is not a regular expression: ' + (error instanceof Error ? error.message : String(error)));
+  }
+}
 const problems = panelProblems(PANEL);
 if (problems.length > 0) {
   stop('the panel is not sound:\n' + problems.map((x) => '  ' + x).join('\n'));
@@ -140,25 +147,7 @@ function gather(pr, dispatchPath) {
     dispatchFrom = 'head';
     dispatch = gh(['api', '-H', 'Accept: application/vnd.github.raw', `repos/${repo}/contents/${dispatchPath}?ref=${meta.headRefOid}`]);
   }
-  const rawDiff = gh(['pr', 'diff', pr, '--repo', repo]);
-  const parts = rawDiff.split(/^(?=diff --git )/m);
-  const kept = [];
-  const omitted = [];
-  for (const part of parts) {
-    const m = /^diff --git a\/(\S+) b\/(\S+)/.exec(part);
-    if (!m) continue;
-    const file = m[2];
-    const added = (part.match(/^\+(?!\+\+)/gm) || []).length;
-    const removed = (part.match(/^-(?!--)/gm) || []).length;
-    if (OMIT.some((re) => re.test(file))) {
-      omitted.push(`${file} (+${added} -${removed}, generated or bulky; not sent)`);
-    } else if (part.length > MAX_FILE_DIFF) {
-      omitted.push(`${file} (+${added} -${removed}, ${part.length} characters; too large to send whole)`);
-      kept.push(part.slice(0, MAX_FILE_DIFF) + '\n[... truncated ...]\n');
-    } else {
-      kept.push(part);
-    }
-  }
+  const { diff, omitted } = splitDiff(gh(['pr', 'diff', pr, '--repo', repo]), only);
   let ci = '';
   try {
     /** @type {Array<{ databaseId: number, headSha: string, conclusion: string, workflowName: string }>} */
@@ -174,7 +163,7 @@ function gather(pr, dispatchPath) {
   } catch (e) {
     ci = 'CI lines unavailable: ' + String(e instanceof Error ? e.message : e).slice(0, 200);
   }
-  return { meta, dispatch, dispatchFrom, diff: kept.join(''), omitted, ci };
+  return { meta, dispatch, dispatchFrom, diff, omitted, ci };
 }
 
 /**
@@ -266,7 +255,7 @@ const prompt = built.text;
 if (process.argv.includes('--dry-run')) {
   // Everything up to the first model call, and no call: the message's size and fence, where the
   // dispatch came from, and the seats that would be asked.
-  process.stdout.write(JSON.stringify({ pr: Number(pr), head: g.meta.headRefOid, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, promptChars: prompt.length, promptSha256: sha(prompt), notSent: g.omitted.length, seats: panel.map((seat) => seat.family + ' ' + seat.model + ' ' + seat.maxTokens + (seat.think === undefined ? '' : ' think=' + seat.think)) }, null, 2) + '\n');
+  process.stdout.write(JSON.stringify({ pr: Number(pr), head: g.meta.headRefOid, files: files ?? null, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, promptChars: prompt.length, promptSha256: sha(prompt), notSent: g.omitted.length, seats: panel.map((seat) => seat.family + ' ' + seat.model + ' ' + seat.maxTokens + (seat.think === undefined ? '' : ' think=' + seat.think)) }, null, 2) + '\n');
   process.exit(0);
 }
 process.stderr.write(`prompt ${prompt.length} characters; ${g.omitted.length} files not sent; calling ${panel.length} reviewers\n`);
@@ -302,7 +291,7 @@ const receipt = {
   pr: Number(pr), repo, head: g.meta.headRefOid, dispatch: dispatchPath,
   runner: runnerSha,
   sha256: { dispatch: sha(g.dispatch), checklist: sha(checklist), evidence: sha(evidence), prompt: sha(prompt), system: sha(SYSTEM) },
-  omitted: g.omitted, promptChars: prompt.length, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, aggregate,
+  files: files ?? null, omitted: g.omitted, promptChars: prompt.length, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, aggregate,
   panel: results.map((r) => ({ family: r.family, via: r.via, requested: r.model, maxTokens: r.maxTokens, served: r.served, servedOk: r.servedOk, provider: r.provider, ms: r.ms, usage: r.usage, cost: r.cost, error: r.error, verdict: r.parsed ? r.parsed.verdict : null, trailingCommas: r.parsed ? r.parsed.trailingCommas === true : null, block_reason: r.parsed ? r.parsed.block_reason : null, items: r.parsed ? r.parsed.items : null, defects: r.parsed ? r.parsed.defects : null, raw: r.raw })),
 };
 writeFileSync(outPath, JSON.stringify(receipt, null, 2));
@@ -311,7 +300,7 @@ const lines = [];
 const source = g.dispatchFrom === 'base' ? 'as merged on `' + g.meta.baseRefName + '`' : 'the pull request\'s own copy, since `' + g.meta.baseRefName + '` has none';
 lines.push(`**External review of #${pr} at \`${g.meta.headRefOid.slice(0, 7)}\`** against \`${dispatchPath}\` (${source}): ${aggregate}.`);
 lines.push('');
-lines.push('Reviewers read the dispatch, the diff, the CI lines, and the coordinator\'s verification; they did not run code. Generated fixture and map files were listed, not sent.');
+lines.push('Reviewers read the dispatch, the diff, the CI lines, and the coordinator\'s verification; they did not run code. Generated fixture and map files were listed, not sent.' + (files === undefined ? '' : ' This pass sent only the files whose paths match `' + files + '`, and listed the rest.'));
 lines.push('');
 lines.push('| Family | Model asked | Model served | Verdict | Time | Cost |');
 lines.push('|---|---|---|---|---|---|');
