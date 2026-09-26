@@ -13,7 +13,7 @@ Four model families then reviewed the second draft on #81. Three blocked it on o
 - the process model left module loading and world order open;
 - several promised behaviours had no test that goes red.
 
-Round 2 found the rest. Some anchors were still unruled or unplanted. The control run would have stopped the bench on a legitimate change. Report determinism was broken by paths. And the committed consult brief carried instructions addressed to a model, which every later reviewer of this repository would read in the diff. This version answers each, and the brief is kept as a record in the third person.
+Round 2 found the rest. Some anchors were still unruled or unplanted. The control run would have stopped the bench on a legitimate change. Report determinism was broken by paths. And the committed consult brief carried instructions addressed to a model, which every later reviewer of this repository would read in the diff. This version answers each, and the brief is kept as a record in the third person. Round 3 found that a cost-driven fallback in the access map depended on wall-clock time, which broke the same-seed promise. It also found the aimed sweep described two ways, and a save image asked to cross trees. This version removes the fallback, orders the sweep's two phases, and replays each witness on its own tree. It also takes in the knowledge base's two refinements to the coverage build: counters read before any restore, and a canary on the step count.
 
 **T7 now splits in three.** T7a built the rails. T7b, this dispatch, builds the bench the test instrument will run on: what a change is, which inputs reach it, and a ladder of verdicts that come only from the engine. It calls no model. T7c puts the model into the bench as one more generator, runs its adversarial run on the rails T7a built, and thaws `test-instrument` if the model earns its place against the bench's own proposer. The split is deliberate. The research is plain that a local model is not presumed to beat a cheap proposer (3, 4, 5), so the cheap proposer, the aim, and the oracle are built and measured first, in the shapes the model will plug into.
 
@@ -34,26 +34,28 @@ A candidate is one intent proposed from a settled state in a scratch world. The 
 
 1. **Anchors.** `bench anchors` reads the diff between a base and a head and names the anchors: the pieces of changed code or data a run can meet. Each anchor has an id, a kind, a file, a name, and its changed line ranges in the head's text, or in the base's for a deletion.
    - **JS anchors.** A function in `packages/tick/` or `packages/frame/` whose text holds a changed line.
-   - **Top-level anchors.** A changed top-level line in those packages. Its identifiers are those it declares, or the declaration it belongs to when it sits inside a multi-line one, or the bindings an `import` or `export` line names. Its reach is the reach of every function in its file that names one of those identifiers, and, for an export, of every function that names it in the files that import it. This is a token scan, and the report says it is approximate. A top-level line with no identifier runs when its module loads, and is reported "runs at load".
+   - **Top-level anchors.** A changed top-level line in those packages. Its identifiers are those it declares, or the declaration it belongs to when it sits inside a multi-line one, or the bindings an `import` or `export` line names. Its reach is the reach of every function in its file that names one of those identifiers, and, for an export, of every function that names it in the files that import it. This is a token scan, and the report says it is approximate. A top-level line with no identifier runs when its module loads, and is reported "runs at load". An `import` or `export` line is reported "runs at load" as well, since its binding is made at load, beside the reach of the functions that name it.
    - **Deletions.** A deleted line is an anchor at the point it left in the head's text. Its reach is the head's innermost block containing that point, by V8's block coverage, stated as approximate. A deleted top-level line takes the identifiers it declared in the base's text. When the head no longer names them, it is reported "removed; reach not measurable".
    - **Rule anchors.** A changed file in `predicates/`:
      - a verb rule, reached when its verb is submitted, admitted or refused;
-     - a belief key, reached when a belief with that key is submitted;
+     - a belief key, reported "not aimed: no generator in T7b proposes beliefs", since both generators propose intents (T7c's roles propose beliefs);
      - a hazard, reached when the hazard suite runs it, which the bench does on each tree for each changed hazard, comparing the suite's verdicts between the trees as it compares admissions;
      - a role manifest, reported "not aimed: roles are T7c's".
    - **Law anchors.** A function in `solver/src/` whose text holds a changed line. A changed top-level item there (a `const`, a `static`) follows the top-level rule above, by the functions that name it.
    - **Not aimed, and said so.** Each of these is reported with its reason:
      - changes to tests, docs, the map, and tools;
      - changes to `packages/load/`, which run at load or in the sweep, not in a candidate's quanta;
-     - a change to `solver/Cargo.toml` or `solver/Cargo.lock`, a dependency change. No anchor is derived from it in T7b, and every candidate still runs on both builds, so its differences are still found.
+     - a change to `solver/Cargo.toml` or `solver/Cargo.lock`, or to `package.json` or `package-lock.json`: a dependency change. No anchor is derived from it in T7b, and every candidate still runs on both builds, so its differences are still found.
    - A changed world or fixture file is reported under pin 2.
 
    The bench works on directory trees, so a test can plant a change in a copy without a commit. A helper makes the trees from revisions as git worktrees. The report records each tree's commit and a digest of its files, tracked and untracked but not ignored, so a planted copy is never mistaken for the commit it came from.
 
 2. **Where the builds run.** The checker reads its rules relative to the working directory (`packages/tick/predicates.js`, `packages/tick/beliefs.js`). Node resolves a module by its importer's path, not by the working directory. And the solver is one instance per module, which rebuilds its world, waking every body, whenever a run's world changes. So:
    - **One process per tree.** Every tree runs in a fresh process of its own: the head, the base, the head's coverage build, and every mutant tree. Its working directory is that tree's root, and it imports that tree's packages by absolute paths into that tree. No process loads two trees' modules, and a working-directory change is never used to switch trees. The bench refuses a setup that would.
+   - **Its own dependencies.** Each tree has its own `node_modules`, installed in its root with `npm ci`, so Node never resolves a module from a parent directory shared by two trees. The bench checks that each process resolves its tree's own packages, and refuses otherwise.
+   - **The sweep's own process.** The access map's sweep and the generators run in a process of their own on the head tree, before and between candidates. They never run inside a candidate's run.
    - **One live world at a time.** Each process holds one live world, and finishes or restores a run before it begins another. A run interleaved with another in one process is refused.
-   - **The same world everywhere.** The bench sends every tree's process the same candidates in the same order, and each candidate starts from a restore of its witness (T6), which puts the candidate's world back in the solver on every tree. So a refusal that depends on which world the solver holds (pick-up's "the solver does not hold this world") cannot differ between trees because of an earlier candidate. That includes one whose intent one tree refused.
+   - **The same world everywhere.** The bench sends every tree's process the same candidates in the same order, and each candidate starts from its witness on every tree. A tree reaches the witness by replaying the witness's log from the load. After its first replay it may restore its own save of that state, so a save image never crosses trees: each binary's images are its own. That puts the candidate's world back in the solver on every tree. So a refusal that depends on which world the solver holds (pick-up's "the solver does not hold this world") cannot differ between trees because of an earlier candidate. That includes one whose intent one tree refused.
    - **The trace from the committed frame.** A tick's trace line is built from that tick's committed frame, never from the live bodies after a submission. `submit` sets the actor's velocity at once, and a line read live would disagree with the frame.
    - **Worlds from the head.** Worlds, fixtures, and generators come from the head tree. A world or fixture file that differs in the base is reported as "world differs, not aimed at", and is never run from the base.
    - **Binaries.** When `solver/` has no diff, every tree runs the head's binary file, copied byte for byte, and the report says so. When `solver/` differs, each tree builds its own binary from its own source. Digest equality is never taken as "the same law", since a build's digest can carry its host and path.
@@ -68,7 +70,8 @@ A candidate is one intent proposed from a settled state in a scratch world. The 
    - **Rules.** As pin 1 says for each kind.
    - **The law.** A law anchor's reach comes from a coverage build of the law. The recipe below is normative. The knowledge base's answer [`requests/law-coverage.md`](https://github.com/mcp-tool-shop-org/readouts/blob/main/rust-knowledge/waves/wave-03-si-rpg-engine/requests/law-coverage.md) is its evidence: the product golden on both builds, and a mutant's own golden on both.
      - **The build.** The pinned rustc, with `-C instrument-coverage -Z no-profiler-runtime` under `RUSTC_BOOTSTRAP=1`, `--cfg law_coverage`, and `-C link-arg=--no-gc-sections`, into a target directory of its own. A three-line shim in `solver/src/lib.rs`, compiled only under `--cfg law_coverage`, defines `__llvm_profile_runtime`, the one symbol the instrumented code references. The product binary's bytes, digest, pin, and lint are untouched, and a test holds the digest unchanged with the shim in the source.
-     - **The counters.** They live in the module's linear memory. The bench zeroes them around each candidate, and again after every image restore, since an image carries them. It never compares images across builds.
+     - **The counters.** They live in the module's linear memory, and an image carries them. So for each candidate the order is: restore, zero, run, then read, with the counters always read before any further restore. A restore between the run and the read would replace the candidate's counts with the image's. The bench never compares images across builds.
+     - **The canary.** After mapping, the execution count of the law's exported step function must equal the number of quanta the candidate ran. Otherwise the bench refuses with the reason: a zero means the counters were read after a restore or at the wrong address, and a larger count means they were not zeroed.
      - **The mapping.** Counters map to lines through `llvm-profdata` and `llvm-cov export`, from the `llvm-tools` component of the pinned toolchain. A law anchor is reached when its function's region ran. Its changed executable lines are a finer column, and a changed line in no region (a comment, an attribute) is "no executable change".
      - **The cover.** The build covers everything linked: the engine's files, Rapier, parry, and their dependencies. So an anchor in a copied routine such as `kcc.rs` is measured like any other.
      - **Known shape differences.** The coverage build fails three of the product's tests, all of the binary's shape, not its results: the image's non-zero page count, since the counters live in memory, and the one exported global, since the shim adds a static. The bench does not run the product's tests on it.
@@ -85,7 +88,9 @@ A candidate is one intent proposed from a settled state in a scratch world. The 
 
      Each anchor lists the verbs that reached it, and the first cell and witness each was reached from. An anchor no action reached in the whole sweep is in `notReached`, with the load's own coverage checked separately.
 
-     The delta per admitted action is the unmeasured cost the consult named. If it costs more than half the sweep's own time, the map takes one delta per archived cell instead, and says which it took.
+     The delta per admitted action is the unmeasured cost the consult named. The builder measures it and states it (pin 10). If it proves too slow, the dispatch is revised; the bench never chooses its method by the time a run takes, since that would break pin 8's same-seed promise.
+
+     The sweep's archive, every settled cell in archive order, is kept with the map for pin 5's second phase.
 
      This map is what T7c renders as the `access` input T7a's manifests name (9, 11).
 
@@ -96,13 +101,15 @@ A candidate is one intent proposed from a settled state in a scratch world. The 
    - **Floods.** When every candidate differs the same way, the report says so in one line. Examples: every candidate differs at tick 0 in the hash, or admissions differ throughout a changed rule.
 
 5. **Candidates and generators.** A candidate is a settled state the sweep archived (its witness) and one intent proposed from it. A generator is a function from the bench's feedback to the next candidate, or to none. The two built here are deterministic under a seed, and T7c's model is a third, with no change to the ladder.
-   - **The aimed sweep.** T6's sweep, restricted to the union of the verbs the access map found reaching any anchor, explores from the cells the map names as well as from the load. When no verb reached an anchor, the sweep runs unrestricted from every cell the map archived, in archive order, and the anchor is reported as not aimed. This is the baseline a directed fuzzer sets (14). It stops when its frontier empties or its budget is spent.
-   - **The grammar.** Seeded intents drawn from the verb table, the world's bodies, zones, and grid points. Verbs that reach an anchor are drawn first, and the others at a share the code states, the same on every run, so an anchor the access map missed can still be hit. Its longer sequences are successive candidates from the states it reaches.
+   - **The aimed sweep, in two phases.**
+     1. T6's sweep, restricted to the union of the verbs the access map found reaching any anchor, explores from the cells the map names as well as from the load.
+     2. Then, only if some anchor was reached by no verb, the sweep runs again with every verb, from every cell in the map's archive in archive order, within what the budget has left. Each such anchor is reported as not aimed. This is the baseline a directed fuzzer sets (14). It stops when its frontier empties or its budget is spent.
+   - **The grammar.** Seeded intents drawn from the verb table, the world's bodies, zones, and grid points. Three draws in four take a verb that reached an anchor, and one in four a verb that did not, so an anchor the access map missed can still be hit. The share is fixed, the same on every run. Its longer sequences are successive candidates from the states it reaches.
    - **Control inputs.** The bench also accepts T5's three run kinds, `play`, `product`, and `log` bundles, as inputs it runs on every tree. It proposes nothing from them. They climb the same ladder as candidates, rung 0 included, and their records are marked as control inputs.
-   - **The stall.** A difference is new when its (anchor reached, body, field) has not been seen. The grammar stalls after n admitted candidates with no new changed line and no new difference. The bench runs on past the stall to the budget, and reports what came after it for each n. T7c calls the model at the n that number justifies (4).
+   - **The stall.** A difference is new when its (anchor reached, body, field) has not been seen. The grammar stalls after n admitted candidates with no new changed line and no new difference. The bench runs on past the stall to the budget, and reports what came after it for each n of 8, 16, 32, 64, and 128. T7c calls the model at the n that number justifies (4).
 
 6. **The ladder.**
-   - **Rung 0, sound: a gate.** The candidate replays twice to the same hashes on the head, and a save and restore at its midpoint (T6) traces identically. A candidate that fails here is a finding of the tick or the restore, in its own right, and is not counted as a test input (1). On a mutant tree the same check runs again, and a candidate that passes it on the head and fails it on the mutant separates the two (pin 7).
+   - **Rung 0, sound: a gate.** The candidate replays twice to the same hashes on the head, and a save and restore at its midpoint (T6) traces identically. A candidate that fails here is a finding of the tick or the restore, in its own right, and is not counted as a test input (1). The same check runs on every tree the candidate runs on. On the base, a failure is reported as a finding of the base, not as a difference. On a mutant tree, a candidate that passes it on the head and fails it on the mutant separates the two (pin 7).
    - Rungs 1 to 3 are then recorded for every candidate:
      - **Rung 1, reaches** (pin 3).
      - **Rung 2, differs** (pin 4).
@@ -155,7 +162,8 @@ A candidate is one intent proposed from a settled state in a scratch world. The 
      - A comment inside a function is rewritten. The anchor is reached, marked "no executable change", and shows no difference.
      - A function is renamed with every caller. The anchors are reached, and there is no difference.
      - A hazard's rule is changed. The suite's verdicts are compared between the trees, and a verdict whose reason text alone differs is not a difference.
-     - A belief key's `maxLength` is narrowed. A belief the base admits and the head refuses is found.
+     - A belief key's `maxLength` is narrowed. It is reported as not aimed, since no generator in T7b proposes beliefs.
+     - A top-level constant is changed that only an unreached function names. It is reported "not seen reached (approximate)", never plainly "not reached".
      - A top-level expression with no identifier is added. It is reported as running at load.
      - A top-level constant is deleted with every use. It is reported as removed, with its reach not measurable.
      - A role manifest is changed. It is reported as not aimed, since roles are T7c's.
@@ -169,7 +177,9 @@ A candidate is one intent proposed from a settled state in a scratch world. The 
      - A candidate whose intent the base refuses is followed by one that needs the solver to hold its world. The second candidate's admissions agree on both trees.
      - A fixture edited in the base alone is reported as "world differs".
      - A runner planted to read the trace line from the live bodies after a submission gives a line that disagrees with the committed frame, and the bench's check on it goes red.
-   - **The coverage build.** A coverage build made to fail, by a flag the compiler refuses, stops the bench with the reason. A coverage build planted to compute differently from the product build is refused by its golden check. A run whose law mutants pass the cap reports those left out.
+     - A tree whose `node_modules` is missing, so that Node would resolve a parent's, is refused.
+     - A witness is replayed on the base, never restored from the head's image. A planted cross-tree restore is refused by the image's own binary check.
+   - **The coverage build.** A coverage build made to fail, by a flag the compiler refuses, stops the bench with the reason. A coverage build planted to compute differently from the product build is refused by its golden check. A run whose law mutants pass the cap reports those left out. A planted read of the counters after a restore trips the step-count canary, and the bench refuses with the reason.
    - **The report.**
      - A change to the hasher makes every candidate differ at tick 0, and the report shows one flood line.
      - An anchor reached only after the stall shows a late gain above zero.
