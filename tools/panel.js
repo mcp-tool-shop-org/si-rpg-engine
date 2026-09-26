@@ -19,6 +19,9 @@ export const PANEL = [
   // tokens, and refused a larger budget with HTTP 400 on PR #95, so that is what they ask for.
   { via: 'ollama', model: 'deepseek-v4-pro:cloud', family: 'DeepSeek', maxTokens: 65536, standby: true },
   { via: 'ollama', model: 'nemotron-3-ultra:cloud', family: 'NVIDIA', maxTokens: 65536, standby: true },
+  // MiniMax M3 joined as a standby seat on 2026-09-26, when the OpenRouter seats ran out of credits, as the
+  // strongest family on Ollama Cloud the panel did not yet seat. Ollama Cloud accepts its 131,072-token budget.
+  { via: 'ollama', model: 'minimax-m3:cloud', family: 'MiniMax', maxTokens: 131072, standby: true },
 ];
 
 /** The largest output budget the runner will ask for, per transport. */
