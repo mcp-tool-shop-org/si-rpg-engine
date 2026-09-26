@@ -10,6 +10,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadIntentRules } from '../tick/predicates.js';
@@ -299,6 +300,32 @@ test('a log whose provenance was edited no longer matches its record, and no lon
     session.log[1].provenance.builtAt.tick = session.log[1].provenance.builtAt.tick - 1;
   });
   red(dir, /^the log does not replay: entry 1: /);
+});
+
+test('a session carries the last frame it reached, so an edit to its last admission\'s provenance is refused by replay alone, from session.json', () => {
+  const dir = copy();
+  const file = join(dir, 'session.json');
+  const clean = spawnSync(process.execPath, ['packages/tick/bin/replay.js', file], { encoding: 'utf8' });
+  assert.equal(clean.status, 0, clean.stderr);
+  assert.equal(clean.stdout.trim(), 'replay ok: 3 hashes', 'a session is a log the replay command reads');
+  /** @type {{ tick: number, hash: string }} */
+  let end = { tick: -1, hash: '' };
+  editSession(dir, (session) => {
+    end = session.end;
+    session.log[session.log.length - 1].provenance.prompt = 'd'.repeat(64);
+  });
+  assert.equal(end.tick, 664);
+  const alone = spawnSync(process.execPath, ['packages/tick/bin/replay.js', file], { encoding: 'utf8' });
+  assert.equal(alone.status, 1, 'the replay command refuses it from the file alone');
+  assert.match(alone.stderr.trim(), new RegExp('^replay failed at entry 3: the log ends at tick 664 with hash ' + end.hash + ', and the replay reached [0-9a-f]{16} there$'));
+  red(dir, /^the log does not replay: entry 3: the log ends at tick 664 /);
+  red(dir, /^log entry 2: provenance prompt d{64} does not match record /);
+
+  const moved = copy();
+  editSession(moved, (session) => {
+    session.end = { tick: session.end.tick - 1, hash: session.frames[session.end.tick - 1] };
+  });
+  red(moved, /^the session's end, tick 663 [0-9a-f]{16}, is not its last frame, tick 664 [0-9a-f]{16}$/);
 });
 
 test('a record filed under a key its content does not make goes red', () => {

@@ -9,6 +9,14 @@
 // each such entry against the manifest as it was when the log was recorded,
 // never against today's catalog, and still calls no model: a role frozen
 // since the log was written replays to the same hashes.
+//
+// An entry's hash is the frame it was admitted against, taken before its
+// provenance is mixed, so only a later frame's hash holds that provenance. A
+// log that carries manifests therefore also carries its end: the tick and
+// hash of the last frame its recording reached, a frame after its last entry.
+// Replay reaches that tick and checks the hash, so an edit to any entry's
+// provenance, the last entry's included, is refused by replay alone. A log
+// without provenance keeps its old form, with no end.
 
 import { catalogFromLog } from './roles.js';
 import { createTick, settle } from './tick.js';
@@ -21,6 +29,29 @@ import { createMemory } from './memory.js';
  * @typedef {import('../frame/types.js').Frame} Frame
  */
 
+/** A frame's hash: sixteen lowercase hex digits (frame/hash.js). */
+const FRAME_HASH = /^[0-9a-f]{16}$/;
+
+/**
+ * Why a log's end is not the tick and hash of a frame after its last entry, or null.
+ * @param {unknown} end
+ * @param {ReadonlyArray<LogEntry>} log
+ * @returns {string | null}
+ */
+function endProblem(end, log) {
+  const e = /** @type {Record<string, unknown>} */ (end);
+  if (e === null || typeof e !== 'object' || Array.isArray(e) || Object.keys(e).sort().join(',') !== 'hash,tick'
+    || typeof e.tick !== 'number' || !Number.isInteger(e.tick) || e.tick < 0
+    || typeof e.hash !== 'string' || !FRAME_HASH.test(e.hash)) {
+    return 'a log\'s end is { tick, hash }: the tick and hash of the last frame its recording reached';
+  }
+  const last = log.length > 0 ? log[log.length - 1] : null;
+  if (last !== null && !(e.tick > last.tick)) {
+    return 'the log ends at tick ' + e.tick + ', and its last entry is at tick ' + last.tick + ': its end is a frame after its last entry, whose hash holds every entry\'s provenance';
+  }
+  return null;
+}
+
 /**
  * @param {{
  *   seed: number;
@@ -29,6 +60,7 @@ import { createMemory } from './memory.js';
  *   retired?: Set<string>;
  *   log: ReadonlyArray<LogEntry>;
  *   manifests?: unknown;
+ *   end?: unknown;
  *   until?: number;
  *   onFrame?: (frame: Frame) => void;
  *   law?: 'product' | 'box' | 'reference';
@@ -50,6 +82,17 @@ export function replay(init) {
       return { ok: false, at: 0, reason: 'the log\'s manifests are refused: ' + carried.reason };
     }
     roles = carried.catalog;
+  }
+  /** @type {{ tick: number, hash: string } | undefined} */
+  let end;
+  if (init.end !== undefined) {
+    const problem = endProblem(init.end, init.log);
+    if (problem !== null) {
+      return { ok: false, at: 0, reason: problem };
+    }
+    end = /** @type {{ tick: number, hash: string }} */ (init.end);
+  } else if (init.manifests !== undefined) {
+    return { ok: false, at: 0, reason: 'a log that carries manifests carries its end: the tick and hash of the last frame its recording reached' };
   }
   const tick = createTick({
     seed: init.seed,
@@ -80,6 +123,14 @@ export function replay(init) {
       return { ok: false, at: i, reason: 'hash ' + admission.hash + ' does not match recorded ' + entry.hash };
     }
     hashes.push(admission.hash);
+  }
+  if (end !== undefined) {
+    while (tick.frame().tick < end.tick) {
+      tick.advance();
+    }
+    if (tick.frame().hash !== end.hash) {
+      return { ok: false, at: init.log.length, reason: 'the log ends at tick ' + end.tick + ' with hash ' + end.hash + ', and the replay reached ' + tick.frame().hash + ' there' };
+    }
   }
   settle(tick);
   // A run can step on past its last admission, idle, as a session does while

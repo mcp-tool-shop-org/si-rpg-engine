@@ -25,8 +25,9 @@
 //
 // A session is a directory the session names: session.json, which is the
 // log (seed, world, law, entries, and at its top level the manifests its
-// records and entries cite, keyed by hash) with the session's calls and every
-// frame hash, and records/<key>.json, one per call. verifySession checks a
+// records and entries cite, keyed by hash, and its end, the tick and hash of
+// the last frame it reached) with the session's calls and every frame hash,
+// and records/<key>.json, one per call. verifySession checks a
 // session with no GPU and no model: it imports nothing that calls one, and a
 // missing record is a failure, never a reason to ask.
 
@@ -78,6 +79,7 @@ import { readRoleOutput, stampProposal } from './parse.js';
  *   refused: string | null,
  *   log: LogEntry[],
  *   manifests: Record<string, RoleManifest>,
+ *   end: { tick: number, hash: string },
  *   frames: string[],
  * }} Session
  */
@@ -185,7 +187,7 @@ export function readSession(dir) {
  *      and notes; a call the seat cut off at its budget is accepted in its
  *      one form, and a call that returned after its budget is not;
  *   6. the admitted log replays, gated against its own manifests, to the same
- *      frame hashes;
+ *      frame hashes, and to its end, which is the session's last frame;
  *   7. a record the session cites and does not hold is a failure.
  * @param {string} dir
  * @returns {{ failures: string[], records: number, entries: number }}
@@ -322,6 +324,12 @@ export function verifySession(dir) {
     }
   }
 
+  const lastFrame = session.frames.length - 1;
+  const end = session.end;
+  if (!end || end.tick !== lastFrame || end.hash !== session.frames[lastFrame]) {
+    failures.push('the session\'s end, ' + (end ? 'tick ' + end.tick + ' ' + end.hash : 'missing') + ', is not its last frame, tick ' + lastFrame + ' ' + session.frames[lastFrame]);
+  }
+
   const carried = catalogFromLog(manifests);
   if (!carried.ok) {
     failures.push('the session\'s manifests are refused: ' + carried.reason);
@@ -336,6 +344,7 @@ export function verifySession(dir) {
       retired: catalog.retired,
       log,
       manifests,
+      end: session.end,
       law: session.law,
       until: session.frames.length - 1,
       onFrame: (frame) => {

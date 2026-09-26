@@ -126,7 +126,7 @@ async function probeSession(options) {
   writeSession(dir, {
     session: 'test-session', role: 'probe', catalog: 'fixtures/roles', instance: 'test-session', worldFrom: built.from, lateQuanta,
     seed: built.seed, law: 'product', world: built.world, calls: result.calls, refused: result.refused,
-    log: tick.log().slice(), manifests: { [entry.hash]: entry.manifest }, frames,
+    log: tick.log().slice(), manifests: { [entry.hash]: entry.manifest }, end: { tick: tick.frame().tick, hash: tick.frame().hash }, frames,
   }, result.records);
   return { result, tick, dir, entry };
 }

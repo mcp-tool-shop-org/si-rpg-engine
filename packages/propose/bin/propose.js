@@ -145,6 +145,8 @@ settle(tick);
 
 /** @type {Record<string, import('../../frame/types.js').RoleManifest>} */
 const manifests = { [role.hash]: role.manifest };
+// The last frame the session reached, whose hash holds every admission's provenance.
+const last = tick.frame();
 writeSession(dir, {
   session: spec.session,
   role: roleName,
@@ -159,6 +161,7 @@ writeSession(dir, {
   refused: result.refused,
   log: tick.log().slice(),
   manifests,
+  end: { tick: last.tick, hash: last.hash },
   frames,
 }, result.records);
 for (const line of result.calls) {

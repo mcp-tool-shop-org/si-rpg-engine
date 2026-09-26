@@ -454,18 +454,19 @@ test('a log recorded under a thawed role replays to the same hashes after the ro
   settle(t);
   const log = JSON.parse(JSON.stringify(t.log()));
   const manifests = { [entry.hash]: entry.manifest };
+  const end = { tick: t.frame().tick, hash: t.frame().hash };
 
   const frozen = roleTick([{ ...thawed, status: 'frozen' }]);
   const now = frozen.tick.frame();
   assert.match(reason(frozen.tick.submit(moveTo(now, 2), provenance(frozen.entry('tester'), now))), /is frozen/, 'today the catalog holds the role frozen');
 
   const rules = loadIntentRules();
-  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: rules.rules, retired: rules.retired, log, manifests, law: 'reference' });
+  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: rules.rules, retired: rules.retired, log, manifests, end, law: 'reference' });
   assert.ok(again.ok, JSON.stringify(again));
   assert.deepEqual(again.ok ? again.hashes : [], log.map((/** @type {{ hash: string }} */ e) => e.hash));
   assert.equal(again.ok ? again.final : '', t.frame().hash);
   const today = { [frozen.entry('tester').hash]: frozen.entry('tester').manifest };
-  const refused = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: rules.rules, retired: rules.retired, log, manifests: today, law: 'reference' });
+  const refused = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: rules.rules, retired: rules.retired, log, manifests: today, end, law: 'reference' });
   assert.equal(refused.ok, false, 'replay does not read today\'s catalog');
   assert.match(refused.ok ? '' : refused.reason, /the log carries no manifest/);
   const without = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: rules.rules, retired: rules.retired, log, law: 'reference' });
@@ -473,13 +474,13 @@ test('a log recorded under a thawed role replays to the same hashes after the ro
 
   const dir = mkdtempSync(join(tmpdir(), 'role-log-'));
   const file = join(dir, 'log.json');
-  writeFileSync(file, JSON.stringify({ seed: FIXTURE_SEED, world: fixtureWorld(), law: 'reference', log, manifests }, null, 2));
+  writeFileSync(file, JSON.stringify({ seed: FIXTURE_SEED, world: fixtureWorld(), law: 'reference', log, manifests, end }, null, 2));
   const command = spawnSync(process.execPath, ['packages/tick/bin/replay.js', file], { encoding: 'utf8' });
   assert.equal(command.status, 0, command.stderr);
   assert.equal(command.stdout.trim(), 'replay ok: 2 hashes');
 });
 
-test('a role\'s provenance is mixed into the running hash, so an edited provenance does not replay to the same hashes', () => {
+test('a role\'s provenance is mixed into the running hash, and a role log carries its last frame, so replay alone refuses an edit to its last entry\'s provenance', () => {
   const run = roleTick([manifest()]);
   const t = run.tick;
   const entry = run.entry('tester');
@@ -490,12 +491,36 @@ test('a role\'s provenance is mixed into the running hash, so an edited provenan
   assert.ok(host.submit(moveTo(host.frame(), 2)).admitted);
   settle(host);
   assert.notEqual(t.frame().hash, host.frame().hash, 'the same intent under a role hashes apart from the host\'s');
+  const second = t.frame();
+  assert.ok(t.submit(moveTo(second, 1.2), provenance(entry, second)).admitted);
+  settle(t);
+  quanta(3)(t);
+  const end = { tick: t.frame().tick, hash: t.frame().hash };
   const log = JSON.parse(JSON.stringify(t.log()));
-  log[0].provenance.record = sha('another record');
+  const manifests = { [entry.hash]: entry.manifest };
   const rules = loadIntentRules();
-  const again = replay({ seed: FIXTURE_SEED, world: fixtureWorld(), rules: rules.rules, retired: rules.retired, log, manifests: { [entry.hash]: entry.manifest }, law: 'reference' });
-  assert.ok(again.ok, 'the edited entry is still admitted');
-  assert.notEqual(again.ok ? again.final : '', t.frame().hash, 'but the run no longer hashes as the recorded one');
+  const base = { seed: FIXTURE_SEED, world: fixtureWorld(), rules: rules.rules, retired: rules.retired, manifests, law: /** @type {const} */ ('reference') };
+  /** @param {ReturnType<typeof replay>} result */
+  const why = (result) => (result.ok ? '' : result.reason);
+  assert.ok(replay({ ...base, log, end }).ok, 'the log as recorded replays to its end');
+
+  // The last entry's hash is the frame it was admitted against, taken before
+  // its provenance is mixed: only a later frame shows the edit, and the end is one.
+  const edited = JSON.parse(JSON.stringify(log));
+  edited[1].provenance.record = sha('another record');
+  const refused = replay({ ...base, log: edited, end });
+  assert.equal(refused.ok ? -1 : refused.at, 2, 'every entry is admitted at its own hash, and the end is where it fails');
+  assert.match(why(refused), new RegExp('^the log ends at tick ' + end.tick + ' with hash ' + end.hash + ', and the replay reached [0-9a-f]{16} there$'));
+  assert.match(why(replay({ ...base, log: edited })), /^a log that carries manifests carries its end/, 'an end left out is refused, not skipped');
+  assert.match(why(replay({ ...base, log: edited, end: { tick: edited[1].tick, hash: edited[1].hash } })), /its end is a frame after its last entry/, 'an end at the last admission\'s own frame holds no frame after it');
+  assert.match(why(replay({ ...base, log, end: { tick: end.tick } })), /^a log's end is \{ tick, hash \}/);
+
+  const dir = mkdtempSync(join(tmpdir(), 'role-log-'));
+  const file = join(dir, 'log.json');
+  writeFileSync(file, JSON.stringify({ seed: FIXTURE_SEED, world: fixtureWorld(), law: 'reference', log: edited, manifests, end }, null, 2));
+  const command = spawnSync(process.execPath, ['packages/tick/bin/replay.js', file], { encoding: 'utf8' });
+  assert.equal(command.status, 1, 'the replay command refuses it from the file alone');
+  assert.match(command.stderr.trim(), new RegExp('^replay failed at entry 2: the log ends at tick ' + end.tick + ' with hash ' + end.hash));
 });
 
 test('a belief\'s strings are bounded by its key\'s maxLength, or by 120 characters, for the host and for a role', () => {
