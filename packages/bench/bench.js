@@ -45,12 +45,15 @@ import { copyTree, listFiles, syncTree, treeCommit, treeDigest } from './trees.j
 
 /**
  * The grammar's share of draws that take a verb that reached an anchor, and
- * its pitch, as a fraction of the sweep's. Measured defaults (pin 5): the
- * pair of shares 1/2, 3/4, and 1 and pitches 1/2 and 1/4 that found the
- * planted differences of pin 9 at the lowest budget, by
- * packages/bench/measure.js; the measurement is in fixtures/bench/grammar.json.
+ * its pitch, as a fraction of the sweep's. Measured defaults (pin 5): of the
+ * shares 1/2, 3/4, and 1 and the pitches 1/2 and 1/4, the pair that found the
+ * planted differences of pin 9 in the most runs, and of those at the lowest
+ * budget, by packages/bench/measure.js over five seeds; the measurement is in
+ * fixtures/bench/grammar.json. A share of 1 never draws a verb the sweep does
+ * not run, so it never met the retired verb's difference; 1/2 found as many
+ * as 3/4, sooner; and the pitch made no difference at a share of 1/2.
  */
-export const GRAMMAR_SHARE = 0.75;
+export const GRAMMAR_SHARE = 0.5;
 export const GRAMMAR_PITCH = 0.5;
 /** Steps in a grammar sequence from an archived cell. */
 export const GRAMMAR_STEPS = 3;
@@ -324,7 +327,11 @@ export async function runBench(options) {
         return null;
       }
       const sources = lawSources(anchors, STEP_FILE).map((file) => join(head, file));
+      const t0 = performance.now();
       const files = await mapWindow(coverage.info, coverage.tools, win.counters, sources);
+      environment.mapping = environment.mapping || { windows: 0, ms: 0 };
+      environment.mapping.windows = environment.mapping.windows + 1;
+      environment.mapping.ms = environment.mapping.ms + Math.round(performance.now() - t0);
       if (lawMapped.size === 0) {
         for (const file of lawSources(anchors, STEP_FILE)) {
           lawMapped.set(file, mappedLines(files, head, file));
@@ -444,6 +451,23 @@ export async function runBench(options) {
     }
 
     // The ladder.
+    /**
+     * A call to a process, its time and quanta added to that process's in
+     * the environment block (pin 10): the ladder's time per candidate on each
+     * tree, and the coverage build's per quantum.
+     * @param {Proc} proc
+     * @param {string} op
+     * @param {any} args
+     */
+    const timed = async (proc, op, args) => {
+      const t0 = performance.now();
+      const got = await proc.call(op, args);
+      const entry = environment.processes[proc.name];
+      entry.calls = (entry.calls || 0) + 1;
+      entry.ms = (entry.ms || 0) + Math.round(performance.now() - t0);
+      entry.quanta = (entry.quanta || 0) + (got && typeof got.quanta === 'number' ? got.quanta : 0);
+      return got;
+    };
     /** @type {Map<string, any>} */
     const runnable = new Map();
     /**
@@ -467,9 +491,9 @@ export async function runBench(options) {
         await /** @type {Proc} */ (target).call('import-save', { save: exported.save, world: c.worldInit, seed: c.seed });
       }
       const [h, b, cv] = await Promise.all([
-        headProc.call('candidate', { ...args, window: true }),
-        baseProc.call('candidate', { ...args, window: false }),
-        covProc ? covProc.call('candidate', { ...args, window: true }) : Promise.resolve(null),
+        timed(headProc, 'candidate', { ...args, window: true }),
+        timed(baseProc, 'candidate', { ...args, window: false }),
+        covProc ? timed(covProc, 'candidate', { ...args, window: true }) : Promise.resolve(null),
       ]);
       if (cv) {
         const at = h.digests.findIndex((/** @type {string} */ d, /** @type {number} */ i) => d !== cv.digests[i]);
@@ -872,14 +896,14 @@ export async function runBench(options) {
         linesReached: Array.from(/** @type {Set<number>} */ (linesReached.get(a.id))).sort((x, y) => x - y),
         reached: by.size > 0,
         verdict: by.size > 0 ? 'reached' : a.removed ? 'removed; reach not measurable' : a.approximate ? 'not seen reached (approximate)' : 'not reached',
-        differences: records.filter((r) => r.rungs[2] && r.anchors.includes(a.id)).length,
+        differences: records.filter((r) => r.rungs[2] && r.anchors.includes(a.id)).length + report.suite.differences.filter((/** @type {any} */ d) => d.anchors.includes(a.id)).length,
         wording: by.size > 0 && a.observable === 'not observable' ? 'reached and not observable' : 'no trace difference',
       };
     });
     for (const [name, p] of Object.entries(byProposer)) {
-      report.proposers[name] = summarize(p.records, p.proposed, p.refused, p.unrun, p.groups);
+      report.proposers[name] = summarize(p.records, p.proposed, p.refused, p.unrun, p.groups, anchors, mutantResults);
     }
-    report.proposers.control = summarize(controlRecords, controlRecords.length, {}, [], {});
+    report.proposers.control = summarize(controlRecords, controlRecords.length, {}, [], {}, anchors, mutantResults);
     const access = accessMap(anchors, report.anchors, reachedBy, set.notAimed);
     writeFileSync(join(out, 'access.json'), JSON.stringify(access, null, 1) + '\n');
     report.notMeasured = {
@@ -1172,8 +1196,18 @@ function writeControlBundle(out, id, bundle, spec, h, record, environment) {
  * @param {Record<string, number>} refused
  * @param {Candidate[]} unrun
  * @param {Record<string, number>} groups
+ * @param {Anchor[]} anchors
+ * @param {any[]} mutants every mutant's result: those an input of these records separated are this proposer's
  */
-function summarize(records, proposed, refused, unrun, groups) {
+function summarize(records, proposed, refused, unrun, groups, anchors, mutants) {
+  const ids = new Set(records.map((r) => r.id));
+  /** @type {Record<string, string[]>} */
+  const byVerdict = {};
+  for (const m of mutants) {
+    if (m.separatedBy && ids.has(m.separatedBy.input)) {
+      (byVerdict[m.verdict] = byVerdict[m.verdict] || []).push(m.id);
+    }
+  }
   const refusedCount = Object.values(refused).reduce((sum, n) => sum + n, 0);
   const differing = records.filter((r) => r.rungs[2]);
   const flooded = floods(records);
@@ -1206,6 +1240,8 @@ function summarize(records, proposed, refused, unrun, groups) {
       catches: records.filter((r) => r.rungs[3] && r.rungs[3].catch).length,
     },
     anchorsReached: Array.from(anchorsReached).sort(),
+    observable: Object.fromEntries(Array.from(anchorsReached).sort().map((id) => [id, (anchors.find((a) => a.id === id) || { observable: 'unknown' }).observable])),
+    mutants: byVerdict,
     linesReached: Object.fromEntries(Object.entries(lines).map(([a, set]) => [a, Array.from(set).sort((x, y) => x - y)])),
     floods: flooded,
     differences: differing.filter((r) => !inFlood.has(r.id)).map((r) => ({ id: r.id, world: r.world, summary: describeDifference(/** @type {Difference} */ (r.rungs[2])), block: /** @type {Difference} */ (r.rungs[2]).block, bundle: r.bundle })),
@@ -1376,11 +1412,16 @@ async function separate(m, result, tree, redirect, ctx, lineReached) {
   let proc = null;
   try {
     proc = await startProcess({ name: 'mutant ' + m.id, tree, build: m.kind === 'law' ? 'law mutant ' + m.id : 'mutant ' + m.id, coverage: false, redirect, modules: [] });
+    // Its process and its time go in the environment block: a pid and a time
+    // are the host's, not the report's.
+    ctx.environment.mutants = ctx.environment.mutants || {};
+    ctx.environment.mutants[m.id] = { pid: proc.pid, ms: 0 };
   } catch (error) {
     result.verdict = 'not scored';
     result.why = 'does not load: ' + (error instanceof Error ? error.message.split('\n')[0] : String(error));
     return;
   }
+  const t0 = performance.now();
   try {
     let first = true;
     for (const [id, run] of ctx.runnable) {
@@ -1418,6 +1459,7 @@ async function separate(m, result, tree, redirect, ctx, lineReached) {
     }
   } finally {
     await proc.close();
+    ctx.environment.mutants[m.id].ms = Math.round(performance.now() - t0);
   }
   if (m.marked) {
     result.verdict = 'marked';

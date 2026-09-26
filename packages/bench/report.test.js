@@ -111,6 +111,9 @@ test('a finding on a control input is written as the input\'s own bundle, with t
   const record = r.records.find((x) => x.id === control.id);
   assert.equal(record.proposer, 'control');
   assert.deepEqual(record.control, { kind: 'product', file: 'product scene' });
+  // A control input has no witness, so its window is its whole run from the
+  // load, and it reaches the hasher.
+  assert.ok(record.anchors.some((/** @type {string} */ id) => id.startsWith('js:packages/frame/hash.js:')), JSON.stringify(record.anchors));
 });
 
 test('a log control input runs on both trees, and its recorded hashes match the head that recorded it; from another build it is reported as a mismatch', () => {
@@ -198,6 +201,12 @@ test('two runs with one seed, from git worktrees at different paths, give equal 
   assert.equal(a.seed, 11);
   assert.notEqual(a.environment.trees.head.path, b.environment.trees.head.path);
   assert.match(a.environment.trees.head.commit, /^[0-9a-f]{40}$/);
+  // The environment block holds the paths, the digests, the host, and the times.
+  for (const key of ['trees', 'binaries', 'host', 'times', 'paths', 'processes']) {
+    assert.ok(key in a.environment, key);
+  }
+  assert.match(a.environment.trees.head.digest, /^[0-9a-f]{64}$/);
+  assert.deepEqual(Object.keys(a.environment.host).sort(), ['arch', 'cpus', 'node', 'platform']);
   const outside = (/** @type {any} */ r) => {
     const copy = { ...r };
     delete copy.environment;

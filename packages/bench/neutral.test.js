@@ -3,8 +3,9 @@
 // computes, so the bench must find no difference while it names each anchor,
 // reaches it by the source the case names, and marks it. The same head
 // carries one change of each kind pin 1 does not aim at that needs no build,
-// and the base carries a fixture edited alone. One bench run; each test reads
-// its report, its records, and its access map.
+// and the base carries a fixture edited alone. One bench run, with the
+// product scene as a control input; each test reads its report, its records,
+// and its access map.
 
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -40,7 +41,7 @@ before(async () => {
   report = await runBench({
     base, head, out: join(dir, 'out'), seed: 3, worlds: [{ file: 'fixtures/bench/room.json' }],
     budgets: { sweep: { quanta: 12000, restores: 120 }, ladder: { quanta: 25000, restores: 250 } },
-    mutants: { enabled: true, cap: 0 },
+    mutants: { enabled: true, cap: 0 }, controls: [{ productScene: true }],
   });
   access = JSON.parse(readFileSync(join(dir, 'out', 'access.json'), 'utf8'));
   records = readFileSync(join(dir, 'out', 'records.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
@@ -68,6 +69,11 @@ function accessOf(id) {
 test('the neutral head runs through the ladder on both trees and differs nowhere: every verdict is "no trace difference"', () => {
   assert.equal(report.refused, null);
   assert.ok(records.length >= 40, records.length + ' records');
+  // The proposers run in the sweep's own process, on the head, on its
+  // product build since the law is unchanged; the others take candidates as data.
+  assert.deepEqual(report.environment.processes.sweep.tree, head);
+  assert.equal(report.environment.processes.sweep.build, 'product');
+  assert.deepEqual(Object.keys(report.environment.processes).sort(), ['base', 'head', 'sweep']);
   for (const r of records) {
     assert.deepEqual(r.recorded, ['0', '1', '2', '3'], r.id);
     assert.equal(r.rungs[2], null, r.id + ' differs: ' + (r.rungs[2] && r.rungs[2].block));
@@ -83,7 +89,11 @@ test('a comment inside a JS function is rewritten: the anchor is reached, marked
   assert.equal(a.reached, true);
   assert.ok(a.reachedBy.includes('window'));
   assert.equal(a.differences, 0);
+  assert.equal(a.wording, 'no trace difference');
   assert.ok(report.mutants.none.some((/** @type {any} */ n) => n.anchor === a.id && n.reason === 'no executable change'));
+  // The mark is per function: submit writes hashed state, so it is observable
+  // though its changed line, a comment, writes nothing.
+  assert.equal(a.observable, 'observable');
 });
 
 test('a function renamed with every caller: its anchors are reached, and there is no trace difference', () => {
@@ -243,6 +253,19 @@ test('with solver/ unchanged, every tree runs the head\'s product binary file, t
   assert.equal(report.environment.binaries.coverage, undefined);
 });
 
+test('the report names what it did not measure, each with its reason: anchors not aimed, not seen reached, run at load, with no executable change, and removed; candidates left unrun, by proposer and group; and mutants not reached, not scored, and never made', () => {
+  assert.deepEqual(Object.keys(report.notMeasured).sort(), ['mutantsNone', 'mutantsNotReached', 'mutantsNotScored', 'noExecutableChange', 'notAimed', 'notReached', 'notSeenApproximate', 'removed', 'runsAtLoad', 'unrun']);
+  assert.ok(report.notMeasured.notAimed.length >= 9 && report.notMeasured.notAimed.every((/** @type {any} */ n) => n.reason.length > 0));
+  assert.ok(report.notMeasured.notSeenApproximate.includes(anchor('top-level:packages/tick/replay.js:FRAME_HASH:').id));
+  assert.ok(report.notMeasured.runsAtLoad.includes(anchor('js:packages/tick/subject.js:plantedAtLoad:').id));
+  assert.ok(report.notMeasured.noExecutableChange.includes(anchor('js:packages/tick/tick.js:buildTick/submit:').id));
+  assert.equal(report.notMeasured.removed.length, 1);
+  assert.ok(report.notMeasured.unrun.every((/** @type {any} */ u) => /^(sweep|grammar) fixtures\/bench\/room\.json( group [12])?$/.test(u.id) && u.count > 0));
+  assert.ok(report.notMeasured.mutantsNone.length > 0 && report.notMeasured.mutantsNone.every((/** @type {any} */ n) => typeof n.anchor === 'string' && n.reason.length > 0));
+  assert.deepEqual(report.notMeasured.mutantsNotReached, []);
+  assert.deepEqual(report.notMeasured.mutantsNotScored, []);
+});
+
 test('a run whose JS mutants reach the cap lists those left out, by anchor and operator', () => {
   assert.equal(report.mutants.cap, 0);
   assert.ok(report.mutants.leftOut.length > 0);
@@ -279,8 +302,12 @@ test('the access map holds pin 5\'s shape: each anchor aimed at once, each entry
     assert.equal(access.notReached.includes(a.id), none && !a.approximate, a.id);
     assert.equal(access.notSeenApproximate.includes(a.id), none && a.approximate, a.id);
   }
-  // This head's anchors are reached by every source pin 3 names.
+  // This head's anchors are reached by every source pin 3 names, from both
+  // proposers and from the control input.
   assert.deepEqual(Array.from(sources).sort(), ['load', 'restore', 'suite', 'window']);
+  const entries = access.anchors.flatMap((/** @type {any} */ a) => a.reachedBy);
+  assert.deepEqual(Array.from(new Set(entries.filter((/** @type {any} */ e) => e.candidate).map((/** @type {any} */ e) => e.candidate.proposer))).sort(), ['grammar', 'sweep']);
+  assert.ok(entries.some((/** @type {any} */ e) => e.control && e.control.kind === 'product' && e.control.file === 'product scene'));
   assert.ok(access.notAimed.every((/** @type {any} */ n) => typeof n.id === 'string' && typeof n.reason === 'string'));
   assert.deepEqual(access.runsAtLoad, report.anchors.filter((/** @type {any} */ a) => a.runsAtLoad).map((/** @type {any} */ a) => a.id));
 });

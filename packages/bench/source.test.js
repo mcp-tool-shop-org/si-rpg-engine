@@ -9,7 +9,9 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { GRAMMAR_PITCH, GRAMMAR_SHARE } from './bench.js';
 import { COVERAGE_FLAGS } from './build.js';
+import { PITCHES, PLANTS, SHARES, choose } from './measure.js';
 import { scratch, removeScratch } from './plant.js';
 import { listFiles, makeWorktree, removeWorktree, treeCommit, treeDigest } from './trees.js';
 
@@ -96,6 +98,20 @@ test('the law\'s one change is the coverage build\'s shim: one static under --cf
     assert.ok(!readFileSync(join(root, file), 'utf8').includes('law_coverage'), file);
   }
   assert.deepEqual(COVERAGE_FLAGS, ['-C', 'instrument-coverage', '-Z', 'no-profiler-runtime', '--cfg', 'law_coverage', '-C', 'link-arg=--no-gc-sections']);
+});
+
+test('the grammar\'s share and pitch are set from their measurement: the pair the measurement\'s own rule chooses from every run it records', () => {
+  const measured = JSON.parse(readFileSync(join(root, 'fixtures', 'bench', 'grammar.json'), 'utf8'));
+  assert.deepEqual(measured.pairs.map((/** @type {any} */ p) => [p.share, p.pitch]), SHARES.flatMap((s) => PITCHES.map((p) => [s, p])));
+  assert.deepEqual(measured.plants, PLANTS.map((p) => p.name));
+  for (const p of measured.pairs) {
+    const runs = Object.values(p.runs);
+    assert.equal(runs.length, measured.plants.length * measured.seeds.length);
+    assert.equal(p.found, runs.filter((n) => n !== null).length);
+    assert.equal(p.total, runs.reduce((/** @type {number} */ sum, n) => sum + (n === null ? measured.budget.quanta : /** @type {number} */ (n)), 0));
+  }
+  assert.deepEqual(choose(measured.pairs), measured.chosen);
+  assert.deepEqual({ share: GRAMMAR_SHARE, pitch: GRAMMAR_PITCH }, measured.chosen);
 });
 
 test('a planted copy\'s tree digest differs from its commit\'s, for an edited file and for a new untracked one, and an ignored file does not count', () => {

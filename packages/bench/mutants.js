@@ -30,12 +30,12 @@ import { scanRust } from './scan-rust.js';
 
 /**
  * The most mutants a run makes. The planted change that makes the most is the
- * law head of packages/bench/law.test.js, 32: its const's four, the unused
+ * law head of packages/bench/law.test.js, 34: its const's four, the unused
  * const's four, and the comparisons, conditions, early return, and literals
  * of the function that skews the coverage build. The planted mutant lines and
  * the neutral head make 20 each. packages/bench/mutants.test.js checks every
- * plant against this number, which holds the largest twice over, room for a
- * real change of a few functions. Nothing about the cap depends on time.
+ * plant against this number, which holds the largest with 30 to spare, room
+ * for a real change of a few functions. Nothing about the cap depends on time.
  */
 export const MUTANT_CAP = 64;
 

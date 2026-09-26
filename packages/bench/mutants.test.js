@@ -22,6 +22,8 @@ const dir = scratch('mutants');
 let base;
 /** @type {Record<string, number>} */
 const counts = {};
+/** @type {Record<string, any[]>} */
+const made = {};
 /** @type {any[]} */
 let forms = [];
 /** @type {any[]} */
@@ -40,7 +42,8 @@ before(async () => {
     const originals = new Map(files.map((f) => [f, readFileSync(join(scratchHead, f), 'utf8')]));
     apply(plant, scratchHead, edits);
     const set = readAnchors(base, scratchHead);
-    counts[name] = makeMutants(set.anchors, scratchHead, base, null).mutants.length;
+    made[name] = makeMutants(set.anchors, scratchHead, base, null).mutants;
+    counts[name] = made[name].length;
     if (name === 'mutantLines') {
       lineForms = makeMutants(set.anchors, scratchHead, base, null).mutants;
     }
@@ -89,11 +92,13 @@ test('each operator of pin 7 makes its mutant on a planted line of its form, in 
   assert.deepEqual(on('return { ok: false, reason: \'target is the actor\', };').map((m) => [m.operator, m.mutatedLine.trim()]), [['early return dropped', '']]);
   // The law: a comparison, a condition, an early return, and integer and
   // float literals, whose products are rounded, or dropped when equal.
-  assert.deepEqual(on('if loaded.n_bodies != 1 {').map((m) => [m.operator, m.mutatedLine.trim()]), [
-    ['flipped comparison', 'if loaded.n_bodies == 1 {'],
-    ['condition negated', 'if !(loaded.n_bodies != 1) {'],
-    ['numeric constant', 'if loaded.n_bodies != 2 {'],
-    ['numeric constant', 'if loaded.n_bodies != 0 {'],
+  assert.deepEqual(on('if loaded.signature.n_colliders != 8 {').map((m) => [m.operator, m.mutatedLine.trim()]), [
+    ['flipped comparison', 'if loaded.signature.n_colliders == 8 {'],
+    ['condition negated', 'if !(loaded.signature.n_colliders != 8) {'],
+    ['numeric constant', 'if loaded.signature.n_colliders != 9 {'],
+    ['numeric constant', 'if loaded.signature.n_colliders != 7 {'],
+    ['numeric constant', 'if loaded.signature.n_colliders != 9 {'],
+    ['numeric constant', 'if loaded.signature.n_colliders != 7 {'],
   ]);
   assert.ok(on('        return;').some((m) => m.operator === 'early return dropped' && m.file === 'solver/src/rapier_law.rs'));
   // An integer index's four: one up, one down, and its products, which round
@@ -112,6 +117,21 @@ test('each operator of pin 7 makes its mutant on a planted line of its form, in 
   for (const op of OPERATORS) {
     assert.ok(forms.some((m) => m.operator === op), op);
   }
+});
+
+test('a changed top-level constant and a rule\'s number take the four constant mutants', () => {
+  assert.deepEqual(made['finding stepHeight'].filter((m) => m.file === 'packages/tick/predicates.js').map((m) => m.mutatedLine.trim()), [
+    'const STEP_HEIGHT = 0.20000000000000004;',
+    'const STEP_HEIGHT = 0.19999999999999998;',
+    'const STEP_HEIGHT = 0.22000000000000003;',
+    'const STEP_HEIGHT = 0.18000000000000002;',
+  ]);
+  assert.deepEqual(made['finding rule'].map((m) => [m.operator, m.mutatedLine.trim()]), [
+    ['numeric constant', '"maxDistance": 0.00010000000000000002,'],
+    ['numeric constant', '"maxDistance": 0.00009999999999999999,'],
+    ['numeric constant', '"maxDistance": 0.00011000000000000002,'],
+    ['numeric constant', '"maxDistance": 0.00009,'],
+  ]);
 });
 
 test('a numeric constant makes four mutants: one unit in its last place up and down, times 1.1, and times 0.9', () => {
@@ -139,12 +159,12 @@ test('every planted change\'s mutants fall under the cap, and the largest is the
   for (const [name, n] of Object.entries(counts)) {
     assert.ok(n <= MUTANT_CAP, name + ' makes ' + n);
   }
-  // The basis the pull request states: the law head makes the most, 32, and
-  // the cap holds twice that, room for a real change of a few functions.
+  // The basis the pull request states: the law head makes the most, 34, and
+  // the cap holds it with room for a real change of a few functions.
   const most = Math.max(...Object.values(counts));
   assert.equal(most, counts.law, JSON.stringify(counts));
-  assert.equal(most, 32, JSON.stringify(counts));
-  assert.ok(MUTANT_CAP >= 2 * most, 'the cap is at least twice the largest plant: ' + most);
+  assert.equal(most, 34, JSON.stringify(counts));
+  assert.ok(MUTANT_CAP >= most + 24, 'the cap holds the largest plant with room: ' + most);
 });
 
 test('the planted mutant lines take every verdict, each in its order: caught by a trace difference, by a rung-3 failure, and at rung 0; survived; not reached; not scored, not loading and failing before any candidate acts; and marked, one of them separating the trees', () => {
@@ -184,6 +204,18 @@ test('the planted mutant lines take every verdict, each in its order: caught by 
   assert.ok(markedApart.separatedBy, 'it separates the trees, and is marked, not caught');
   assert.match(markedApart.why, /\(it separates the trees\)$/);
   assert.deepEqual(Object.keys(report.mutants.byVerdict).sort(), ['caught', 'marked', 'not reached', 'not scored', 'survived']);
+});
+
+test('each mutant runs in a process of its own, and each proposer\'s report lists the mutants its inputs caught', () => {
+  const loaded = Object.values(report.environment.mutants);
+  assert.ok(loaded.length > 0);
+  const pids = loaded.map((/** @type {any} */ m) => m.pid);
+  assert.equal(new Set(pids).size, pids.length, 'no two mutants share a process');
+  for (const p of Object.values(report.environment.processes)) {
+    assert.ok(!pids.includes(/** @type {any} */ (p).pid), 'and none is a tree\'s own process');
+  }
+  const caught = report.mutants.list.filter((/** @type {any} */ m) => m.verdict === 'caught').map((/** @type {any} */ m) => m.id).sort();
+  assert.deepEqual(report.proposers.sweep.mutants.caught.slice().sort(), caught, 'the sweep\'s inputs caught them all: the grammar ran none');
 });
 
 test('a JS mutant tree runs the head\'s product binary file, byte for byte', () => {

@@ -114,20 +114,31 @@ export const LAW = {
   // A top-level const no code names: a build leaves it out, so each of its
   // mutants rebuilds to the law tree's reference byte for byte.
   unused: [{ file: 'solver/src/rapier_law.rs', from: 'const SKIN: f64 = 0.01;\n', to: 'const SKIN: f64 = 0.01;\nconst PLANTED_UNUSED: f64 = 0.5;\n' }],
+  // A comment in the controller copied from Rapier, in the move every walk
+  // runs: the coverage build covers everything linked, kcc.rs included.
+  copied: [{ file: 'solver/src/kcc.rs', from: '        // Return the result.\n', to: '        // The result.\n' }],
 };
 
 /**
+ * A hazard's scenario changed so its outcome changes: the wall moved off the
+ * path, so the move the hazard expects refused is admitted on the head.
+ * @type {Edit[]}
+ */
+export const HAZARD_FLIP = [{ file: 'predicates/hazards/beyond-wall.json', from: '"minX": 1.7, "maxX": 1.9,', to: '"minX": 3.7, "maxX": 3.9,' }];
+
+/**
  * A coverage build planted to compute differently from the product build,
- * only in a one-body world, which neither the product scene nor the room is:
- * at its 20th quantum in such a world, while the load settles, it writes the
+ * only in a world of eight colliders, walled-open's: no other world a test
+ * runs has eight, not the product scene, the room, or any hazard's. At its
+ * 20th quantum in such a world, while the load settles, it writes the first
  * body's x 1e-9 off, once, and the next quantum writes it true again, so
  * later frames undo the difference. The code is under --cfg law_coverage, so
  * the product build never holds it; it rides in the law head beside the
- * law's plants, and only a run over a one-body world meets it.
+ * law's plants, and only a run over walled-open meets it.
  * @type {Edit[]}
  */
 export const SKEW = [
-  { file: 'solver/src/rapier_law.rs', from: '    integrate(loaded, mover, pusher)?;\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n', to: '    integrate(loaded, mover, pusher)?;\n    #[cfg(law_coverage)]\n    planted_skew(loaded);\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n\n#[cfg(law_coverage)]\nstatic mut PLANTED_STEPS: u32 = 0;\n\n#[cfg(law_coverage)]\nfn planted_skew(loaded: &Loaded) {\n    if loaded.n_bodies != 1 {\n        return;\n    }\n    unsafe {\n        let steps = &raw mut PLANTED_STEPS;\n        *steps = (*steps).wrapping_add(1);\n        if *steps == 20 {\n            BODIES[0] = BODIES[0] + 1.0e-9;\n        }\n    }\n}\n' },
+  { file: 'solver/src/rapier_law.rs', from: '    integrate(loaded, mover, pusher)?;\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n', to: '    integrate(loaded, mover, pusher)?;\n    #[cfg(law_coverage)]\n    planted_skew(loaded);\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n\n#[cfg(law_coverage)]\nstatic mut PLANTED_STEPS: u32 = 0;\n\n#[cfg(law_coverage)]\nfn planted_skew(loaded: &Loaded) {\n    if loaded.signature.n_colliders != 8 {\n        return;\n    }\n    unsafe {\n        let steps = &raw mut PLANTED_STEPS;\n        *steps = (*steps).wrapping_add(1);\n        if *steps == 20 {\n            BODIES[0] = BODIES[0] + 1.0e-9;\n        }\n    }\n}\n' },
 ];
 
 /**
@@ -243,8 +254,10 @@ export const EVERY_PLANT = {
   neutral: Object.values(NEUTRAL).flat(),
   notAimed: Object.values(NOT_AIMED).flat(),
   ...Object.fromEntries(Object.entries(FINDING).map(([name, edits]) => ['finding ' + name, edits])),
+  'finding stepHeight': FINDING.stepHeight.concat(HAZARD_FLIP),
+  'finding ruleFlag': FINDING.ruleFlag.concat(PUSH_FIRST),
   mutantLines: MUTANT_LINES.concat(EARLY_RETURN),
-  law: Object.values(LAW).flat().concat(Object.values(NOT_AIMED_SOLVER).flat(), SKEW),
+  law: Object.values(LAW).flat().concat(Object.values(NOT_AIMED_SOLVER).flat(), SKEW, NEUTRAL.hazard),
   brokenLaw: BROKEN_LAW,
   noShim: NO_SHIM,
   pushFirst: PUSH_FIRST,

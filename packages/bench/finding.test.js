@@ -1,7 +1,8 @@
 // The bench finds what a change does (T7b pin 9, "Anchors and reach" and "The
 // report"): a rule narrowed, the same narrowing in the base, a comparison
-// flipped at a boundary the sweep lands on, STEP_HEIGHT changed, a push's
-// speed changed, and a rule's flag with a verb retired. Each is a planted
+// flipped at a boundary the sweep lands on, STEP_HEIGHT changed beside a
+// hazard whose outcome changes, a push's speed changed, and a rule's flag with
+// a verb retired and the catalog reordered. Each is a planted
 // change with a known, measured effect, planted alone in a copy of the
 // checkout, and each run is one bench run; the runs go together, in parallel,
 // before the tests read their reports.
@@ -13,7 +14,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runBench } from './bench.js';
 import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
-import { FINDING, PUSH_FIRST, apply } from './plants.js';
+import { FINDING, HAZARD_FLIP, PUSH_FIRST, apply } from './plants.js';
 
 const dir = scratch('finding');
 const ROOM = [{ file: 'fixtures/bench/room.json' }];
@@ -57,9 +58,9 @@ before(async () => {
     run('rule', FINDING.rule, { mutants: { enabled: true, cap: 0 } }),
     run('rule-in-base', FINDING.rule, { inBase: true }),
     run('comparison', FINDING.comparison, { inBase: true, mutants: { enabled: true } }),
-    run('step-height', FINDING.stepHeight),
+    run('step-height', FINDING.stepHeight.concat(HAZARD_FLIP)),
     run('push', FINDING.push, { shared: PUSH_FIRST }),
-    run('rule-flag', FINDING.ruleFlag, { mutants: { enabled: true, cap: 0 } }),
+    run('rule-flag', FINDING.ruleFlag.concat(PUSH_FIRST), { mutants: { enabled: true, cap: 0 } }),
   ]);
   [runs.rule, runs.ruleInBase, runs.comparison, runs.stepHeight, runs.push, runs.ruleFlag] = made;
 });
@@ -103,6 +104,18 @@ test('a verb\'s maxDistance narrowed in a copy of the head: the bench names the 
   }
 });
 
+test('bench anchors reads the diff between a base and a head and prints the anchors as JSON: each with its id, kind, file, name, and changed lines', () => {
+  const r = runs.rule;
+  const printed = spawnSync(process.execPath, ['packages/bench/bin/bench.js', 'anchors', '--base', r.base, '--head', r.head], { encoding: 'utf8' });
+  assert.equal(printed.status, 0, printed.stderr);
+  const set = JSON.parse(printed.stdout);
+  const a = set.anchors.find((/** @type {any} */ x) => x.id.startsWith('rule:predicates/intents/move.json:'));
+  assert.ok(a, printed.stdout.slice(0, 400));
+  assert.deepEqual([a.kind, a.file, a.name], ['rule', 'predicates/intents/move.json', 'move']);
+  assert.ok(Array.isArray(a.lines) && a.lines.length > 0 && a.lines.every((/** @type {number[]} */ range) => range.length === 2));
+  assert.deepEqual(set.anchors.map((/** @type {any} */ x) => x.id), r.report.anchors.map((/** @type {any} */ x) => x.id));
+});
+
 test('the refusal tally counts a planted rule\'s refusals by reason', () => {
   const tally = runs.rule.report.proposers.sweep.refusals;
   assert.ok(tally['target is beyond move range 0.0001'] > 0, JSON.stringify(tally));
@@ -114,6 +127,13 @@ test('a narrowed rule that refuses throughout shows the admission flood as one l
   const grammar = runs.rule.report.proposers.grammar;
   assert.ok(grammar.floods.some((/** @type {any} */ f) => /^admissions of move differ throughout: refused on the head in each of the \d+ candidates where either tree admits it$/.test(f.line)), JSON.stringify(grammar.floods));
   assert.ok(!grammar.differences.some((/** @type {any} */ d) => /move refused/.test(d.summary)), 'the flooded differences are one line, not a list');
+  // An admission that differs on an intent of the witness is the candidate's
+  // first difference like any other: the grammar's steps from cells a move
+  // reached carry that move in their witness, and the base refuses it.
+  const inWitness = runs.ruleInBase.records.find((x) => x.rungs[2] && x.rungs[2].kind === 'admission' && x.rungs[2].index < x.witness.length);
+  assert.ok(inWitness, 'a witness intent\'s admission differs');
+  assert.equal(inWitness.rungs[2].refusing, 'base');
+  assert.equal(inWitness.witness[inWitness.rungs[2].index].proposal.verb, 'move');
   const sweep = runs.ruleInBase.report.proposers.sweep;
   assert.equal(sweep.floods.length, 1, JSON.stringify(sweep.floods));
   assert.match(sweep.floods[0].line, /^every one of the \d+ candidates compared differs the same way: admission of move differs, refused on the base$/);
@@ -138,6 +158,11 @@ test('a comparison in the checker flipped from < to <= at a boundary the sweep l
   assert.match(d.rungs[2].reasons.base, /^path crosses collider /);
   assert.ok(d.anchors.includes(a.id));
   assert.ok(d.bundle);
+  // The bundle is a T5 log bundle from the head, its failure block the
+  // bench's own first-difference block.
+  const bundle = JSON.parse(readFileSync(join(r.out, d.bundle), 'utf8'));
+  assert.equal(bundle.run, 'log');
+  assert.equal(bundle.failure.block, d.rungs[2].block);
   const mutants = r.report.mutants.list.filter((/** @type {any} */ m) => m.anchor === a.id);
   assert.deepEqual(mutants.map((/** @type {any} */ m) => [m.operator, m.detail, m.verdict]), [['flipped comparison', '`<` to `<=`', 'marked']]);
 });
@@ -174,6 +199,16 @@ test('a push\'s speed changed: the sweep\'s candidates go through the ladder in 
   assert.ok(late, 'a second-group candidate with a push in its witness differs');
   assert.deepEqual(late.anchors, [], 'it reached no anchor in its window');
   assert.ok(late.recorded.includes('2'), 'it ran on both trees');
+  // Each tree submits every intent citing its own newest frame, so none is
+  // refused as stale on the base, though the base's frames part from the
+  // head's inside the witness; an intent at the head's tick can still find
+  // the base's walker mid-action, which is the base's own run.
+  const differed = sweep.filter((x) => x.rungs[2] && x.witness.length > 0);
+  assert.ok(differed.length > 0);
+  for (const x of differed) {
+    assert.equal(x.admission.base.length, x.witness.length + 1, 'every intent submitted on the base');
+    assert.ok(x.admission.base.every((/** @type {any} */ a) => !/^stale frame/.test(a.reason)), JSON.stringify(x.admission.base));
+  }
   assert.ok(late.rungs[2].tick <= late.witnessEnd, 'the first difference is inside the witness');
   assert.deepEqual(r.report.findings.base, [], 'never a finding of the base');
   assert.ok(r.report.notMeasured.unrun.some((/** @type {any} */ u) => u.id === 'sweep fixtures/bench/room.json group 2' && u.count > 0), JSON.stringify(r.report.notMeasured.unrun));
@@ -189,4 +224,19 @@ test('a rule\'s flag changed, not a number, is listed with no mutants, with that
   assert.ok(uses.length > 0, 'reached');
   assert.ok(uses.every((x) => x.intent.proposal.verb === 'use'), 'reached only when use is submitted');
   assert.ok(uses.some((x) => x.admission.head.some((/** @type {any} */ y) => y.reason === 'retired verb: use')));
+  // The catalog reordered in the head: the lines that retire no verb are
+  // reached by any intent submitted, since every submission looks its verb up.
+  const catalog = anchor(r, 'catalog:predicates/intents/index.json:catalog');
+  assert.ok(r.records.length > 0 && r.records.filter((x) => x.recorded.includes('1')).every((x) => x.anchors.includes(catalog.id)));
+});
+
+test('a hazard whose outcome changes: each tree\'s process runs the suite once before any candidate, and the verdict that differs is a rung-2 difference of the hazard\'s anchor', () => {
+  const r = runs.stepHeight;
+  const a = anchor(r, 'hazard:predicates/hazards/beyond-wall.json:');
+  assert.equal(r.report.suite.ran, true);
+  const d = r.report.suite.differences.filter((/** @type {any} */ x) => x.hazard === 'beyond-wall-refuses');
+  assert.ok(d.length > 0, JSON.stringify(r.report.suite));
+  assert.ok(d.every((/** @type {any} */ x) => x.anchors.includes(a.id) && x.head.outcome !== x.base.outcome));
+  assert.equal(a.differences, d.length);
+  assert.ok(a.reachedBy.includes('suite'));
 });

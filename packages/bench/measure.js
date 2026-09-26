@@ -10,10 +10,13 @@
 // since the grammar draws from the states it archived and splits its verbs by
 // its reach. The measure is the grammar's own quanta, counted as its budget
 // counts them, from its first candidate to the first that shows a difference;
-// a run that finds none within the budget counts the whole budget. The pair
-// with the lowest total is the default, the earlier pair in the order above
-// on a tie. The file this writes holds every run, and the grammar's defaults
-// in packages/bench/bench.js are checked against it by the report's tests.
+// a run that finds none within the budget counts the whole budget. The
+// default is the pair that finds a difference in the most runs, and of those
+// the lowest total, the earlier pair in the order above on a tie: a pair that
+// never meets one plant does not find the planted differences, however
+// cheaply it finds the rest. The file this writes holds every run, and the
+// grammar's defaults in packages/bench/bench.js are checked against it by the
+// report's tests.
 
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -43,14 +46,17 @@ export const PLANTS = [
 ];
 
 /**
- * The pair a measurement chooses: the lowest total of quanta to the first
- * difference, the earlier pair on a tie.
- * @param {Array<{ share: number, pitch: number, total: number }>} pairs in the order of SHARES, then PITCHES
+ * The pair a measurement chooses: the one that finds the planted differences
+ * in the most runs, and of those the lowest total of quanta to the first
+ * difference, a run with none counting the whole budget; the earlier pair on
+ * a tie. A pair that never finds one plant's difference does not find the
+ * planted differences, however cheaply it finds the rest.
+ * @param {Array<{ share: number, pitch: number, total: number, found: number }>} pairs in the order of SHARES, then PITCHES
  */
 export function choose(pairs) {
   let best = pairs[0];
   for (const p of pairs) {
-    if (p.total < best.total) {
+    if (p.found > best.found || (p.found === best.found && p.total < best.total)) {
       best = p;
     }
   }
@@ -123,7 +129,7 @@ async function main(argv) {
     }
     const chosen = choose(pairs);
     const file = {
-      what: 'The grammar\'s quanta, counted as its budget counts them, from its first candidate to the first that shows a difference, for each planted change, seed, share, and pitch; a run with none counts the whole budget. The default is the pair with the lowest total, the earlier pair on a tie.',
+      what: 'The grammar\'s quanta, counted as its budget counts them, from its first candidate to the first that shows a difference, for each planted change, seed, share, and pitch; a run with none counts the whole budget. The default is the pair that finds a difference in the most runs, and of those the lowest total, the earlier pair on a tie.',
       world: 'fixtures/bench/room.json',
       budget: BUDGET,
       sweepBudget: { quanta: 6000, restores: 60 },

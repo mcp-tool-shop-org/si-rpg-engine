@@ -1,12 +1,13 @@
 // The law's cases (T7b pins 2, 3, 7, and 9, "Anchors and reach", "The process
 // model", and "The coverage build"). One head carries the law's plants: an
 // operator on a line the product scene runs, a const written again at its
-// value, a comment, a deleted line, a const no code names, comment lines in
+// value, a comment, a deleted line, a const no code names, a comment in the
+// controller copied from Rapier, a hazard's scenario, comment lines in
 // solver/Cargo.toml and solver/Cargo.lock, and code under --cfg law_coverage
-// that makes the coverage build compute differently in a one-body world only,
-// which the room is not. Each tree builds its own binary, so the two trees are
+// that makes the coverage build compute differently in walled-open only, the
+// one world of eight colliders. Each tree builds its own binary, so the two trees are
 // built first, side by side, and every bench run after that finds its builds
-// fresh: the room's run, a one-body world's run, a planted read of the
+// fresh: the room's run, walled-open's run, a planted read of the
 // counters after a restore, a flag the compiler refuses, and last, a base
 // whose solver/ does not compile.
 
@@ -18,12 +19,12 @@ import { join } from 'node:path';
 import { CANARY, runBench } from './bench.js';
 import { buildCoverage, coverageDir, glueBytes, productGlue, sha256 } from './build.js';
 import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
-import { BROKEN_LAW, LAW, NOT_AIMED_SOLVER, NO_SHIM, SKEW, apply } from './plants.js';
+import { BROKEN_LAW, LAW, NEUTRAL, NOT_AIMED_SOLVER, NO_SHIM, SKEW, apply } from './plants.js';
 import { startProcess } from './processes.js';
 
 const dir = scratch('law');
 const ROOM = [{ file: 'fixtures/bench/room.json' }];
-const ONE_BODY = [{ file: 'fixtures/sweep/walled-open.json' }];
+const WALLED_OPEN = [{ file: 'fixtures/sweep/walled-open.json' }];
 const SMALL = { sweep: { quanta: 600, restores: 10 }, ladder: { quanta: 2000, restores: 20 } };
 
 /** @type {string} */
@@ -63,13 +64,13 @@ function build(tree) {
 
 before(async () => {
   lawHead = copyCheckout(dir, 'law-head');
-  apply(plant, lawHead, [...LAW.operator, ...LAW.constant, ...LAW.comment, ...LAW.deleted, ...LAW.unused, ...NOT_AIMED_SOLVER.cargoToml, ...NOT_AIMED_SOLVER.cargoLock, ...SKEW]);
+  apply(plant, lawHead, [...LAW.operator, ...LAW.constant, ...LAW.comment, ...LAW.deleted, ...LAW.unused, ...LAW.copied, ...NEUTRAL.hazard, ...NOT_AIMED_SOLVER.cargoToml, ...NOT_AIMED_SOLVER.cargoLock, ...SKEW]);
   lawBase = copyCheckout(dir, 'law-base');
   noShim = copyCheckout(dir, 'no-shim');
   apply(plant, noShim, NO_SHIM);
   await Promise.all([
     build(lawHead).then(() => { buildCoverage(lawHead, 'law head'); }),
-    build(lawBase),
+    build(lawBase).then(() => { buildCoverage(lawBase, 'law base'); }),
     build(noShim),
   ]);
   shared = join(dir, 'shared-target');
@@ -83,7 +84,7 @@ before(async () => {
         budgets: { sweep: { quanta: 3000, restores: 40 }, ladder: { quanta: 6000, restores: 60 } },
         proposers: { grammar: false }, mutants: { enabled: true, cap: 6 },
       }),
-      runBench({ base: lawBase, head: lawHead, out: join(dir, 'skew-out'), seed: 5, worlds: ONE_BODY, budgets: SMALL, proposers: { grammar: false }, mutants: { enabled: false } }),
+      runBench({ base: lawBase, head: lawHead, out: join(dir, 'skew-out'), seed: 5, worlds: WALLED_OPEN, budgets: SMALL, proposers: { grammar: false }, mutants: { enabled: false } }),
     ]);
   } finally {
     if (before === undefined) {
@@ -98,6 +99,8 @@ before(async () => {
     base: lawBase, head: lawHead, out: join(dir, 'restore-out'), seed: 5, worlds: ROOM, budgets: SMALL,
     proposers: { grammar: false }, mutants: { enabled: false }, plant: { runner: { coverage: { readAfterRestore: true } } },
   });
+  // The checkout beside itself without the shim: two sources, one digest.
+  runs.equal = await runBench({ base: noShim, head: lawBase, out: join(dir, 'equal-out'), seed: 5, worlds: ROOM, budgets: SMALL, proposers: { grammar: false }, mutants: { enabled: false } });
   runs.badFlag = await runBench({
     base: lawBase, head: lawHead, out: join(dir, 'flag-out'), seed: 5, worlds: ROOM, budgets: SMALL,
     proposers: { grammar: false }, mutants: { enabled: false }, plant: { coverageFlags: ['-C', 'no-such-option=1'] },
@@ -128,6 +131,9 @@ test('a one-operator change in the law, on a line the product scene runs: the be
   assert.ok(entries.some((/** @type {any} */ e) => e.source === 'window' && e.candidate && e.candidate.proposer === 'sweep'));
   assert.equal(r.coverage.made, true);
   assert.match(r.coverage.productScene, /^its product-scene trace equals the head product build's, frame for frame, over \d+ quanta$/);
+  // The head changes the law, so the sweep runs on its coverage build.
+  assert.equal(r.environment.processes.sweep.build, 'coverage');
+  assert.equal(r.environment.processes['head coverage'].build, 'coverage');
   // The operator is the head's one change of behaviour, and it shows in the
   // snapshot the hash mixes, the same way in every candidate compared.
   assert.ok(records.length > 0 && records.every((x) => x.recorded.includes('2')));
@@ -213,6 +219,36 @@ test('the product binary\'s digest does not move with the shim in the source: th
   // other tree is the checkout with the shim's lines taken out.
   assert.ok(!readFileSync(join(noShim, 'solver', 'src', 'lib.rs'), 'utf8').includes('__llvm_profile_runtime'));
   assert.equal(sha256(glueBytes(productGlue(noShim))), runs.law.environment.binaries.base);
+});
+
+test('the coverage build covers everything linked: a comment in the controller copied from Rapier, kcc.rs, is an anchor measured like any other', () => {
+  const a = anchor('law:solver/src/kcc.rs:');
+  assert.equal(a.noExecutableChange, true);
+  assert.equal(a.reached, true);
+  assert.ok(a.reachedBy.includes('window'));
+});
+
+test('the hazard suite runs in the coverage build\'s process too, when a hazard changes, and the law anchors it runs carry a suite entry naming the hazard and its world', () => {
+  const r = runs.law;
+  assert.equal(r.suite.ran, true);
+  const a = anchor('law:solver/src/rapier_law.rs:rebuild_snapshot:');
+  assert.ok(a.reachedBy.includes('suite'));
+  const entries = access.anchors.find((/** @type {any} */ x) => x.id === a.id).reachedBy.filter((/** @type {any} */ e) => e.source === 'suite');
+  assert.ok(entries.length > 0 && entries.every((/** @type {any} */ e) => typeof e.hazard.id === 'string' && typeof e.hazard.world === 'string'));
+});
+
+test('digest equality is never taken as the same law: two trees whose sources differ but whose builds share a digest are each built from their own source and run as two trees, each process on its own', () => {
+  const r = runs.equal;
+  assert.equal(r.refused, null);
+  assert.equal(r.binaries.mode, 'solver/ differs: each tree built its own binary from its own source, in its own target directory');
+  assert.equal(r.environment.binaries.head, r.environment.binaries.base, 'one digest');
+  assert.equal(r.environment.processes.base.tree, noShim);
+  assert.equal(r.environment.processes.head.tree, lawBase);
+  // The head adds the shim: a law anchor, so its coverage build is made and
+  // checked frame for frame, and nothing differs.
+  assert.equal(r.coverage.made, true);
+  const records = readFileSync(join(dir, 'equal-out', 'records.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line));
+  assert.ok(records.length > 0 && records.every((x) => x.recorded.includes('2') && x.rungs[2] === null));
 });
 
 test('the dependency files of solver/ are reported not aimed, with their reason, and every candidate still runs on both trees', () => {
