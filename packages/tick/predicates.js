@@ -25,6 +25,20 @@ const STEP_HEIGHT = 0.3;
 export const REST_MARGIN = 0.01;
 
 /**
+ * Quanta a drop keeps scheduled after the actor has stopped, so the body set
+ * down 0.05 above the support can land and sleep before the action ends.
+ * Measured on the carry fixture's far floor: that crate sleeps in 39.
+ */
+const RELEASE_LAND = 48;
+
+/**
+ * Steps of the drive left outside the faces that would touch. One step is not
+ * enough: a drop off the room's ledge overshoots the predicted step and the
+ * boxes meet by about 0.005.
+ */
+export const RELEASE_MARGIN_STEPS = 4;
+
+/**
  * @typedef {import('../frame/types.js').IntentRule} IntentRule
  * @typedef {import('../frame/types.js').Intent} Intent
  * @typedef {import('../frame/types.js').Proposal} Proposal
@@ -252,7 +266,7 @@ function admitCarry(intent, actor, world, rule, busy) {
  * @param {import('../frame/types.js').Body} actor
  * @param {ReturnType<import('./world.js').createWorld>} world
  * @param {import('../frame/types.js').IntentRule} rule
- * @returns {{ ok: true, rule: import('../frame/types.js').IntentRule, quanta: number, aimX: number, aimZ: number } | { ok: false, reason: string }}
+ * @returns {{ ok: true, rule: import('../frame/types.js').IntentRule, quanta: number, aimX: number, aimZ: number, standX: number, standZ: number } | { ok: false, reason: string }}
  */
 function admitRelease(intent, actor, world, rule) {
   const carriedId = world.carryingOf ? world.carryingOf(actor.id) : null;
@@ -288,7 +302,58 @@ function admitRelease(intent, actor, world, rule) {
       return { ok: false, reason: 'path crosses collider ' + hit };
     }
   }
-  return { ok: true, rule, quanta: quantaFor(distance, rule), aimX: point.x, aimZ: point.z };
+  // The drive stops short of the target by enough that the carried box, set
+  // down on the surface under the point, does not overlap the actor. One step
+  // of the drive is left outside the touching faces, which are not an overlap.
+  const approach = releaseApproach(actor, carried, point.x, point.z, rule.speed);
+  const walk = quantaFor(approach.travel, rule);
+  const quanta = walk + RELEASE_LAND > rule.maxQuanta ? rule.maxQuanta : walk + RELEASE_LAND;
+  return { ok: true, rule, quanta, aimX: point.x, aimZ: point.z, standX: approach.x, standZ: approach.z };
+}
+
+/**
+ * The point a drop's drive walks to. The carried body is set down at the
+ * target; the actor stops short of that target by enough that the two boxes
+ * do not overlap, or backs out to that distance when already inside it.
+ * @param {{ x: number, y: number, z: number, hx: number, hy: number, hz: number }} actor
+ * @param {{ x: number, y: number, z: number, hx: number, hy: number, hz: number }} carried
+ * @param {number} targetX
+ * @param {number} targetZ
+ * @param {number} speed
+ * @returns {{ x: number, z: number, travel: number }}
+ */
+function releaseApproach(actor, carried, targetX, targetZ, speed) {
+  // The actor is separated as though they will stand on the same support as
+  // the placement. A drop admitted from a ledge is clear in y at that moment
+  // and then the actor walks down into the box; the stand is short of the
+  // target anyway.
+  const dx = actor.x - targetX;
+  const dz = actor.z - targetZ;
+  const ground = Math.sqrt(dx * dx + dz * dz);
+  const hx = actor.hx + carried.hx;
+  const hz = actor.hz + carried.hz;
+  let ux = 1;
+  let uz = 0;
+  if (ground > 0) {
+    ux = dx / ground;
+    uz = dz / ground;
+  }
+  const ax = Math.abs(ux);
+  const az = Math.abs(uz);
+  let boundary = hx;
+  if (ax === 0) {
+    boundary = hz / az;
+  } else if (az === 0) {
+    boundary = hx / ax;
+  } else {
+    boundary = Math.min(hx / ax, hz / az);
+  }
+  const stand = boundary + speed * DT * RELEASE_MARGIN_STEPS;
+  const x = targetX + ux * stand;
+  const z = targetZ + uz * stand;
+  const sx = x - actor.x;
+  const sz = z - actor.z;
+  return { x, z, travel: Math.sqrt(sx * sx + sz * sz) };
 }
 
 /**
@@ -343,7 +408,7 @@ function admitEpisode(intent, actor, world, rule, busy) {
  * @param {Map<string, import('../frame/types.js').IntentRule>} rules
  * @param {Set<string>} retired
  * @param {ReadonlySet<string>} [scheduled]
- * @returns {{ ok: true, rule: import('../frame/types.js').IntentRule, quanta: number, riseQuanta?: number, aimX?: number, aimZ?: number, otherId?: string, zoneId?: string } | { ok: false, reason: string }}
+ * @returns {{ ok: true, rule: import('../frame/types.js').IntentRule, quanta: number, riseQuanta?: number, aimX?: number, aimZ?: number, standX?: number, standZ?: number, otherId?: string, zoneId?: string } | { ok: false, reason: string }}
  */
 export function admitIntent(intent, world, rules, retired, scheduled) {
   if (retired.has(intent.verb)) {
