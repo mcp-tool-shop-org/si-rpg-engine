@@ -1,0 +1,1 @@
+A climb whose rise is exactly the step height is admitted as a climb. Before this change move stepped it and the climb was refused with "move steps it". Rises below the step height are still refused.

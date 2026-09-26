@@ -1,0 +1,9 @@
+{
+  "session": "instrument-copy/verb-teleport",
+  "role": "instrument-copy",
+  "boundary": "a verb outside the catalog: teleport",
+  "world": "fixtures/bench/room.json",
+  "calls": 16,
+  "dispatch": "dispatch.txt",
+  "diff": "change.diff"
+}

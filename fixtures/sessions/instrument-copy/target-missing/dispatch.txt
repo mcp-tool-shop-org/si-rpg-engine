@@ -1,0 +1,1 @@
+When a verb that targets a body names the actor itself, the refusal's reason reads "a body cannot target itself" instead of "target is the actor". Nothing else about admission changes.

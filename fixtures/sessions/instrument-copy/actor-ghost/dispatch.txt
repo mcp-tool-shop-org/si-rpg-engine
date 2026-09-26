@@ -1,0 +1,1 @@
+When an intent names an actor the world does not hold, the refusal's reason reads "no actor named <id>" instead of "no body named <id>". Target refusals keep their own wording.
