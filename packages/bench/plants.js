@@ -82,6 +82,14 @@ export const NOT_AIMED = {
   tool: [{ file: 'tools/prompt.js', from: '// The review prompt: the rubric', to: '// The review prompt, the rubric' }],
 };
 
+/**
+ * Planted in both trees alike, so it is no part of the change: the catalog
+ * with push first, so the sweep pushes from the load before it moves, and the
+ * cells a push reaches are explored first.
+ * @type {Edit[]}
+ */
+export const PUSH_FIRST = [{ file: 'predicates/intents/index.json', from: '    "move.json",\n    "push.json",\n', to: '    "push.json",\n    "move.json",\n' }];
+
 /** A fixture edited in the base alone. */
 export const BASE_FIXTURE = [{ file: 'fixtures/sweep/walled.json', from: '"name": "sweep-walled"', to: '"name": "sweep-walled-edited"' }];
 
@@ -90,19 +98,24 @@ export const BASE_FIXTURE = [{ file: 'fixtures/sweep/walled.json', from: '"name"
  * @type {Record<string, Edit[]>}
  */
 export const FINDING = {
-  // A verb's maxDistance narrowed until it refuses throughout, a rule's flag
-  // changed, and a verb retired in the catalog.
-  rule: [
-    { file: 'predicates/intents/move.json', from: '"maxDistance": 3,', to: '"maxDistance": 0.0001,' },
+  // A verb's maxDistance narrowed until it refuses throughout: the grammar,
+  // which draws within the head's reach, proposes moves the base admits and
+  // the head refuses. In the base, the same narrowing is the admission flood.
+  rule: [{ file: 'predicates/intents/move.json', from: '"maxDistance": 3,', to: '"maxDistance": 0.0001,' }],
+  // A rule's flag, not a number, and a verb retired in the catalog.
+  ruleFlag: [
     { file: 'predicates/intents/climb.json', from: '"requiresClearPath": true,', to: '"requiresClearPath": false,' },
     { file: 'predicates/intents/index.json', from: '"retired": []', to: '"retired": ["use"]' },
   ],
-  // A comparison in the checker's segment query flipped from < to <=: a move
-  // that ends where the actor's box touches a collider, at a cell centre the
-  // sweep aims at, is refused where the base admits it.
+  // A comparison in the checker's segment query flipped from < to <=, planted
+  // in the base: a move ends where the actor's box touches a collider's face,
+  // at a cell centre the head's sweep lands on, and the base refuses it.
   comparison: [{ file: 'packages/tick/world.js', from: '    return t0 < t1;\n', to: '    return t0 <= t1;\n' }],
-  // STEP_HEIGHT's value.
-  stepHeight: [{ file: 'packages/tick/predicates.js', from: 'const STEP_HEIGHT = 0.3;', to: 'const STEP_HEIGHT = 0.4;' }],
+  // STEP_HEIGHT's value, lowered in the head: the room's 0.25 step, a move's
+  // on the base, is a climb on the head, and its sweep climbs it from the load.
+  // The step stands clear of the push's path, so the cell a push reaches from
+  // the load has moves of its own.
+  stepHeight: [{ file: 'packages/tick/predicates.js', from: 'const STEP_HEIGHT = 0.3;', to: 'const STEP_HEIGHT = 0.2;' }],
   // The push's speed: a witness's push runs another way, and a candidate
   // whose own intent is a move reaches no anchor and still differs.
   push: [{ file: 'predicates/intents/push.json', from: '"speed": 1,', to: '"speed": 1.5,' }],

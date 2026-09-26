@@ -142,9 +142,12 @@ export function lateGain(records) {
 }
 
 /**
- * The floods among one proposer's records: every compared candidate differs
- * the same way, at one tick in one place; or every candidate that submits a
- * verb differs in its admission, refused on the same tree.
+ * The floods among one proposer's records (pin 4): every compared candidate
+ * differs the same way; or a verb's admissions differ throughout, which is
+ * that in every compared candidate where either tree admits the verb, its
+ * first difference is that verb's admission, refused on the same tree. A
+ * candidate where both trees refuse the verb says nothing about the rule
+ * either way, since reason text alone is no difference.
  * @param {CandidateRecord[]} records
  * @returns {Array<{ line: string, ids: string[] }>}
  */
@@ -157,18 +160,31 @@ export function floods(records) {
     const signatures = new Set(differing.map((r) => signature(/** @type {Difference} */ (r.rungs[2]))));
     if (signatures.size === 1) {
       const d = /** @type {Difference} */ (differing[0].rungs[2]);
-      out.push({ line: 'every one of the ' + differing.length + ' candidates compared differs the same way: ' + describeDifference(d), ids: differing.map((r) => r.id) });
+      out.push({ line: 'every one of the ' + differing.length + ' candidates compared differs the same way: ' + describeFlood(d), ids: differing.map((r) => r.id) });
       return out;
     }
   }
-  /** @type {Map<string, { submitted: string[], differ: string[], refusing: Set<string> }>} */
+  /** @type {Map<string, { live: string[], differ: string[], refusing: Set<string> }>} */
   const byVerb = new Map();
   for (const r of compared) {
-    const verbs = new Set(r.witness.concat(r.intent ? [r.intent] : []).map((e) => e.proposal && e.proposal.verb).filter(Boolean));
-    for (const verb of verbs) {
-      const entry = byVerb.get(verb) || { submitted: [], differ: [], refusing: new Set() };
-      entry.submitted.push(r.id);
-      const d = r.rungs[2];
+    const intents = r.witness.concat(r.intent ? [r.intent] : []);
+    const d = r.rungs[2];
+    /** @type {Set<string>} */
+    const live = new Set();
+    for (const entries of Object.values(r.admission)) {
+      for (const e of entries) {
+        const submitted = intents[e.index];
+        if (e.admitted && submitted && submitted.proposal && typeof submitted.proposal.verb === 'string') {
+          live.add(submitted.proposal.verb);
+        }
+      }
+    }
+    if (d && d.kind === 'admission') {
+      live.add(d.verb);
+    }
+    for (const verb of live) {
+      const entry = byVerb.get(verb) || { live: [], differ: [], refusing: new Set() };
+      entry.live.push(r.id);
       if (d && d.kind === 'admission' && d.verb === verb) {
         entry.differ.push(r.id);
         entry.refusing.add(d.refusing);
@@ -177,14 +193,16 @@ export function floods(records) {
     }
   }
   for (const [verb, entry] of Array.from(byVerb.entries()).sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
-    if (entry.differ.length >= 2 && entry.differ.length === entry.submitted.length && entry.refusing.size === 1) {
-      out.push({ line: 'admissions of ' + verb + ' differ throughout: refused on the ' + Array.from(entry.refusing)[0] + ' in every one of the ' + entry.differ.length + ' candidates that submit it', ids: entry.differ });
+    if (entry.differ.length >= 2 && entry.differ.length === entry.live.length && entry.refusing.size === 1) {
+      out.push({ line: 'admissions of ' + verb + ' differ throughout: refused on the ' + Array.from(entry.refusing)[0] + ' in each of the ' + entry.differ.length + ' candidates where either tree admits it', ids: entry.differ });
     }
   }
   return out;
 }
 
 /**
+ * What a flood's candidates share: the whole of a trace difference's place,
+ * and an admission difference's verb and refusing tree, whose ticks may differ.
  * @param {Difference} d
  */
 function signature(d) {
@@ -195,6 +213,20 @@ function signature(d) {
     return 'admission ' + d.verb + ' ' + d.refusing;
   }
   return 'failure ' + d.failureKind + ' ' + d.tree;
+}
+
+/**
+ * A flood's shared difference in words: only what its signature holds.
+ * @param {Difference} d
+ */
+function describeFlood(d) {
+  if (d.kind === 'admission') {
+    return 'admission of ' + d.verb + ' differs, refused on the ' + d.refusing;
+  }
+  if (d.kind === 'failure') {
+    return 'a ' + d.failureKind + ' failure on the ' + d.tree + ' alone';
+  }
+  return describeDifference(d);
 }
 
 /**
