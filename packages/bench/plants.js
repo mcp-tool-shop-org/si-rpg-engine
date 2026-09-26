@@ -130,6 +130,14 @@ export const SKEW = [
   { file: 'solver/src/rapier_law.rs', from: '    integrate(loaded, mover, pusher)?;\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n', to: '    integrate(loaded, mover, pusher)?;\n    #[cfg(law_coverage)]\n    planted_skew(loaded);\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n\n#[cfg(law_coverage)]\nstatic mut PLANTED_STEPS: u32 = 0;\n\n#[cfg(law_coverage)]\nfn planted_skew(loaded: &Loaded) {\n    if loaded.n_bodies != 1 {\n        return;\n    }\n    unsafe {\n        let steps = &raw mut PLANTED_STEPS;\n        *steps = (*steps).wrapping_add(1);\n        if *steps == 20 {\n            BODIES[0] = BODIES[0] + 1.0e-9;\n        }\n    }\n}\n' },
 ];
 
+/**
+ * The law without the coverage build's shim: the product build of this tree
+ * is the product build of main's law, so its digest is the one the shim must
+ * leave unmoved (pin 3).
+ * @type {Edit[]}
+ */
+export const NO_SHIM = [{ file: 'solver/src/lib.rs', from: '// The coverage build\'s one symbol (T7b pin 3). The bench builds the law with\n// `-C instrument-coverage -Z no-profiler-runtime --cfg law_coverage`, and the\n// instrumented code still references `__llvm_profile_runtime`, which the\n// dropped runtime would have defined. Nothing else sets the cfg, so the\n// product binary never holds this static and its bytes do not move.\n#[cfg(law_coverage)]\n#[unsafe(no_mangle)]\npub static __llvm_profile_runtime: i32 = 0;\n\n', to: '' }];
+
 /** A base whose solver/ does not compile: a law function returns text. */
 export const BROKEN_LAW = [{ file: 'solver/src/rapier_law.rs', from: 'fn canon(x: f64) -> f64 {\n    if x == 0.0 { 0.0 } else { x }\n}\n', to: 'fn canon(x: f64) -> f64 {\n    if x == 0.0 { 0.0 } else { "x" }\n}\n' }];
 
@@ -238,6 +246,7 @@ export const EVERY_PLANT = {
   mutantLines: MUTANT_LINES.concat(EARLY_RETURN),
   law: Object.values(LAW).flat().concat(Object.values(NOT_AIMED_SOLVER).flat(), SKEW),
   brokenLaw: BROKEN_LAW,
+  noShim: NO_SHIM,
   pushFirst: PUSH_FIRST,
 };
 

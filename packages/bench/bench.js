@@ -48,7 +48,7 @@ import { copyTree, listFiles, syncTree, treeCommit, treeDigest } from './trees.j
  * its pitch, as a fraction of the sweep's. Measured defaults (pin 5): the
  * pair of shares 1/2, 3/4, and 1 and pitches 1/2 and 1/4 that found the
  * planted differences of pin 9 at the lowest budget, by
- * packages/bench/measure.mjs; the measurement is in fixtures/bench/grammar.json.
+ * packages/bench/measure.js; the measurement is in fixtures/bench/grammar.json.
  */
 export const GRAMMAR_SHARE = 0.75;
 export const GRAMMAR_PITCH = 0.5;
@@ -634,7 +634,10 @@ export async function runBench(options) {
       let archiveCells = [];
       /** @type {Set<string>} */
       const reachedVerbs = new Set();
-      if (useSweep) {
+      // The sweep runs whenever either proposer does: the grammar draws from
+      // the states it archived and splits its verbs by the sweep's reach. Its
+      // own candidates go through the ladder only when it proposes.
+      if (useSweep || useGrammar) {
         const swept = await sweepProc.call('sweep', { input, budget: budgets.sweep });
         worldReport.sweep = { ...swept.summary, ms: undefined, findings: swept.findings };
         environment.times['sweep ' + worldName] = Math.round(swept.summary.ms);
@@ -673,11 +676,13 @@ export async function runBench(options) {
         });
         byProposer.sweep.groups[worldName + ' group 1'] = reached.length;
         byProposer.sweep.groups[worldName + ' group 2'] = rest.length;
-        const queue = reached.concat(rest);
-        let i = 0;
-        const ran = await drive(async () => (i < queue.length ? queue[i++] : null), budgets.ladder, true);
-        byProposer.sweep.records.push(...ran.records);
-        byProposer.sweep.unrun.push(...ran.unrun);
+        if (useSweep) {
+          const queue = reached.concat(rest);
+          let i = 0;
+          const ran = await drive(async () => (i < queue.length ? queue[i++] : null), budgets.ladder, true);
+          byProposer.sweep.records.push(...ran.records);
+          byProposer.sweep.unrun.push(...ran.unrun);
+        }
         lap('sweep ladder ' + worldName);
       }
       if (useGrammar && archiveCells.length > 0) {

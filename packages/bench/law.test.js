@@ -18,7 +18,7 @@ import { join } from 'node:path';
 import { CANARY, runBench } from './bench.js';
 import { buildCoverage, coverageDir, glueBytes, productGlue, sha256 } from './build.js';
 import { copyCheckout, plant, removeScratch, scratch } from './plant.js';
-import { BROKEN_LAW, LAW, NOT_AIMED_SOLVER, SKEW, apply } from './plants.js';
+import { BROKEN_LAW, LAW, NOT_AIMED_SOLVER, NO_SHIM, SKEW, apply } from './plants.js';
 import { startProcess } from './processes.js';
 
 const dir = scratch('law');
@@ -32,6 +32,8 @@ let lawHead;
 let lawBase;
 /** @type {string} */
 let shared;
+/** @type {string} */
+let noShim;
 /** @type {Record<string, any>} */
 const runs = {};
 /** @type {Record<string, any>} */
@@ -63,9 +65,12 @@ before(async () => {
   lawHead = copyCheckout(dir, 'law-head');
   apply(plant, lawHead, [...LAW.operator, ...LAW.constant, ...LAW.comment, ...LAW.deleted, ...LAW.unused, ...NOT_AIMED_SOLVER.cargoToml, ...NOT_AIMED_SOLVER.cargoLock, ...SKEW]);
   lawBase = copyCheckout(dir, 'law-base');
+  noShim = copyCheckout(dir, 'no-shim');
+  apply(plant, noShim, NO_SHIM);
   await Promise.all([
     build(lawHead).then(() => { buildCoverage(lawHead, 'law head'); }),
     build(lawBase),
+    build(noShim),
   ]);
   shared = join(dir, 'shared-target');
   mkdirSync(shared);
@@ -201,6 +206,13 @@ test('law mutants are built in turn in the one law tree against the reference it
   assert.deepEqual(r.mutants.leftOut.slice(0, 2).map((/** @type {any} */ m) => [m.anchor, m.operator]), [[a.id, 'numeric constant'], [a.id, 'numeric constant']]);
   assert.ok(r.mutants.leftOut.every((/** @type {any} */ m) => typeof m.anchor === 'string' && typeof m.operator === 'string'));
   assert.deepEqual(r.notMeasured.mutantsNotScored.map((/** @type {any} */ m) => m.id), unused.map((/** @type {any} */ m) => m.id));
+});
+
+test('the product binary\'s digest does not move with the shim in the source: the checkout\'s law, built with it and without it, is one binary', () => {
+  // The base is the checkout, shim and all, built by its own build script; the
+  // other tree is the checkout with the shim's lines taken out.
+  assert.ok(!readFileSync(join(noShim, 'solver', 'src', 'lib.rs'), 'utf8').includes('__llvm_profile_runtime'));
+  assert.equal(sha256(glueBytes(productGlue(noShim))), runs.law.environment.binaries.base);
 });
 
 test('the dependency files of solver/ are reported not aimed, with their reason, and every candidate still runs on both trees', () => {

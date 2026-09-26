@@ -249,3 +249,38 @@ test('a run whose JS mutants reach the cap lists those left out, by anchor and o
   assert.ok(report.mutants.leftOut.every((/** @type {any} */ m) => typeof m.anchor === 'string' && typeof m.operator === 'string'));
   assert.deepEqual(report.mutants.list, []);
 });
+
+test('the access map holds pin 5\'s shape: each anchor aimed at once, each entry naming its source with that source\'s one field, and every anchor with no entry named in notReached or notSeenApproximate', () => {
+  assert.deepEqual(Object.keys(access).sort(), ['anchors', 'notAimed', 'notReached', 'notSeenApproximate', 'runsAtLoad']);
+  assert.deepEqual(access.anchors.map((/** @type {any} */ a) => a.id), report.anchors.map((/** @type {any} */ a) => a.id));
+  assert.equal(new Set(access.anchors.map((/** @type {any} */ a) => a.id)).size, access.anchors.length);
+  /** @type {Set<string>} */
+  const sources = new Set();
+  for (const a of access.anchors) {
+    assert.deepEqual(Object.keys(a).sort(), ['approximate', 'file', 'id', 'kind', 'lines', 'name', 'observable', 'reachedBy']);
+    assert.ok(['observable', 'not observable', 'unknown'].includes(a.observable));
+    for (const e of a.reachedBy) {
+      sources.add(e.source);
+      if (e.source === 'load') {
+        assert.deepEqual(Object.keys(e), ['source'], 'a load entry carries no input');
+      } else if (e.source === 'suite') {
+        assert.deepEqual(Object.keys(e).sort(), ['hazard', 'source']);
+        assert.deepEqual(Object.keys(e.hazard).sort(), ['id', 'world']);
+      } else {
+        assert.ok(e.source === 'window' || e.source === 'restore', e.source);
+        const keys = Object.keys(e).sort();
+        assert.ok(JSON.stringify(keys) === '["candidate","source"]' || JSON.stringify(keys) === '["control","source"]', keys.join());
+        if (e.candidate) {
+          assert.deepEqual(Object.keys(e.candidate).sort(), ['cell', 'proposer', 'verb', 'witness', 'world']);
+        }
+      }
+    }
+    const none = a.reachedBy.length === 0;
+    assert.equal(access.notReached.includes(a.id), none && !a.approximate, a.id);
+    assert.equal(access.notSeenApproximate.includes(a.id), none && a.approximate, a.id);
+  }
+  // This head's anchors are reached by every source pin 3 names.
+  assert.deepEqual(Array.from(sources).sort(), ['load', 'restore', 'suite', 'window']);
+  assert.ok(access.notAimed.every((/** @type {any} */ n) => typeof n.id === 'string' && typeof n.reason === 'string'));
+  assert.deepEqual(access.runsAtLoad, report.anchors.filter((/** @type {any} */ a) => a.runsAtLoad).map((/** @type {any} */ a) => a.id));
+});
