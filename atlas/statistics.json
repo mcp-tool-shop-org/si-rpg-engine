@@ -28,12 +28,12 @@
         "importsAndCoChanges": [],
         "importsOnly": []
       },
-      "cohesion": null,
+      "cohesion": 1,
       "cohesionDropped": false,
       "confidence": "low",
       "highWater": null,
       "name": "bench",
-      "qualifyingSourceCommits": 9,
+      "qualifyingSourceCommits": 12,
       "rebaseline": null
     },
     {
@@ -313,8 +313,8 @@
         "path": ".gitattributes"
       },
       {
-        "commits": 27,
-        "lines": 779,
+        "commits": 28,
+        "lines": 782,
         "path": ".github/workflows/ci.yml"
       },
       {
@@ -333,8 +333,8 @@
         "path": ".gitignore"
       },
       {
-        "commits": 23,
-        "lines": 214,
+        "commits": 25,
+        "lines": 216,
         "path": "CHANGELOG.md"
       },
       {
@@ -343,43 +343,43 @@
         "path": "LICENSE"
       },
       {
-        "commits": 21,
-        "lines": 1021,
+        "commits": 23,
+        "lines": 1127,
         "path": "README.es.md"
       },
       {
-        "commits": 21,
-        "lines": 1221,
+        "commits": 23,
+        "lines": 1375,
         "path": "README.fr.md"
       },
       {
-        "commits": 21,
-        "lines": 1173,
+        "commits": 23,
+        "lines": 1295,
         "path": "README.hi.md"
       },
       {
-        "commits": 21,
-        "lines": 1253,
+        "commits": 23,
+        "lines": 1391,
         "path": "README.it.md"
       },
       {
-        "commits": 21,
-        "lines": 1243,
+        "commits": 23,
+        "lines": 1377,
         "path": "README.ja.md"
       },
       {
-        "commits": 55,
-        "lines": 561,
+        "commits": 57,
+        "lines": 591,
         "path": "README.md"
       },
       {
-        "commits": 21,
-        "lines": 1005,
+        "commits": 23,
+        "lines": 1095,
         "path": "README.pt-BR.md"
       },
       {
-        "commits": 21,
-        "lines": 1241,
+        "commits": 23,
+        "lines": 1399,
         "path": "README.zh.md"
       },
       {
@@ -398,28 +398,28 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 91,
-        "lines": 3557,
+        "commits": 93,
+        "lines": 3747,
         "path": "atlas/README.md"
       },
       {
-        "commits": 20,
-        "lines": 98,
+        "commits": 21,
+        "lines": 101,
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 91,
-        "lines": 13708,
+        "commits": 93,
+        "lines": 14468,
         "path": "atlas/page.json"
       },
       {
-        "commits": 91,
-        "lines": 22287,
+        "commits": 93,
+        "lines": 22859,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 91,
-        "lines": 49233,
+        "commits": 93,
+        "lines": 54235,
         "path": "atlas/structure.json"
       },
       {
@@ -758,23 +758,23 @@
         "path": "fixtures/behavior-verbs.json"
       },
       {
-        "commits": 1,
-        "lines": 22,
+        "commits": 2,
+        "lines": 44,
         "path": "fixtures/bench/gap.json"
       },
       {
-        "commits": 1,
-        "lines": 268,
+        "commits": 2,
+        "lines": 536,
         "path": "fixtures/bench/grammar.json"
       },
       {
-        "commits": 2,
-        "lines": 25,
+        "commits": 3,
+        "lines": 48,
         "path": "fixtures/bench/pit.json"
       },
       {
-        "commits": 2,
-        "lines": 29,
+        "commits": 3,
+        "lines": 54,
         "path": "fixtures/bench/room.json"
       },
       {
@@ -1268,143 +1268,143 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 68,
-        "lines": 248,
+        "commits": 69,
+        "lines": 253,
         "path": "package.json"
       },
       {
-        "commits": 2,
-        "lines": 1058,
+        "commits": 4,
+        "lines": 2152,
         "path": "packages/bench/anchors.js"
       },
       {
-        "commits": 4,
-        "lines": 1545,
+        "commits": 6,
+        "lines": 3136,
         "path": "packages/bench/bench.js"
       },
       {
-        "commits": 1,
-        "lines": 147,
+        "commits": 2,
+        "lines": 294,
         "path": "packages/bench/bin/bench.js"
       },
       {
-        "commits": 2,
-        "lines": 218,
+        "commits": 3,
+        "lines": 434,
         "path": "packages/bench/build.js"
       },
       {
-        "commits": 2,
-        "lines": 154,
+        "commits": 3,
+        "lines": 298,
         "path": "packages/bench/costs.js"
       },
       {
-        "commits": 1,
-        "lines": 182,
+        "commits": 2,
+        "lines": 364,
         "path": "packages/bench/diff.js"
       },
       {
-        "commits": 1,
-        "lines": 104,
+        "commits": 3,
+        "lines": 242,
         "path": "packages/bench/f2.js"
       },
       {
-        "commits": 3,
-        "lines": 268,
+        "commits": 5,
+        "lines": 530,
         "path": "packages/bench/finding.test.js"
       },
       {
-        "commits": 3,
-        "lines": 336,
+        "commits": 5,
+        "lines": 682,
         "path": "packages/bench/law.test.js"
       },
       {
-        "commits": 2,
-        "lines": 169,
+        "commits": 3,
+        "lines": 320,
         "path": "packages/bench/measure.js"
       },
       {
-        "commits": 4,
-        "lines": 448,
+        "commits": 5,
+        "lines": 878,
         "path": "packages/bench/mutants.js"
       },
       {
-        "commits": 2,
-        "lines": 248,
+        "commits": 4,
+        "lines": 480,
         "path": "packages/bench/mutants.test.js"
       },
       {
-        "commits": 4,
-        "lines": 323,
+        "commits": 6,
+        "lines": 724,
         "path": "packages/bench/neutral.test.js"
       },
       {
-        "commits": 1,
-        "lines": 88,
+        "commits": 4,
+        "lines": 318,
         "path": "packages/bench/plant.js"
       },
       {
-        "commits": 6,
-        "lines": 304,
+        "commits": 7,
+        "lines": 580,
         "path": "packages/bench/plants.js"
       },
       {
-        "commits": 1,
-        "lines": 212,
+        "commits": 3,
+        "lines": 508,
         "path": "packages/bench/process.test.js"
       },
       {
-        "commits": 1,
-        "lines": 156,
+        "commits": 3,
+        "lines": 430,
         "path": "packages/bench/processes.js"
       },
       {
-        "commits": 2,
-        "lines": 448,
+        "commits": 3,
+        "lines": 894,
         "path": "packages/bench/profile.js"
       },
       {
-        "commits": 2,
-        "lines": 217,
+        "commits": 3,
+        "lines": 428,
         "path": "packages/bench/reach.js"
       },
       {
-        "commits": 2,
-        "lines": 351,
+        "commits": 3,
+        "lines": 678,
         "path": "packages/bench/report.js"
       },
       {
-        "commits": 3,
-        "lines": 258,
+        "commits": 5,
+        "lines": 554,
         "path": "packages/bench/report.test.js"
       },
       {
-        "commits": 1,
-        "lines": 138,
+        "commits": 3,
+        "lines": 280,
         "path": "packages/bench/rungs.test.js"
       },
       {
-        "commits": 3,
-        "lines": 1379,
+        "commits": 5,
+        "lines": 2770,
         "path": "packages/bench/runner.js"
       },
       {
-        "commits": 1,
-        "lines": 805,
+        "commits": 2,
+        "lines": 1610,
         "path": "packages/bench/scan-js.js"
       },
       {
-        "commits": 2,
-        "lines": 530,
+        "commits": 3,
+        "lines": 1060,
         "path": "packages/bench/scan-rust.js"
       },
       {
-        "commits": 2,
-        "lines": 146,
+        "commits": 4,
+        "lines": 298,
         "path": "packages/bench/source.test.js"
       },
       {
-        "commits": 2,
-        "lines": 220,
+        "commits": 4,
+        "lines": 500,
         "path": "packages/bench/trees.js"
       },
       {
@@ -1478,8 +1478,8 @@
         "path": "packages/load/suite.js"
       },
       {
-        "commits": 6,
-        "lines": 1731,
+        "commits": 7,
+        "lines": 1760,
         "path": "packages/load/sweep.js"
       },
       {
@@ -1668,8 +1668,8 @@
         "path": "packages/tick/subject.js"
       },
       {
-        "commits": 30,
-        "lines": 2276,
+        "commits": 31,
+        "lines": 2290,
         "path": "packages/tick/tick.js"
       },
       {
@@ -1908,8 +1908,8 @@
         "path": "site/src/content.config.ts"
       },
       {
-        "commits": 19,
-        "lines": 208,
+        "commits": 21,
+        "lines": 218,
         "path": "site/src/content/docs/handbook/architecture.md"
       },
       {
@@ -1918,28 +1918,28 @@
         "path": "site/src/content/docs/handbook/getting-started.md"
       },
       {
-        "commits": 7,
-        "lines": 97,
+        "commits": 9,
+        "lines": 103,
         "path": "site/src/content/docs/handbook/index.md"
       },
       {
-        "commits": 11,
-        "lines": 284,
+        "commits": 13,
+        "lines": 304,
         "path": "site/src/content/docs/handbook/reference.md"
       },
       {
-        "commits": 9,
-        "lines": 84,
+        "commits": 11,
+        "lines": 96,
         "path": "site/src/content/docs/handbook/security.md"
       },
       {
-        "commits": 24,
-        "lines": 337,
+        "commits": 26,
+        "lines": 361,
         "path": "site/src/content/docs/handbook/testing.md"
       },
       {
-        "commits": 9,
-        "lines": 248,
+        "commits": 11,
+        "lines": 288,
         "path": "site/src/content/docs/handbook/usage.md"
       },
       {
@@ -1953,8 +1953,8 @@
         "path": "site/src/pages/index.astro"
       },
       {
-        "commits": 13,
-        "lines": 250,
+        "commits": 15,
+        "lines": 252,
         "path": "site/src/site-config.ts"
       },
       {
@@ -2048,8 +2048,8 @@
         "path": "solver/src/kcc.rs"
       },
       {
-        "commits": 21,
-        "lines": 1022,
+        "commits": 22,
+        "lines": 1031,
         "path": "solver/src/lib.rs"
       },
       {
@@ -2058,8 +2058,8 @@
         "path": "solver/src/rapier_law.rs"
       },
       {
-        "commits": 2,
-        "lines": 40,
+        "commits": 4,
+        "lines": 44,
         "path": "tools/coordinator/README.md"
       },
       {
@@ -2093,18 +2093,18 @@
         "path": "tools/panel.test.js"
       },
       {
-        "commits": 5,
-        "lines": 283,
+        "commits": 7,
+        "lines": 365,
         "path": "tools/prompt.js"
       },
       {
-        "commits": 3,
-        "lines": 261,
+        "commits": 5,
+        "lines": 297,
         "path": "tools/prompt.test.js"
       },
       {
-        "commits": 14,
-        "lines": 1314,
+        "commits": 16,
+        "lines": 1420,
         "path": "tools/review.mjs"
       },
       {
@@ -2143,259 +2143,315 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-26T13:04:08.434Z",
+  "generatedAt": "2026-09-26T15:15:33.848Z",
   "generatedFrom": {
-    "commit": "1d2952be2b700ead34bcd8a9bca5bb6e2b205d09"
+    "commit": "c5d702911af4b72e32a230b56e285818783115cb"
   },
   "pairs": [
     {
       "a": "CHANGELOG.md",
       "b": "README.es.md",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.fr.md",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.hi.md",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.it.md",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.ja.md",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.pt-BR.md",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.zh.md",
-      "either": 13,
-      "shared": 8,
-      "strength": 0.615385
+      "either": 14,
+      "shared": 9,
+      "strength": 0.642857
     },
     {
       "a": "CHANGELOG.md",
       "b": "site/src/content/docs/handbook/architecture.md",
-      "either": 11,
-      "shared": 9,
-      "strength": 0.818182
-    },
-    {
-      "a": "CHANGELOG.md",
-      "b": "site/src/content/docs/handbook/testing.md",
       "either": 12,
       "shared": 10,
       "strength": 0.833333
     },
     {
+      "a": "CHANGELOG.md",
+      "b": "site/src/content/docs/handbook/reference.md",
+      "either": 12,
+      "shared": 6,
+      "strength": 0.5
+    },
+    {
+      "a": "CHANGELOG.md",
+      "b": "site/src/content/docs/handbook/testing.md",
+      "either": 13,
+      "shared": 11,
+      "strength": 0.846154
+    },
+    {
       "a": "README.es.md",
       "b": "README.fr.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.es.md",
       "b": "README.hi.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.es.md",
       "b": "README.it.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.es.md",
       "b": "README.ja.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.es.md",
       "b": "README.pt-BR.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.es.md",
       "b": "README.zh.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.es.md",
-      "b": "site/src/content/docs/handbook/testing.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
       "either": 14,
       "shared": 7,
       "strength": 0.5
+    },
+    {
+      "a": "README.es.md",
+      "b": "site/src/content/docs/handbook/testing.md",
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
       "a": "README.fr.md",
       "b": "README.hi.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.fr.md",
       "b": "README.it.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.fr.md",
       "b": "README.ja.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.fr.md",
       "b": "README.pt-BR.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.fr.md",
       "b": "README.zh.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.fr.md",
-      "b": "site/src/content/docs/handbook/testing.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
       "either": 14,
       "shared": 7,
       "strength": 0.5
+    },
+    {
+      "a": "README.fr.md",
+      "b": "site/src/content/docs/handbook/testing.md",
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
       "a": "README.hi.md",
       "b": "README.it.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.hi.md",
       "b": "README.ja.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.hi.md",
       "b": "README.pt-BR.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.hi.md",
       "b": "README.zh.md",
-      "either": 10,
-      "shared": 10,
+      "either": 11,
+      "shared": 11,
       "strength": 1
     },
     {
       "a": "README.hi.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
+      "either": 14,
+      "shared": 7,
+      "strength": 0.5
+    },
+    {
+      "a": "README.hi.md",
       "b": "site/src/content/docs/handbook/testing.md",
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
+    },
+    {
+      "a": "README.it.md",
+      "b": "README.ja.md",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "README.it.md",
+      "b": "README.pt-BR.md",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "README.it.md",
+      "b": "README.zh.md",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "README.it.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
       "either": 14,
       "shared": 7,
       "strength": 0.5
     },
     {
       "a": "README.it.md",
-      "b": "README.ja.md",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "README.it.md",
-      "b": "README.pt-BR.md",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "README.it.md",
-      "b": "README.zh.md",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "README.it.md",
       "b": "site/src/content/docs/handbook/testing.md",
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
+    },
+    {
+      "a": "README.ja.md",
+      "b": "README.pt-BR.md",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "README.ja.md",
+      "b": "README.zh.md",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "README.ja.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
       "either": 14,
       "shared": 7,
       "strength": 0.5
     },
     {
       "a": "README.ja.md",
-      "b": "README.pt-BR.md",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "README.ja.md",
-      "b": "README.zh.md",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
-    },
-    {
-      "a": "README.ja.md",
       "b": "site/src/content/docs/handbook/testing.md",
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
+    },
+    {
+      "a": "README.pt-BR.md",
+      "b": "README.zh.md",
+      "either": 11,
+      "shared": 11,
+      "strength": 1
+    },
+    {
+      "a": "README.pt-BR.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
       "either": 14,
       "shared": 7,
       "strength": 0.5
     },
     {
       "a": "README.pt-BR.md",
-      "b": "README.zh.md",
-      "either": 10,
-      "shared": 10,
-      "strength": 1
+      "b": "site/src/content/docs/handbook/testing.md",
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
-      "a": "README.pt-BR.md",
-      "b": "site/src/content/docs/handbook/testing.md",
+      "a": "README.zh.md",
+      "b": "site/src/content/docs/handbook/architecture.md",
       "either": 14,
       "shared": 7,
       "strength": 0.5
@@ -2403,50 +2459,50 @@
     {
       "a": "README.zh.md",
       "b": "site/src/content/docs/handbook/testing.md",
-      "either": 14,
-      "shared": 7,
-      "strength": 0.5
+      "either": 15,
+      "shared": 8,
+      "strength": 0.533333
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 52,
-      "shared": 52,
+      "either": 53,
+      "shared": 53,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 52,
-      "shared": 52,
+      "either": 53,
+      "shared": 53,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 52,
-      "shared": 52,
+      "either": 53,
+      "shared": 53,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 52,
-      "shared": 52,
+      "either": 53,
+      "shared": 53,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 52,
-      "shared": 52,
+      "either": 53,
+      "shared": 53,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 52,
-      "shared": 52,
+      "either": 53,
+      "shared": 53,
       "strength": 1
     },
     {
@@ -2490,6 +2546,27 @@
       "either": 14,
       "shared": 7,
       "strength": 0.5
+    },
+    {
+      "a": "packages/bench/bench.js",
+      "b": "packages/bench/neutral.test.js",
+      "either": 5,
+      "shared": 5,
+      "strength": 1
+    },
+    {
+      "a": "packages/bench/bench.js",
+      "b": "packages/bench/plants.js",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
+    },
+    {
+      "a": "packages/bench/neutral.test.js",
+      "b": "packages/bench/plants.js",
+      "either": 7,
+      "shared": 4,
+      "strength": 0.571429
     },
     {
       "a": "packages/frame/types.d.ts",
@@ -2627,51 +2704,100 @@
     {
       "a": "site/src/content/docs/handbook/architecture.md",
       "b": "site/src/content/docs/handbook/getting-started.md",
-      "either": 9,
-      "shared": 5,
-      "strength": 0.555556
-    },
-    {
-      "a": "site/src/content/docs/handbook/architecture.md",
-      "b": "site/src/content/docs/handbook/testing.md",
-      "either": 12,
-      "shared": 8,
-      "strength": 0.666667
-    },
-    {
-      "a": "site/src/content/docs/handbook/architecture.md",
-      "b": "site/src/site-config.ts",
       "either": 10,
       "shared": 5,
       "strength": 0.5
     },
     {
+      "a": "site/src/content/docs/handbook/architecture.md",
+      "b": "site/src/content/docs/handbook/security.md",
+      "either": 10,
+      "shared": 5,
+      "strength": 0.5
+    },
+    {
+      "a": "site/src/content/docs/handbook/architecture.md",
+      "b": "site/src/content/docs/handbook/testing.md",
+      "either": 13,
+      "shared": 9,
+      "strength": 0.692308
+    },
+    {
+      "a": "site/src/content/docs/handbook/architecture.md",
+      "b": "site/src/content/docs/handbook/usage.md",
+      "either": 10,
+      "shared": 5,
+      "strength": 0.5
+    },
+    {
+      "a": "site/src/content/docs/handbook/architecture.md",
+      "b": "site/src/site-config.ts",
+      "either": 11,
+      "shared": 6,
+      "strength": 0.545455
+    },
+    {
       "a": "site/src/content/docs/handbook/getting-started.md",
       "b": "site/src/site-config.ts",
-      "either": 7,
+      "either": 8,
       "shared": 4,
-      "strength": 0.571429
+      "strength": 0.5
+    },
+    {
+      "a": "site/src/content/docs/handbook/reference.md",
+      "b": "site/src/content/docs/handbook/security.md",
+      "either": 6,
+      "shared": 5,
+      "strength": 0.833333
+    },
+    {
+      "a": "site/src/content/docs/handbook/reference.md",
+      "b": "site/src/content/docs/handbook/usage.md",
+      "either": 6,
+      "shared": 5,
+      "strength": 0.833333
     },
     {
       "a": "site/src/content/docs/handbook/reference.md",
       "b": "site/src/site-config.ts",
+      "either": 8,
+      "shared": 5,
+      "strength": 0.625
+    },
+    {
+      "a": "site/src/content/docs/handbook/security.md",
+      "b": "site/src/content/docs/handbook/usage.md",
+      "either": 5,
+      "shared": 5,
+      "strength": 1
+    },
+    {
+      "a": "site/src/content/docs/handbook/security.md",
+      "b": "site/src/site-config.ts",
       "either": 7,
-      "shared": 4,
-      "strength": 0.571429
+      "shared": 5,
+      "strength": 0.714286
+    },
+    {
+      "a": "site/src/content/docs/handbook/usage.md",
+      "b": "site/src/site-config.ts",
+      "either": 7,
+      "shared": 5,
+      "strength": 0.714286
     },
     {
       "a": "tools/review.mjs",
       "b": "tools/verdicts.js",
-      "either": 9,
+      "either": 10,
       "shared": 5,
-      "strength": 0.555556
+      "strength": 0.5
     },
     {
       "a": "tools/review.mjs",
       "b": "tools/verdicts.test.js",
-      "either": 9,
+      "either": 10,
       "shared": 5,
-      "strength": 0.555556
+      "strength": 0.5
     },
     {
       "a": "tools/verdicts.js",
@@ -2691,16 +2817,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-26T09:03:39-04:00",
-    "inScopeFiles": 359,
+    "headDate": "2026-09-26T08:13:26-07:00",
+    "inScopeFiles": 360,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 281,
+    "qualifyingCommits": 288,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-30T13:03:39.000Z",
+    "since": "2026-03-30T15:13:26.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
@@ -2714,7 +2840,7 @@
     ],
     "sourceFileReach": 20,
     "sourceFileRise": 25,
-    "sourceFilesReachingStrongFloor": 12,
+    "sourceFilesReachingStrongFloor": 13,
     "strength": 0.5,
     "windowDays": 180
   },

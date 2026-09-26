@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-26
+
+Phase 2 so far: the suite that measures the engine, the fixes to the law it found, and the bench that measures a change against its parent. Every change below merged from a written dispatch in `docs/`, was verified on a fresh checkout, and was reviewed by other model families before it merged. `docs/HANDOFF.md` says where the work stands and what comes next.
+
 ### Added
 
 - **A trace and the first difference.** `harness/trace.mjs` prints one line per step with every body's numbers as exact bit patterns, under node and the three engine shells. `harness/first-difference.js` names the first step, body, and field where two traces part. CI prints that block when an engine leaves the golden.
@@ -54,6 +58,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Sleep state per world.** Asking whether a body is asleep in a world the physics module does not currently hold used to answer for whichever world stepped last; it now refuses with a reason.
 - **The terrain surface.** The actions' support query read a smoothly blended heightfield, while the physics collides with two flat triangles per cell. It now reads the physics' own surface.
 
+### Golden hashes at this release
+
+| Harness | Hash |
+|---|---|
+| `harness/sim.mjs` (product) | `69a671f962665563` |
+| `harness/arith.mjs` (arithmetic contract) | `0d38671370d12d1e` |
+| `fixtures/solver.sha256` (Linux binary) | `fd4b46bb45f299894d31e8745a3649f986c08b95ad3acba7ec20d70bfef2fde2` |
+
 ## [0.1.0] - 2026-09-25
 
 The first release. Version numbers before 0.1.0 were internal slice counters and were never tagged or published.
@@ -81,5 +93,6 @@ The first release. Version numbers before 0.1.0 were internal slice counters and
 | `harness/arith.mjs` (arithmetic contract) | `0d38671370d12d1e` |
 | `fixtures/solver.sha256` (Linux binary) | `ede99ea1e51ec3ca12afa407764a66acf98eda3d7c36ac70397a6105c76fb5f0` |
 
-[Unreleased]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/releases/tag/v0.2.0
 [0.1.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/releases/tag/v0.1.0

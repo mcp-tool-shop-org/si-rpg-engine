@@ -9,7 +9,7 @@ export const config: SiteConfig = {
   footerText: 'MIT Licensed — built by <a href="https://mcp-tool-shop.github.io/" style="color:var(--color-muted);text-decoration:underline">MCP Tool Shop</a>',
 
   hero: {
-    badge: 'Open source · MIT · 0.1.0',
+    badge: 'Open source · MIT · 0.2.0',
     headline: 'A 3D physics world',
     headlineAccent: 'that replays exactly.',
     description: 'si-rpg-engine steps physics at a fixed 64 steps per second, records a fingerprint of the world after every step, and can rebuild any run from its starting seed and the inputs it accepted, bit for bit. The physics is Rust compiled to WebAssembly, and the same build gives the same answer in the JavaScript engines behind Chrome, Firefox, and Safari, and on both x64 and ARM processors.',

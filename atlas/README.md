@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit 1d2952b.
+Mapped at 2026-09-26 from commit c5d7029.
 
 ## What this is
 
@@ -8,22 +8,14 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 17 parts, mostly JavaScript (131 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (386f0d9)
+## What changed since 2026-09-26 (1d2952b)
 
-- bench now imports tick.
-- CI now also runs packages/bench/finding.test.js, packages/bench/law.test.js, packages/bench/mutants.test.js and 5 more.
-- CI now also checks packages/bench/.
-- bench (package.json) is a new command. It runs packages/bench/bin/bench.js.
-- .github/ is now read by packages/bench/anchors.js.
-- docs/ is now read by packages/bench/anchors.js.
-- docs/PHASE-2.md is now read by packages/bench/plants.js.
-- And 68 more new writers and readers of places.
-- In packages/load/sweep.js, sweep gained a step, open, before refused.
-- In packages/load/sweep.js, sweep gained a step, refused, before admitted.
-- In packages/load/sweep.js, sweep gained a step, admitted, after refused.
+- solver/src/lib.rs is now also read by tools/prompt.test.js.
+- In packages/bench/bench.js, run bench gained a step, same path, before one tree per process.
+- In packages/bench/bench.js, run bench lost a step, product glue.
+- In packages/bench/bench.js, run bench gained a step, same path, before one tree per process.
 - And 3 more changes to the order of work.
-- bench is a new part, drawn from `packages/bench/**`.
-- 31 files added and 5 changed content, across 7 parts.
+- 1 file added and 37 changed content, across 3 parts.
 
 ## What comes in
 
@@ -73,9 +65,9 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       11. refused
       12. admitted
    10. Inside packages/bench/finding.test.js, run does, in order: copy checkout, plants (3 steps) and run bench.
-   11. **Run bench** runs, in order: one tree per process, list files, read anchors, trees (4 steps) and build (5 steps).
+   11. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
    12. Inside packages/bench/rungs.test.js, run does, in order: copy checkout, apply and run bench.
-   13. **Run bench** runs, in order: one tree per process, list files, read anchors, trees (4 steps) and build (5 steps).
+   13. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
    14. Inside packages/propose/propose.test.js, probe session does, in order:
       1. load roles (tick)
       2. scratch world
@@ -192,17 +184,17 @@ Only CI itself reads what it writes.
 
 ## What tends to change together
 
+- **packages/bench/bench.js** and **packages/bench/neutral.test.js** changed together in 5 of 5 commits, inside the bench part.
 - **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 7 of 10 commits, inside the harness part.
 - **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 9 of 13 commits, inside the propose part.
 - **packages/host/host.test.js** and **packages/host/session.js** changed together in 8 of 12 commits, inside the host part.
 - **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 8 of 12 commits, inside the propose part.
-- **packages/propose/prompt.js** and **packages/propose/schema.js** changed together in 6 of 9 commits, inside the propose part.
 
 2 files changed together with their own tests, as expected.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
-Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do.
+Window: 180 days; a pair counts from 3 shared commits, since 13 source files reach 10 revisions; the floor rises to 10 when 25 do.
 
 ## What no test touches
 
@@ -239,7 +231,7 @@ Read those in order to follow one pull request end to end.
 - 18 import sites could not be resolved.
 - 3 writes and 8 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
-- 49 writes and 95 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 49 writes and 99 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
 - 38 commands are built at run time and not followed, 32 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
