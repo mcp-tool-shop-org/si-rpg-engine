@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit 450e262.
+Mapped at 2026-09-26 from commit 8776886.
 
 ## What this is
 
@@ -8,11 +8,9 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 17 parts, mostly JavaScript (132 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (ed05b61)
+## What changed since 2026-09-26 (450e262)
 
-- CI now also runs packages/bench/coverage.test.js.
-- solver/Cargo.lock is now also read by packages/bench/coverage.test.js.
-- 1 file added and 17 changed content, across 4 parts.
+Nothing structural changed since 2026-09-26; 22 files changed content.
 
 ## What comes in
 
@@ -61,13 +59,11 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       10. open
       11. refused
       12. admitted
-   10. Inside packages/bench/coverage.test.js, ensure glue does, in order: product glue and product glue.
-   11. Or, when `existsSync(productGlue(root))`, ensure glue does copy product instead.
-   12. Inside packages/bench/finding.test.js, run does, in order: copy checkout, plants (3 steps) and run bench.
+   10. Inside packages/bench/finding.test.js, run does, in order: copy checkout, plants (3 steps) and run bench.
+   11. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
+   12. Inside packages/bench/rungs.test.js, run does, in order: copy checkout, apply and run bench.
    13. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
-   14. Inside packages/bench/rungs.test.js, run does, in order: copy checkout, apply and run bench.
-   15. **Run bench** runs, in order: same path, one tree per process, list files, read anchors, trees (4 steps) and build (4 steps).
-   16. Inside packages/propose/propose.test.js, probe session does, in order:
+   14. Inside packages/propose/propose.test.js, probe session does, in order:
       1. load roles (tick)
       2. scratch world
       3. load intent rules
@@ -78,7 +74,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       8. run session
       9. settle
       10. write session
-   17. **Create tick** (tick) runs, in order:
+   15. **Create tick** (tick) runs, in order:
       1. create hasher (frame)
       2. install minds
       3. mix load
@@ -87,7 +83,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       6. u 32
       7. commit frame
       8. least label
-   18. **Run session** runs, in order:
+   16. **Run session** runs, in order:
       1. template slots
       2. frame
       3. render template
@@ -98,9 +94,9 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       8. while out
       9. loaded
       10. record (3 steps)
-   19. **Settle** (tick) runs, in order: idle and advance.
-   20. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
-   21. **Create tick** runs, in order:
+   17. **Settle** (tick) runs, in order: idle and advance.
+   18. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
+   19. **Create tick** runs, in order:
       1. create hasher (frame)
       2. install minds
       3. mix load
@@ -109,8 +105,18 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       6. u 32
       7. commit frame
       8. least label
-   22. Inside packages/tick/load-hash.test.js, snapshot at load does, in order: create world and create hasher (frame).
-   23. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
+   20. Inside packages/tick/load-hash.test.js, snapshot at load does, in order: create world and create hasher (frame).
+   21. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
+   22. **Create tick** runs, in order:
+      1. create hasher (frame)
+      2. install minds
+      3. mix load
+      4. mix minds
+      5. snapshot
+      6. u 32
+      7. commit frame
+      8. least label
+   23. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
    24. **Create tick** runs, in order:
       1. create hasher (frame)
       2. install minds
@@ -120,17 +126,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       6. u 32
       7. commit frame
       8. least label
-   25. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
-   26. **Create tick** runs, in order:
-      1. create hasher (frame)
-      2. install minds
-      3. mix load
-      4. mix minds
-      5. snapshot
-      6. u 32
-      7. commit frame
-      8. least label
-   27. Inside solver/lint.mjs, lint wasm does, in order:
+   25. Inside solver/lint.mjs, lint wasm does, in order:
       1. byte
       2. signed
       3. byte
