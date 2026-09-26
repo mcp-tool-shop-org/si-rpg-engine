@@ -1,6 +1,8 @@
 // The engine's copy of Rapier's character controller: the movement routine
 // `KinematicCharacterController::move_shape` and the private functions it
-// calls, with one added branch (F2, docs/dispatch-f2-walker-stride.md).
+// calls, with two changes: a branch added to decompose_hit (F2,
+// docs/dispatch-f2-walker-stride.md) and a second cast in move_shape (F4,
+// docs/dispatch-f4-floor-cast.md).
 //
 // Source. rapier3d-f64 0.35.3, src/control/character_controller.rs, from the
 // crate as published: the methods check_and_fix_penetrations (lines 240-293),
@@ -18,27 +20,55 @@
 // Crozet <sebcrozet@dimforge.com>, and Dimforge publishes Rapier
 // (https://github.com/dimforge/rapier). This file is licensed under the Apache
 // License, Version 2.0, whose text is solver/LICENSE-APACHE-2.0; solver/NOTICE
-// names this file and the change. The rest of the repository is MIT.
+// names this file and the changes. The rest of the repository is MIT.
 //
-// Modified by si-rpg-engine, 2026-09-25. What differs from the source:
+// Modified by si-rpg-engine, 2026-09-25 and 2026-09-26. What differs from the
+// source:
 //
-// - The one change, in decompose_hit: when the hit normal crossed with `up`
-//   has no direction, the part of the tangent along `up` is the vertical
-//   tangent and the rest is the horizontal tangent. Rapier files the whole
-//   tangent, horizontal travel included, as vertical there. When the normal
-//   is vertical but for its last bit (y = 1 - 2^-53, which GJK returns on
-//   about one flat-ground quantum in 30 at the product walker's speed), that
-//   tangent's up component is about -4.3e-19, handle_slopes reads the
-//   character as slipping on a non-slip slope, and it keeps only the
-//   horizontal tangent, which is zero: the quantum loses its travel but for
-//   the 1e-4 normal nudge. The engine's walker lost 332 of 10,000 flat-ground
-//   quanta that way at the origin and 323 at an offset of a million. The Rust
-//   knowledge base measured it (readouts, rust-knowledge wave 3,
-//   requests/walker-stall.md) and filed it upstream as
+// - The first change, in decompose_hit (2026-09-25): when the hit normal
+//   crossed with `up` has no direction, the part of the tangent along `up` is
+//   the vertical tangent and the rest is the horizontal tangent. Rapier files
+//   the whole tangent, horizontal travel included, as vertical there. When
+//   the normal is vertical but for its last bit (y = 1 - 2^-53, which GJK
+//   returns on about one flat-ground quantum in 30 at the product walker's
+//   speed), that tangent's up component is about -4.3e-19, handle_slopes
+//   reads the character as slipping on a non-slip slope, and it keeps only
+//   the horizontal tangent, which is zero: the quantum loses its travel but
+//   for the 1e-4 normal nudge. The engine's walker lost 332 of 10,000
+//   flat-ground quanta that way at the origin and 323 at an offset of a
+//   million. The Rust knowledge base measured it (readouts, rust-knowledge
+//   wave 3, requests/walker-stall.md) and filed it upstream as
 //   https://github.com/dimforge/rapier/issues/1019; the routine is unchanged
-//   at rapier 0.36.0. Everywhere the direction exists the routine is Rapier's.
-//   The branch is the const parameter BRANCH: the law runs the copy with it
-//   on (Stride below), and only the tests run it off.
+//   at rapier 0.36.0. Everywhere the direction exists the routine is
+//   Rapier's. The branch is the const parameter BRANCH: the law runs the copy
+//   with it on (Stride below), and only the tests run it off.
+// - The second change, in move_shape (2026-09-26): when the move's first cast
+//   finds nothing while the character was grounded at its start, the copy
+//   casts once more with the skin, `offset`, larger by RETRY_EXTRA_SKIN, 1e-9.
+//   The first cast is the character's shape dilated by the skin, cast along
+//   the move. A character standing on a floor starts with its dilated bottom
+//   on the floor's face to within rounding, so the ray inside parry's GJK cast
+//   starts on the surface of the shapes' Minkowski difference. There GJK's
+//   projected distance can fall to the rounding floor of that difference,
+//   about 2.5e-15 on the product floor, whose support points carry
+//   coordinates near 56, just above its absolute tolerance of 2.2e-15, and
+//   the search direction it then takes is rounding noise. When that
+//   direction points along the cast, the half-space test declares a miss and
+//   the cast returns nothing: the character takes its whole move, gravity
+//   step included, sinks 1.953125e-3 into its 0.01 skin, and climbs back at
+//   the 1e-4 nudge over 20 quanta. The engine's walker sank that way on 8 of
+//   10,000 flat-ground quanta at the origin and 7 at an offset of a million.
+//   The Rust knowledge base measured it (readouts, rust-knowledge wave 3,
+//   requests/floor-cast-miss.md and requests/floor-cast-retry.md). The
+//   defect is parry's, filed as https://github.com/dimforge/parry/issues/452:
+//   Rapier's own routine does the same, and parry 0.31.1, which rapier 0.36.0
+//   brings, has the same GJK. With the skin 1e-9 larger the start is clearly
+//   inside the dilated shape, and parry's answer for an impact at the start
+//   derives the normal from a contact query and keeps the hit only if the
+//   move approaches the collider, so for a character moving off the ground
+//   the retry finds nothing too. The retry is the const parameter RETRY: the
+//   law runs the copy with it on (Stride below), and only the tests run it
+//   off.
 // - Rapier's public API only. The methods live on `Controller`, which wraps a
 //   `KinematicCharacterController` and reads its fields through `Deref`, so
 //   `self.up` and the rest read as in the source. CharacterLength::eval is
@@ -47,16 +77,21 @@
 //   `collider.parent()`, which returns the handle that field holds, stands for
 //   `collider.parent.map(|p| p.handle)`.
 // - The `#[profiling::function]` attributes, the dim2 branches, and the
-//   `#[cfg(feature = "dim3")]` guards are gone, since the engine is 3D. Every
-//   statement that computes is the source's, in the source's order.
+//   `#[cfg(feature = "dim3")]` guards are gone, since the engine is 3D. Apart
+//   from the two changes, every statement that computes is the source's, in
+//   the source's order.
 //
-// The control test (the end of solver/src/rapier_law.rs, `cargo test --release`)
-// runs the law with Rapier's own controller and this copy with the branch off
-// side by side over the flat walk, the character course, the step in four
-// directions, and the verb fixture's capsule carry, and requires every
-// quantum's movement to match bit for bit. A bump of rapier3d-f64 re-syncs this
-// file from the new source and reruns the control test before anything else
-// (solver/FLAGS.md).
+// The control tests are at the end of solver/src/rapier_law.rs (`cargo test
+// --release`). F2's runs the law with Rapier's own controller and this copy
+// with both changes off side by side over the flat walk, the character
+// course, the step in four directions, and the verb fixture's capsule carry,
+// and requires every quantum's movement to match bit for bit. F4's holds the
+// copy with the retry off to the law before F4 bit for bit over every
+// recorded law run, the course, the flat walks, and the step, and requires
+// the copy with the retry on to part from it only on a call where the retry
+// fired and hit, each hit starting on the skin. A bump of rapier3d-f64
+// re-syncs this file from the new source and reruns both before anything else
+// (solver/FLAGS.md); a parry that fixes #452 lets the retry go.
 
 use core::ops::Deref;
 
@@ -85,7 +120,7 @@ pub(crate) trait Mover {
     ) -> EffectiveCharacterMovement;
 }
 
-/// The law's movement: the copy with its branch on.
+/// The law's movement: the copy with its branch and its retry on.
 pub(crate) struct Stride;
 
 impl Mover for Stride {
@@ -99,16 +134,24 @@ impl Mover for Stride {
         desired_translation: Vector,
         collisions: &mut Vec<CharacterCollision>,
     ) -> EffectiveCharacterMovement {
-        Controller::<true>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit))
+        Controller::<true, true>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit))
     }
 }
 
-/// Rapier's controller settings, moved by the copy of its routine. BRANCH is
-/// the engine's one change to decompose_hit: true in the law, false only in
-/// the tests, which is how the copy is held to Rapier's own routine.
-pub(crate) struct Controller<'c, const BRANCH: bool>(pub(crate) &'c KinematicCharacterController);
+/// How much larger than the controller's skin, `offset`, the retry's skin is
+/// (F4): 400,000 times the rounding floor of the first cast's Minkowski
+/// difference on the product floor, about 2.5e-15, and far below what the
+/// controller resolves, the 1e-4 normal nudge and the 1e-2 skin.
+pub(crate) const RETRY_EXTRA_SKIN: Real = 1.0e-9;
 
-impl<const BRANCH: bool> Deref for Controller<'_, BRANCH> {
+/// Rapier's controller settings, moved by the copy of its routine. BRANCH is
+/// the engine's change to decompose_hit (F2) and RETRY its second cast in
+/// move_shape (F4): both true in the law, and off only in the tests, which is
+/// how the copy is held to Rapier's own routine and, with RETRY off, to the
+/// law before F4.
+pub(crate) struct Controller<'c, const BRANCH: bool, const RETRY: bool>(pub(crate) &'c KinematicCharacterController);
+
+impl<const BRANCH: bool, const RETRY: bool> Deref for Controller<'_, BRANCH, RETRY> {
     type Target = KinematicCharacterController;
 
     fn deref(&self) -> &KinematicCharacterController {
@@ -146,7 +189,7 @@ impl HitDecomposition {
     }
 }
 
-impl<const BRANCH: bool> Controller<'_, BRANCH> {
+impl<const BRANCH: bool, const RETRY: bool> Controller<'_, BRANCH, RETRY> {
     /// Pushes the character out of any non-sensor collider it is overlapping with, which is
     /// what stops an obstacle pushed into a non-moving character from tunneling through it
     /// ([`Self::move_shape`]'s shape-casts never run on a zero desired translation).
@@ -253,6 +296,8 @@ impl<const BRANCH: bool> Controller<'_, BRANCH> {
         let mut kinematic_friction_translation = Vector::ZERO;
         let offset = length(self.offset, dims.y);
         let mut is_moving = false;
+        // Whether the cast below is the move's first (F4).
+        let mut first_cast = true;
 
         while let Some((translation_dir, translation_dist)) =
             utils::try_normalize_and_get_length(translation_remaining, 1.0e-5)
@@ -265,7 +310,7 @@ impl<const BRANCH: bool> Controller<'_, BRANCH> {
             is_moving = true;
 
             // 2. Cast towards the movement direction.
-            if let Some((handle, hit)) = queries.cast_shape(
+            let mut cast = queries.cast_shape(
                 &(Pose::from_translation(result.translation) * *character_pos),
                 translation_dir,
                 character_shape,
@@ -275,7 +320,34 @@ impl<const BRANCH: bool> Controller<'_, BRANCH> {
                     max_time_of_impact: translation_dist,
                     compute_impact_geometry_on_penetration: true,
                 },
-            ) {
+            );
+            // The engine's second change (F4). A character standing on a floor
+            // starts its move with its skin on the floor's face to within
+            // rounding, and there parry's cast can report no hit at all
+            // (dimforge/parry#452): the character would take its whole move,
+            // gravity step included, into its skin. So when the move's first
+            // cast finds nothing while the character was grounded at its
+            // start, it casts once more with the skin RETRY_EXTRA_SKIN larger:
+            // the start is then clearly inside the dilated shape, and parry's
+            // answer for an impact at the start derives the normal from a
+            // contact query and keeps the hit only if the move approaches the
+            // collider. With RETRY off, the cast above is the only one, as in
+            // Rapier.
+            if RETRY && first_cast && grounded_at_starting_pos && cast.is_none() {
+                cast = queries.cast_shape(
+                    &(Pose::from_translation(result.translation) * *character_pos),
+                    translation_dir,
+                    character_shape,
+                    ShapeCastOptions {
+                        target_distance: offset + RETRY_EXTRA_SKIN,
+                        stop_at_penetration: false,
+                        max_time_of_impact: translation_dist,
+                        compute_impact_geometry_on_penetration: true,
+                    },
+                );
+            }
+            first_cast = false;
+            if let Some((handle, hit)) = cast {
                 // We hit something, compute and apply the allowed interference-free translation.
                 let allowed_dist = hit.time_of_impact;
                 let allowed_translation = translation_dir * allowed_dist;
@@ -794,9 +866,58 @@ fn subtract_hit(translation: Vector, hit: &ShapeCastHit) -> Vector {
     translation + hit.normal1 * surface_correction
 }
 
+/// What the retry does on one call of move_shape (F4).
+#[cfg(test)]
+#[derive(Debug)]
+pub(crate) enum Retry {
+    /// The move has no first cast, the character was not grounded at its
+    /// start, or the first cast found something.
+    Idle,
+    /// It fired and found nothing either, so the move is unchanged.
+    Missed,
+    /// It fired and found this collider.
+    Hit(ColliderHandle),
+}
+
+#[cfg(test)]
+impl<const BRANCH: bool, const RETRY: bool> Controller<'_, BRANCH, RETRY> {
+    /// What the retry does on a call of move_shape with these inputs,
+    /// computed with the calls move_shape makes before and at its first
+    /// cast, from the same pose. The first cast is the loop's, which runs
+    /// only on a move of 1e-5 or more; below that nothing moved the
+    /// character before it, so its pose is the start. The law's tests, at the
+    /// end of solver/src/rapier_law.rs, hold this to what the law does: the
+    /// copy with RETRY on differs from the copy with it off exactly where
+    /// this says the retry hit.
+    pub(crate) fn retry(&self, dt: Real, queries: &QueryPipeline, character_shape: &dyn Shape, character_pos: &Pose, desired_translation: Vector) -> Retry {
+        let dims = self.compute_dims(character_shape);
+        let Some((translation_dir, translation_dist)) = utils::try_normalize_and_get_length(desired_translation, 1.0e-5) else {
+            return Retry::Idle;
+        };
+        let start = Pose::from_translation(Vector::ZERO) * *character_pos;
+        if !self.detect_grounded_status_and_apply_friction(dt, queries, character_shape, &start, dims, None, None) {
+            return Retry::Idle;
+        }
+        let offset = length(self.offset, dims.y);
+        let options = |target_distance: Real| ShapeCastOptions {
+            target_distance,
+            stop_at_penetration: false,
+            max_time_of_impact: translation_dist,
+            compute_impact_geometry_on_penetration: true,
+        };
+        if queries.cast_shape(&start, translation_dir, character_shape, options(offset)).is_some() {
+            return Retry::Idle;
+        }
+        match queries.cast_shape(&start, translation_dir, character_shape, options(offset + RETRY_EXTRA_SKIN)) {
+            Some((handle, _)) => Retry::Hit(handle),
+            None => Retry::Missed,
+        }
+    }
+}
+
 // The branch on one hit, as arithmetic. The law's tests, at the end of
 // solver/src/rapier_law.rs, hold the copy to Rapier's controller over whole
-// runs; these hold the one change to what pin 2 of the dispatch says it is.
+// runs; these hold the branch to what pin 2 of F2's dispatch says it is.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -827,10 +948,11 @@ mod tests {
     }
 
     /// What handle_slopes keeps of one quantum's step on a floor hit at
-    /// time of impact 0, the whole step still to go.
+    /// time of impact 0, the whole step still to go. RETRY acts only in
+    /// move_shape, which these tests do not call, so it is off.
     fn kept<const BRANCH: bool>(settings: &KinematicCharacterController, normal_y: f64) -> Vector {
         let step = Vector::new(0.4 / 64.0, -8.0 / 64.0 / 64.0, 0.0);
-        let copy = Controller::<BRANCH>(settings);
+        let copy = Controller::<BRANCH, false>(settings);
         let info = copy.compute_hit_info(floor_hit(normal_y));
         let mut result = EffectiveCharacterMovement { translation: Vector::ZERO, grounded: false, is_sliding_down_slope: false };
         copy.handle_slopes(&info, step, step, copy.normal_nudge_factor, &mut result)
@@ -852,11 +974,11 @@ mod tests {
         let step = 0.4 / 64.0;
 
         let hit = floor_hit(last_bit);
-        let rapier = Controller::<false>(&settings).decompose_hit(Vector::new(step, -8.0 / 64.0 / 64.0, 0.0), &hit);
+        let rapier = Controller::<false, false>(&settings).decompose_hit(Vector::new(step, -8.0 / 64.0 / 64.0, 0.0), &hit);
         assert_eq!(rapier.horizontal_tangent, Vector::ZERO);
         assert_eq!(rapier.vertical_tangent.y, -(1.0 / (1u64 << 61) as f64));
         assert_eq!(rapier.vertical_tangent.x, step);
-        let ours = Controller::<true>(&settings).decompose_hit(Vector::new(step, -8.0 / 64.0 / 64.0, 0.0), &hit);
+        let ours = Controller::<true, false>(&settings).decompose_hit(Vector::new(step, -8.0 / 64.0 / 64.0, 0.0), &hit);
         assert_eq!((ours.horizontal_tangent.x, ours.horizontal_tangent.y), (step, 0.0));
         assert_eq!(ours.vertical_tangent.y, -(1.0 / (1u64 << 61) as f64));
 

@@ -21,15 +21,23 @@ compute_hit_info, decompose_hit, compute_dims, handle_stairs, subtract_hit),
 the private structs HitInfo and HitDecomposition, and the body of the private
 method CharacterLength::eval.
 
-What si-rpg-engine changed, 2026-09-25:
+What si-rpg-engine changed, 2026-09-25 and 2026-09-26:
 
-- One branch in decompose_hit. When the hit normal crossed with the
-  controller's up vector has no direction, the tangent's component along up
-  is the vertical tangent and the rest is the horizontal tangent; Rapier files
-  the whole tangent as vertical there. With a floor normal that is vertical
-  but for its last bit, Rapier's routine then keeps none of a character's
-  horizontal travel for that quantum. The report upstream is
+- One branch in decompose_hit (2026-09-25). When the hit normal crossed with
+  the controller's up vector has no direction, the tangent's component along
+  up is the vertical tangent and the rest is the horizontal tangent; Rapier
+  files the whole tangent as vertical there. With a floor normal that is
+  vertical but for its last bit, Rapier's routine then keeps none of a
+  character's horizontal travel for that quantum. The report upstream is
   https://github.com/dimforge/rapier/issues/1019.
+- A second cast in move_shape (2026-09-26). When the move's first cast finds
+  nothing while the character was grounded at the start of the move, the
+  routine casts once more with the skin (the controller's offset) 1e-9
+  larger. A character standing on a floor starts its move with its skin on
+  the floor's face to within rounding, and there parry's GJK cast can lose
+  its search direction to rounding and report no hit, so the character takes
+  its whole move, gravity step included, into its skin. The defect is
+  parry's; the report upstream is https://github.com/dimforge/parry/issues/452.
 - The routine is adapted to Rapier's public API: its methods live on a
   wrapper of KinematicCharacterController, a private method's body is a local
   function, and a crate-private field is read through its public accessor.
