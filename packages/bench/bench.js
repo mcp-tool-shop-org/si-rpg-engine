@@ -35,10 +35,10 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { arch, cpus, platform } from 'node:os';
 import { isAbsolute, join, relative, resolve } from 'node:path';
 import { readAnchors } from './anchors.js';
-import { BuildFailure, buildCoverage, buildProduct, copyProduct, glueBytes, llvmTools, productGlue, sha256 } from './build.js';
+import { BuildFailure, buildCoverage, buildProduct, copyProduct, glueBytes, llvmTools, productGlue, seedCoverage, sha256 } from './build.js';
 import { MUTANT_CAP, applyEdits, makeMutants } from './mutants.js';
 import { BenchRefusal, oneTreePerProcess, startProcess } from './processes.js';
-import { coverageInfo, lineStats, mapWindow, normalize, countAt } from './profile.js';
+import { coverageInfo, lineStats, mapWindow, normalize, countAt, regionAt } from './profile.js';
 import { lawSources, mappedLines, probeTable, reachOf } from './reach.js';
 import { describeDifference, floods, lateGain, markdown } from './report.js';
 import { copyTree, listFiles, syncTree, treeCommit, treeDigest } from './trees.js';
@@ -311,6 +311,8 @@ export async function runBench(options) {
 
     /** @type {Map<string, Set<number>>} */
     const lawMapped = new Map();
+    /** @type {Map<string, { file: string, line: number, column: number, how: string, point: { line: number, column: number } } | null>} */
+    const regions = new Map();
     /**
      * Maps a law window and checks the canary against it (pin 3).
      * @param {import('./runner.js').Window | any} win
@@ -326,6 +328,16 @@ export async function runBench(options) {
       if (lawMapped.size === 0) {
         for (const file of lawSources(anchors, STEP_FILE)) {
           lawMapped.set(file, mappedLines(files, head, file));
+        }
+        // A law deletion's region, read from the coverage build's mapping:
+        // the innermost region in force at the point the lines left.
+        for (const a of anchors) {
+          if (a.kind === 'law-deletion' && a.lawEntries.length === 1 && a.why === 'the innermost coverage region at the point') {
+            const e = a.lawEntries[0];
+            const segments = files.get(normalize(head.replace(/\\/g, '/') + '/' + e.file));
+            const at = segments ? regionAt(segments, e) : null;
+            regions.set(a.id, at ? { file: e.file, line: at.line, column: at.column, how: at.how, point: { line: e.line, column: e.column } } : null);
+          }
         }
       }
       if (canary !== false) {
@@ -371,7 +383,7 @@ export async function runBench(options) {
       if (firstDiff >= 0 || h.digests.length !== c.digests.length) {
         const tick = firstDiff >= 0 ? firstDiff : Math.min(h.digests.length, c.digests.length);
         const block = await blockAt(headProc, covProc, tick, 'head product', 'head coverage');
-        throw new BenchRefusal('the coverage build does not compute what the product build computes: the product scene\'s traces differ, frame for frame, first at tick ' + tick + '\n' + block);
+        throw new BenchRefusal('the coverage build does not compute what the product build computes: the product scene\'s traces differ, frame for frame, first at tick ' + tick + '; ' + frameAgreement(h, c) + '\n' + block);
       }
       const files = await mapLaw(c.window, 'the product scene', false);
       const segments = files ? files.get(normalize(head.replace(/\\/g, '/') + '/' + STEP_FILE)) : null;
@@ -434,6 +446,11 @@ export async function runBench(options) {
     // The ladder.
     /** @type {Map<string, any>} */
     const runnable = new Map();
+    /**
+     * What a mutant is compared with: one build's run of an input.
+     * @param {any} r
+     */
+    const view = (r) => ({ digests: r.digests, admitted: r.admissions.map((/** @type {any} */ a) => a.admitted), failure: r.failure ? r.failure.kind : null });
     let serial = 0;
     /**
      * Runs one candidate on every tree and build, and writes its record.
@@ -459,7 +476,7 @@ export async function runBench(options) {
         if (at >= 0 || h.digests.length !== cv.digests.length) {
           const tick = at >= 0 ? at : Math.min(h.digests.length, cv.digests.length);
           const block = await blockAt(headProc, /** @type {Proc} */ (covProc), tick, 'head product', 'head coverage');
-          throw new BenchRefusal('the coverage build computes differently from the product build at ' + c.id + ' in ' + c.world + ': the traces differ, frame for frame, first at tick ' + tick + '\n' + block);
+          throw new BenchRefusal('the coverage build computes differently from the product build at ' + c.id + ' in ' + c.world + ': the traces differ, frame for frame, first at tick ' + tick + '; ' + frameAgreement(h, cv) + '\n' + block);
         }
       }
       const record = baseRecord(c);
@@ -501,7 +518,7 @@ export async function runBench(options) {
             record.rungs[2] = null;
             record.notes.push('a rung-3 failure on the ' + tree + ' alone: ' + only.kind);
           }
-          runnable.set(c.id, { args, digests: h.digests, admitted: h.admissions.map((/** @type {any} */ a) => a.admitted), failure: h.failure ? h.failure.kind : null, control: null });
+          runnable.set(c.id, { args, control: null, head: view(h), coverage: cv ? view(cv) : null });
         }
       }
       if (headSound && (record.rungs[2] || (record.rungs[3] && (record.rungs[3].catch || Object.values(record.rungs[3].failures).some(Boolean))))) {
@@ -531,6 +548,11 @@ export async function runBench(options) {
         }
         return record;
       })();
+      // Awaited in order by drive(). When an earlier candidate's refusal ends
+      // the run first, this one is never awaited, and its own refusal, if it
+      // has one, is not the run's: it is marked handled so it cannot surface
+      // after the run has ended.
+      finish.catch(() => {});
       return { record, finish };
     };
 
@@ -738,7 +760,7 @@ export async function runBench(options) {
         if (at >= 0 || h.digests.length !== cv.digests.length) {
           const tick = at >= 0 ? at : Math.min(h.digests.length, cv.digests.length);
           const block = await blockAt(headProc, /** @type {Proc} */ (covProc), tick, 'head product', 'head coverage');
-          throw new BenchRefusal('the coverage build computes differently from the product build on the control input ' + file + ': first at tick ' + tick + '\n' + block);
+          throw new BenchRefusal('the coverage build computes differently from the product build on the control input ' + file + ': first at tick ' + tick + '; ' + frameAgreement(h, cv) + '\n' + block);
         }
       }
       /** @type {CandidateRecord} */
@@ -789,7 +811,7 @@ export async function runBench(options) {
             failures: { head: h.failure ? { kind: h.failure.kind, tick: h.failure.tick, detail: h.failure.detail } : null, base: b.failure ? { kind: b.failure.kind, tick: b.failure.tick, detail: b.failure.detail } : null },
             catch: Boolean(h.failure && (!b.failure || b.failure.kind !== h.failure.kind)),
           };
-          runnable.set(id, { control: { name: id, spec: runSpec }, digests: h.digests, admitted: h.admissions.map((/** @type {any} */ a) => a.admitted), failure: h.failure ? h.failure.kind : null });
+          runnable.set(id, { control: { name: id, spec: runSpec }, head: view(h), coverage: cv ? view(cv) : null });
           if (record.rungs[2] || record.rungs[3].catch) {
             record.bundle = writeControlBundle(out, id, bundle, runSpec, h, record, environment);
           }
@@ -840,6 +862,7 @@ export async function runBench(options) {
         observable: a.observable, why: a.why, executable: lawMapped.has(a.file) && (a.kind === 'law') ? a.changed.filter((l) => /** @type {Set<number>} */ (lawMapped.get(a.file)).has(l)) : a.executable,
         noExecutableChange: lawMapped.has(a.file) && a.kind === 'law' ? a.changed.every((l) => !/** @type {Set<number>} */ (lawMapped.get(a.file)).has(l)) : a.noExecutableChange,
         runsAtLoad: a.runsAtLoad || loadOnly.has(a.id), removed: a.removed, identifiers: a.identifiers, verb: a.verb, hazard: a.hazard,
+        region: regions.has(a.id) ? regions.get(a.id) : undefined,
         reachedBy: sources, entries: by.size,
         linesReached: Array.from(/** @type {Set<number>} */ (linesReached.get(a.id))).sort((x, y) => x - y),
         reached: by.size > 0,
@@ -887,6 +910,33 @@ export async function runBench(options) {
   writeFileSync(join(out, 'report.json'), JSON.stringify(report, null, 1) + '\n');
   writeFileSync(join(out, 'report.md'), markdown(report));
   return report;
+}
+
+/**
+ * How two runs of one input differ after their first difference: whether
+ * their states, each line without its hash, agree again, as they do after a
+ * difference later frames undo; the hash is a running chain, so it carries
+ * any difference on to the end.
+ * @param {{ digests: string[], states: string[] }} a
+ * @param {{ digests: string[], states: string[] }} b
+ */
+function frameAgreement(a, b) {
+  const n = Math.min(a.states.length, b.states.length);
+  const first = a.digests.findIndex((d, i) => i < n && d !== b.digests[i]);
+  if (a.states.length !== b.states.length) {
+    return 'one run is ' + Math.abs(a.states.length - b.states.length) + ' frames longer';
+  }
+  let again = -1;
+  for (let i = Math.max(first, 0) + 1; i < n; i = i + 1) {
+    if (a.states[i] !== b.states[i]) {
+      again = -1;
+    } else if (again < 0) {
+      again = i;
+    }
+  }
+  return again >= 0
+    ? 'the states agree again from tick ' + again + ' to the last frame, tick ' + (n - 1) + ', and the running hash carries the difference on'
+    : 'the states still differ at the last frame, tick ' + (n - 1);
 }
 
 /**
@@ -1214,7 +1264,13 @@ async function runMutants(mutants, ctx) {
   let reference = null;
   for (const m of mutants) {
     /** @type {any} */
-    const result = { id: m.id, anchor: m.anchor, file: m.file, line: m.line, operator: m.operator, detail: m.detail, kind: m.kind, marked: m.marked, verdict: '', why: '', separatedBy: null, build: m.kind === 'law' ? 'the head\'s coverage build' : 'the head\'s product build' };
+    const result = {
+      id: m.id, anchor: m.anchor, file: m.file, line: m.line, operator: m.operator, detail: m.detail, kind: m.kind, marked: m.marked, verdict: '', why: '', separatedBy: null,
+      // What its runs are compared with (pin 7): a law mutant's with the head's
+      // coverage build, like with like, and a JS mutant's with the head's product build.
+      build: m.kind === 'law' ? 'the head\'s coverage build' : 'the head\'s product build',
+      comparedWith: m.kind === 'law' ? { build: 'head coverage', digest: ctx.environment.binaries.coverage || null } : { build: 'head product', digest: ctx.environment.binaries.head },
+    };
     const anchor = /** @type {Anchor} */ (ctx.anchors.find((a) => a.id === m.anchor));
     const lineReached = /** @type {Set<number>} */ (ctx.linesReached.get(m.anchor)).has(m.line)
       || ((anchor.kind === 'top-level' || anchor.kind === 'law-top-level' || anchor.kind === 'rule') && /** @type {Map<string, any>} */ (ctx.reachedBy.get(m.anchor)).size > 0);
@@ -1227,7 +1283,18 @@ async function runMutants(mutants, ctx) {
         mkdirSync(lawTree, { recursive: true });
         syncTree(ctx.head, lawTree);
         copyProduct(ctx.head, lawTree);
+        // Its target starts as the head's coverage target without the law
+        // crate's own files, so the reference compiles the law crate alone,
+        // from the law tree's sources. Were any of its files left, cargo could
+        // take the head's law crate as fresh, and the reference would carry the
+        // head's source paths in its mapping, and so the head's bytes.
+        const seeded = seedCoverage(ctx.head, lawTree);
         const ref = buildCoverage(lawTree, 'law tree reference');
+        if (ref.digest === ctx.environment.binaries.coverage) {
+          throw new BenchRefusal('the law tree\'s reference build has the head coverage build\'s bytes: its law crate was not built from the law tree\'s own sources');
+        }
+        ctx.environment.lawReferenceSeeded = seeded;
+        ctx.environment.lawReferenceMs = Math.round(ref.ms);
         reference = ref.digest;
         ctx.environment.binaries.lawReference = ref.digest;
         lawReady = true;
@@ -1238,6 +1305,10 @@ async function runMutants(mutants, ctx) {
         let built;
         try {
           built = buildCoverage(lawTree, 'law mutant ' + m.id);
+          /** @type {Record<string, number>} */
+          const rebuilds = ctx.environment.lawRebuilds || {};
+          rebuilds[m.id] = Math.round(built.ms);
+          ctx.environment.lawRebuilds = rebuilds;
         } catch (error) {
           result.verdict = 'not scored';
           result.why = 'does not load: ' + (error instanceof Error ? error.message.split('\n')[0] : String(error));
@@ -1308,6 +1379,10 @@ async function separate(m, result, tree, redirect, ctx, lineReached) {
   try {
     let first = true;
     for (const [id, run] of ctx.runnable) {
+      const ref = m.kind === 'law' ? run.coverage : run.head;
+      if (!ref) {
+        throw new BenchRefusal('the law mutant ' + m.id + ' has no run of the head\'s coverage build to be compared with on ' + id);
+      }
       const got = run.control
         ? await proc.call('control', { ...run.control, window: false, restoreCheck: true })
         : await proc.call('candidate', { ...run.args, window: false });
@@ -1323,12 +1398,12 @@ async function separate(m, result, tree, redirect, ctx, lineReached) {
       let by = null;
       if (got.rung0 && !got.rung0.ok) {
         by = { rung: 'rung 0', detail: 'rung 0 fails on the mutant: ' + String(got.rung0.detail).split('\n')[0] };
-      } else if ((got.failure ? got.failure.kind : null) !== run.failure) {
-        by = { rung: 'rung 3', detail: 'a rung-3 failure on one and not the other: ' + (got.failure ? got.failure.kind + ' on the mutant (' + got.failure.detail + ')' : run.failure + ' on the head') };
-      } else if (got.digests.length !== run.digests.length || got.digests.some((/** @type {string} */ d, /** @type {number} */ i) => d !== run.digests[i])) {
-        const at = got.digests.findIndex((/** @type {string} */ d, /** @type {number} */ i) => d !== run.digests[i]);
-        by = { rung: 'rung 2', detail: 'a trace difference at tick ' + (at >= 0 ? at : Math.min(got.digests.length, run.digests.length)) };
-      } else if (got.admissions.some((/** @type {any} */ a, /** @type {number} */ i) => a.admitted !== run.admitted[i])) {
+      } else if ((got.failure ? got.failure.kind : null) !== ref.failure) {
+        by = { rung: 'rung 3', detail: 'a rung-3 failure on one and not the other: ' + (got.failure ? got.failure.kind + ' on the mutant (' + got.failure.detail + ')' : ref.failure + ' on the head') };
+      } else if (got.digests.length !== ref.digests.length || got.digests.some((/** @type {string} */ d, /** @type {number} */ i) => d !== ref.digests[i])) {
+        const at = got.digests.findIndex((/** @type {string} */ d, /** @type {number} */ i) => d !== ref.digests[i]);
+        by = { rung: 'rung 2', detail: 'a trace difference at tick ' + (at >= 0 ? at : Math.min(got.digests.length, ref.digests.length)) };
+      } else if (got.admissions.some((/** @type {any} */ a, /** @type {number} */ i) => a.admitted !== ref.admitted[i])) {
         by = { rung: 'rung 2', detail: 'an admission differs' };
       }
       if (by) {

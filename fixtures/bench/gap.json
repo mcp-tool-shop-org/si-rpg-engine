@@ -1,5 +1,5 @@
 {
-  "name": "bench-pit",
+  "name": "bench-gap",
   "seed": 9,
   "bodies": [
     { "id": "walker", "x": 1.75, "y": 0.3, "z": 1.75, "vx": 0, "vy": 0, "vz": 0, "hx": 0.25, "hy": 0.25, "hz": 0.25 }
@@ -7,7 +7,6 @@
   "colliders": [
     { "id": "floor-west", "minX": -1, "maxX": 2, "minY": -1, "maxY": 0, "minZ": -1, "maxZ": 4.5 },
     { "id": "floor-east", "minX": 3, "maxX": 6, "minY": -1, "maxY": 0, "minZ": -1, "maxZ": 4.5 },
-    { "id": "pit-bottom", "minX": -1, "maxX": 6, "minY": -401, "maxY": -400, "minZ": -1, "maxZ": 4.5 },
     { "id": "wall-west", "minX": -1, "maxX": 0, "minY": 0, "maxY": 3.5, "minZ": -1, "maxZ": 4.5 },
     { "id": "wall-east", "minX": 5, "maxX": 6, "minY": 0, "maxY": 3.5, "minZ": -1, "maxZ": 4.5 },
     { "id": "wall-south", "minX": -1, "maxX": 6, "minY": 0, "maxY": 3.5, "minZ": -1, "maxZ": 0 },

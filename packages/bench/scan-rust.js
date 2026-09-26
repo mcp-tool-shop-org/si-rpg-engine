@@ -487,6 +487,33 @@ export function scanRust(text) {
 }
 
 /**
+ * Where the innermost block around an offset opens: the position just past
+ * its `{`, as a line and a 1-based column, or null outside every block.
+ * @param {{ tokens: RustToken[], lineStarts: number[] }} scan
+ * @param {number} offset
+ * @returns {{ line: number, column: number } | null}
+ */
+export function innermostBlock(scan, offset) {
+  /** @type {RustToken[]} */
+  const open = [];
+  for (const t of scan.tokens) {
+    if (t.start >= offset) {
+      break;
+    }
+    if (t.type === 'punct' && t.value === '{') {
+      open.push(t);
+    } else if (t.type === 'punct' && t.value === '}') {
+      open.pop();
+    }
+  }
+  const brace = open[open.length - 1];
+  if (!brace) {
+    return null;
+  }
+  return { line: brace.line, column: brace.end - scan.lineStarts[brace.line - 1] + 1 };
+}
+
+/**
  * The innermost fn whose span holds an offset, or -1.
  * @param {RustFn[]} functions
  * @param {number} offset

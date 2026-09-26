@@ -23,7 +23,7 @@
 
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /** The flags the coverage build adds to the product's (pin 3). */
@@ -104,6 +104,27 @@ export function copyProduct(head, tree) {
  */
 export function coverageDir(tree) {
   return join(tree, 'solver', 'target', 'coverage');
+}
+
+/**
+ * Starts a law tree's coverage target as a copy of the head's, leaving out
+ * every file of the law crate itself (pin 7). Cargo then builds the law crate
+ * from the law tree's own sources, in the law tree's own target directory,
+ * and takes the dependencies' artifacts as they are: the coverage flags name
+ * no tree, so those are the same build's in any tree. The caller checks that
+ * the reference it builds is not the head's bytes: the mapping names each
+ * source by its path, so a law crate built in the law tree differs.
+ * @param {string} from
+ * @param {string} to
+ * @returns {boolean} whether there was a target to copy
+ */
+export function seedCoverage(from, to) {
+  const source = coverageDir(from);
+  if (!existsSync(source) || existsSync(coverageDir(to))) {
+    return false;
+  }
+  cpSync(source, coverageDir(to), { recursive: true, filter: (path) => !/[\\/](si[-_]solver[^\\/]*|solver\.mjs)$/.test(path) });
+  return true;
 }
 
 /**

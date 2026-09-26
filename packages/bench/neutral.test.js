@@ -141,7 +141,10 @@ test('a top-level constant that only an unreached function names is reported not
 });
 
 test('a top-level constant deleted with every use is reported removed, its reach not measurable', () => {
-  const a = anchor('deletion:packages/tick/tick.js:48-49:');
+  // Found by what it declared, not by its lines, which move with the file.
+  const found = report.anchors.filter((/** @type {any} */ x) => x.kind === 'deletion' && x.file === 'packages/tick/tick.js' && Array.isArray(x.identifiers) && x.identifiers.includes('FRAME_HASH'));
+  assert.equal(found.length, 1, report.anchors.map((/** @type {any} */ x) => x.id).join(' | '));
+  const a = found[0];
   assert.equal(a.removed, true);
   assert.equal(a.verdict, 'removed; reach not measurable');
   assert.deepEqual(a.identifiers, ['FRAME_HASH']);

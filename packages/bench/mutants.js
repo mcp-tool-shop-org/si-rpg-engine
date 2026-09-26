@@ -356,10 +356,13 @@ export function makeMutants(anchors, headTree, baseTree, lawMapped) {
     const law = a.kind === 'law' || a.kind === 'law-top-level';
     /** @type {number[]} */
     let lines;
-    if (law) {
+    if (a.kind === 'law') {
       const mapped = lawMapped ? lawMapped.get(a.file) : null;
       lines = mapped ? a.changed.filter((l) => mapped.has(l)) : a.executable;
     } else {
+      // A top-level const or static of the law, like any top-level constant,
+      // takes the four constant mutants: its value is folded into the code
+      // that names it, so no region of the mapping holds its own line.
       lines = a.executable;
     }
     if (lines.length === 0) {

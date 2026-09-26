@@ -249,6 +249,15 @@ function digest(line) {
 }
 
 /**
+ * A line's digest without its hash, the running chain: the state alone, so a
+ * difference later frames undo shows where the states agree again.
+ * @param {string} line
+ */
+function stateDigest(line) {
+  return digest(line.replace(/^(\S+) \S+/, '$1'));
+}
+
+/**
  * A tick's trace line from its committed frame: the frame's bodies, and the
  * world's zones, links, snapshot, and minds, which nothing after the commit
  * changes.
@@ -331,7 +340,25 @@ function restless(run) {
  *   lines: string[], hashes: string[], admissions: Admission[],
  *   quanta: number, restores: number, failure: Failure | null, acted: boolean, settling: number
  * }} LogState
+ * settling: the tick at which the run last fell idle, every entry submitted and
+ * no action scheduled, or -1 while one is; the 512 quanta a world has to
+ * settle count from there, so a run resumed inside that stretch, from rung
+ * 0's midpoint or a stored save, ends where a run from the load does.
  */
+
+/**
+ * Notes whether the run is idle at this tick: every entry below `upTo`
+ * submitted and nothing scheduled.
+ * @param {LogState} s
+ * @param {number} upTo
+ */
+function noteIdle(s, upTo) {
+  if (s.next < upTo || !s.tick.idle()) {
+    s.settling = -1;
+  } else if (s.settling < 0) {
+    s.settling = s.tick.frame().tick;
+  }
+}
 
 /**
  * Submits every entry due at the current tick, each citing this tree's own
@@ -415,6 +442,7 @@ function runOut(s, entries, how) {
       checkLine(s.lines[s.lines.length - 1], s.tick.frame());
     }
     const pending = s.next < entries.length || !s.tick.idle();
+    noteIdle(s, entries.length);
     if (typeof how.until === 'number') {
       if (s.tick.frame().tick >= how.until) {
         return;
@@ -429,14 +457,14 @@ function runOut(s, entries, how) {
   if (!how.settle) {
     return;
   }
-  for (let n = 0; ; n = n + 1) {
+  for (;;) {
     if (allAsleep(s)) {
       return;
     }
     if (runaway(s, entries, start, limit)) {
       return;
     }
-    if (n === SETTLE_QUANTA) {
+    if (s.tick.frame().tick - s.settling >= SETTLE_QUANTA) {
       const moving = restless(s);
       if (moving.length > 0) {
         const body = s.world.body(moving[0]);
@@ -483,7 +511,7 @@ function runaway(s, entries, start, limit) {
 function fromLoad(worldInit, seed, law, retired) {
   const made = freshTick(worldInit, seed, law, retired);
   /** @type {LogState} */
-  const s = { ...made, next: 0, lines: [], hashes: [], admissions: [], quanta: 0, restores: 0, failure: null, acted: false, settling: 0 };
+  const s = { ...made, next: 0, lines: [], hashes: [], admissions: [], quanta: 0, restores: 0, failure: null, acted: false, settling: -1 };
   pushLine(s);
   return s;
 }
@@ -500,6 +528,7 @@ function runTo(s, entries, upTo, target) {
   const start = s.quanta;
   for (;;) {
     submitDue(s, entries, upTo);
+    noteIdle(s, entries.length);
     if (s.tick.frame().tick >= target) {
       return true;
     }
@@ -539,7 +568,7 @@ function reachWitness(spec) {
     /** @type {LogState} */
     const s = {
       ...made, next: stored.next, lines: stored.lines.slice(), hashes: stored.hashes.slice(), admissions: stored.admissions.map((/** @type {Admission} */ a) => ({ ...a })),
-      quanta: 0, restores: 1, failure: null, acted: stored.acted, settling: 0,
+      quanta: 0, restores: 1, failure: null, acted: stored.acted, settling: stored.settling,
     };
     return { s, restored: true };
   }
@@ -551,7 +580,7 @@ function reachWitness(spec) {
   if (spec.key !== null && s.next === spec.witness) {
     saves.set(spec.key, {
       tag: { process: cfg().processId, tree: cfg().tree, build: cfg().build },
-      save: s.tick.save(), next: s.next, lines: s.lines.slice(), hashes: s.hashes.slice(), admissions: s.admissions.map((a) => ({ ...a })), acted: s.acted,
+      save: s.tick.save(), next: s.next, lines: s.lines.slice(), hashes: s.hashes.slice(), admissions: s.admissions.map((a) => ({ ...a })), acted: s.acted, settling: s.settling,
     });
     while (saves.size > SAVE_CAP) {
       const oldest = saves.keys().next().value;
@@ -574,11 +603,12 @@ function restoreCheck(spec, first, firstFailure) {
   const mid = Math.floor(endTick / 2);
   const s = fromLoad(spec.world, spec.seed, spec.law, spec.retired);
   let failed = !runTo(s, spec.entries, spec.entries.length, mid);
-  /** @type {{ tick: any, next: number, lines: number } | null} */
+  /** @type {{ tick: any, next: number, lines: number, settling: number } | null} */
   let saved = null;
   if (!failed) {
     submitDue(s, spec.entries, spec.entries.length);
-    saved = { tick: s.tick.save(), next: s.next, lines: s.lines.length };
+    noteIdle(s, spec.entries.length);
+    saved = { tick: s.tick.save(), next: s.next, lines: s.lines.length, settling: s.settling };
     runOut(s, spec.entries, { settle: spec.settle, until: spec.until });
   }
   const second = s.lines.slice();
@@ -589,6 +619,7 @@ function restoreCheck(spec, first, firstFailure) {
     s.tick.restore(saved.tick);
     restores = restores + 1;
     s.next = saved.next;
+    s.settling = saved.settling;
     s.lines = s.lines.slice(0, saved.lines);
     s.hashes = s.hashes.slice(0, saved.lines);
     s.failure = null;
@@ -641,7 +672,7 @@ function candidate(a) {
       // The load itself threw: this tree fails before the candidate acts.
       const failure = { kind: /** @type {'throws'} */ ('throws'), tick: 0, detail: 'the load throws: ' + (error instanceof Error ? error.message : String(error)), body: null };
       return {
-        admissions: [], hashes: ['NAN'], digests: [digest('0 NAN')], end: 0, failure, failedBeforeActing: true, restoredWitness: false,
+        admissions: [], hashes: ['NAN'], digests: [digest('0 NAN')], states: [stateDigest('0 NAN')], end: 0, failure, failedBeforeActing: true, restoredWitness: false,
         window: null, rung0: null, restoreWindow: null, quanta: 0, restores: 0, witnessQuanta: 0,
       };
     }
@@ -689,6 +720,7 @@ function candidate(a) {
       admissions: s.admissions,
       hashes: s.hashes,
       digests: s.lines.map(digest),
+      states: s.lines.map(stateDigest),
       end: s.lines.length - 1,
       failure: s.failure,
       failedBeforeActing,
@@ -745,7 +777,7 @@ function control(a) {
         last.restored = rung0.restored;
       }
       return {
-        admissions: s.admissions, hashes: s.hashes, digests: s.lines.map(digest), end: s.lines.length - 1, failure: s.failure,
+        admissions: s.admissions, hashes: s.hashes, digests: s.lines.map(digest), states: s.lines.map(stateDigest), end: s.lines.length - 1, failure: s.failure,
         failedBeforeActing: s.failure !== null && !s.acted, window: win, rung0: rung0 ? { ok: rung0.ok, detail: rung0.detail, mid: rung0.mid } : null, restoreWindow,
         quanta: s.quanta + (rung0 ? rung0.quanta : 0), restores: s.restores + (rung0 ? rung0.restores : 0),
       };
@@ -769,7 +801,7 @@ function control(a) {
       last.restored = rung0.restored;
     }
     return {
-      admissions: [], hashes: first.hashes, digests: first.lines.map(digest), end: first.lines.length - 1, failure: first.failure,
+      admissions: [], hashes: first.hashes, digests: first.lines.map(digest), states: first.lines.map(stateDigest), end: first.lines.length - 1, failure: first.failure,
       failedBeforeActing: first.failure !== null && first.lines.length <= 1, window: win, rung0: rung0 ? { ok: rung0.ok, detail: rung0.detail, mid: rung0.mid } : null, restoreWindow,
       quanta: first.quanta + (rung0 ? rung0.quanta : 0), restores: rung0 ? rung0.restores : 0,
     };
@@ -1128,7 +1160,7 @@ function grammarNext() {
       if (!saves.has(key)) {
         saves.set(key, {
           tag: { process: cfg().processId, tree: cfg().tree, build: cfg().build },
-          save: s.tick.save(), next: s.next, lines: s.lines.slice(), hashes: s.hashes.slice(), admissions: s.admissions.map((a) => ({ ...a })), acted: s.acted,
+          save: s.tick.save(), next: s.next, lines: s.lines.slice(), hashes: s.hashes.slice(), admissions: s.admissions.map((a) => ({ ...a })), acted: s.acted, settling: s.settling,
         });
       }
     }

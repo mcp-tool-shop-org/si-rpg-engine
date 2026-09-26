@@ -391,6 +391,45 @@ export function lineStats(segments) {
  * @param {number} column
  */
 export function countAt(segments, line, column) {
+  const found = segmentAt(segments, line, column);
+  return found ? found.count : null;
+}
+
+/**
+ * A law deletion's region (pin 1): the innermost region in force at its
+ * point; or, where the point falls between regions, as a line that left from
+ * between two statements does in Rust's mapping, the first region of the
+ * innermost block around it, which runs whenever that block is entered.
+ * @param {Segments} segments
+ * @param {{ line: number, column: number, block?: { line: number, column: number } | null }} point
+ * @returns {{ line: number, column: number, count: number, how: string } | null}
+ */
+export function regionAt(segments, point) {
+  const at = segmentAt(segments, point.line, point.column);
+  if (at) {
+    return { ...at, how: 'the region in force at the point' };
+  }
+  const block = point.block;
+  if (block) {
+    for (const s of segments) {
+      if ((s[0] > block.line || (s[0] === block.line && s[1] >= block.column)) && s[3]) {
+        return { line: s[0], column: s[1], count: s[2], how: 'the first region of the innermost block around the point, which falls between regions' };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * The segment in force at a position: where the count of the innermost region
+ * there begins, and that count; null when the position is in no region with a
+ * count. A deletion anchor in the law reads its region here (pin 1).
+ * @param {Segments} segments
+ * @param {number} line
+ * @param {number} column
+ * @returns {{ line: number, column: number, count: number } | null}
+ */
+export function segmentAt(segments, line, column) {
   /** @type {Segments[number] | null} */
   let found = null;
   for (const s of segments) {
@@ -403,5 +442,5 @@ export function countAt(segments, line, column) {
   if (!found || !found[3]) {
     return null;
   }
-  return found[2];
+  return { line: found[0], column: found[1], count: found[2] };
 }

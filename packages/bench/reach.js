@@ -16,13 +16,14 @@
 //               that names what it declared ran;
 //   law         when its function's entry region counts, in the mapping;
 //   law-top-level, law-deletion  likewise, by the functions that name it or
-//               the innermost region at its point;
+//               the innermost region at its point, or, at a point between
+//               regions, the first region of the innermost block around it;
 //   rule        when its verb was submitted in the window, admitted or refused;
 //   catalog     when any intent was submitted, or the verb a line retires or
 //               restores was;
 //   hazard      when the suite ran its hazard.
 
-import { countAt, lineStats, normalize } from './profile.js';
+import { countAt, lineStats, normalize, regionAt } from './profile.js';
 
 /**
  * @typedef {import('./anchors.js').Anchor} Anchor
@@ -139,7 +140,9 @@ export function reachOf(anchors, table, window) {
         if (!segments) {
           continue;
         }
-        const count = countAt(segments, entry.line, entry.column);
+        // A deletion's point reads its region; every other entry, a function's.
+        const region = a.kind === 'law-deletion' && entry.block !== undefined ? regionAt(segments, entry) : null;
+        const count = region ? region.count : a.kind === 'law-deletion' && entry.block !== undefined ? null : countAt(segments, entry.line, entry.column);
         if (count !== null && count > 0) {
           reached.add(a.id);
         }

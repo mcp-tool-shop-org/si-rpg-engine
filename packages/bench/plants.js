@@ -83,6 +83,57 @@ export const NOT_AIMED = {
 };
 
 /**
+ * The dependency files of solver/, not aimed at, planted where the trees
+ * build: comment lines only, so the build and the lock stay as they were.
+ * @type {Record<string, Edit[]>}
+ */
+export const NOT_AIMED_SOLVER = {
+  cargoToml: [{ file: 'solver/Cargo.toml', from: '# The allocator std links on wasm32, at std 1.98.1\'s version, given a fixed\n', to: '# The allocator std links on wasm32 at std 1.98.1\'s version, given a fixed\n' }],
+  cargoLock: [{ file: 'solver/Cargo.lock', from: '# It is not intended for manual editing.\n', to: '# It is not meant for manual editing.\n' }],
+};
+
+/**
+ * The law's plants (pin 9), planted together in one head: each is a kind of
+ * law anchor, and none stops the product scene.
+ * @type {Record<string, Edit[]>}
+ */
+export const LAW = {
+  // One operator on a line the product scene runs: the snapshot's sleep
+  // timer, which the frame hash mixes, is written times the quantum instead of
+  // divided by it, so frames differ wherever a dynamic body can sleep.
+  operator: [{ file: 'solver/src/rapier_law.rs', from: '            push_f64(out, act.time_since_can_sleep / DT);\n', to: '            push_f64(out, act.time_since_can_sleep * DT);\n' }],
+  // A const two law functions name, gravity, written again at the same
+  // value: the difference the head shows is the operator's alone, and the
+  // const's four mutants each change what runs.
+  constant: [{ file: 'solver/src/rapier_law.rs', from: 'const G: f64 = -8.0;\n', to: 'const G: f64 = -8.000;\n' }],
+  // A comment in a law function, rewritten; nothing else in that function changes.
+  comment: [{ file: 'solver/src/rapier_law.rs', from: '        // A lifted kinematic takes its vertical velocity from the record.\n', to: '        // A lifted kinematic body takes its vertical velocity from the record.\n' }],
+  // A line deleted from a law function the product scene runs: one line of
+  // the comment on the snapshot's sort.
+  deleted: [{ file: 'solver/src/rapier_law.rs', from: '    // pairs never share both handles. The stable sort stays anyway, so that if\n', to: '' }],
+  // A top-level const no code names: a build leaves it out, so each of its
+  // mutants rebuilds to the law tree's reference byte for byte.
+  unused: [{ file: 'solver/src/rapier_law.rs', from: 'const SKIN: f64 = 0.01;\n', to: 'const SKIN: f64 = 0.01;\nconst PLANTED_UNUSED: f64 = 0.5;\n' }],
+};
+
+/**
+ * A coverage build planted to compute differently from the product build,
+ * only in a one-body world, which neither the product scene nor the room is:
+ * at its 20th quantum in such a world, while the load settles, it writes the
+ * body's x 1e-9 off, once, and the next quantum writes it true again, so
+ * later frames undo the difference. The code is under --cfg law_coverage, so
+ * the product build never holds it; it rides in the law head beside the
+ * law's plants, and only a run over a one-body world meets it.
+ * @type {Edit[]}
+ */
+export const SKEW = [
+  { file: 'solver/src/rapier_law.rs', from: '    integrate(loaded, mover, pusher)?;\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n', to: '    integrate(loaded, mover, pusher)?;\n    #[cfg(law_coverage)]\n    planted_skew(loaded);\n    rebuild_snapshot(loaded, &mut solver.snapshot)\n}\n\n#[cfg(law_coverage)]\nstatic mut PLANTED_STEPS: u32 = 0;\n\n#[cfg(law_coverage)]\nfn planted_skew(loaded: &Loaded) {\n    if loaded.n_bodies != 1 {\n        return;\n    }\n    unsafe {\n        let steps = &raw mut PLANTED_STEPS;\n        *steps = (*steps).wrapping_add(1);\n        if *steps == 20 {\n            BODIES[0] = BODIES[0] + 1.0e-9;\n        }\n    }\n}\n' },
+];
+
+/** A base whose solver/ does not compile: a law function returns text. */
+export const BROKEN_LAW = [{ file: 'solver/src/rapier_law.rs', from: 'fn canon(x: f64) -> f64 {\n    if x == 0.0 { 0.0 } else { x }\n}\n', to: 'fn canon(x: f64) -> f64 {\n    if x == 0.0 { 0.0 } else { "x" }\n}\n' }];
+
+/**
  * Planted in both trees alike, so it is no part of the change: the catalog
  * with push first, so the sweep pushes from the load before it moves, and the
  * cells a push reaches are explored first.

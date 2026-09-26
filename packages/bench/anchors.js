@@ -40,7 +40,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { diffLines, splitLines } from './diff.js';
 import { innermost, lineOf, scanJs } from './scan-js.js';
-import { innermostFn, scanRust } from './scan-rust.js';
+import { innermostBlock, innermostFn, scanRust } from './scan-rust.js';
 import { listFiles } from './trees.js';
 
 /**
@@ -48,7 +48,7 @@ import { listFiles } from './trees.js';
  * @typedef {'js' | 'top-level' | 'deletion' | 'rule' | 'catalog' | 'hazard' | 'law' | 'law-top-level' | 'law-deletion'} AnchorKind
  * @typedef {'observable' | 'not observable' | 'unknown'} Observable
  * @typedef {{ file: string, offset: number }} JsProbe
- * @typedef {{ file: string, line: number, column: number }} LawPoint
+ * @typedef {{ file: string, line: number, column: number, block?: { line: number, column: number } | null }} LawPoint
  * @typedef {{
  *   id: string, kind: AnchorKind, file: string, name: string,
  *   lines: Array<[number, number]>, side: 'head' | 'base',
@@ -754,7 +754,7 @@ function lawAnchors(file, baseText, headText, rust) {
       const f = innermostFn(head.functions, point);
       if (f >= 0) {
         a.name = head.functions[f].qualified + ' (' + a.name + ')';
-        a.lawEntries = [{ file, line: pointLine, column: point - head.lineStarts[pointLine - 1] + 1 }];
+        a.lawEntries = [{ file, line: pointLine, column: point - head.lineStarts[pointLine - 1] + 1, block: innermostBlock(head, point) }];
         a.why = 'the innermost coverage region at the point';
       } else if (base) {
         const from = base.lineStarts[hunk.base[0]];
