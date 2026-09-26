@@ -44,6 +44,10 @@ Rapier has not fixed it, so there is nothing upstream to backport. This slice ch
    - **Rewritten, because this slice changes them on purpose:** the three F3 native tests that pin the law's push to Rapier's routine wherever #1004 is idle. They pin the new claim instead: the law parts from Rapier's routine at every push of a dynamic body, and nowhere else.
 6. **Costs on record.** The copy's time per quantum with the change on against off, on the red world and on the product scene.
 7. **Public surfaces are the coordinator's.** The builder does not edit `README.md`, its translations, anything under `site/`, or `CHANGELOG.md`.
+8. **F3's review, carried.** F3's external review left three low findings in its tests, all in what this slice changes next. They are answered here:
+   - **Each push is bounded by its own pusher.** F3's native guard divides a pushed body's speed by the fastest driven character's horizontal speed that quantum. It divides instead by the horizontal speed of the character whose plan pushed that body. Today every law run has one driven character, so no multiple moves; with two, a push by the slower one would be measured against the faster one's speed. A character at rest that still pushes, since an oncoming body can make its plan, bounds the pushed body by that body's own speed before the push, never by a multiple of zero. A test plants each case: two characters at different speeds, and a character at rest met by a moving body.
+   - **The two guards bound one population, or are named apart.** F3's JS bound in `harness/push.test.js` covers every body of every push fixture at every quantum, while the native guard covers only the bodies a push changed. If the JS bound moves to pushed bodies (pin 4), it takes the native guard's population and its 1.5 times. If it stays on every body, it gets a constant and a name of its own, and its comment says it is not the push guard.
+   - **The control test's product-scene pin is asserted.** F3's control test checks a run's digest against the product binary's recorded digest only when no quantum of the run had two dynamic colliders near the character, and never asserts the count F3 pinned for the product scene: no collision there has a dynamic collider near the walker. It asserts that count directly for the product scene, so the digest check cannot pass by being skipped. A planted dynamic collider beside the walker's path fails it.
 
 ## Acceptance
 
@@ -52,6 +56,7 @@ Rapier has not fixed it, so there is nothing upstream to backport. This slice ch
 - The guard at 1.5 times passes here and fails on `main` in the red world and in red room A.
 - The goldens are unchanged. Every moved fixture, law run, and sweep verdict is named with its reason.
 - The header and the notice name the change and rapier#1020.
+- F3's three review findings are answered as pin 8 says, each with its planted test.
 - Typecheck clean, tests at or above the count on `main`, three engines and ARM64 print the goldens, lint clean, digest pinned from CI's Linux build, Atlas check green.
 
 ## Not in F5
