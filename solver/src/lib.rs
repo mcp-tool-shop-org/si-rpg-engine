@@ -14,6 +14,7 @@
 
 #[cfg(target_arch = "wasm32")]
 mod arena;
+mod impulses;
 mod kcc;
 mod rapier_law;
 

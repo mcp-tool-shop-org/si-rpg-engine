@@ -9,10 +9,10 @@
 // check that exploring by restore explores the real world. A throw planted
 // into the tick, in the processes of load world and replay only, is refused
 // with its bundle, and replay reproduces it. Two tests hold existing content
-// to what the sweep says of it: everything that loads today still loads but
-// for the minds fixture, whose crate the product law launches over its walls,
-// pinned here, and the scheduled job's record of every world it sweeps fails
-// on any verdict that moves.
+// to what the sweep says of it: everything that loads today still loads, the
+// minds fixture included since F3 stopped the push launching its crate over
+// its walls, pinned here, and the scheduled job's record of every world it
+// sweeps fails on any verdict that moves.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -25,7 +25,7 @@ import { readBundle, specOf } from '../packages/tick/bundle.js';
 import { replayTo } from '../packages/tick/runs.js';
 import { settles } from '../packages/tick/admit-world.js';
 import { loadScene, validateScene } from '../packages/tick/scene.js';
-import { costLine, replayWitness, sceneInput, sweep, sweepVerdict, witnessSpec } from '../packages/load/sweep.js';
+import { costLine, replayWitness, sceneInput, sweep, sweepVerdict } from '../packages/load/sweep.js';
 import { LOAD_BUDGET, considerWorld } from '../packages/load/world.js';
 import { SWEEP_BUDGET, readSweepRecord, sweepCorpus, sweepWorlds } from './corpus.mjs';
 
@@ -151,7 +151,7 @@ test('crate-and-door: its door is reached and the witness replays; its costs are
   assert.deepEqual(report.findings.map((finding) => finding.kind + ' ' + finding.body), []);
 });
 
-test('every world and every product-law fixture world that loads today still loads with the sweep, but for the minds fixture, whose crate is launched over its walls, pinned here as a finding for the coordinator', (t) => {
+test('every world and every product-law fixture world that loads today still loads with the sweep, and the minds fixture, whose crate the push launched over its walls until F3, is admitted with no finding', (t) => {
   // What loads today: each world in worlds/index.json, and each fixture
   // world on the product law that passes validateScene and the settle
   // hazard as a world file. As load world sweeps them, their actors are the
@@ -188,42 +188,44 @@ test('every world and every product-law fixture world that loads today still loa
   assert.ok(loadable.length >= 10);
   // T6 found two rooms open at their edges, worlds/crate-and-door.json and the
   // minds fixture's, where a move, a push, or a drop carried a body over an
-  // open edge and out of the world. Both are walled now, and crate-and-door
-  // loads. Under F2's law the sweep still refuses the minds fixture, for
-  // another reason: after the watcher pushes shade with the crate near it, the
-  // crate, at rest against the inner wall, leaves in one quantum at 141 units
-  // a second and clears the 8-unit walls. It is the launch F3
-  // (docs/dispatch-f3-character-push.md) is dispatched to fix, a finding for
-  // the coordinator. This pins exactly that refusal, over the walls: a fix, or
-  // any other change to what the sweep says of it, fails this test and has to
-  // say why.
-  /** @type {Record<string, string[]>} */
-  const refused = { 'behavior-minds': ['leaves crate by watcher'] };
+  // open edge and out of the world. Both are walled now, and both load. Under
+  // F2's law the sweep still refused the minds fixture: after the watcher
+  // pushed shade with the crate near it, the crate, at rest against the inner
+  // wall, left in one quantum at 141 units a second and cleared the 8-unit
+  // walls, found as `leaves crate by watcher`. That was the character's push
+  // pushing the crate at the shade's contact points, which F3
+  // (docs/dispatch-f3-character-push.md) removes with the engine's copy of
+  // Rapier's impulse routine and Rapier's #1004. Now no body leaves the minds
+  // fixture inside load world's budget: it is admitted with no finding, both
+  // its zones reached, and the rest of its sweep deferred to the scheduled
+  // job, since the budget runs out before its archive does. This pins exactly
+  // that verdict: any change to what the sweep says of it fails this test and
+  // has to say why.
+  /** @type {ReturnType<typeof considerWorld> | null} */
+  let mindsVerdict = null;
   for (const item of loadable) {
     const considered = considerWorld(item.scene, { bundles: null });
     const findings = considered.report ? considered.report.findings : [];
     const named = findings.map((finding) => finding.kind + ' ' + finding.body + ' by ' + finding.actor).sort();
     t.diagnostic(item.name + ': ' + (considered.ok ? 'admitted' : 'refused') + (considered.report ? ', ' + costLine(considered.report) : ', nothing to sweep') + (named.length > 0 ? '; ' + named.join(', ') : ''));
-    if (!refused[item.name]) {
-      assert.equal(considered.ok, true, item.name + ' still loads: ' + (considered.ok ? '' : considered.reason));
-      continue;
+    assert.equal(considered.ok, true, item.name + ' still loads: ' + (considered.ok ? '' : considered.reason));
+    if (item.name === 'behavior-minds') {
+      mindsVerdict = considered;
     }
-    assert.equal(considered.ok, false, item.name + ' is refused');
-    assert.deepEqual(named, refused[item.name], item.name);
-    const finding = findings[0];
-    assert.match(finding.detail, /^crate leaves the world after push shade by watcher: its centre is at y -1\.\d+, below the lowest collider minimum -1, at tick \d+ at \(x, z\) \(-\d+\.\d+, \d+\.\d+\), past the edge of every collider$/);
-    // Over the walls, not through a gap: its witness replays, and on the way
-    // the crate rises past their top.
-    const run = replayTo(witnessSpec(sceneInput(item.scene), finding.witness), 0);
-    let top = -Infinity;
-    while (run.tick < finding.tick) {
-      run.advance();
-      top = Math.max(top, /** @type {import('../packages/frame/types.js').Body} */ (run.world.body('crate')).y);
-    }
-    assert.equal(run.hash, finding.hash, 'the witness replays to the finding');
-    assert.ok(top > 8, item.name + ': the crate clears the 8-unit walls; it rises to ' + top);
-    t.diagnostic(item.name + ': the crate rises to y ' + top.toFixed(2) + ' before it leaves the world at tick ' + finding.tick);
   }
+  assert.ok(mindsVerdict && mindsVerdict.report, 'the minds fixture loads and is swept');
+  if (!mindsVerdict || !mindsVerdict.report) {
+    return;
+  }
+  const report = mindsVerdict.report;
+  assert.deepEqual(report.findings.map((finding) => finding.kind + ' ' + finding.body + ' by ' + finding.actor), [], 'no body leaves the minds fixture');
+  // Load world sweeps the fixture's one mind, the watcher.
+  assert.deepEqual(report.actors, ['watcher']);
+  assert.deepEqual(report.zones.map((zone) => zone.id + (zone.reached ? ' reached' : ' not reached')), ['west reached', 'east reached']);
+  assert.equal(report.complete, false, 'the minds fixture is swept to the end inside load world\'s budget');
+  assert.equal(report.quanta >= LOAD_BUDGET.quanta || report.restores >= LOAD_BUDGET.restores, true, 'the sweep stopped short of its budget');
+  const deferred = 'sweep: sweep deferred: the budget of ' + LOAD_BUDGET.quanta + ' quanta and ' + LOAD_BUDGET.restores + ' restores ran out';
+  assert.ok(mindsVerdict.lines.some((line) => line.startsWith(deferred)), mindsVerdict.lines.join(' | '));
 });
 
 test('sweeping a world twice gives the same archive, the same witnesses, and the same verdicts', () => {

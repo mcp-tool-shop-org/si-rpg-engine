@@ -1,25 +1,26 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit 83d9caf.
+Mapped at 2026-09-26 from commit 33052f1.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-16 parts, mostly JavaScript (100 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
+16 parts, mostly JavaScript (102 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (8d78f1e)
+## What changed since 2026-09-26 (83d9caf)
 
-- CI now also runs packages/tick/load-hash.test.js.
-- fixtures/sweep/walled-open.json is now also read by packages/tick/load-hash.test.js.
-- fixtures/sweep/walled.json is now also read by packages/tick/load-hash.test.js.
-- packages/host/bin/host.js is now read by packages/tick/load-hash.test.js.
-- And 3 more new writers and readers of places.
-- 3 files added and 5 changed content, across 5 parts.
+- CI now also runs harness/push.test.js.
+- CI now also checks harness/law-runs.mjs.
+- fixtures/law-runs/ is now written by harness/law-runs.mjs.
+- fixtures/law-runs/ is now read by harness/law-runs.mjs.
+- fixtures/push/ is now read by harness/law-runs.mjs.
+- And 1 more new writer or reader of a place.
+- 22 files added and 8 changed content, across 4 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 35 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 26 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 36 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 27 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -31,7 +32,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 ## What happens through CI
 
-1. The workflow runs 19 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, 4 files in solver, and 11 files in 4 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 15 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 44 files in 7 more places.
+1. The workflow runs 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, 4 files in solver, and 11 files in 4 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, packages/load/ in load, and 44 files in 7 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
@@ -135,7 +136,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       10. u 32
       11. byte
       12. signed, and 8 more
-2. It writes to fixtures/sweep/verdicts.json.
+2. It writes to fixtures/law-runs/ and fixtures/sweep/verdicts.json.
 3. It runs git.
 
 ## Who reads the results
@@ -191,7 +192,7 @@ Every code part is imported by at least one test.
 
 ## Written but never read
 
-Every written place has a reader.
+- **fixtures/law-runs/** is written by harness/law-runs.mjs and read by nothing else in this repository.
 
 ## Helpers that look duplicated
 
@@ -201,6 +202,7 @@ No two parts export a helper that looks alike.
 
 - **fixtures/golden-behaviour.json** has a block written by harness/write-golden.js.
 - **fixtures/golden.txt** is written by harness/write-golden.js.
+- **fixtures/law-runs/** is written by harness/law-runs.mjs.
 - **fixtures/solver.sha256** has a block written by solver/build.mjs when run without --check.
 - **fixtures/sweep/verdicts.json** has a block written by harness/corpus.mjs.
 
@@ -216,7 +218,7 @@ Read those in order to follow one pull request end to end.
 
 ## What this map cannot see
 
-- 14 import sites could not be resolved.
+- 15 import sites could not be resolved.
 - 2 writes and 3 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 14 writes and 41 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.

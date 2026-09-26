@@ -323,6 +323,78 @@
           "path": "fixtures/golden.txt"
         },
         {
+          "hash": "6e91de93f4c9b62a9c2498ae16f51d1161e32068a3c668e3ef7659dc9c6b8bff",
+          "path": "fixtures/law-runs/behavior-minds.txt"
+        },
+        {
+          "hash": "c970c9ec02681f60a2bb66b2d186217030d392032c7b62fc81da2f4f04cd2d43",
+          "path": "fixtures/law-runs/behavior-ramp-slide.txt"
+        },
+        {
+          "hash": "68746e7bcd6447a99f8fef2a4072865dd566677a16a7ccfc36d4e85030efee2e",
+          "path": "fixtures/law-runs/behavior-rotation-stack.txt"
+        },
+        {
+          "hash": "49bf7219c3587549e8691f702e69d280d51132ee4b68a9af3fa19e9316fd2a4b",
+          "path": "fixtures/law-runs/behavior-rotation-tip.txt"
+        },
+        {
+          "hash": "7b31aeae6a230d38c89661fb9e9c647abafa95a8993800f81cf37b67bf34dc1e",
+          "path": "fixtures/law-runs/behavior-rotation-tumble.txt"
+        },
+        {
+          "hash": "f8125b66ac077864c2cd6f5199f7f62c17df3efb7a575bf9dd929189a90b8aa8",
+          "path": "fixtures/law-runs/behavior-verbs-carry-capsule.txt"
+        },
+        {
+          "hash": "6586285dc98f172bbdc737b1738de8d7b3a7100bf16bbb8ac0914a3b28b69e9c",
+          "path": "fixtures/law-runs/behavior-verbs-carry.txt"
+        },
+        {
+          "hash": "75bbc74d8d3380b2461a73476a302d5c00ced30aec0d2fddf7e3c7907829b08f",
+          "path": "fixtures/law-runs/behavior-verbs-climb.txt"
+        },
+        {
+          "hash": "2c620f0631e4365e221a8bf192886517db3f0428e7b01f57d1e756e4ef9107a7",
+          "path": "fixtures/law-runs/product-scene.txt"
+        },
+        {
+          "hash": "33a5d60315e2540e3a6191d483fb646df4bc631a1bf63df3e0847390d88c6bb5",
+          "path": "fixtures/law-runs/red-room-a.txt"
+        },
+        {
+          "hash": "1de167250244b43d4c9ff5753a14d46b4154c50b604c004a6bee14cf6256fd88",
+          "path": "fixtures/law-runs/shape-traversal-gap-box.txt"
+        },
+        {
+          "hash": "50cf1ba20fd3cc5042f6b89859ba6ccdabce709ee6c2641a7cab9ffd3aa4c827",
+          "path": "fixtures/law-runs/shape-traversal-gap-capsule.txt"
+        },
+        {
+          "hash": "347ca143cbabe14c2050ca30b3a6f41e27b0bd75a3d52d7eb4a9fc66e767e733",
+          "path": "fixtures/law-runs/shape-traversal-ledge-box.txt"
+        },
+        {
+          "hash": "a69baa08635271e1641a70cc07ed9a5bc0ea41add4eababa51d97dd1a6b43e64",
+          "path": "fixtures/law-runs/shape-traversal-ledge-capsule.txt"
+        },
+        {
+          "hash": "77c96225732796b4791f354bcd58d61219d14f46fbc5d135a1d1f1120900c065",
+          "path": "fixtures/law-runs/shape-traversal-slope-box.txt"
+        },
+        {
+          "hash": "e2113e3f27e8eaffcab69219495dd18db9299f5a6758e6ea43360aa822fa9991",
+          "path": "fixtures/law-runs/shape-traversal-slope-capsule.txt"
+        },
+        {
+          "hash": "1b8f152270bf9b4e549c3ad478705c8883f3905cc45b1a5543ca82db19fd2c5b",
+          "path": "fixtures/law-runs/shape-traversal-step-box.txt"
+        },
+        {
+          "hash": "66b743fe23049ce7b3dd7804967a4225b2e48e9f3d862fa0635bf682d0b773d7",
+          "path": "fixtures/law-runs/shape-traversal-step-capsule.txt"
+        },
+        {
           "hash": "9ad205cb228f52370dfdfedf0ee58e64e7ff768c397d6d68b8b6a641cb2e7ee8",
           "path": "fixtures/legacy-play-log.json"
         },
@@ -341,6 +413,10 @@
         {
           "hash": "e47d425e54a558818ee36c7d1868a2f5e9499b0d92d33610d9cb97eb68375f7b",
           "path": "fixtures/push-play-log.json"
+        },
+        {
+          "hash": "0648b9247a6d63674451940d50f97a439a5380142684f05f13c7c735aa94797e",
+          "path": "fixtures/push/red-room-a.json"
         },
         {
           "hash": "f991cfd04bdb0462841c0028f2d2e556c83dc7d55699c05514e259756c808954",
@@ -415,7 +491,7 @@
           "path": "fixtures/shape-traversal.json"
         },
         {
-          "hash": "01211e88248f155e5b1d13afc520f2fbfe4a000e0dbf8324d7ebc11ceed4cb00",
+          "hash": "99ee87a5b4d12eac646db1bd98119933e8f0a751e6b0cd468a2d41e5b8075988",
           "path": "fixtures/solver.sha256"
         },
         {
@@ -431,7 +507,7 @@
           "path": "fixtures/sweep/plateau-low.json"
         },
         {
-          "hash": "6f5e2539abb983aeb59e18d10f7884c35647e859794b82023547a5998ece1af2",
+          "hash": "4231de1985c41998be650b28fb3f32e9d184d9b6bca997531959c39228473680",
           "path": "fixtures/sweep/verdicts.json"
         },
         {
@@ -492,7 +568,7 @@
       "name": "frame",
       "origin": "authored",
       "role": "code",
-      "testedBy": 15,
+      "testedBy": 16,
       "unresolvedSites": 0
     },
     {
@@ -2151,6 +2227,30 @@
         },
         {
           "exports": [
+            "bits",
+            "fileName",
+            "productFixtureRuns",
+            "pushFixtures",
+            "pushRun",
+            "recordLaw",
+            "recordLawRuns",
+            "staleLawRuns"
+          ],
+          "hash": "83b8c5379e7ea32049dbe1e365b12a483e998946eb513b222f093aab3d491e75",
+          "importsFiles": [
+            "harness/corpus.mjs",
+            "harness/product-run.mjs",
+            "harness/replay-to.mjs",
+            "packages/frame/hash.js",
+            "packages/tick/memory.js",
+            "packages/tick/predicates.js",
+            "packages/tick/tick.js",
+            "packages/tick/world.js"
+          ],
+          "path": "harness/law-runs.mjs"
+        },
+        {
+          "exports": [
             "mindSnapshot",
             "playMinds",
             "replayMinds"
@@ -2429,6 +2529,34 @@
             "packages/tick/world.js"
           ],
           "path": "harness/product.test.js"
+        },
+        {
+          "entry": "pushSpeed",
+          "entryRule": 1,
+          "hash": "78b0d6a992e4caa5d5719897d0b169647464ac46ed89e20d16951caed9548476",
+          "importsFiles": [
+            "harness/bundle.mjs",
+            "harness/law-runs.mjs",
+            "packages/tick/predicates.js"
+          ],
+          "path": "harness/push.test.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 38,
+                  "name": "loadIntentRules",
+                  "target": {
+                    "file": "packages/tick/predicates.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "pushSpeed"
+            }
+          ]
         },
         {
           "entry": "replayTo",
@@ -3570,7 +3698,7 @@
         {
           "entry": "sweepOf",
           "entryRule": 1,
-          "hash": "d6b4ddb6fa0f9db196e8dbf17d11f9fc68f08960d47bd2740aacc737f4022040",
+          "hash": "d2391b2d2ec53179f850e2e4b0e119f719a85435e36ac3e353239596c36275f1",
           "importsFiles": [
             "harness/corpus.mjs",
             "packages/load/sweep.js",
@@ -3946,8 +4074,8 @@
       "outsideReads": 7,
       "outsideWrites": 4,
       "role": "test",
-      "testedBy": 15,
-      "unresolvedSites": 8
+      "testedBy": 16,
+      "unresolvedSites": 9
     },
     {
       "dynamicReads": 0,
@@ -5679,7 +5807,7 @@
           "path": "package-lock.json"
         },
         {
-          "hash": "61d6fa46d021c853df51ce8dd07de7bac04bb4cccefdddba09125f7f6ce3a6e6",
+          "hash": "4a402f21a9c920f90f85ea29a00965a93f5db31b5cb6478d09d9f7c37b758e20",
           "path": "package.json"
         },
         {
@@ -5718,7 +5846,7 @@
           "path": "solver/Cargo.toml"
         },
         {
-          "hash": "0286d6608f5ce4a8538964ecb00d7a36b5febacf3d36862541a740f2181855f0",
+          "hash": "4f018f41eb5914f3aafb3b4b5ec0761a419fed1488b1c9fcd2eb5ef2c2095dc9",
           "path": "solver/FLAGS.md"
         },
         {
@@ -5726,7 +5854,7 @@
           "path": "solver/LICENSE-APACHE-2.0"
         },
         {
-          "hash": "9a2fbdc21a5ba18e1e048836bb7a1241a8810064c856384633f3af8b3766d242",
+          "hash": "20fda30c05e15b3cbd24a938e10d0ca5cf8065e48cca86306d5e84e39b2c792d",
           "path": "solver/NOTICE"
         },
         {
@@ -6335,15 +6463,19 @@
           "path": "solver/src/arena.rs"
         },
         {
+          "hash": "cbb014730ca8351494ad4e205e5f019d3a38cc31dfa1498d8d1a7654daa4876c",
+          "path": "solver/src/impulses.rs"
+        },
+        {
           "hash": "6de3abc24f00f071925ef74e7a03fb93226d1d60afe7a9e398b32a95496aa2bb",
           "path": "solver/src/kcc.rs"
         },
         {
-          "hash": "59ac2db77c636f80e595ef30255f93bab6f9322598a9f9bef56e4223b48da2d7",
+          "hash": "91dd713540f35fd1dc310f0d9dcc918b808da004a0c928cdbd4cb8f7af47458e",
           "path": "solver/src/lib.rs"
         },
         {
-          "hash": "39717c68f30bda82a12a3f28eff0aa0e3562c020eeed2e07ac97238d4e880639",
+          "hash": "0bfb35cdbc3e6a908d3f36680693159c09828743d28a88701bae8871ae97062b",
           "path": "solver/src/rapier_law.rs"
         }
       ],
@@ -8388,7 +8520,7 @@
       "outsideReads": 19,
       "outsideWrites": 3,
       "role": "code",
-      "testedBy": 25,
+      "testedBy": 26,
       "unresolvedSites": 4
     },
     {
@@ -8454,7 +8586,7 @@
   ],
   "doors": [
     {
-      "checksCount": 29,
+      "checksCount": 30,
       "commands": [
         {
           "job": "engines",
@@ -8550,6 +8682,7 @@
       "elsewhere": [],
       "file": ".github/workflows/ci.yml",
       "landings": [
+        "fixtures/law-runs",
         "fixtures/sweep/verdicts.json"
       ],
       "mentions": [
@@ -8598,7 +8731,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 34
+          "files": 36
         },
         {
           "boundary": "host",
@@ -8627,6 +8760,24 @@
         }
       ],
       "readers": [
+        {
+          "by": "harness/law-runs.mjs",
+          "call": "existsSync",
+          "confidence": "ast",
+          "target": "fixtures/law-runs"
+        },
+        {
+          "by": "harness/law-runs.mjs",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "target": "fixtures/law-runs"
+        },
+        {
+          "by": "harness/law-runs.mjs",
+          "call": "readdirSync",
+          "confidence": "ast",
+          "target": "fixtures/law-runs"
+        },
         {
           "by": "harness/corpus.mjs",
           "call": "existsSync",
@@ -8725,6 +8876,13 @@
         {
           "job": "engines",
           "matched": true,
+          "path": "harness/law-runs.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "matched": true,
           "path": "harness/minds-scene.mjs",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
@@ -8758,6 +8916,11 @@
         {
           "job": "engines",
           "path": "harness/product.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "path": "harness/push.test.js",
           "runKind": "executes"
         },
         {
@@ -9047,7 +9210,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 67,
+      "runsCount": 69,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -9823,8 +9986,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "83d9caf114b467717e89f3a9a203d0e52eec6a1c",
-    "tracked": 287
+    "commit": "33052f13c0cdce03db798d86f21278e7fe3e01d1",
+    "tracked": 309
   },
   "landings": [
     {
@@ -10240,6 +10403,32 @@
     {
       "readers": [
         {
+          "by": "harness/law-runs.mjs",
+          "call": "existsSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "harness/law-runs.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "harness/law-runs.mjs",
+          "call": "readdirSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "fixtures/law-runs",
+      "writers": [
+        {
+          "by": "harness/law-runs.mjs",
+          "confidence": "ast"
+        }
+      ]
+    },
+    {
+      "readers": [
+        {
           "by": "packages/tick/tick.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -10253,6 +10442,22 @@
         }
       ],
       "target": "fixtures/legacy-play-log.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "harness/law-runs.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "harness/law-runs.mjs",
+          "call": "readdirSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "fixtures/push",
       "writers": []
     },
     {
@@ -11295,6 +11500,12 @@
     {
       "readers": [
         {
+          "by": "harness/push.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
           "by": "solver/source.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -11634,7 +11845,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 32,
+  "testFiles": 33,
   "unassigned": [
     {
       "exports": [

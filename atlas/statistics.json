@@ -90,7 +90,7 @@
       "confidence": "full",
       "highWater": null,
       "name": "harness",
-      "qualifyingSourceCommits": 57,
+      "qualifyingSourceCommits": 59,
       "rebaseline": null
     },
     {
@@ -374,8 +374,8 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 81,
-        "lines": 3305,
+        "commits": 83,
+        "lines": 3387,
         "path": "atlas/README.md"
       },
       {
@@ -384,18 +384,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 81,
-        "lines": 12860,
+        "commits": 83,
+        "lines": 13116,
         "path": "atlas/page.json"
       },
       {
-        "commits": 81,
-        "lines": 18321,
+        "commits": 83,
+        "lines": 18915,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 81,
-        "lines": 45917,
+        "commits": 83,
+        "lines": 46569,
         "path": "atlas/structure.json"
       },
       {
@@ -740,6 +740,96 @@
       },
       {
         "commits": 2,
+        "lines": 33,
+        "path": "fixtures/law-runs/behavior-minds.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 6,
+        "path": "fixtures/law-runs/behavior-ramp-slide.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 7,
+        "path": "fixtures/law-runs/behavior-rotation-stack.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 5,
+        "path": "fixtures/law-runs/behavior-rotation-tip.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 7,
+        "path": "fixtures/law-runs/behavior-rotation-tumble.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 23,
+        "path": "fixtures/law-runs/behavior-verbs-carry-capsule.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 23,
+        "path": "fixtures/law-runs/behavior-verbs-carry.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 111,
+        "path": "fixtures/law-runs/behavior-verbs-climb.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 26,
+        "path": "fixtures/law-runs/product-scene.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 17,
+        "path": "fixtures/law-runs/red-room-a.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 6,
+        "path": "fixtures/law-runs/shape-traversal-gap-box.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 6,
+        "path": "fixtures/law-runs/shape-traversal-gap-capsule.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 5,
+        "path": "fixtures/law-runs/shape-traversal-ledge-box.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 5,
+        "path": "fixtures/law-runs/shape-traversal-ledge-capsule.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 5,
+        "path": "fixtures/law-runs/shape-traversal-slope-box.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 5,
+        "path": "fixtures/law-runs/shape-traversal-slope-capsule.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 6,
+        "path": "fixtures/law-runs/shape-traversal-step-box.txt"
+      },
+      {
+        "commits": 1,
+        "lines": 6,
+        "path": "fixtures/law-runs/shape-traversal-step-capsule.txt"
+      },
+      {
+        "commits": 2,
         "lines": 2500,
         "path": "fixtures/legacy-play-log.json"
       },
@@ -762,6 +852,11 @@
         "commits": 2,
         "lines": 130,
         "path": "fixtures/push-play-log.json"
+      },
+      {
+        "commits": 1,
+        "lines": 30,
+        "path": "fixtures/push/red-room-a.json"
       },
       {
         "commits": 2,
@@ -854,8 +949,8 @@
         "path": "fixtures/shape-traversal.json"
       },
       {
-        "commits": 25,
-        "lines": 48,
+        "commits": 26,
+        "lines": 50,
         "path": "fixtures/solver.sha256"
       },
       {
@@ -874,8 +969,8 @@
         "path": "fixtures/sweep/plateau-low.json"
       },
       {
-        "commits": 4,
-        "lines": 636,
+        "commits": 5,
+        "lines": 644,
         "path": "fixtures/sweep/verdicts.json"
       },
       {
@@ -954,6 +1049,11 @@
         "path": "harness/golden-gate.test.js"
       },
       {
+        "commits": 1,
+        "lines": 381,
+        "path": "harness/law-runs.mjs"
+      },
+      {
         "commits": 4,
         "lines": 440,
         "path": "harness/minds-scene.mjs"
@@ -982,6 +1082,11 @@
         "commits": 9,
         "lines": 382,
         "path": "harness/product.test.js"
+      },
+      {
+        "commits": 1,
+        "lines": 105,
+        "path": "harness/push.test.js"
       },
       {
         "commits": 5,
@@ -1034,8 +1139,8 @@
         "path": "harness/surface.test.js"
       },
       {
-        "commits": 5,
-        "lines": 894,
+        "commits": 6,
+        "lines": 966,
         "path": "harness/sweep.test.js"
       },
       {
@@ -1074,8 +1179,8 @@
         "path": "package-lock.json"
       },
       {
-        "commits": 58,
-        "lines": 225,
+        "commits": 60,
+        "lines": 229,
         "path": "package.json"
       },
       {
@@ -1219,8 +1324,8 @@
         "path": "packages/propose/seat.js"
       },
       {
-        "commits": 6,
-        "lines": 368,
+        "commits": 7,
+        "lines": 448,
         "path": "packages/tick/admit-world.js"
       },
       {
@@ -1269,8 +1374,8 @@
         "path": "packages/tick/gate.test.js"
       },
       {
-        "commits": 2,
-        "lines": 282,
+        "commits": 3,
+        "lines": 558,
         "path": "packages/tick/load-hash.test.js"
       },
       {
@@ -1659,8 +1764,8 @@
         "path": "solver/Cargo.toml"
       },
       {
-        "commits": 18,
-        "lines": 371,
+        "commits": 19,
+        "lines": 385,
         "path": "solver/FLAGS.md"
       },
       {
@@ -1669,8 +1774,8 @@
         "path": "solver/LICENSE-APACHE-2.0"
       },
       {
-        "commits": 2,
-        "lines": 74,
+        "commits": 3,
+        "lines": 107,
         "path": "solver/NOTICE"
       },
       {
@@ -1709,18 +1814,23 @@
         "path": "solver/src/arena.rs"
       },
       {
+        "commits": 1,
+        "lines": 264,
+        "path": "solver/src/impulses.rs"
+      },
+      {
         "commits": 3,
         "lines": 1742,
         "path": "solver/src/kcc.rs"
       },
       {
-        "commits": 18,
-        "lines": 1011,
+        "commits": 19,
+        "lines": 1012,
         "path": "solver/src/lib.rs"
       },
       {
-        "commits": 22,
-        "lines": 7115,
+        "commits": 24,
+        "lines": 7986,
         "path": "solver/src/rapier_law.rs"
       },
       {
@@ -1769,8 +1879,8 @@
         "path": "worlds/crate-and-door.json"
       },
       {
-        "commits": 3,
-        "lines": 12,
+        "commits": 4,
+        "lines": 14,
         "path": "worlds/index.json"
       },
       {
@@ -1784,51 +1894,51 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-26T07:35:08.171Z",
+  "generatedAt": "2026-09-26T08:16:09.574Z",
   "generatedFrom": {
-    "commit": "83d9caf114b467717e89f3a9a203d0e52eec6a1c"
+    "commit": "33052f13c0cdce03db798d86f21278e7fe3e01d1"
   },
   "pairs": [
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 47,
-      "shared": 47,
+      "either": 48,
+      "shared": 48,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 47,
-      "shared": 47,
+      "either": 48,
+      "shared": 48,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 47,
-      "shared": 47,
+      "either": 48,
+      "shared": 48,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 47,
-      "shared": 47,
+      "either": 48,
+      "shared": 48,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 47,
-      "shared": 47,
+      "either": 48,
+      "shared": 48,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 47,
-      "shared": 47,
+      "either": 48,
+      "shared": 48,
       "strength": 1
     },
     {
@@ -2031,16 +2141,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-26T03:34:34-04:00",
-    "inScopeFiles": 292,
+    "headDate": "2026-09-26T04:15:25-04:00",
+    "inScopeFiles": 314,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 217,
+    "qualifyingCommits": 223,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-03-30T07:34:34.000Z",
+    "since": "2026-03-30T08:15:25.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",
