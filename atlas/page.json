@@ -96,38 +96,24 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 8,
-      "changed": 52,
+      "added": 0,
+      "changed": 36,
       "moved": 0,
-      "parts": 8,
+      "parts": 5,
       "removed": 0
     },
     "items": [
       {
-        "kind": "sequence",
-        "sentence": "In packages/propose/seat.js, run session gained a step, loaded, before prompt hash.",
-        "subjects": [
-          "packages/propose/seat.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/propose/seat.js, run session lost a step, cut off timing.",
-        "subjects": [
-          "packages/propose/seat.js"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "8 files added and 52 changed content, across 8 parts.",
+        "sentence": "Nothing structural changed since 2026-09-26; 36 files changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "33052f13c0cdce03db798d86f21278e7fe3e01d1",
-      "generatedAt": "2026-09-26T08:16:09.574Z"
+      "commit": "2f2f2d76fafb36524be89be3d49af33a6ce5a5d7",
+      "generatedAt": "2026-09-26T10:31:39.798Z"
     },
-    "unchanged": false
+    "unchanged": true
   },
   "changesTogether": [
     {
@@ -212,7 +198,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "2f2f2d76fafb36524be89be3d49af33a6ce5a5d7",
+  "commit": "282e65eb7368ac61393800adabebc4fddc823ba1",
   "defaultBranch": "main",
   "derived": "16 parts, mostly JavaScript (102 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -730,7 +716,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T10:31:39.798Z",
+  "generatedAt": "2026-09-26T11:27:02.565Z",
   "limits": [
     "15 import sites could not be resolved.",
     "2 writes and 3 reads use paths built at run time and are not named here.",

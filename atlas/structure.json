@@ -40,7 +40,7 @@
           "path": "docs/PHASE-1.md"
         },
         {
-          "hash": "090ef8a38cc6c6e15324930562ba250839b22df18086f56a290c638416968176",
+          "hash": "b18ab452155b9b152941bda9be89cadd68ef5d9ad116fd221be824983c45d643",
           "path": "docs/PHASE-2.md"
         },
         {
@@ -339,11 +339,11 @@
           "path": "fixtures/golden-arith.txt"
         },
         {
-          "hash": "f8693091d1d89aaa3df7ebffc37f2c313124a3e52e1ff7c37026347dd07c6bf3",
+          "hash": "581bae2abe976e09bb2c8177556e61e5e8fd7f3b608af7163f1b90e24a5e261e",
           "path": "fixtures/golden-behaviour.json"
         },
         {
-          "hash": "8672866fe857f3c445b3ffb053ec2c5c9545af1a8d8b271ed67c9ec7bcd5362c",
+          "hash": "dbe646d1bb33a73dabe43b3966de4b8726966fb1053b18c304dd6ccae836c942",
           "path": "fixtures/golden.txt"
         },
         {
@@ -351,15 +351,15 @@
           "path": "fixtures/law-runs/behavior-minds.txt"
         },
         {
-          "hash": "c970c9ec02681f60a2bb66b2d186217030d392032c7b62fc81da2f4f04cd2d43",
+          "hash": "2d3d531791c27d187a9255fecffafb33337b583403d297ae437d57c0bafd7f6d",
           "path": "fixtures/law-runs/behavior-ramp-slide.txt"
         },
         {
-          "hash": "68746e7bcd6447a99f8fef2a4072865dd566677a16a7ccfc36d4e85030efee2e",
+          "hash": "9d1d25f33846132f9a8d7333b15f96f76940512ef3b5fa4a2f76c58ec8c3a6d7",
           "path": "fixtures/law-runs/behavior-rotation-stack.txt"
         },
         {
-          "hash": "49bf7219c3587549e8691f702e69d280d51132ee4b68a9af3fa19e9316fd2a4b",
+          "hash": "4eea7abd32cda83a9b9b0fcbb06730820e6a6f61379d4b38fd57f228af40580e",
           "path": "fixtures/law-runs/behavior-rotation-tip.txt"
         },
         {
@@ -375,11 +375,11 @@
           "path": "fixtures/law-runs/behavior-verbs-carry.txt"
         },
         {
-          "hash": "75bbc74d8d3380b2461a73476a302d5c00ced30aec0d2fddf7e3c7907829b08f",
+          "hash": "7827859b36ac57afdaca58502d2c2847b7ec61621acf3265117cea4a9da2cef5",
           "path": "fixtures/law-runs/behavior-verbs-climb.txt"
         },
         {
-          "hash": "2c620f0631e4365e221a8bf192886517db3f0428e7b01f57d1e756e4ef9107a7",
+          "hash": "a047f42a7053a499a326d214b64e5aad5eb75ec358d66d56cbe14e7d81b97ca4",
           "path": "fixtures/law-runs/product-scene.txt"
         },
         {
@@ -391,35 +391,35 @@
           "path": "fixtures/law-runs/red-room-a.txt"
         },
         {
-          "hash": "1de167250244b43d4c9ff5753a14d46b4154c50b604c004a6bee14cf6256fd88",
+          "hash": "9ecb8a9e10c2a2e9cb3510fb5d23e855e0b74f229920d6a6c1dbe94dbf1c93fa",
           "path": "fixtures/law-runs/shape-traversal-gap-box.txt"
         },
         {
-          "hash": "50cf1ba20fd3cc5042f6b89859ba6ccdabce709ee6c2641a7cab9ffd3aa4c827",
+          "hash": "464ac41be1b13aa76b6d2592f4f50b1b0a126253b47e658fd93dbfd2551e0aed",
           "path": "fixtures/law-runs/shape-traversal-gap-capsule.txt"
         },
         {
-          "hash": "347ca143cbabe14c2050ca30b3a6f41e27b0bd75a3d52d7eb4a9fc66e767e733",
+          "hash": "42f47bef0bcd2de99b58b46e1d99fbffd2023db2a747d98ee1cb6f08d102127f",
           "path": "fixtures/law-runs/shape-traversal-ledge-box.txt"
         },
         {
-          "hash": "a69baa08635271e1641a70cc07ed9a5bc0ea41add4eababa51d97dd1a6b43e64",
+          "hash": "f34b0e466be971688ed09733c6211bcd58d873d3d0ce40208b4c9928483f6fcf",
           "path": "fixtures/law-runs/shape-traversal-ledge-capsule.txt"
         },
         {
-          "hash": "77c96225732796b4791f354bcd58d61219d14f46fbc5d135a1d1f1120900c065",
+          "hash": "57675550753c4909f16a06c4b1313edfb7aa3d82a3ded624ac7ab47882ae071b",
           "path": "fixtures/law-runs/shape-traversal-slope-box.txt"
         },
         {
-          "hash": "e2113e3f27e8eaffcab69219495dd18db9299f5a6758e6ea43360aa822fa9991",
+          "hash": "36cbf288a6aa5e5bd5618c6d5347293afc044661538cbb022558d9d375028737",
           "path": "fixtures/law-runs/shape-traversal-slope-capsule.txt"
         },
         {
-          "hash": "1b8f152270bf9b4e549c3ad478705c8883f3905cc45b1a5543ca82db19fd2c5b",
+          "hash": "0d2687a4b033c6a31578fbf1ff6ca4ff8c02564356a2b2217d7a6cf6cfc81e04",
           "path": "fixtures/law-runs/shape-traversal-step-box.txt"
         },
         {
-          "hash": "66b743fe23049ce7b3dd7804967a4225b2e48e9f3d862fa0635bf682d0b773d7",
+          "hash": "3bca8c80e8a14d44349baa127bf54e205b188f1170b1e792b9f8b92dd1ba92b9",
           "path": "fixtures/law-runs/shape-traversal-step-capsule.txt"
         },
         {
@@ -523,7 +523,7 @@
           "path": "fixtures/shape-traversal.json"
         },
         {
-          "hash": "905945c80e3c93e7d685001aa653e37f4296650b47f45a778865d00a6a559db9",
+          "hash": "947871837b2571c138e9c81ad1f517228aeae1949fea90a94b004486b8ea0b30",
           "path": "fixtures/solver.sha256"
         },
         {
@@ -2300,7 +2300,7 @@
         {
           "entry": "translatedRun",
           "entryRule": 1,
-          "hash": "6c4d406a0049274e2874c182f8d2d4df29a308a42a2ca6513f18bebbccd9206d",
+          "hash": "3cdea02f29e41a25f79501e44457b4cfce7c86a773f2b90c39342c886e21cb24",
           "importsFiles": [
             "harness/behaviour.mjs",
             "harness/bundle.mjs",
@@ -2467,14 +2467,14 @@
             {
               "calls": [
                 {
-                  "line": 434,
+                  "line": 444,
                   "name": "recordRun",
                   "target": {
                     "file": "harness/bundle.mjs"
                   }
                 },
                 {
-                  "line": 435,
+                  "line": 445,
                   "name": "createWorld",
                   "target": {
                     "file": "packages/tick/world.js"
@@ -2485,6 +2485,36 @@
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
               "name": "flatWalk"
+            },
+            {
+              "calls": [
+                {
+                  "line": 602,
+                  "name": "createWorld",
+                  "target": {
+                    "file": "packages/tick/world.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "oneQuantum"
+            },
+            {
+              "calls": [
+                {
+                  "line": 610,
+                  "name": "recordRun",
+                  "target": {
+                    "file": "harness/bundle.mjs"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "recordQuantum"
             }
           ]
         },
@@ -5999,7 +6029,7 @@
           "path": ".gitignore"
         },
         {
-          "hash": "6a70b712081badb813bfca7051b3e9259f516af7f634f8914de780e14252f45c",
+          "hash": "765e0f55524ac5981c8ab8d29e801de2d0624de8ae09a1fe213c43a15a818b97",
           "path": "CHANGELOG.md"
         },
         {
@@ -6007,35 +6037,35 @@
           "path": "LICENSE"
         },
         {
-          "hash": "e3f30a0bb88b48d684342ce9b3555b68efbac6357c2cc48f184d4c8a6d2e1de1",
+          "hash": "c67cc99510a119264aaa8e1c36c8c3b558284b6f7505710f37793cf61df871a7",
           "path": "README.es.md"
         },
         {
-          "hash": "22633a7c32f44970f77d0788d428ab1fde6b44fd0e03d547bd886a0e294cc4c3",
+          "hash": "da2c0c61226062444f9cd93c259977116d7f0046f8456125d1596afee7ad1dd3",
           "path": "README.fr.md"
         },
         {
-          "hash": "3897ca3b4a9bba80df3efee0a9c8f60784efb5a1a0f830b5a951c932baf7d149",
+          "hash": "e8dfcbe9e2b4b44237ec8db821c1bd8866c0635bf19a12b0c6db03d731b21b46",
           "path": "README.hi.md"
         },
         {
-          "hash": "eb42220b5bf77da318d6647a903c66e9f6889b4a07b56f7eeffd0691461ccd2d",
+          "hash": "7d09c7cb9ac79927e119b29cf56ff5df3d95ec2f27ac3e3bef26bc0822638b91",
           "path": "README.it.md"
         },
         {
-          "hash": "be8e49285bd2408cd224d9055c5f61c5cca92535f6a36ec109233d103a49af78",
+          "hash": "7802eefccec428cafaa16b6642dcc4cc27eb63f5baf886f3532b77659a12a448",
           "path": "README.ja.md"
         },
         {
-          "hash": "c58abb5cd5056587ba8afb3ddb04542ce8aa2664ba4a37dd2460ae8ae882dde0",
+          "hash": "ec36700cc18f5ddfc3c8230c4bd219e96be01469b2c7c58299aa5e43daeb32db",
           "path": "README.md"
         },
         {
-          "hash": "8697654373d9c4dbc480aca230059d444632f865a3324ec11a1786564b3a1da1",
+          "hash": "d1e670f5bea2d49906cf25b3dde1cb759a7f42927055a985910b15f2687dfa9b",
           "path": "README.pt-BR.md"
         },
         {
-          "hash": "a2824a41c887a72d07fe1daa32fa4f891cf27d83419f3c188054456beb4ddea3",
+          "hash": "16e8ebf5a627798c8226eec9957b83bf284e1f243f1fa4dace5480ad2afdac57",
           "path": "README.zh.md"
         },
         {
@@ -6094,7 +6124,7 @@
           "path": "solver/Cargo.toml"
         },
         {
-          "hash": "a1d2f1a63f1404330b8ecbe3538ad9c0af51c567b988ed9916b2cce78471bcd1",
+          "hash": "b1023c2d356940d45207b04b9584cf21e147ec614d7c22523406207c7eb7f559",
           "path": "solver/FLAGS.md"
         },
         {
@@ -6102,7 +6132,7 @@
           "path": "solver/LICENSE-APACHE-2.0"
         },
         {
-          "hash": "d467a758f90dbf35615c97dae7b040c7b33fbd0f60dfd1ebd40790a83e44793e",
+          "hash": "61366c7a57ed3d2870d98b3d757ce2424efaf29d03670cb568ffbff2a3d88c71",
           "path": "solver/NOTICE"
         },
         {
@@ -6715,7 +6745,7 @@
           "path": "solver/src/impulses.rs"
         },
         {
-          "hash": "6de3abc24f00f071925ef74e7a03fb93226d1d60afe7a9e398b32a95496aa2bb",
+          "hash": "a470e513f3c32e7b53defb25a0d5725e76ec801f00bd5a44c4bed2f6d7898b14",
           "path": "solver/src/kcc.rs"
         },
         {
@@ -6723,7 +6753,7 @@
           "path": "solver/src/lib.rs"
         },
         {
-          "hash": "416de50683d9f451c56822385ad6e9c15f76cf5892ff4e132af95c9304f46dbf",
+          "hash": "dc3a29ab4f593f5405735bbeb3ebffeef6a9127d4c25bde93824c4565a24f4d2",
           "path": "solver/src/rapier_law.rs"
         }
       ],
@@ -10234,7 +10264,7 @@
     }
   ],
   "generatedFrom": {
-    "commit": "2f2f2d76fafb36524be89be3d49af33a6ce5a5d7",
+    "commit": "282e65eb7368ac61393800adabebc4fddc823ba1",
     "tracked": 317
   },
   "landings": [
@@ -12127,7 +12157,7 @@
       "path": "site/src/content.config.ts"
     },
     {
-      "hash": "95e7d082bcaa92a6a932627e084c1f6cb8a718721f7b61e580314624de861270",
+      "hash": "bfbbe154038e9b4fe24bb24ff2f7c54736a138487f360e7e3c8ee0023498956b",
       "path": "site/src/content/docs/handbook/architecture.md"
     },
     {
@@ -12147,7 +12177,7 @@
       "path": "site/src/content/docs/handbook/security.md"
     },
     {
-      "hash": "47d33ca1bab9c56062cd5d14b75b2b7f4c462f3e5cc7a06f322efa5c15ae1651",
+      "hash": "8ac15596412525ddf495af418e01aab24dd552197e298109f49c9ca3e35ff31a",
       "path": "site/src/content/docs/handbook/testing.md"
     },
     {
@@ -12183,11 +12213,11 @@
         "choose",
         "panelProblems"
       ],
-      "hash": "6d32a753549a5e05b2d203b1c95be42802765a4da1dd37ef899f3dd5fdbd5ae6",
+      "hash": "dafb2363560bc528cb6fc40ce8f9b119c33d9b1cca1cfbcd77fdc54a950ad4f9",
       "path": "tools/panel.js"
     },
     {
-      "hash": "bbb37fe06d1d1a6aadfb1455c10bb641a73664be3d5d25fba96bc4cdc10446a3",
+      "hash": "8a50068ef9ccd70eae3f9c0ee89d9cce2c9f5c410bbb53514495fc797fd94275",
       "importsFiles": [
         "tools/panel.js"
       ],
@@ -12212,7 +12242,7 @@
       "sequences": []
     },
     {
-      "hash": "94d139d9c24e7ea6d67964a445d8263cdc3c0713178ba4f47a82d4f39a4c63a2",
+      "hash": "7648517a03d81ac844839664e9a9911cc793117ded96dbf8a0eb8f7745403bd5",
       "importsFiles": [
         "packages/tool/guard.js",
         "tools/panel.js",

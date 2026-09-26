@@ -4,7 +4,8 @@
 // running world (F1). The world is built from the records only at its first
 // load and when the world itself changes. A driven character moves through
 // the engine's copy of Rapier's character controller, kcc.rs, which adds one
-// branch for a floor normal parallel to `up` (F2), and pushes the dynamic
+// branch for a floor normal parallel to `up` (F2) and casts again when a
+// move's first cast misses the floor it stands on (F4), and pushes the dynamic
 // bodies it touched through the engine's copy of Rapier's impulse routine,
 // impulses.rs, which gathers each collider's contact manifolds apart, as
 // Rapier's #1004 does (F3), and sizes each impulse with the effective mass at
@@ -771,9 +772,10 @@ struct Plan {
 
 /// One quantum on the loaded world. Each driven character moves through
 /// `mover` with the law's controller settings: the law passes `Stride`, the
-/// engine's copy of Rapier's controller with its branch on (kcc.rs, F2), and
-/// the control test at the end of this file passes Rapier's own controller
-/// beside the copy with the branch off. The dynamic bodies each character
+/// engine's copy of Rapier's controller with its branch and its retry on
+/// (kcc.rs, F2 and F4), and the control tests at the end of this file pass
+/// Rapier's own controller beside the copy with both off, and the copy with
+/// the retry off beside the law's. The dynamic bodies each character
 /// touched are pushed through `pusher`, with the character mass of 1: the law
 /// passes `Shove`, the engine's copy of Rapier's impulse routine with both its
 /// changes on (impulses.rs, F3 and F5), and the control test passes Rapier's
@@ -1094,6 +1096,11 @@ pub extern "C" fn solver_rebuilds() -> u32 {
 // runs; the guard bounds how fast a push may leave a body against its own
 // pusher's speed, with a planted case for each way that can be measured wrong;
 // and the costs are printed.
+//
+// F4, the floor cast, at the end: the copy of the controller with its retry
+// off moves the character as the law before F4 did, bit for bit; with the
+// retry on, the law parts from that only on a call where the retry fired and
+// hit, and every hit starts on the skin; and the costs are printed.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2041,6 +2048,11 @@ mod tests {
     //
     // Pin 10: the time per call of the copy against Rapier's controller on
     // the product walker's flat walk, printed.
+    //
+    // Since F4 the copy has a second change, the retry in move_shape. These
+    // tests are about the branch, so every copy they call has the retry off,
+    // the one against Rapier its branch off too; `Stride` is the law, with
+    // both on. F4's control tests, at the end of the module, hold the retry.
 
     use crate::kcc::Controller;
     use rapier3d_f64::control::EffectiveCharacterMovement;
@@ -2112,9 +2124,9 @@ mod tests {
             let mut theirs = Vec::new();
             let rapier = controller.move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| theirs.push(hit));
             let mut ours = Vec::new();
-            let off = Controller::<false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| ours.push(hit));
+            let off = Controller::<false, false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| ours.push(hit));
             let mut patched = Vec::new();
-            let on = Controller::<true>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| patched.push(hit));
+            let on = Controller::<true, false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| patched.push(hit));
             let want = movement_words(&rapier, &theirs);
             let got = movement_words(&off, &ours);
             if self.parted.is_none() && got != want {
@@ -2151,7 +2163,7 @@ mod tests {
         }
     }
 
-    /// The copy with its branch off, alone.
+    /// The copy with its branch and its retry off, alone.
     struct Unpatched;
 
     impl Mover for Unpatched {
@@ -2165,7 +2177,7 @@ mod tests {
             desired_translation: Vector,
             collisions: &mut Vec<CharacterCollision>,
         ) -> EffectiveCharacterMovement {
-            Controller::<false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit))
+            Controller::<false, false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit))
         }
     }
 
@@ -2515,7 +2527,7 @@ mod tests {
                 let mut theirs = Vec::new();
                 let rapier = settings.move_shape(DT, &query, &*character, &pos, desired, |hit| theirs.push(hit));
                 let mut ours = Vec::new();
-                let off = Controller::<false>(&settings).move_shape(DT, &query, &*character, &pos, desired, |hit| ours.push(hit));
+                let off = Controller::<false, false>(&settings).move_shape(DT, &query, &*character, &pos, desired, |hit| ours.push(hit));
                 assert_eq!(movement_words(&off, &ours), movement_words(&rapier, &theirs), "shape {shape} at {at:?}: {rapier:?} against {off:?}");
                 if rapier.translation != Vector::ZERO {
                     pushed += 1;
@@ -2868,6 +2880,19 @@ mod tests {
         mut before: impl FnMut(&mut P, usize),
         mut after: impl FnMut(&mut P, usize),
     ) -> (Vec<String>, String) {
+        replay_moved(turn, run, mover, pusher, |_, p, q| before(p, q), |_, p, q| after(p, q))
+    }
+
+    /// `replay` with the mover named: `before` and `after` see the mover,
+    /// the pusher, and the quantum.
+    fn replay_moved<M: Mover, P: Pusher>(
+        turn: &mut u32,
+        run: &LawRun,
+        mover: &mut M,
+        pusher: &mut P,
+        mut before: impl FnMut(&mut M, &mut P, usize),
+        mut after: impl FnMut(&mut M, &mut P, usize),
+    ) -> (Vec<String>, String) {
         *turn += 1;
         for (i, b) in run.bodies.iter().enumerate() {
             set_body(i, *b);
@@ -2894,7 +2919,7 @@ mod tests {
                 set_slot(i, slot, value);
                 edits.next();
             }
-            before(pusher, q);
+            before(mover, pusher, q);
             assert_eq!(step_law(*turn, n, m, run.rows, run.cols, run.cell, run.shape, mover, pusher), Ok(()), "{} at quantum {q}", run.name);
             let records = record_bytes(run.bodies.len());
             let snap = snapshot();
@@ -2904,7 +2929,7 @@ mod tests {
             quanta.push(one.digest());
             lanes.bytes(&records);
             lanes.bytes(&snap);
-            after(pusher, q);
+            after(mover, pusher, q);
         }
         (quanta, lanes.digest())
     }
@@ -3833,6 +3858,442 @@ mod tests {
                 println!("{name}, {label}, pushing its own run: median of {rounds} runs of {} quanta, {:.3} us a quantum (from {:.3} to {:.3})", run.quanta, times[rounds / 2], times[0], times[rounds - 1]);
                 assert!(times[rounds / 2] > 0.0, "{name}, {label}: no time measured");
             }
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // F4: the character stays on the floor it starts on. When the move's first
+    // cast finds nothing while the character was grounded at its start, the
+    // engine's copy of the controller casts once more with the skin
+    // RETRY_EXTRA_SKIN larger (solver/src/kcc.rs, docs/dispatch-f4-floor-cast.md).
+    // A character standing on a floor starts its move with its dilated shape
+    // on the floor's face to within rounding, and there parry's GJK cast can
+    // lose its search direction to rounding and report no hit
+    // (dimforge/parry#452), so the character took its whole move, gravity step
+    // included, into its skin.
+    //
+    // Pin 2, the control test, in two parts.
+    //
+    // The retry off is the law before F4, bit for bit. Driven by the copy with
+    // its branch on and its retry off, every law run replays to the digest the
+    // product binary recorded before F4: its file's own for every run F4 does
+    // not move, and for the product scene the digest its file held before F4.
+    // The flat walks, the ten course cases, and the step from 80 starts replay
+    // to the digests main's own Stride made, digested as `driven_digests`
+    // digests them. F2's control test, above, holds the copy with both off to
+    // Rapier's own controller.
+    //
+    // The retry on. The law's copy and the copy with the retry off are called
+    // with the same inputs at every quantum of the law's own runs of the flat
+    // walks, the course, the step from 80 starts, every law run, and the
+    // product scene translated by (1e6, 0, 1e6) as outcome 4 translates it; the
+    // law's result moves the character. They must return the same movement bit
+    // for bit except on a call where the retry fired and hit, and there they
+    // must differ. Every hit must be a boundary start: the start's distance to
+    // the collider the retry hit equals the skin to within BOUNDARY. The test
+    // counts the firings and the hits per run and requires the hits the
+    // dispatch names and no others; run whole, the law parts from the law with
+    // the retry off at the run's first hit and not before.
+    //
+    // Pin 7: the time per quantum of the copy with the retry on and with it
+    // off, on the flat walk and the product scene, printed.
+
+    use crate::kcc::{Retry, RETRY_EXTRA_SKIN};
+
+    /// How far from the skin a hit's start may be and still be a boundary
+    /// start: the rounding floor of the first cast's Minkowski difference,
+    /// about 2.5e-15, which GJK's projected distance falls to on a miss. The
+    /// farthest start of a hit is 2.4338e-15 from the skin, on the walk at
+    /// 1e6, 44 units in the last place of 0.26 under it (the knowledge base
+    /// gave it as 2.4e-15).
+    const BOUNDARY: f64 = 2.5e-15;
+
+    /// The digest the product binary recorded for the product scene's law run
+    /// before F4: fixtures/law-runs/product-scene.txt on main at 2fa4703, and
+    /// unchanged at a7f4d77, after F5, since the scene pushes no body. F4
+    /// records the file again; the copy with the retry off must still make
+    /// this run.
+    const PRODUCT_SCENE_BEFORE_F4: &str = "feb8a18fcbbe0975";
+
+    /// The law's runs before F4: each driven on main through its own Stride
+    /// and digested as `driven_digests` digests it, the step's 80 runs in
+    /// order into one digest. Recorded at 2fa4703; main at 7c31349 and at
+    /// a7f4d77, after #71 and F5, makes the same, since none of these runs
+    /// picks up, drops, or pushes a body.
+    const FLAT_WALKS_BEFORE_F4: [&str; 2] = ["75dfc64549d82edd", "624b5a19fc22dfad"];
+    const COURSE_BEFORE_F4: [&str; 10] = [
+        "077138f1170521b9",
+        "7cfcf2a9727b6f55",
+        "b0dffa0d50eada9d",
+        "ba04d3f55751a765",
+        "7db3b4754ce6230d",
+        "37c44721d70febc1",
+        "a3e8eb219cf8e9e9",
+        "b9b22805107fb409",
+        "1b7de6e9bc01ad75",
+        "9b29e7d1aafbfa6d",
+    ];
+    const STEP_BEFORE_F4: &str = "02bc2be98a079485";
+
+    /// The copy with its branch on and its retry off: the law before F4.
+    struct Today;
+
+    impl Mover for Today {
+        fn move_shape(
+            &mut self,
+            controller: &KinematicCharacterController,
+            dt: f64,
+            queries: &QueryPipeline,
+            character_shape: &dyn Shape,
+            character_pos: &Pose,
+            desired_translation: Vector,
+            collisions: &mut Vec<CharacterCollision>,
+        ) -> EffectiveCharacterMovement {
+            Controller::<true, false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit))
+        }
+    }
+
+    /// Drives `run` with `mover` as `drive` does, and returns every quantum's
+    /// digest of its records and snapshot, as `replay` digests a law run.
+    /// `span` takes the same bytes, so one digest can cover a run or several.
+    fn driven_digests<M: Mover>(turn: &mut u32, run: &Run, mover: &mut M, span: &mut Lanes, mut before: impl FnMut(&mut M, usize)) -> Vec<String> {
+        let n = run.bodies.len();
+        let mut quanta = Vec::with_capacity(run.quanta);
+        drive(turn, run, mover, |m, q| before(m, q), |_| {
+            let records = record_bytes(n);
+            let snap = snapshot();
+            let mut one = Lanes::new();
+            one.bytes(&records);
+            one.bytes(&snap);
+            quanta.push(one.digest());
+            span.bytes(&records);
+            span.bytes(&snap);
+        });
+        quanta
+    }
+
+    /// A law run moved by (dx, 0, dz), as outcome 4 moves the product scene:
+    /// every body, every box collider, and any edit of a body's x or z. The
+    /// heightfield stays centred on the origin, where the law puts every
+    /// field. It has no recorded finals or digest.
+    fn translated(run: &LawRun, dx: f64, dz: f64) -> LawRun {
+        LawRun {
+            name: format!("{} at ({dx:e}, 0, {dz:e})", run.name),
+            quanta: run.quanta,
+            shape: run.shape,
+            rows: run.rows,
+            cols: run.cols,
+            cell: run.cell,
+            colliders: run.colliders.iter().map(|c| {
+                let mut c = *c;
+                c[0] += dx;
+                c[1] += dx;
+                c[4] += dz;
+                c[5] += dz;
+                c
+            }).collect(),
+            heights: run.heights.clone(),
+            ids: run.ids.clone(),
+            bodies: run.bodies.iter().map(|b| {
+                let mut b = *b;
+                b[0] += dx;
+                b[2] += dz;
+                b
+            }).collect(),
+            pins: run.pins.clone(),
+            edits: run.edits.iter().map(|&(q, i, slot, v)| (q, i, slot, match slot {
+                0 => v + dx,
+                2 => v + dz,
+                _ => v,
+            })).collect(),
+            finals: Vec::new(),
+            digest: String::new(),
+        }
+    }
+
+    /// The law's copy, with the retry on, and the copy with it off, called
+    /// with the same inputs; the law's result moves the character. What the
+    /// retry did on each call comes from `Controller::retry`, which this holds
+    /// to what the two copies did. It keeps the quantum of every call on which
+    /// the retry fired and of every one on which it hit, the first call where
+    /// the two copies part other than on a hit or agree on one, and the
+    /// farthest a hit's start lay from the skin.
+    #[derive(Default)]
+    struct RetryControl {
+        run: String,
+        quantum: usize,
+        calls: usize,
+        fired: Vec<usize>,
+        hits: Vec<usize>,
+        parted: Option<String>,
+        boundary: f64,
+    }
+
+    impl Mover for RetryControl {
+        fn move_shape(
+            &mut self,
+            controller: &KinematicCharacterController,
+            dt: f64,
+            queries: &QueryPipeline,
+            character_shape: &dyn Shape,
+            character_pos: &Pose,
+            desired_translation: Vector,
+            collisions: &mut Vec<CharacterCollision>,
+        ) -> EffectiveCharacterMovement {
+            self.calls += 1;
+            let law = Controller::<true, true>(controller);
+            let mut ours = Vec::new();
+            let on = law.move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| ours.push(hit));
+            let mut theirs = Vec::new();
+            let off = Controller::<true, false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| theirs.push(hit));
+            let same = movement_words(&on, &ours) == movement_words(&off, &theirs);
+            let retry = law.retry(dt, queries, character_shape, character_pos, desired_translation);
+            let hit = match &retry {
+                Retry::Idle => None,
+                Retry::Missed => {
+                    self.fired.push(self.quantum);
+                    None
+                }
+                Retry::Hit(handle) => {
+                    self.fired.push(self.quantum);
+                    self.hits.push(self.quantum);
+                    Some(*handle)
+                }
+            };
+            if self.parted.is_none() && same != hit.is_none() {
+                self.parted = Some(format!(
+                    "{} quantum {}: the retry {:?}, and the copy with it on moved the character {} the copy with it off.\nwith it: {:?} {:?}\nwithout: {:?} {:?}",
+                    self.run, self.quantum, retry, if same { "as" } else { "differently from" }, on, ours, off, theirs
+                ));
+            }
+            if let Some(handle) = hit {
+                let collider = queries.colliders.get(handle).expect("the collider the retry hit");
+                let pos12 = character_pos.inv_mul(collider.position());
+                let distance = queries.dispatcher.distance(&pos12, character_shape, collider.shape()).expect("a distance from the character to the collider");
+                self.boundary = self.boundary.max((distance - SKIN).abs());
+            }
+            collisions.extend(ours);
+            on
+        }
+    }
+
+    // Pin 2, the retry off.
+    #[test]
+    fn the_copy_with_its_retry_off_moves_the_character_as_the_law_did_before_f4_bit_for_bit() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        for run in law_runs() {
+            let (_, digest) = replay(&mut turn, &run, &mut Today, &mut Shove, |_, _| {}, |_, _| {});
+            let before = if run.name == "product-scene" { PRODUCT_SCENE_BEFORE_F4 } else { run.digest.as_str() };
+            println!("{}: the copy with its retry off makes {digest}, before F4 {before}", run.name);
+            assert_eq!(digest, before, "{}: the copy with its retry off is not the law before F4", run.name);
+        }
+        let digest = |turn: &mut u32, run: &Run| {
+            let mut span = Lanes::new();
+            driven_digests(turn, run, &mut Today, &mut span, |_, _| {});
+            span.digest()
+        };
+        for (offset, before) in [0.0, MILLION].into_iter().zip(FLAT_WALKS_BEFORE_F4) {
+            let run = flat_walk(offset);
+            let got = digest(&mut turn, &run);
+            println!("{}: the copy with its retry off makes {got}, before F4 {before}", run.name);
+            assert_eq!(got, before, "{}: the copy with its retry off is not the law before F4", run.name);
+        }
+        for (run, before) in course().iter().zip(COURSE_BEFORE_F4) {
+            let got = digest(&mut turn, run);
+            println!("{}: the copy with its retry off makes {got}, before F4 {before}", run.name);
+            assert_eq!(got, before, "{}: the copy with its retry off is not the law before F4", run.name);
+        }
+        let mut span = Lanes::new();
+        for direction in 0..STEP_DIRECTIONS.len() {
+            for k in 0..STEP_STARTS {
+                driven_digests(&mut turn, &step_run(direction, k), &mut Today, &mut span, |_, _| {});
+            }
+        }
+        println!("the 0.29 step from 80 starts: the copy with its retry off makes {}, before F4 {STEP_BEFORE_F4}", span.digest());
+        assert_eq!(span.digest(), STEP_BEFORE_F4, "the step from 80 starts: the copy with its retry off is not the law before F4");
+    }
+
+    /// What one run under `RetryControl` found, for the counts.
+    struct Counted {
+        run: String,
+        calls: usize,
+        fired: Vec<usize>,
+        hits: Vec<usize>,
+        boundary: f64,
+    }
+
+    /// Runs `control` over a driven run, holds it, and holds the run whole:
+    /// the law parts from the law with the retry off at its first hit.
+    fn count_driven(turn: &mut u32, run: &Run) -> Counted {
+        let mut control = RetryControl { run: run.name.clone(), ..RetryControl::default() };
+        let law = driven_digests(turn, run, &mut control, &mut Lanes::new(), |c, q| c.quantum = q);
+        let today = driven_digests(turn, run, &mut Today, &mut Lanes::new(), |_, _| {});
+        counted(control, &law, &today)
+    }
+
+    /// Runs `control` over a law run, as `count_driven` does. With the retry
+    /// on the run is the law's, so a recorded digest must be the run's.
+    fn count_replayed(turn: &mut u32, run: &LawRun) -> Counted {
+        let mut control = RetryControl { run: run.name.clone(), ..RetryControl::default() };
+        let (law, digest) = replay_moved(turn, run, &mut control, &mut Shove, |c, _, q| c.quantum = q, |_, _, _| {});
+        if !run.digest.is_empty() {
+            assert_eq!(digest, run.digest, "{}: the run under the control is not the product binary's", run.name);
+        }
+        let (today, _) = replay(turn, run, &mut Today, &mut Shove, |_, _| {}, |_, _| {});
+        counted(control, &law, &today)
+    }
+
+    fn counted(control: RetryControl, law: &[String], today: &[String]) -> Counted {
+        if let Some(parted) = &control.parted {
+            panic!("{parted}");
+        }
+        assert_eq!(parting(law, today), control.hits.first().copied(), "{}: run whole, the law does not part from the law with the retry off at the first hit", control.run);
+        assert!(control.boundary <= BOUNDARY, "{}: a hit started {:e} from the skin, not on it", control.run, control.boundary);
+        Counted { run: control.run, calls: control.calls, fired: control.fired, hits: control.hits, boundary: control.boundary }
+    }
+
+    fn print_counted(c: &Counted) {
+        println!(
+            "{}: {} calls; the retry fired {} times{}, hit {} times{}{}",
+            c.run,
+            c.calls,
+            c.fired.len(),
+            if c.fired.is_empty() { String::new() } else { format!(" (quanta {:?})", c.fired) },
+            c.hits.len(),
+            if c.hits.is_empty() { String::new() } else { format!(" (quanta {:?})", c.hits) },
+            if c.hits.is_empty() { String::new() } else { format!(", each start within {:e} of the skin", c.boundary) },
+        );
+    }
+
+    // Pin 2, the retry on.
+    #[test]
+    fn with_the_retry_on_the_law_parts_from_the_law_before_f4_only_where_the_retry_hits_and_each_hit_starts_on_the_skin() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let mut all: Vec<Counted> = Vec::new();
+
+        let flat: Vec<Counted> = [0.0, MILLION].into_iter().map(|offset| count_driven(&mut turn, &flat_walk(offset))).collect();
+        let course: Vec<Counted> = course().iter().map(|run| count_driven(&mut turn, run)).collect();
+        let mut step = Counted { run: "the 0.29 step from 80 starts".to_string(), calls: 0, fired: Vec::new(), hits: Vec::new(), boundary: 0.0 };
+        for direction in 0..STEP_DIRECTIONS.len() {
+            for k in 0..STEP_STARTS {
+                let c = count_driven(&mut turn, &step_run(direction, k));
+                step.calls += c.calls;
+                step.fired.extend(c.fired);
+                step.hits.extend(c.hits);
+                step.boundary = step.boundary.max(c.boundary);
+            }
+        }
+        let runs = law_runs();
+        let scene = runs.iter().find(|run| run.name == "product-scene").expect("the product scene's law run");
+        let far = count_replayed(&mut turn, &translated(scene, MILLION, MILLION));
+        let replayed: Vec<Counted> = runs.iter().map(|run| count_replayed(&mut turn, run)).collect();
+
+        let hits = |cs: &[Counted]| cs.iter().map(|c| c.hits.len()).sum::<usize>();
+        for c in flat.iter().chain(&course).chain([&step, &far]).chain(&replayed) {
+            print_counted(c);
+        }
+        let near = replayed.iter().find(|c| c.run == "product-scene").expect("the product scene's count");
+        assert_eq!(hits(&flat), 8, "the retry's hits in the flat walks");
+        assert_eq!(near.hits.len() + far.hits.len(), 8, "the retry's hits in the product scene at the origin and at (1e6, 0, 1e6)");
+        assert_eq!(course.iter().map(|c| c.hits.len()).collect::<Vec<usize>>(), [0, 0, 0, 0, 0, 0, 0, 0, 2, 1], "the retry's hits in the course");
+        assert_eq!(step.hits.len(), 3, "the retry's hits in the step from 80 starts");
+        let elsewhere: Vec<&str> = replayed.iter().filter(|c| c.run != "product-scene" && !c.hits.is_empty()).map(|c| c.run.as_str()).collect();
+        assert!(elsewhere.is_empty(), "the retry hit in law runs F4 does not move: {elsewhere:?}");
+
+        all.extend(flat);
+        all.extend(course);
+        all.push(step);
+        all.push(far);
+        all.extend(replayed);
+        let fired: usize = all.iter().map(|c| c.fired.len()).sum();
+        let boundary = all.iter().map(|c| c.boundary).fold(0.0, f64::max);
+        println!("over the course, the outcome runs, and the law runs: the retry fired {fired} times and hit {} times, every hit's start within {boundary:e} of the skin; the retry's skin is {RETRY_EXTRA_SKIN:e} larger", hits(&all));
+        assert_eq!(hits(&all), 22);
+    }
+
+    /// The copy with the retry off and with it on, each timed on the same
+    /// inputs at every call, in turn first; the law's result moves the
+    /// character.
+    #[derive(Default)]
+    struct RetryTimed {
+        spent: [Duration; 2],
+        calls: usize,
+    }
+
+    impl Mover for RetryTimed {
+        fn move_shape(
+            &mut self,
+            controller: &KinematicCharacterController,
+            dt: f64,
+            queries: &QueryPipeline,
+            character_shape: &dyn Shape,
+            character_pos: &Pose,
+            desired_translation: Vector,
+            collisions: &mut Vec<CharacterCollision>,
+        ) -> EffectiveCharacterMovement {
+            let mut aside = Vec::new();
+            let mut time_off = |spent: &mut Duration| {
+                let start = Instant::now();
+                let _ = Controller::<true, false>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| aside.push(hit));
+                *spent += start.elapsed();
+            };
+            let mut on = None;
+            let mut time_on = |spent: &mut Duration, collisions: &mut Vec<CharacterCollision>| {
+                let start = Instant::now();
+                on = Some(Controller::<true, true>(controller).move_shape(dt, queries, character_shape, character_pos, desired_translation, |hit| collisions.push(hit)));
+                *spent += start.elapsed();
+            };
+            let [off_spent, on_spent] = &mut self.spent;
+            if self.calls % 2 == 0 {
+                time_off(off_spent);
+                time_on(on_spent, collisions);
+            } else {
+                time_on(on_spent, collisions);
+                time_off(off_spent);
+            }
+            self.calls += 1;
+            on.expect("the law's movement")
+        }
+    }
+
+    // Pin 7: the costs on record.
+    #[test]
+    fn the_retry_costs_about_what_the_law_before_f4_cost_a_quantum_on_the_flat_walk_and_the_product_scene() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let rounds = 7;
+        let median = |mut times: Vec<f64>| -> (f64, f64, f64) {
+            times.sort_by(|a, b| a.total_cmp(b));
+            (times[times.len() / 2], times[0], times[times.len() - 1])
+        };
+        let scene = law_run("product-scene");
+        let walk = flat_walk(0.0);
+        for name in ["the flat walk at the origin", "the product scene"] {
+            let quanta = (if name == "the product scene" { scene.quanta } else { walk.quanta }) as f64;
+            let mut same: Vec<[f64; 2]> = Vec::new();
+            let mut own: Vec<[f64; 2]> = Vec::new();
+            for _ in 0..rounds {
+                let mut side = RetryTimed::default();
+                let mut off = Timed { inner: Today, spent: Duration::ZERO, calls: 0 };
+                let mut on = Timed { inner: Stride, spent: Duration::ZERO, calls: 0 };
+                if name == "the product scene" {
+                    replay(&mut turn, &scene, &mut side, &mut Shove, |_, _| {}, |_, _| {});
+                    replay(&mut turn, &scene, &mut off, &mut Shove, |_, _| {}, |_, _| {});
+                    replay(&mut turn, &scene, &mut on, &mut Shove, |_, _| {}, |_, _| {});
+                } else {
+                    drive(&mut turn, &walk, &mut side, |_, _| {}, |_| {});
+                    drive(&mut turn, &walk, &mut off, |_, _| {}, |_| {});
+                    drive(&mut turn, &walk, &mut on, |_, _| {}, |_| {});
+                }
+                same.push(side.spent.map(|d| d.as_secs_f64() * 1.0e6 / quanta));
+                own.push([off.spent, on.spent].map(|d| d.as_secs_f64() * 1.0e6 / quanta));
+            }
+            for (k, label) in ["the retry off (the law before F4)", "the retry on (the law)"].iter().enumerate() {
+                let (m, lo, hi) = median(same.iter().map(|t| t[k]).collect());
+                println!("{name}, {label}, on the same inputs at every call of the law's run: median of {rounds} runs, {m:.3} us a quantum (from {lo:.3} to {hi:.3})");
+                let (m, lo, hi) = median(own.iter().map(|t| t[k]).collect());
+                println!("{name}, {label}, each driving its own run: median of {rounds} runs, {m:.3} us a quantum (from {lo:.3} to {hi:.3})");
+            }
+            assert!(same.iter().chain(&own).all(|t| t[0] > 0.0 && t[1] > 0.0));
         }
     }
 }
