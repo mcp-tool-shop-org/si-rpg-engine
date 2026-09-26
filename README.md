@@ -37,11 +37,11 @@ What it aims to be is the simulation core inside a host: a browser, Godot, or Un
 | Save and restore three ways: by replaying the inputs to a step, by copying the physics module's memory, or by the tick's own save of its whole state, which restores without replay; each proven to continue exactly | `packages/tick/runs.js`, `packages/tick/tick.js`, `solver/build.mjs` | `harness/restore.test.js` |
 | Bundles: a failing test writes its seed, world, accepted inputs, and hashes, which `replay` reproduces in one command; a weekly job replays every bundle, fixture, and log far longer than a pull request can | `packages/tick/bundle.js`, `.github/workflows/corpus.yml` | `harness/bundle.test.js` |
 | One binary on two CPU architectures, with memory fixed at 32 MiB and a lint that refuses host-chosen instructions, memory growth, and state kept outside memory | `solver/build.rs`, `solver/src/arena.rs`, `solver/lint.mjs` | CI's ARM64 job; `solver/lint.test.js`, `harness/caps.test.js` |
-| Tests of what the world did: a character course at the controller's measured limits, a full stride on every step of a long flat walk, a thin fast body against a thin wall, terrain seams, and the whole scene moved a million units | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuses to write while any of them fails |
+| Tests of what the world did: a character course at the controller's measured limits, a full stride on every step of a long flat walk and no step sunk into the floor, a thin fast body against a thin wall, terrain seams, and the whole scene moved a million units | `harness/course.test.js`, `harness/outcome.test.js` | `write-golden` refuses to write while any of them fails |
 | Roles for model seats: a manifest per role, the Rule of Two derived from what the role reads, a role gate in the checker, provenance on every admission, trust labels that stay with a belief, and every model call recorded and checked without a GPU; both declared roles frozen | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` over the sessions in `fixtures/sessions/` |
 | Replay from a seed and a log, and a debug view of the tick on localhost | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` is a person's play through the host boundary |
 
-378 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
+380 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
 
 ## Install
 
