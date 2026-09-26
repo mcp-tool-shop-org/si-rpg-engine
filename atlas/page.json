@@ -96,24 +96,66 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 0,
-      "changed": 36,
+      "added": 6,
+      "changed": 15,
       "moved": 0,
-      "parts": 5,
+      "parts": 2,
       "removed": 0
     },
     "items": [
       {
+        "kind": "door",
+        "sentence": "CI now also runs tools/coordinator/check-translations.test.js.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "tools/coordinator/check-translations.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "solver/build.mjs is now read by tools/coordinator/verify-pr.sh.",
+        "subjects": [
+          "solver/build.mjs",
+          "tools/coordinator/verify-pr.sh"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/coordinator/README.md is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/coordinator/README.md"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/coordinator/atlas-linux.sh is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/coordinator/atlas-linux.sh"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "tools/coordinator/check-translations.mjs is new and belongs to no part, so atlas check fails on it against the previous map.",
+        "subjects": [
+          "tools/coordinator/check-translations.mjs"
+        ]
+      },
+      {
+        "kind": "unassigned",
+        "sentence": "And 2 more new files that belong to no part.",
+        "subjects": []
+      },
+      {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-26; 36 files changed content.",
+        "sentence": "6 files added and 15 changed content, across 2 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "2f2f2d76fafb36524be89be3d49af33a6ce5a5d7",
-      "generatedAt": "2026-09-26T10:31:39.798Z"
+      "commit": "282e65eb7368ac61393800adabebc4fddc823ba1",
+      "generatedAt": "2026-09-26T11:27:02.565Z"
     },
-    "unchanged": true
+    "unchanged": false
   },
   "changesTogether": [
     {
@@ -198,9 +240,9 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 12 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "282e65eb7368ac61393800adabebc4fddc823ba1",
+  "commit": "386f0d9c9514e0d293fa9f7a5d71acf35a737b65",
   "defaultBranch": "main",
-  "derived": "16 parts, mostly JavaScript (102 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
+  "derived": "16 parts, mostly JavaScript (104 files). Work enters through 9 doors; the busiest is CI, which reaches 8 parts. People run host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -326,11 +368,12 @@
         "solver/lint.mjs",
         "solver/lint.test.js",
         "solver/source.test.js",
+        "tools/coordinator/check-translations.test.js",
         "tools/panel.test.js",
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 39,
+      "runsCount": 40,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -716,7 +759,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T11:27:02.565Z",
+  "generatedAt": "2026-09-26T12:13:24.565Z",
   "limits": [
     "15 import sites could not be resolved.",
     "2 writes and 3 reads use paths built at run time and are not named here.",
@@ -1735,7 +1778,7 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 33,
+  "testFiles": 34,
   "testedBy": {
     "frame": 16,
     "host": 1,
