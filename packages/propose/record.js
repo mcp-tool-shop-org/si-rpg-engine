@@ -41,7 +41,8 @@
 // rejection, 0 when it failed before it was asked (failedTiming).
 //
 // How a call reads from its record, and so what its call line says, is one
-// function, callRead, which the seat applies as it makes the record.
+// function, callRead, which the seat applies as it makes the record and
+// verifySession applies again to check the line.
 //
 // A session is a directory the session names: session.json, which is the
 // log (seed, world, law, entries, and at its top level the manifests its
@@ -242,12 +243,12 @@ export function modelChange(record, pin) {
 
 /**
  * How a call reads from its record, by the rules the seat applies as it
- * makes the record (seat.js runSession). In order: a call that failed reads
- * call-failed, with its failure as the reason; one cut off at its budget,
- * timed-out; one whose reply held nothing, no-output; one whose readings of
- * the loaded model name another model, model-changed; and otherwise what the
- * seat's parser reads of the output under the manifest, whose proposal is
- * what the seat submits.
+ * makes the record (seat.js runSession) and verifySession applies again to
+ * check the call's line. In order: a call that failed reads call-failed, with
+ * its failure as the reason; one cut off at its budget, timed-out; one whose
+ * reply held nothing, no-output; one whose readings of the loaded model name
+ * another model, model-changed; and otherwise what the seat's parser reads of
+ * the output under the manifest, whose proposal is what the seat submits.
  * @param {CallRecord} record
  * @param {RoleManifest} manifest the manifest the record cites
  * @returns {CallRead}
@@ -308,8 +309,9 @@ export function readSession(dir) {
 }
 
 /**
- * The seven checks of pin 7, over one session, with no GPU and no model. Each
- * failure names what it found; an empty list is a session that verifies.
+ * The seven checks of pin 7 over one session, and the check of its call lines
+ * (#87 pin 6), with no GPU and no model. Each failure names what it found; an
+ * empty list is a session that verifies.
  *   1. every record's key is recomputed from its content, and its version is
  *      1 or 2, each read by the rules it was made under;
  *   2. every record's model digest is the pin in the manifest it cites, as
@@ -326,7 +328,17 @@ export function readSession(dir) {
  *      after its budget is not;
  *   6. the admitted log replays, gated against its own manifests, to the same
  *      frame hashes, and to its end, which is the session's last frame;
- *   7. a record the session cites and does not hold is a failure.
+ *   7. a record the session cites and does not hold is a failure;
+ *   8. every call line agrees with its record and the log. Lines are numbered
+ *      from 0 in order, each its record's call. Its builtAt is a frame of the
+ *      session, at its tick with its hash, and an admitted line's is the frame
+ *      its log entry was built from. Its read and reason are what callRead
+ *      gives of its record under the manifest it cites; for a line whose
+ *      record reads ok, the reason is null if it was admitted, and otherwise
+ *      the checker's refusal, which neither the record nor the log holds, so
+ *      it is checked only to name one. An admitted line's log entry is at its
+ *      `at` and cites its record; a line not admitted has no entry and no
+ *      `at`. Every admission in the log is a call line's.
  * @param {string} dir
  * @returns {{ failures: string[], records: number, entries: number }}
  */
@@ -436,13 +448,87 @@ export function verifySession(dir) {
     }
   }
 
-  for (const line of session.calls || []) {
-    if (!records.has(line.record)) {
+  const log = session.log || [];
+  /** @type {Map<string, number[]>} the log entries whose provenance cites each record */
+  const citing = new Map();
+  for (let i = 0; i < log.length; i = i + 1) {
+    const p = log[i].provenance;
+    if (p) {
+      citing.set(p.record, [...(citing.get(p.record) || []), i]);
+    }
+  }
+  /** @type {Set<number>} the log entries an admitted call line accounts for */
+  const accounted = new Set();
+  const lines = session.calls || [];
+  for (let index = 0; index < lines.length; index = index + 1) {
+    const line = lines[index];
+    const at = 'call ' + line.call + ': ';
+    const record = records.get(line.record);
+    if (!record) {
       failures.push('call ' + line.call + ' cites record ' + line.record + ', which is missing; a missing record is never asked for again');
+    }
+    if (line.call !== index) {
+      failures.push(at + 'it is line ' + index + ' of the session, whose calls are numbered from 0 in order');
+    }
+    if (record && record.call !== line.call) {
+      failures.push(at + 'record ' + line.record + ' is call ' + record.call);
+    }
+    const built = line.builtAt;
+    const tick = built && Number.isInteger(built.tick) ? built.tick : -1;
+    const framed = tick >= 0 && tick < session.frames.length;
+    if (!built || !framed || session.frames[tick] !== built.hash) {
+      failures.push(at + 'builtAt tick ' + (built ? built.tick : 'none') + ' ' + (built ? built.hash : 'none') + ' is not a frame of the session' + (framed ? ', whose frame at tick ' + tick + ' is ' + session.frames[tick] : ''));
+    }
+    const manifest = record ? byHash.get(record.manifest) : undefined;
+    if (record && manifest && (record.record === 1 || record.record === 2)) {
+      const read = callRead(record, manifest);
+      if (line.read !== read.read) {
+        failures.push(at + 'read ' + line.read + ', and record ' + line.record + ' reads ' + read.read);
+      }
+      if (!('proposal' in read)) {
+        if (line.reason !== read.reason) {
+          failures.push(at + 'reason ' + JSON.stringify(line.reason) + ', and record ' + line.record + ' gives ' + JSON.stringify(read.reason));
+        }
+      } else if (line.admitted === true) {
+        if (line.reason !== null) {
+          failures.push(at + 'reason ' + JSON.stringify(line.reason) + ', and an admitted call has none');
+        }
+      } else if (typeof line.reason !== 'string' || line.reason.length === 0) {
+        failures.push(at + 'reason ' + JSON.stringify(line.reason) + ', and a call the checker refused names its refusal');
+      }
+    }
+    const entries = citing.get(line.record) || [];
+    if (line.admitted === true) {
+      const hit = entries.find((i) => log[i].tick === line.at);
+      if (entries.length === 0) {
+        failures.push(at + 'admitted true, and no log entry cites record ' + line.record);
+      } else if (hit === undefined) {
+        failures.push(at + 'at ' + String(line.at) + ', and log entry ' + entries[0] + ' admits record ' + line.record + ' at tick ' + log[entries[0]].tick);
+      } else {
+        accounted.add(hit);
+        const from = /** @type {NonNullable<LogEntry['provenance']>} */ (log[hit].provenance).builtAt;
+        if (built && from && (built.tick !== from.tick || built.hash !== from.hash)) {
+          failures.push(at + 'builtAt tick ' + built.tick + ' ' + built.hash + ' is not the frame log entry ' + hit + ' was built from, tick ' + from.tick + ' ' + from.hash);
+        }
+      }
+    } else if (line.admitted === false) {
+      if (entries.length > 0) {
+        failures.push(at + 'admitted false, and log entry ' + entries[0] + ' cites record ' + line.record);
+      }
+      if (line.at !== null) {
+        failures.push(at + 'at ' + String(line.at) + ', and a call not admitted has no tick');
+      }
+    } else {
+      failures.push(at + 'admitted ' + JSON.stringify(line.admitted) + ', and admitted is true or false');
+    }
+  }
+  for (let i = 0; i < log.length; i = i + 1) {
+    const p = log[i].provenance;
+    if (p && !accounted.has(i)) {
+      failures.push('log entry ' + i + ': no call line admits record ' + p.record + ' at tick ' + log[i].tick);
     }
   }
 
-  const log = session.log || [];
   for (let i = 0; i < log.length; i = i + 1) {
     const entry = log[i];
     const p = entry.provenance;

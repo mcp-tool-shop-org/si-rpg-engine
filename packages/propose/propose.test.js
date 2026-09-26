@@ -746,14 +746,15 @@ test('a call that never returns is cut off at the seat\'s one deadline and recor
   assert.deepEqual(verifySession(late.dir).failures, []);
 
   // Planted in the session: a call that returned over its budget still
-  // fails, and so does a cut-off record out of its one form.
+  // fails, and its call line, which says it timed out, no longer matches it;
+  // and a cut-off record out of its one form fails.
   const file = join(silent.dir, 'records', key + '.json');
   /** @param {object} record */
   const plant = (record) => {
     writeFileSync(file, JSON.stringify(record, null, 2) + '\n');
     return verifySession(silent.dir).failures;
   };
-  assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move), timing: replied(move, 120001).timing }), ['record ' + key + ': took 120001 ms, over the budget of 120 s']);
+  assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move), timing: replied(move, 120001).timing }), ['record ' + key + ': took 120001 ms, over the budget of 120 s', 'call 0: read timed-out, and record ' + key + ' reads ok']);
   assert.deepEqual(plant({ ...cut, timing: { ...cut.timing, ms: 120001 } }), ['record ' + key + ': a call cut off at its budget is recorded at the budget of 120000 ms, with nothing the server reported']);
   assert.deepEqual(plant({ ...cut, timing: { ...cut.timing, evalCount: 3 } }), ['record ' + key + ': a call cut off at its budget is recorded at the budget of 120000 ms, with nothing the server reported']);
   assert.deepEqual(plant({ ...cut, output: move, outputSha256: sha256(move) }), ['record ' + key + ': a call cut off at its budget holds no output, and this one holds one']);
@@ -1101,7 +1102,7 @@ test('a version-2 record keys both readings of the loaded model, the client\'s e
   }
 });
 
-test('a failed call\'s record is held to its one form, and a record that read no model, or a version this check does not read, goes red', async () => {
+test('a failed call\'s record is held to its one form, and a record that read no model, a version this check does not read, or a line out of shape goes red', async () => {
   const move = JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 1.2, z: 0 } } });
   const failed = await probeSession({
     calls: 1,
@@ -1160,6 +1161,20 @@ test('a failed call\'s record is held to its one form, and a record that read no
       },
       failure: (key) => 'record ' + key + ': version 3 is not one this check reads, 1 or 2',
     },
+    {
+      from: ended.dir,
+      change: (_record, line) => {
+        line.admitted = 'yes';
+      },
+      failure: () => 'call 0: admitted "yes", and admitted is true or false',
+    },
+    {
+      from: ended.dir,
+      change: (_record, line) => {
+        line.call = 5;
+      },
+      failure: () => 'call 5: it is line 0 of the session, whose calls are numbered from 0 in order',
+    },
   ];
   for (const { from, change, failure } of cases) {
     const dir = mkdtempSync(join(tmpdir(), 'planted-'));
@@ -1173,6 +1188,49 @@ test('a failed call\'s record is held to its one form, and a record that read no
     writeFileSync(join(dir, 'session.json'), JSON.stringify(session, null, 2) + '\n');
     const failures = verifySession(dir).failures;
     assert.ok(failures.includes(failure(key)), failure(key) + ': ' + JSON.stringify(failures));
+  }
+});
+
+test('a call line not admitted is checked too: its read and reason against its record, and its admitted and at against the log', async () => {
+  const { result, dir } = await probeSession({
+    calls: 3,
+    client: fakeClient([
+      JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 2, z: 0 } } }),
+      'the model wandered off',
+      JSON.stringify({ notes: '', proposal: { kind: 'intent', verb: 'move', actor: 'walker', target: { x: 50, z: 0 } } }),
+    ]),
+  });
+  assert.deepEqual(result.calls.map((line) => [line.read, line.admitted]), [['ok', true], ['not-json', false], ['ok', false]]);
+  assert.deepEqual(verifySession(dir).failures, []);
+  const unread = result.calls[1].record;
+  const refused = result.calls[2].record;
+  /** @type {Array<[number, (line: any) => void, RegExp]>} */
+  const cases = [
+    [1, (line) => {
+      line.read = 'no-output';
+    }, new RegExp('^call 1: read no-output, and record ' + unread + ' reads not-json$')],
+    [1, (line) => {
+      line.reason = 'the reply was fine';
+    }, new RegExp('^call 1: reason "the reply was fine", and record ' + unread + ' gives "the output is not one JSON object"$')],
+    [1, (line) => {
+      line.at = 16;
+    }, /^call 1: at 16, and a call not admitted has no tick$/],
+    [2, (line) => {
+      line.reason = null;
+    }, /^call 2: reason null, and a call the checker refused names its refusal$/],
+    [2, (line) => {
+      line.admitted = true;
+    }, new RegExp('^call 2: admitted true, and no log entry cites record ' + refused + '$')],
+  ];
+  for (const [call, tamper, pattern] of cases) {
+    const copied = mkdtempSync(join(tmpdir(), 'tampered-'));
+    cpSync(dir, copied, { recursive: true });
+    const path = join(copied, 'session.json');
+    const session = JSON.parse(readFileSync(path, 'utf8'));
+    tamper(session.calls[call]);
+    writeFileSync(path, JSON.stringify(session, null, 2) + '\n');
+    const failures = verifySession(copied).failures;
+    assert.ok(failures.some((line) => pattern.test(line)), pattern + ': ' + JSON.stringify(failures));
   }
 });
 
