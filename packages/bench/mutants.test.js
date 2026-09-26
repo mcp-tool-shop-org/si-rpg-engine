@@ -15,7 +15,7 @@ import { readAnchors } from './anchors.js';
 import { runBench } from './bench.js';
 import { MUTANT_CAP, OPERATORS, makeMutants, numberMutants } from './mutants.js';
 import { copyCheckout, plant, scratch, teardown } from './plant.js';
-import { EARLY_RETURN, EVERY_PLANT, MUTANT_LINES, SKEW, apply } from './plants.js';
+import { EARLY_RETURN, EVERY_PLANT, FINDING, MUTANT_LINES, SKEW, apply } from './plants.js';
 
 const dir = scratch('mutants');
 /** @type {string} */
@@ -216,6 +216,54 @@ test('each mutant runs in a process of its own, and each proposer\'s report list
   }
   const caught = report.mutants.list.filter((/** @type {any} */ m) => m.verdict === 'caught').map((/** @type {any} */ m) => m.id).sort();
   assert.deepEqual(report.proposers.sweep.mutants.caught.slice().sort(), caught, 'the sweep\'s inputs caught them all: the grammar ran none');
+});
+
+/**
+ * One bench run of the quanta plant on the room, at the smallest budgets
+ * that reach its fourth mutant's throw: one grammar candidate.
+ * @param {string} name
+ * @param {string} head
+ * @param {number} cap
+ * @param {Record<string, any>} [planted]
+ */
+function quantaRun(name, head, cap, planted) {
+  return runBench({
+    base, head, out: join(dir, name), seed: 1, worlds: [{ file: 'fixtures/bench/room.json' }],
+    proposers: { sweep: false }, grammar: { share: 0.5, pitch: 0.5 },
+    budgets: { sweep: { quanta: 100, restores: 2 }, ladder: { quanta: 1, restores: 1 } },
+    mutants: { enabled: true, cap }, plant: planted,
+  });
+}
+
+test('a mutant whose run throws is not scored, naming the input and the throw, and the bench goes on with every other mutant\'s verdict as it is without it', async () => {
+  const head = copyCheckout(dir, 'quanta-head');
+  apply(plant, head, FINDING.quanta);
+  const [ran, without] = await Promise.all([quantaRun('quanta-out', head, 4), quantaRun('quanta-without-out', head, 3)]);
+  assert.equal(ran.refused, null, ran.refused);
+  const list = ran.mutants.list;
+  assert.equal(list.length, 4);
+  const thrown = list[3];
+  assert.equal(thrown.detail, '1 to 1.1, times 1.1');
+  assert.equal(thrown.verdict, 'not scored');
+  assert.equal(thrown.separatedBy, null);
+  assert.match(thrown.why, /^its run throws on c\d+: mutant m4 candidate: restore refused: the actions are actor ids, each with an action and its quanta still to run$/);
+  const input = /** @type {RegExpMatchArray} */ (thrown.why.match(/^its run throws on (c\d+):/))[1];
+  const ranRecords = readFileSync(join(dir, 'quanta-out', 'records.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
+  assert.ok(ranRecords.some((record) => record.id === input), 'it names an input the ladder ran');
+  assert.ok(ran.mutants.byVerdict['not scored'].some((/** @type {any} */ m) => m.id === thrown.id));
+  assert.ok(ran.environment.mutants[thrown.id], 'its process was started and closed like any other');
+  assert.equal(without.refused, null, without.refused);
+  /** @param {any} m */
+  const verdict = (m) => [m.id, m.detail, m.verdict, m.why, m.separatedBy];
+  assert.deepEqual(list.slice(0, 3).map(verdict), without.mutants.list.map(verdict), 'the other mutants\' verdicts are those of the run without the throwing mutant');
+  assert.ok(list.slice(0, 3).every((/** @type {any} */ m) => m.verdict !== 'not scored'));
+});
+
+test('a refusal the bench raises itself inside a mutant\'s run still refuses the run', async () => {
+  const head = copyCheckout(dir, 'quanta-refusal-head');
+  apply(plant, head, FINDING.quanta);
+  const ran = await quantaRun('quanta-refusal-out', head, 1, { runner: { mutant: { liveLine: true } } });
+  assert.match(String(ran.refused), /the trace line at tick \d+ disagrees with the committed frame/);
 });
 
 test('a JS mutant tree runs the head\'s product binary file, byte for byte', () => {

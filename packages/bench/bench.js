@@ -1720,7 +1720,7 @@ async function separate(m, result, tree, redirect, ctx, lineReached) {
   /** @type {Proc | null} */
   let proc = null;
   try {
-    proc = await startProcess({ name: 'mutant ' + m.id, tree, build: m.kind === 'law' ? 'law mutant ' + m.id : 'mutant ' + m.id, coverage: false, redirect, modules: [] });
+    proc = await startProcess({ name: 'mutant ' + m.id, tree, build: m.kind === 'law' ? 'law mutant ' + m.id : 'mutant ' + m.id, coverage: false, redirect, modules: [], plant: (ctx.plant.runner && ctx.plant.runner.mutant) || {} });
     // Its process and its time go in the environment block: a pid and a time
     // are the host's, not the report's.
     ctx.environment.mutants = ctx.environment.mutants || {};
@@ -1738,9 +1738,23 @@ async function separate(m, result, tree, redirect, ctx, lineReached) {
       if (!ref) {
         throw new BenchRefusal('the law mutant ' + m.id + ' has no run of the head\'s coverage build to be compared with on ' + id);
       }
-      const got = run.control
-        ? await proc.call('control', { ...run.control, window: false, restoreCheck: true })
-        : await proc.call('candidate', { ...run.args, window: false });
+      // A throw from the mutant's run is the harness refusing a state, not a
+      // separation: the mutant is not scored. The bench's own refusals still
+      // refuse the run.
+      /** @type {any} */
+      let got;
+      try {
+        got = run.control
+          ? await proc.call('control', { ...run.control, window: false, restoreCheck: true })
+          : await proc.call('candidate', { ...run.args, window: false });
+      } catch (error) {
+        if (error instanceof BenchRefusal) {
+          throw error;
+        }
+        result.verdict = 'not scored';
+        result.why = 'its run throws on ' + id + ': ' + (error instanceof Error ? error.message.split('\n')[0] : String(error).split('\n')[0]);
+        return;
+      }
       if (first && got.failedBeforeActing) {
         result.verdict = 'not scored';
         result.why = 'fails before any candidate acts: ' + (got.failure ? got.failure.detail : 'no frame');
