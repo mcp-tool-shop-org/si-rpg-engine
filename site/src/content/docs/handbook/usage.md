@@ -100,6 +100,26 @@ npx replay fixtures/corpus/product-rebuild-261.bundle.json
 
 A bundle is one file holding a run's seed, its world, the inputs it accepted, the hashes up to a save tick, and optionally the physics module's memory at that tick, stored as only the pages in use. Every failing restore, outcome, course, trace, or golden check that has a world and a log writes one, and CI keeps it as an artifact of the failed run. `replay` reproduces it in one command. The bundles in `fixtures/corpus/` are replayed every week by a scheduled job, alongside every behaviour fixture, every log, and the product scene run to 100,000 steps with memory restores at ten points; a failure opens an issue with the first difference.
 
+## Measure a change
+
+```bash
+npx bench trees . main HEAD ../trees
+npx bench anchors --base ../trees/base --head ../trees/head
+npx bench run --base ../trees/base --head ../trees/head --out ../bench --product-scene
+```
+
+The bench takes a change and the build before it. `bench trees` makes the two as git worktrees and builds the head's physics in its own tree. `bench anchors` names what the change touches: each changed function, top-level declaration, verb rule, hazard, and function of the physics, and the kinds of change it does not aim at, each with its reason.
+
+`bench run` runs each tree in a Node process of its own, which loads only that tree's modules. T6's sweep proposes the actions it explores, and a seeded grammar proposes short sequences from the states the sweep saved. Every candidate runs on both trees, from the load, and climbs a ladder:
+- **Rung 0.** The candidate runs twice to the same hashes, and a save and restore at its midpoint changes nothing.
+- **Rung 1.** It reached the change.
+- **Rung 2.** The two trees' runs differ, at a named step, body, and field.
+- **Rung 3.** It fails on the change and not on the parent: a throw, a body leaving the world, or a world still moving 512 steps after the action.
+
+Every verdict comes from the engine, and none from a model. A candidate that differs or fails is written as a bundle that `replay` reproduces. `--control` adds a recorded play or the product scene as an input that proposes nothing.
+
+The run writes `report.json`, `report.md`, one record per candidate in `records.jsonl`, and `access.json`, which names what reached each anchor and every anchor nothing reached. Mutants planted at the change, one per process, measure how sensitive the candidates are there. When `solver/` changes, each tree builds its own physics, and a coverage build of the head says which lines of the law each run reached; it must run the product scene exactly as the product build does, or the bench stops with the reason.
+
 ## Rewrite the golden
 
 ```bash

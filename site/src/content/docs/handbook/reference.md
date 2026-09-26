@@ -45,6 +45,16 @@ Serves the debug view on `127.0.0.1`, port 4173 by default. Without `--world` it
 
 The seat, the only code that calls a model. Without `--role` it lists the roles in `predicates/roles/`, or in `--catalog`, each with its status, its world, the Rule of Two properties the loader derived, and its trust label. With `--role` it refuses a frozen role, or one that acts in a live world, with exit 2 before any model client loads. For a thawed scratch role it runs the session the spec names through Ollama at `127.0.0.1:11434`, and writes `session.json` and one record per call beside the spec, a failed call included; a session stops at its first failed call. `--drift` reissues a recorded session's calls and reports how far the new outputs drift from the recorded ones, and any call that failed; it runs by hand on a GPU and exits 0 whatever it finds. Both declared roles are frozen.
 
+### `bench trees <repo> <base-rev> <head-rev> <dir>`, `bench anchors`, `bench run`, `bench replay`
+
+The instrument's bench, run by hand; no workflow runs it.
+- `bench trees` makes the base and the head as git worktrees at `<dir>/base` and `<dir>/head`, and builds the head's physics in its own tree.
+- `bench anchors --base <tree> --head <tree>` prints the anchors of the change as JSON.
+- `bench run --base <tree> --head <tree> --out <dir>` runs the bench and writes `report.json`, `report.md`, `records.jsonl`, `access.json`, and `bundles/`. It takes `--seed`, `--world <file>` (repeatable), `--product-scene`, `--control <bundle | product-scene>` (repeatable), the sweep's and each proposer's budgets in quanta and restores, and `--no-sweep`, `--no-grammar`, `--no-mutants`, and `--cap <n>`.
+- `bench replay <bundle> --tree <dir>` submits an admission difference's log on one tree and prints that tree's admission or refusal of the differing intent.
+
+`bench run` exits 0 when it ran and 1 when it refused, with the reason.
+
 ### `write-golden`
 
 Runs the character course and the outcome tests, and refuses to write while any fails. Then runs `harness/sim.mjs`, writes `fixtures/golden.txt` and `fixtures/golden-behaviour.json`, and prints each behaviour number that moved.
