@@ -8,7 +8,10 @@
 //   run      'product' (the product scene's act over `world`, `quanta` long),
 //            'play' (a fixture case: `seed`, `steps`, `driven`, `world`), or
 //            'log' (a tick replaying the admitted-input `log` from `seed` in
-//            `world` under `law`, with `retired` verbs); packages/tick/runs.js
+//            `world` under `law`, with `retired` verbs, to where nothing is
+//            scheduled after the last entry, or on to `quanta` when the bundle
+//            names it, which is how a sweep's finding reaches a quantum after
+//            its action ended, T6); packages/tick/runs.js
 //   seed, world, log   the seed, the world file's contents, the admitted inputs
 //   tick     the save tick; hashes, the T1 trace hashes from the load (tick 0)
 //            to it, one per quantum. A failure bundle may be saved one past
@@ -41,6 +44,7 @@
 
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { binaryDigest, imageDigest } from '../../solver/dist/solver.mjs';
@@ -170,6 +174,16 @@ export function denseImage(sparse) {
 // Making, writing, and reading.
 
 /**
+ * Where bundles are written: $SI_RPG_BUNDLES, or a directory under the
+ * temporary one. CI and the corpus job set it and upload it; `load world`
+ * writes a sweep's finding there (T6), so it lives with the bundle and not
+ * in the harness, which the packages never import.
+ */
+export function bundleDir() {
+  return process.env.SI_RPG_BUNDLES || join(tmpdir(), 'si-rpg-bundles');
+}
+
+/**
  * The run a bundle names.
  * @param {Bundle} bundle
  * @returns {RunSpec}
@@ -181,7 +195,7 @@ export function specOf(bundle) {
   if (bundle.run === 'play') {
     return { seed: bundle.seed, steps: /** @type {number} */ (bundle.steps), driven: bundle.driven || [], world: bundle.world };
   }
-  return { seed: bundle.seed, world: bundle.world, log: bundle.log, law: bundle.law, retired: bundle.retired };
+  return { seed: bundle.seed, world: bundle.world, log: bundle.log, law: bundle.law, retired: bundle.retired, ...(typeof bundle.quanta === 'number' ? { quanta: bundle.quanta } : {}) };
 }
 
 /** @type {string | null} */
@@ -265,6 +279,9 @@ export function bundleFrom(spec, fields) {
   } else if ('log' in spec) {
     bundle.law = spec.law || 'product';
     bundle.retired = Boolean(spec.retired);
+    if (typeof spec.quanta === 'number') {
+      bundle.quanta = spec.quanta;
+    }
   } else {
     bundle.steps = spec.steps;
     bundle.driven = spec.driven.slice();
@@ -373,6 +390,9 @@ export function bundleProblem(b) {
     }
     if (b.retired !== undefined && typeof b.retired !== 'boolean') {
       return 'a log bundle\'s retired is true or false';
+    }
+    if (b.quanta !== undefined && (!Number.isInteger(b.quanta) || b.quanta < b.tick - 1)) {
+      return 'a log bundle\'s quanta, when it names them, are a whole number, at least ' + (b.tick - 1) + ', its save tick less one';
     }
     let last = 0;
     for (let i = 0; i < b.log.length; i = i + 1) {

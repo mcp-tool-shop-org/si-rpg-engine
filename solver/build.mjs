@@ -316,10 +316,41 @@ export function solverRebuilds() {
 // skipped its epilogue and left the pointer lowered; it is dead. Never image
 // it; restoreImage builds a fresh instance and writes the last image into it.
 // No Rust runs during either copy.
+//
+// The sparse image (T6 pin 2) is the in-process form the reachability sweep
+// keeps for every state it archives: a bitmap of the memory's pages and the
+// bytes of only the pages that are not all zero, as a T5 bundle stores them.
+// imageSparse takes it and restoreSparse puts it back without leaving the
+// process, with the checks restoreImage makes: the same binary, a whole number
+// of pages, and the image's digest over the whole memory. What made a restore
+// cost 56 ms in CI was the digest, measured: on the builder's machine the
+// byte-by-byte digest of the 32 MiB took 191 ms of a 201 ms restore, a fresh
+// instance 0.46 ms, and the copy 1.3 ms. So the digest is now read a word at a
+// time, and a page of zeros, which multiplies each lane by FNV^32768, is one
+// multiplication; from the pages in use it takes 0.2 ms. A fresh instance
+// stays: taking the image in place into a running instance whose stack pointer
+// is at its base measured no cheaper (0.66 ms against 0.63 ms on Linux, 1.48 ms
+// against 0.69 ms on Windows, over 30,000 restores), since the host zeroes a
+// fresh memory lazily and the image writes six pages, while in place has to
+// zero the other 506. So every restore builds a fresh instance, which also
+// covers an instance that has trapped.
 
 const PAGE = 65536;
+const FNV = 0x01000193;
 let binaryHex = null;
 let refusal = 'none';
+
+// A zero byte multiplies its lane by FNV, and a page gives each lane half its
+// bytes, so a page of zeros multiplies each lane by FNV^32768, mod 2^32.
+let zeroPage = 1;
+for (let i = 0; i < PAGE / 2; i++) {
+  zeroPage = Math.imul(zeroPage, FNV);
+}
+zeroPage = zeroPage >>> 0;
+
+// Words are read little-endian, as the digest reads bytes; a big-endian host
+// would read them the other way, so it takes the byte loop.
+const littleEndian = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
 
 function hex32(n) {
   let s = (n >>> 0).toString(16);
@@ -408,28 +439,122 @@ export function binaryDigest() {
   return binaryHex;
 }
 
+/** The two lanes after the length's four bytes, as the digest starts. */
+function lanesAfterLength(n) {
+  let h0 = 0x811c9dc5;
+  let h1 = 0x811c9dc5;
+  for (let i = 0; i < 4; i++) {
+    const b = (n >>> (i * 8)) & 255;
+    h0 = Math.imul(h0 ^ b, FNV);
+    h1 = Math.imul(h1 ^ b, FNV);
+  }
+  return [h0, h1];
+}
+
+/** Bytes [from, to) of data into the lanes, byte i to lane (i & 4) >> 2. */
+function mixBytes(h, data, from, to) {
+  let h0 = h[0];
+  let h1 = h[1];
+  for (let i = from; i < to; i++) {
+    if ((i & 4) === 0) {
+      h0 = Math.imul(h0 ^ data[i], FNV);
+    } else {
+      h1 = Math.imul(h1 ^ data[i], FNV);
+    }
+  }
+  h[0] = h0;
+  h[1] = h1;
+}
+
+/**
+ * The same as mixBytes a word at a time: from and to are multiples of 8, and
+ * data starts on a four-byte boundary of its buffer.
+ */
+function mixWords(h, data, from, to) {
+  const words = new Uint32Array(data.buffer, data.byteOffset + from, (to - from) >>> 2);
+  let h0 = h[0];
+  let h1 = h[1];
+  for (let i = 0; i < words.length; i += 2) {
+    let w = words[i];
+    h0 = Math.imul(h0 ^ (w & 255), FNV);
+    h0 = Math.imul(h0 ^ ((w >>> 8) & 255), FNV);
+    h0 = Math.imul(h0 ^ ((w >>> 16) & 255), FNV);
+    h0 = Math.imul(h0 ^ (w >>> 24), FNV);
+    w = words[i + 1];
+    h1 = Math.imul(h1 ^ (w & 255), FNV);
+    h1 = Math.imul(h1 ^ ((w >>> 8) & 255), FNV);
+    h1 = Math.imul(h1 ^ ((w >>> 16) & 255), FNV);
+    h1 = Math.imul(h1 ^ (w >>> 24), FNV);
+  }
+  h[0] = h0;
+  h[1] = h1;
+}
+
+/** One page of the image into the lanes, a word at a time where it can be. */
+function mixPage(h, data, from) {
+  if (littleEndian && (data.byteOffset & 3) === 0) {
+    mixWords(h, data, from, from + PAGE);
+  } else {
+    mixBytes(h, data, from, from + PAGE);
+  }
+}
+
+/** True when bytes [from, to) are all zero; data starts on a four-byte boundary. */
+function zeroRegion(data, from, to) {
+  const words = new Int32Array(data.buffer, data.byteOffset + from, (to - from) >>> 2);
+  for (let i = 0; i < words.length; i++) {
+    if (words[i] !== 0) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Two FNV-1a lanes over an image, as packages/frame/hash.js mixes words:
  * the length first, then each 32-bit little-endian word, even words to lane
- * 0 and odd words to lane 1.
+ * 0 and odd words to lane 1. A whole page of zeros is one multiplication of
+ * each lane, and the rest is read a word at a time; the value is the byte
+ * loop's, which harness/restore.test.js keeps and compares.
  */
 export function imageDigest(data) {
-  let h0 = 0x811c9dc5;
-  let h1 = 0x811c9dc5;
   const n = data.length;
-  for (let i = 0; i < 4; i++) {
-    const b = (n >>> (i * 8)) & 255;
-    h0 = Math.imul(h0 ^ b, 0x01000193) >>> 0;
-    h1 = Math.imul(h1 ^ b, 0x01000193) >>> 0;
-  }
-  for (let i = 0; i < n; i++) {
-    if ((i & 4) === 0) {
-      h0 = Math.imul(h0 ^ data[i], 0x01000193) >>> 0;
+  const h = lanesAfterLength(n);
+  const aligned = (data.byteOffset & 3) === 0;
+  const whole = aligned ? n - (n % PAGE) : 0;
+  for (let at = 0; at < whole; at += PAGE) {
+    if (zeroRegion(data, at, at + PAGE)) {
+      h[0] = Math.imul(h[0], zeroPage);
+      h[1] = Math.imul(h[1], zeroPage);
     } else {
-      h1 = Math.imul(h1 ^ data[i], 0x01000193) >>> 0;
+      mixPage(h, data, at);
     }
   }
-  return hex32(h0) + hex32(h1);
+  mixBytes(h, data, whole, n);
+  return hex32(h[0]) + hex32(h[1]);
+}
+
+/**
+ * The digest of the whole memory a sparse image stands for, from its page
+ * bitmap and the bytes of the pages it marks: imageDigest of the dense image,
+ * computed from the pages in use.
+ * @param {Uint8Array} pages bit p of byte p >> 3 set when page p is kept
+ * @param {Uint8Array} data the kept pages, in order
+ * @param {number} count the memory's pages
+ */
+export function sparseDigest(pages, data, count) {
+  const h = lanesAfterLength(count * PAGE);
+  let at = 0;
+  for (let p = 0; p < count; p++) {
+    if (pages[p >> 3] & (1 << (p & 7))) {
+      mixPage(h, data, at);
+      at += PAGE;
+    } else {
+      h[0] = Math.imul(h[0], zeroPage);
+      h[1] = Math.imul(h[1], zeroPage);
+    }
+  }
+  return hex32(h[0]) + hex32(h[1]);
 }
 
 function atBase(exp) {
@@ -505,7 +630,125 @@ export function restoreImage(image) {
   return true;
 }
 
-/** Why the last imageSolver or restoreImage refused, or 'none'. */
+/** The memory's pages. The memory is fixed, so every instance has the same. */
+function memoryPages() {
+  return instantiate().exports.memory.buffer.byteLength / PAGE;
+}
+
+let freshKept = null;
+
+/** The pages a fresh instance holds data in: its data segments. */
+function freshPages() {
+  if (freshKept === null) {
+    const memory = new Uint8Array(fresh().exports.memory.buffer);
+    freshKept = [];
+    for (let p = 0; p < memory.length / PAGE; p++) {
+      if (!zeroRegion(memory, p * PAGE, (p + 1) * PAGE)) {
+        freshKept.push(p);
+      }
+    }
+  }
+  return freshKept;
+}
+
+/**
+ * The instance's memory as a sparse image (T6 pin 2): the SHA-256 of this
+ * binary, the digest of the whole memory, a bitmap of its pages with a bit set
+ * for each page that is not all zero, and those pages' bytes in order. Null,
+ * with imageRefusal() saying why, when the stack pointer is not at its base.
+ * @returns {{ binary: string, digest: string, pages: Uint8Array, data: Uint8Array } | null}
+ */
+export function imageSparse() {
+  const exp = instantiate().exports;
+  if (!atBase(exp)) {
+    refusal = 'the stack pointer is not at its base: the instance is inside a call or has trapped';
+    return null;
+  }
+  const memory = new Uint8Array(exp.memory.buffer);
+  const count = memory.length / PAGE;
+  const pages = new Uint8Array(Math.ceil(count / 8));
+  const kept = [];
+  for (let p = 0; p < count; p++) {
+    if (!zeroRegion(memory, p * PAGE, (p + 1) * PAGE)) {
+      pages[p >> 3] = pages[p >> 3] | (1 << (p & 7));
+      kept.push(p);
+    }
+  }
+  const data = new Uint8Array(kept.length * PAGE);
+  for (let i = 0; i < kept.length; i++) {
+    data.set(memory.subarray(kept[i] * PAGE, (kept[i] + 1) * PAGE), i * PAGE);
+  }
+  refusal = 'none';
+  return { binary: binaryDigest(), digest: sparseDigest(pages, data, count), pages, data };
+}
+
+/**
+ * Puts a sparse image back without leaving the process: a fresh instance, the
+ * kept pages written into it, and every page a fresh instance holds data in
+ * that the image leaves zero cleared. False, with the current instance
+ * unchanged and imageRefusal() saying why, when the image is from another
+ * binary, its bitmap is not the memory's pages or its data not a whole number
+ * of the pages it marks, or its pages do not match its digest.
+ * @param {{ binary: string, digest: string, pages: Uint8Array, data: Uint8Array }} image
+ */
+export function restoreSparse(image) {
+  if (!image || !(image.pages instanceof Uint8Array) || !(image.data instanceof Uint8Array) || typeof image.binary !== 'string' || typeof image.digest !== 'string') {
+    refusal = 'not a sparse image';
+    return false;
+  }
+  if (image.binary !== binaryDigest()) {
+    refusal = 'the image is from another binary';
+    return false;
+  }
+  const count = memoryPages();
+  if (image.pages.length !== Math.ceil(count / 8)) {
+    refusal = 'the page bitmap is ' + image.pages.length + ' bytes, not the ' + Math.ceil(count / 8) + ' that cover the ' + count + ' pages of the memory';
+    return false;
+  }
+  let marked = 0;
+  for (let p = 0; p < image.pages.length * 8; p++) {
+    if (image.pages[p >> 3] & (1 << (p & 7))) {
+      if (p >= count) {
+        refusal = 'the page bitmap marks page ' + p + ', and the memory has ' + count + ' pages';
+        return false;
+      }
+      marked++;
+    }
+  }
+  if (image.data.length !== marked * PAGE) {
+    refusal = 'the length is not a whole number of pages: the bitmap marks ' + marked + ' and the data holds ' + image.data.length + ' bytes';
+    return false;
+  }
+  if (sparseDigest(image.pages, image.data, count) !== image.digest) {
+    refusal = 'the bytes do not match the image digest';
+    return false;
+  }
+  const clear = freshPages();
+  const instance = fresh();
+  const exp = instance.exports;
+  if (exp.memory.buffer.byteLength !== count * PAGE || !atBase(exp)) {
+    refusal = 'the fresh instance does not match the image';
+    return false;
+  }
+  const memory = new Uint8Array(exp.memory.buffer);
+  for (const p of clear) {
+    if (!(image.pages[p >> 3] & (1 << (p & 7)))) {
+      memory.fill(0, p * PAGE, (p + 1) * PAGE);
+    }
+  }
+  let at = 0;
+  for (let p = 0; p < count; p++) {
+    if (image.pages[p >> 3] & (1 << (p & 7))) {
+      memory.set(image.data.subarray(at, at + PAGE), p * PAGE);
+      at += PAGE;
+    }
+  }
+  cached = instance;
+  refusal = 'none';
+  return true;
+}
+
+/** Why the last imageSolver, imageSparse, restoreImage, or restoreSparse refused, or 'none'. */
 export function imageRefusal() {
   return refusal;
 }

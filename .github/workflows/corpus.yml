@@ -1,13 +1,24 @@
-# The corpus, T5 pins 4 and 5 (docs/dispatch-t5-replay-corpus.md).
+# The corpus, T5 pins 4 and 5 (docs/dispatch-t5-replay-corpus.md), and the
+# reachability sweep, T6 pin 10 (docs/dispatch-t6-reachability-sweep.md).
 #
 # Why a schedule: replaying every bundle in fixtures/corpus/, every behaviour
 # fixture and log, and the product scene for 100,000 quanta with ten image
-# restores does not fit the pull-request job's budget; and the runner image
-# drifts week to week under the pinned toolchain, which no push can detect.
-# The job replays and reports. It never pushes, never opens a pull request,
-# and never edits a golden. On failure it opens one issue titled with the
-# first failing bundle and its first-difference block, with the bundles
-# attached as this run's `bundles` artifact. A bundle's hashes are the law's,
+# restores does not fit the pull-request job's budget, and neither does
+# sweeping every world in worlds/index.json, every fixture world on the
+# product law, and the product scene, each under a budget of 1,500,000 quanta
+# and 15,000 restores (SWEEP_BUDGET in harness/corpus.mjs; it cuts short the
+# product scene and the minds fixture, and every other world finishes inside
+# it); and the runner image drifts week to week under the pinned toolchain,
+# which no push can detect. The job replays,
+# sweeps, and reports. It never pushes, never opens a pull request, and never
+# edits a golden or the sweep's record. On failure it opens one issue titled
+# with the first failing bundle and its first-difference block, with the
+# bundles attached as this run's `bundles` artifact. A sweep fails when its
+# verdict differs from fixtures/sweep/verdicts.json in either direction (a new
+# finding or a finding gone, a zone reached or lost, a sweep that no longer
+# finishes), and writes the bundles of its findings; the worlds the record
+# holds refused are findings already named for the coordinator, so they do
+# not open an issue every week. A bundle's hashes are the law's,
 # so every bundle replays on any binary; its stored image is one binary's
 # bytes, used on that binary and otherwise skipped for a fresh image taken at
 # its save tick, and the run prints how many were used and skipped. Every run
@@ -16,12 +27,12 @@
 # place of the old ones; a slice that only moves the binary need not.
 #
 # Standards compliance (0 missing, 1 partial, 2 present, 3 exemplary):
-# - PIN_PER_STEP 2: node 22, Rust 1.98.1, the solver's Linux digest (build --check refuses any other before a bundle replays), the actions by major tag; ubuntu-latest cannot be pinned by digest, so the job prints ImageOS and ImageVersion, the drift it exists to catch. Remediation: pin the actions by commit SHA, owner coordinator, target T6.
-# - ANDON_AUTHORITY 3: any failing bundle, fixture, capture, or restore point fails the job and opens an issue, and every failure writes a bundle; the replay step has its own timeout inside the job's, so a run over budget fails that step and the issue still opens (a job timeout cancels, and skips failure() steps); build --check halts on a moved digest first; harness/bundle.test.js proves a planted failure goes red and its bundle reproduces it.
+# - PIN_PER_STEP 2: node 22, Rust 1.98.1, the solver's Linux digest (build --check refuses any other before a bundle replays or a world is swept), the actions by major tag, and the sweep's budget and its record of verdicts, both committed; ubuntu-latest cannot be pinned by digest, so the job prints ImageOS and ImageVersion, the drift it exists to catch. Remediation still open: pin the actions by commit SHA, owner coordinator; T6 did not take it, since its dispatch does not name it.
+# - ANDON_AUTHORITY 3: any failing bundle, fixture, capture, restore point, or sweep verdict fails the job and opens an issue, and every failure writes a bundle; the replay step has its own timeout inside the job's, so a run over budget fails that step and the issue still opens (a job timeout cancels, and skips failure() steps); build --check halts on a moved digest first; harness/bundle.test.js proves a planted failure goes red and its bundle reproduces it, and harness/sweep.test.js that a record planted with a moved verdict goes red with the findings bundled.
 # - NAMED_COMPENSATORS 2: its one irreversible action, opening an issue, has the undo and owner in the table below; it never pushes, so nothing else needs undoing.
-# - DECOMPOSE_BY_SECRETS 2: the bundle format and its replay are packages/tick/bundle.js, which the replay command shares; where failures write and the test hooks are harness/bundle.mjs; what the corpus replays is harness/corpus.mjs; the schedule and the issue are this file; the engine is not touched.
-# - UNCERTAINTY_GATED_HUMANS 2: a green run asks no one; a red run is the uncertainty a person decides (fix the engine, or rewrite a bundle and say why), so it opens an issue for the coordinator.
-# - EXTERNAL_VERIFIER 2: the verdict is the hash chain and the first-difference comparison (packages/tick/difference.js, which harness/first-difference.js and the replay command share), never a model; the slice that wrote this is reviewed by another model family before merge.
+# - DECOMPOSE_BY_SECRETS 2: the bundle format and its replay are packages/tick/bundle.js, which the replay command shares; where failures write and the test hooks are harness/bundle.mjs; the sweep is packages/load/sweep.js, which load world shares; what the corpus replays and sweeps, and the comparison with the record, are harness/corpus.mjs; the record is fixtures/sweep/verdicts.json; the schedule and the issue are this file; the engine is not touched.
+# - UNCERTAINTY_GATED_HUMANS 2: a green run asks no one; a red run is the uncertainty a person decides (fix the engine or the content, or rewrite a bundle or the record with node harness/corpus.mjs --record-sweep and say why), so it opens an issue for the coordinator.
+# - EXTERNAL_VERIFIER 2: the verdict is the hash chain and the first-difference comparison (packages/tick/difference.js, which harness/first-difference.js and the replay command share) and, for the sweep, the checker's admissions with every witness replayable by the replay command, never a model; the slice that wrote this is reviewed by another model family before merge.
 #
 # Compensators:
 # | action                        | undo                                                         | state after the undo                                   | owner       |
@@ -71,8 +82,10 @@ jobs:
       # this step fails, and the failure() steps below still upload the bundles
       # and open the issue; a job timeout would cancel the job and skip them.
       # The log is kept so an issue for a run that did not finish shows how far
-      # it got.
-      - name: Replay the corpus
+      # it got. The replay took about 3 minutes before T6, and the sweep adds
+      # about 12: six and a half minutes on the builder's machine, which runs
+      # a quantum 1.8 times as fast as CI (SWEEP_BUDGET in harness/corpus.mjs).
+      - name: Replay the corpus and sweep the worlds
         timeout-minutes: 25
         run: |
           set -euo pipefail

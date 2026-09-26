@@ -8,7 +8,7 @@ import { createHasher } from '../frame/hash.js';
 import { createWorld } from './world.js';
 import { createTick, settle } from './tick.js';
 import { createMemory } from './memory.js';
-import { loadIntentRules } from './predicates.js';
+import { REST_MARGIN, admitIntent, loadIntentRules } from './predicates.js';
 import { playVerbs } from '../../harness/verbs-scene.mjs';
 
 const bare = { rules: ['move.json'], retired: [] };
@@ -27,6 +27,60 @@ test('a rule without an effect compiles as drive, and an unknown effect or an un
   assert.match(extra.ok ? '' : extra.reason, /unknown field/);
   assert.equal(readFileSync('predicates/intents/move.json', 'utf8').includes('effect'), false);
   assert.equal(readFileSync('predicates/intents/push.json', 'utf8').includes('effect'), false);
+});
+
+test('a walker at rest sits a contact margin into the floor, and still moves, pushes, climbs, and uses; a wall still refuses', () => {
+  // T6 found every path from a settled actor refused: the product law leaves
+  // a resting box below its half-extent, deeper under a load, so a path
+  // tested at the centre's height began inside the padded floor. The porter
+  // holds a box up, and sinks past the 1e-4 pick-up allowed for before T6.
+  const world = createWorld({
+    bodies: [
+      { id: 'walker', x: 1, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'crate', x: 2.4, y: 0.36, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 },
+      { id: 'porter', x: 4, y: 0.3, z: -1, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'load', x: 4, y: 0.85, z: -1, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+    ],
+    colliders: [
+      { id: 'floor', minX: -1, maxX: 6, minY: -1, maxY: 0, minZ: -2, maxZ: 2 },
+      { id: 'wall', minX: -1, maxX: 0, minY: 0, maxY: 3, minZ: -2, maxZ: 2 },
+      { id: 'ledge', minX: 0.5, maxX: 1.5, minY: 0, maxY: 0.8, minZ: 1, maxZ: 2 },
+    ],
+    zones: [{ id: 'yard', minX: 0, maxX: 6, minY: 0, maxY: 3, minZ: -2, maxZ: 1 }],
+  }, 'product');
+  const rules = loadIntentRules().rules;
+  const tick = createTick({ seed: 5, world, rules, memory: createMemory() });
+  for (let n = 0; n < 512 && !world.bodies.every((body) => world.sleeping(body.id)); n = n + 1) {
+    tick.advance();
+  }
+  const walker = /** @type {import('../frame/types.js').Body} */ (world.body('walker'));
+  assert.ok(world.sleeping('walker') && world.sleeping('crate'), 'both settle asleep');
+  const sunk = walker.hy - walker.y;
+  assert.ok(sunk > 0, 'the walker rests ' + sunk + ' below its half-extent');
+  /**
+   * @param {string} verb
+   * @param {import('../frame/types.js').Intent['target']} target
+   */
+  const check = (verb, target) => admitIntent({ kind: 'intent', verb, actor: 'walker', target, frameHash: tick.frame().hash }, world, rules, new Set(), new Set());
+  for (const [verb, target] of /** @type {Array<[string, import('../frame/types.js').Intent['target']]>} */ ([
+    ['move', { x: walker.x + 0.5, z: walker.z }],
+    ['push', { body: 'crate' }],
+    ['climb', { x: 1, z: 1.5 }],
+    ['use', { body: 'crate' }],
+    ['pick-up', { body: 'crate' }],
+  ])) {
+    const got = check(verb, target);
+    assert.equal(got.ok, true, verb + ' from rest: ' + (got.ok ? '' : got.reason));
+  }
+  const walled = check('move', { x: -0.5, z: walker.z });
+  assert.equal(walled.ok, false);
+  assert.equal(walled.ok ? '' : walled.reason, 'path crosses collider wall');
+  const porter = /** @type {import('../frame/types.js').Body} */ (world.body('porter'));
+  const loaded = porter.hy - porter.y;
+  assert.ok(loaded > 1e-4, 'the porter, holding a box up, rests ' + loaded + ' below its half-extent, past the 1e-4 pick-up used to allow');
+  const carrying = admitIntent({ kind: 'intent', verb: 'move', actor: 'porter', target: { x: porter.x - 0.5, z: porter.z }, frameHash: tick.frame().hash }, world, rules, new Set(), new Set());
+  assert.equal(carrying.ok, true, 'the porter moves from rest: ' + (carrying.ok ? '' : carrying.reason));
+  assert.ok(sunk < REST_MARGIN && loaded < REST_MARGIN, 'the margin ' + REST_MARGIN + ' clears the ' + sunk + ' and ' + loaded + ' they sank');
 });
 
 test('supportAt answers an axis-aligned box, a rotated slab, a heightfield cell, and a resting body', () => {

@@ -185,4 +185,8 @@ export interface Hasher {
   u32(w: number): void;
   text(s: string): void;
   digest(): string;
+  /** the two lanes, the hasher's whole state, for a save */
+  lanes(): [number, number];
+  /** puts back lanes a save took; throws, changing nothing, on anything else */
+  resume(lanes: ReadonlyArray<number>): void;
 }

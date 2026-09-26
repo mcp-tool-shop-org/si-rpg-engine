@@ -78,6 +78,27 @@ export function createHasher() {
     digest() {
       return hex(h0) + hex(h1);
     },
+    /**
+     * The two lanes as they stand: the whole of the hasher's state. A tick's
+     * save carries them (T6 pin 1), so a restored tick hashes on from where
+     * the saved one was, not from where it has since run.
+     * @returns {[number, number]}
+     */
+    lanes() {
+      return [h0, h1];
+    },
+    /**
+     * Puts back two lanes that lanes() returned. Throws, changing nothing,
+     * unless both are whole numbers from 0 through 2^32 - 1.
+     * @param {ReadonlyArray<number>} saved
+     */
+    resume(saved) {
+      if (!Array.isArray(saved) || saved.length !== 2 || !saved.every((lane) => Number.isInteger(lane) && lane >= 0 && lane <= 0xffffffff)) {
+        throw new Error('resume refused: the lanes are two whole numbers from 0 through 2^32 - 1');
+      }
+      h0 = saved[0];
+      h1 = saved[1];
+    },
   };
 }
 

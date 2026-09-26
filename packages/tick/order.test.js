@@ -58,7 +58,7 @@ test('the world-file loader keeps file order for bodies, colliders, and zones', 
     scene.zones.push({ id: 'aisle', minX: 0.2, maxX: 1.2, minY: 0, maxY: 2, minZ: -0.5, maxZ: 0.5 });
   });
   assert.deepEqual(reversed.bodies.map((body) => body.id), ['crate', 'walker']);
-  assert.deepEqual(reversed.colliders.map((box) => box.id), ['wall-right', 'wall-left', 'floor']);
+  assert.deepEqual(reversed.colliders.map((box) => box.id), ['wall-far', 'wall-near', 'wall-right', 'wall-left', 'floor']);
   assert.deepEqual(reversed.zones.map((zone) => zone.id), ['door', 'aisle']);
 });
 

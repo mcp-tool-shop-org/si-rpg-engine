@@ -8,11 +8,21 @@
 // or not anything is scheduled: the world keeps stepping and hashing while a
 // person does nothing. A log entry records the tick and the hash at the moment
 // of admission. Replay advances to that tick before it submits.
+//
+// save and restore (T6 pin 1) take and put back the tick's whole state, so a
+// state is returned to without replaying to it: what the reachability sweep
+// does thousands of times. Restoring and then advancing traces identically to
+// the run that was saved; harness/restore.test.js proves it on every fixture
+// and the product scene, and shows a save that omits one field goes red. They
+// are on the tick createRestorableTick makes, not the one createTick makes:
+// restore writes body records, and a tick handed to a host has no method that
+// writes geometry (packages/tick/tick.test.js, the host boundary).
 
 import { createHasher } from '../frame/hash.js';
 import { commitFrame } from '../frame/frame.js';
 import { beliefRefusal, subjectText } from './beliefs.js';
-import { installMinds, mixMinds, observeMinds } from './minds.js';
+import { memorySaveProblem } from './memory.js';
+import { installMinds, mindsSaveProblem, mixMinds, observeMinds, restoreMinds, saveMinds } from './minds.js';
 import { admitIntent } from './predicates.js';
 
 /**
@@ -22,18 +32,48 @@ import { admitIntent } from './predicates.js';
  * @typedef {import('../frame/types.js').Host} Host
  * @typedef {import('../frame/types.js').LogEntry} LogEntry
  * @typedef {import('../frame/types.js').IntentRule} IntentRule
+ * @typedef {{ remaining: number, effect: string, riseQuanta: number, aimX: number, aimZ: number, otherId: string | null, speed: number }} ScheduledAction
+ * @typedef {ReturnType<ReturnType<typeof import('./world.js').createWorld>['saveSparse']>} WorldSave
+ * @typedef {{
+ *   seed: number, tick: number, lanes: [number, number], frame: Frame,
+ *   actions: Array<[string, ScheduledAction]>, pending: number,
+ *   minds: import('./minds.js').MindsSave, memory: import('./memory.js').MemorySave,
+ *   log: LogEntry[], world: WorldSave
+ * }} TickSave
  */
 
 /**
- * @param {{
+ * @typedef {{
  *   seed: number;
  *   world: ReturnType<import('./world.js').createWorld>;
  *   rules: Map<string, IntentRule>;
  *   retired?: Set<string>;
  *   memory: ReturnType<import('./memory.js').createMemory>;
- * }} init
+ * }} TickInit
+ */
+
+/**
+ * The tick a host is handed: submit, advance, idle, attach, frame, and log.
+ * @param {TickInit} init
  */
 export function createTick(init) {
+  return buildTick(init).tick;
+}
+
+/**
+ * The same tick with save() and restore(saved) beside its six methods (T6
+ * pin 1). The sweep, the runs a bundle names, and the tests make this one.
+ * @param {TickInit} init
+ */
+export function createRestorableTick(init) {
+  const built = buildTick(init);
+  return { ...built.tick, save: built.save, restore: built.restore };
+}
+
+/**
+ * @param {TickInit} init
+ */
+function buildTick(init) {
   const { seed, world, rules, memory } = init;
   const retired = init.retired ?? new Set();
   const hasher = createHasher();
@@ -47,7 +87,7 @@ export function createTick(init) {
    * One scheduled action per actor. The count is the quanta still to run.
    * When it reaches zero the actor's horizontal velocity is cleared, after
    * that quantum has been hashed, which is where the old submit cleared it.
-   * @typedef {{ remaining: number, effect: string, riseQuanta: number, aimX: number, aimZ: number, otherId: string | null, speed: number }} Action
+   * @typedef {ScheduledAction} Action
    * @type {Map<string, Action>}
    */
   const actions = new Map();
@@ -421,19 +461,142 @@ export function createTick(init) {
     }
   }
 
+  /**
+   * The tick's whole state (T6 pin 1): the tick number, the running hasher's
+   * lanes, the current frame, the scheduled actions, the quanta owed to
+   * admissions that are not actions, the minds' state and memory, the input
+   * log, and the world's save (its body records, its lifted and carried
+   * sets, and an image of the solver). The log is copied, not cut back to a
+   * length: a sweep restores states that other branches reached, so a
+   * restored tick's log must be the path to its own state. A save taken with
+   * an action in flight carries the action. The attached hosts are not state:
+   * they stay attached across a restore. The solver's image is the sparse
+   * in-process form (T6 pin 2): a save lives in this process, and a restore
+   * from it costs about a millisecond.
+   * @returns {TickSave}
+   */
+  function save() {
+    return {
+      seed,
+      tick,
+      lanes: hasher.lanes(),
+      frame: current,
+      actions: Array.from(actions, ([id, action]) => /** @type {[string, Action]} */ ([id, { ...action }])),
+      pending,
+      minds: saveMinds(world),
+      memory: memory.save(),
+      log: inputLog.slice(),
+      world: world.saveSparse(),
+    };
+  }
+
+  /**
+   * Whether a value is a scheduled action as submit writes one.
+   * @param {any} action
+   */
+  function isAction(action) {
+    return Boolean(action) && typeof action === 'object' && Number.isInteger(action.remaining) && action.remaining >= 1
+      && typeof action.effect === 'string' && Number.isInteger(action.riseQuanta) && action.riseQuanta >= 0
+      && typeof action.aimX === 'number' && typeof action.aimZ === 'number'
+      && (action.otherId === null || typeof action.otherId === 'string') && typeof action.speed === 'number';
+  }
+
+  /**
+   * Why a value is not a save of this tick, or null. It checks the whole
+   * save, the world's part with the world's own check, so restore changes
+   * nothing until nothing it reads can fail.
+   * @param {any} saved
+   * @returns {string | null}
+   */
+  function saveProblem(saved) {
+    if (!saved || typeof saved !== 'object') {
+      return 'a save is an object';
+    }
+    if (saved.seed !== seed) {
+      return 'the save is of a tick seeded ' + String(saved.seed) + ', and this tick is seeded ' + seed;
+    }
+    if (!Number.isInteger(saved.tick) || saved.tick < 0) {
+      return 'the tick is a whole number';
+    }
+    if (!Array.isArray(saved.lanes) || saved.lanes.length !== 2 || !saved.lanes.every((/** @type {unknown} */ lane) => Number.isInteger(lane) && /** @type {number} */ (lane) >= 0 && /** @type {number} */ (lane) <= 0xffffffff)) {
+      return 'the lanes are two whole numbers from 0 through 2^32 - 1';
+    }
+    if (!saved.frame || typeof saved.frame !== 'object' || saved.frame.tick !== saved.tick || typeof saved.frame.hash !== 'string' || !Array.isArray(saved.frame.bodies)) {
+      return 'the frame is the committed frame at the saved tick';
+    }
+    if (!Array.isArray(saved.actions) || !saved.actions.every((/** @type {any} */ entry) => Array.isArray(entry) && entry.length === 2 && typeof entry[0] === 'string' && world.body(entry[0]) !== undefined && isAction(entry[1]))
+      || new Set(saved.actions.map((/** @type {any[]} */ entry) => entry[0])).size !== saved.actions.length) {
+      return 'the actions are actor ids, each with an action and its quanta still to run';
+    }
+    if (!Number.isInteger(saved.pending) || saved.pending < 0) {
+      return 'the quanta owed are a whole number';
+    }
+    const minds = mindsSaveProblem(world, saved.minds);
+    if (minds !== null) {
+      return minds;
+    }
+    const kept = memorySaveProblem(saved.memory);
+    if (kept !== null) {
+      return kept;
+    }
+    if (!Array.isArray(saved.log) || !saved.log.every((/** @type {any} */ entry) => entry && Number.isInteger(entry.tick) && typeof entry.hash === 'string' && entry.proposal && typeof entry.proposal === 'object')) {
+      return 'the log is entries with a tick, a hash, and a proposal';
+    }
+    return world.restoreProblem(saved.world);
+  }
+
+  /**
+   * Puts back a save this tick, or one built from the same world file and
+   * seed, took. The whole save is checked first, every field restore reads,
+   * the world's included; then the world is restored, which refuses an image
+   * of another binary or one whose bytes do not match its digest before it
+   * writes anything. A refused restore changes nothing, and past the world's
+   * restore nothing can fail, so no restore stops halfway. After it, the tick
+   * is where it was when saved: its next quantum hashes on from the saved
+   * lanes, its actions resume with the quanta they had left, it owes the
+   * quanta it owed, and its log is the saved log. The restore does not draw:
+   * the attached hosts see the next committed frame.
+   * @param {TickSave} saved
+   */
+  function restore(saved) {
+    const why = saveProblem(saved);
+    if (why !== null) {
+      throw new Error('restore refused: ' + why);
+    }
+    world.restore(saved.world);
+    tick = saved.tick;
+    hasher.resume(saved.lanes);
+    current = saved.frame;
+    actions.clear();
+    for (const [id, action] of saved.actions) {
+      actions.set(id, { ...action });
+    }
+    pending = saved.pending;
+    restoreMinds(world, saved.minds);
+    memory.restore(saved.memory);
+    inputLog.length = 0;
+    for (const entry of saved.log) {
+      inputLog.push(entry);
+    }
+  }
+
   return {
-    submit,
-    advance,
-    idle,
-    attach,
-    /** @returns {Frame} */
-    frame() {
-      return current;
+    tick: {
+      submit,
+      advance,
+      idle,
+      attach,
+      /** @returns {Frame} */
+      frame() {
+        return current;
+      },
+      /** @returns {ReadonlyArray<LogEntry>} */
+      log() {
+        return inputLog;
+      },
     },
-    /** @returns {ReadonlyArray<LogEntry>} */
-    log() {
-      return inputLog;
-    },
+    save,
+    restore,
   };
 }
 

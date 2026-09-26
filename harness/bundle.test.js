@@ -245,7 +245,7 @@ test('every failure writes one: when the corpus\'s untraced and traced product r
   let results;
   try {
     // Planted: the traced run's walker is nudged after the frame at 150.
-    results = runCorpus({ quanta: 400, points: 2, only: 'product scene', plantSplit: 150, say: () => {} });
+    results = runCorpus({ quanta: 400, points: 2, only: 'product scene', plantSplit: 150, sweepBudget: null, say: () => {} });
   } finally {
     if (was === undefined) {
       delete process.env.SI_RPG_BUNDLES;
@@ -278,7 +278,7 @@ test('every failure writes one: when the corpus\'s two product runs stop at the 
   try {
     // Planted: the scene's own length is 300 and the corpus asks for 400, so
     // both runs make frames 0 to 300 and stop, and neither throws.
-    results = runCorpus({ quanta: 400, points: 2, only: 'product scene', plantStop: 300, say: () => {} });
+    results = runCorpus({ quanta: 400, points: 2, only: 'product scene', plantStop: 300, sweepBudget: null, say: () => {} });
   } finally {
     if (was === undefined) {
       delete process.env.SI_RPG_BUNDLES;

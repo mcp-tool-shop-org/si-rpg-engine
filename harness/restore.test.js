@@ -26,6 +26,22 @@
 // 401) and in every fixture run that has one (the carry cases at each of
 // their four switches, the climb, and the minds fixture), each point by
 // replay and by image (F1 pin 6).
+//
+// T6 pin 1 adds a third way to restore, beside replay and the image, that
+// replays nothing at all: the run's own save()
+// (the tick's for a log, the session's for a fixture case or the product
+// scene) is taken at each point of one uninterrupted run, which then runs on
+// to its end; each save is restored into that same run, now past the point,
+// with the solver evicted, and the rest is rerun, twice in a row. A save that
+// leaves out one field is planted for the hasher's lanes, an action in
+// flight, a mind's memory, the minds' sight, and the quanta owed to a body
+// draft and a belief admitted at one tick, and each is caught by the diff. A
+// save with a field out of shape anywhere in it, to the last sight record, is
+// refused before anything changes, and the run traces on as if no restore had
+// been tried. Those saves hold the solver's image in the sparse in-process
+// form (pin 2), so the same tests prove its restore traces identically; the
+// digest it is checked by is held to the byte loop it replaced, and the
+// sparse restore refuses what the dense one refuses.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -34,9 +50,11 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHasher } from '../packages/frame/hash.js';
+import { createMemory } from '../packages/tick/memory.js';
 import { loadIntentRules } from '../packages/tick/predicates.js';
+import { createTick, settle } from '../packages/tick/tick.js';
 import { createWorld } from '../packages/tick/world.js';
-import { bytes as binary, imageDigest, imageSolver, instantiate, restoreImage, snapshotBytes, stackPointer } from '../solver/dist/solver.mjs';
+import { bytes as binary, imageDigest, imageRefusal, imageSolver, imageSparse, instantiate, restoreImage, restoreSparse, snapshotBytes, sparseDigest, stackPointer } from '../solver/dist/solver.mjs';
 import { expectIdentical } from './bundle.mjs';
 import { asleep as asleepIn, contacts as contactPairs, solverClasses, switched } from './events.mjs';
 import { replayTo } from './replay-to.mjs';
@@ -47,6 +65,7 @@ import { playVerbs } from './verbs-scene.mjs';
  * @typedef {import('./replay-to.mjs').ReplaySpec} ReplaySpec
  * @typedef {import('./replay-to.mjs').Run} Run
  * @typedef {ReturnType<ReturnType<typeof createWorld>['save']>} WorldSave
+ * @typedef {ReturnType<ReturnType<typeof createWorld>['saveSparse']>} SparseWorldSave
  * @typedef {{ name: string, spec: ReplaySpec }} Case
  */
 
@@ -314,6 +333,279 @@ test('restores straddle every switch: replay and image restores on both sides of
   }
 });
 
+/**
+ * One uninterrupted run that saves itself at each point with its own save(),
+ * then runs on to its end. The run is returned there, past every point.
+ * @param {ReplaySpec} spec
+ * @param {number[]} points
+ * @param {string[]} lines the whole run's trace, which this run must match
+ */
+function ownSaves(spec, points, lines) {
+  const run = replayTo(spec, 0);
+  /** @type {Map<number, ReturnType<Run['save']>>} */
+  const saves = new Map();
+  const again = [run.line()];
+  for (;;) {
+    if (points.includes(run.tick)) {
+      saves.set(run.tick, run.save());
+    }
+    if (!run.advance()) {
+      break;
+    }
+    again.push(run.line());
+  }
+  assert.deepEqual(again, lines, 'a run that saves itself traces the same as one that does not');
+  return { run, saves };
+}
+
+for (const item of cases) {
+  const product = 'scene' in item.spec;
+  test(item.name + ': its own save restores without replay into a run that has gone on, twice, at every chosen point', (t) => {
+    const whole = wholeRun(item.spec);
+    const points = choosePoints(whole, product);
+    const { run, saves } = ownSaves(item.spec, points, whole.lines);
+    t.diagnostic(item.name + ': saved at ' + points.join(', ') + ', restored from tick ' + run.tick);
+    for (const point of points) {
+      const saved = saves.get(point);
+      if (!saved) {
+        throw new Error('no save at ' + point);
+      }
+      for (let again = 0; again < 2; again = again + 1) {
+        evict();
+        const from = run.tick;
+        run.restore(saved);
+        assert.equal(run.tick, point, 'the restore puts the run back at ' + point + ' from ' + from);
+        expectIdentical(item.name + ' own save at ' + point + ' restore ' + (again + 1), whole.lines, rerunLines(whole.lines, run), [{ spec: item.spec, tick: point, hashes: hashesTo(whole.lines, point) }]);
+      }
+    }
+  });
+}
+
+/**
+ * rerun, but a step that throws ends the lines with the trace's mark for a
+ * thrown step. A planted save can make a log's next entry name a frame the
+ * run no longer has, and the replay refuses it; the diff then still names
+ * the first quantum that differed, which comes before the refusal.
+ * @param {string[]} whole
+ * @param {Run} run
+ */
+function rerunCaught(whole, run) {
+  const lines = whole.slice(0, run.tick);
+  lines.push(run.line());
+  for (;;) {
+    const before = run.tick;
+    try {
+      if (!run.advance()) {
+        break;
+      }
+    } catch {
+      lines.push((before + 1) + ' NAN');
+      break;
+    }
+    lines.push(run.line());
+  }
+  lines.push(endLine(lines.length));
+  return lines;
+}
+
+/**
+ * The first-difference block of a run restored from a planted save and rerun
+ * to its end, against the whole run. The run is at its end when restored.
+ * @param {ReplaySpec} spec
+ * @param {number} point
+ * @param {(saved: any, end: any) => any} plant makes the planted save from the true one and the run's save at its end
+ */
+function plantedRerun(spec, point, plant) {
+  const whole = wholeRun(spec);
+  const { run, saves } = ownSaves(spec, [point], whole.lines);
+  const saved = saves.get(point);
+  const end = run.save();
+  // Unplanted, the save reruns identically from the run's end.
+  evict();
+  run.restore(/** @type {any} */ (saved));
+  assert.equal(diff(whole.lines.concat([endLine(whole.lines.length)]), rerunCaught(whole.lines, run)), 'identical\n');
+  evict();
+  run.restore(plant(saved, end));
+  return { saved: /** @type {any} */ (saved), block: diff(whole.lines.concat([endLine(whole.lines.length)]), rerunCaught(whole.lines, run)).split('\n') };
+}
+
+/** The carry script of behavior-verbs as a log, and a tick inside its move, with the move in flight. */
+function carryCase() {
+  const spec = JSON.parse(readFileSync('fixtures/behavior-verbs.json', 'utf8')).cases.find((/** @type {{ name: string }} */ c) => c.name === 'carry');
+  const played = playVerbs(spec, rules);
+  if (!played.ok || !played.log) {
+    throw new Error('carry did not play');
+  }
+  const move = played.log.find((entry) => entry.proposal.kind === 'intent' && entry.proposal.verb === 'move');
+  if (!move) {
+    throw new Error('carry has no move');
+  }
+  return { spec: { seed: spec.seed, world: spec.world, log: played.log }, point: move.tick + 5 };
+}
+
+test('a save planted without the hasher lanes is caught at the next quantum, by its hash', () => {
+  const { spec, point } = carryCase();
+  const { block } = plantedRerun(spec, point, (saved, end) => ({ ...saved, tick: { ...saved.tick, lanes: end.tick.lanes } }));
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.equal(block[1], 'hash');
+});
+
+test('a save planted without the action in flight is caught: the actor stops where it should walk on', () => {
+  const { spec, point } = carryCase();
+  const { saved, block } = plantedRerun(spec, point, (kept, end) => ({ ...kept, tick: { ...kept.tick, actions: end.tick.actions } }));
+  assert.equal(saved.tick.actions.length, 1, 'the save carries the move in flight');
+  assert.equal(saved.tick.actions[0][0], 'walker');
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.match(block[1], /^body walker field /);
+});
+
+test('a save planted without a mind memory is caught at the mind, by its newest belief', () => {
+  const spec = { seed: minds.seed, world: minds.world, log: minds.log };
+  const whole = wholeRun(spec);
+  const point = Math.floor((whole.lines.length - 1) / 3);
+  const { saved, block } = plantedRerun(spec, point, (kept, end) => ({ ...kept, tick: { ...kept.tick, memory: end.tick.memory } }));
+  assert.ok(saved.tick.memory.minds.length > 0, 'the save carries a mind with beliefs');
+  assert.equal(block[0], 'first difference at tick ' + point, block.join('\n'));
+  assert.match(block[1], /^mind /);
+});
+
+test('a save planted without the minds sight is caught at the next quantum, where the mind sees everything anew', () => {
+  const spec = { seed: minds.seed, world: minds.world, log: minds.log };
+  const whole = wholeRun(spec);
+  const point = Math.floor((whole.lines.length - 1) / 3);
+  // What a run that has seen nothing holds. The run's own end remembers the
+  // same sight as the point here, so leaving the end's in place would pass.
+  const { saved, block } = plantedRerun(spec, point, (kept) => ({ ...kept, tick: { ...kept.tick, minds: { ...kept.tick.minds, sight: [] } } }));
+  assert.ok(saved.tick.minds.sight.length > 0, 'the save carries what the mind has seen');
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.match(block[1], /^mind /);
+});
+
+/**
+ * A log that owes a quantum at a save point (pin 1: the quanta owed to
+ * admissions that are not actions). In crate-and-door, once the load has
+ * settled, a body draft and a belief citing the draft's episode are admitted
+ * at one tick. Each is owed one quantum, so the run is not idle for two, and
+ * a save taken one quantum after the admissions still owes one. The log is
+ * the play's admitted log, so replaying it is the same run.
+ */
+function owedCase() {
+  const file = JSON.parse(readFileSync('worlds/crate-and-door.json', 'utf8'));
+  const world = createWorld(file, 'product');
+  const memory = createMemory();
+  const tick = createTick({ seed: file.seed, world, rules, memory });
+  for (let i = 0; i < 64; i = i + 1) {
+    tick.advance();
+  }
+  const draft = tick.submit({ kind: 'body', id: 'parcel', x: 1.5, y: 0.5, z: 1, hx: 0.2, hy: 0.2, hz: 0.2 });
+  assert.ok(draft.admitted, draft.admitted ? '' : draft.reason);
+  const source = memory.episodes[memory.episodes.length - 1].id;
+  const belief = tick.submit({ kind: 'belief', subject: 'parcel', key: 'placed', value: 'by hand', confidence: 1, source });
+  assert.ok(belief.admitted, belief.admitted ? '' : belief.reason);
+  const admitted = tick.frame().tick;
+  assert.equal(settle(tick), 2, 'a body draft and a belief admitted at one tick owe two quanta');
+  const log = tick.log().map((entry) => ({ tick: entry.tick, hash: entry.hash, proposal: entry.proposal }));
+  return { spec: { seed: file.seed, world: file, log }, point: admitted + 1 };
+}
+
+test('a save taken while a quantum is owed restores it into a run that has gone on, and one planted without it ends a quantum early', () => {
+  const { spec, point } = owedCase();
+  // The run's own end owes nothing, so leaving the end's count in place is
+  // what a restore that omits the quanta owed does.
+  const { saved, block } = plantedRerun(spec, point, (kept, end) => ({ ...kept, tick: { ...kept.tick, pending: end.tick.pending } }));
+  assert.equal(saved.tick.pending, 1, 'the save owes a quantum');
+  assert.equal(saved.next, spec.log.length, 'and the log is spent: only the quantum owed runs the run on');
+  assert.deepEqual(saved.tick.actions, [], 'nothing is scheduled');
+  assert.equal(block[0], 'first difference at tick ' + (point + 1), block.join('\n'));
+  assert.equal(block[1], 'length', block.join('\n'));
+});
+
+test('a save of another tick, or one with a field out of shape anywhere in it, is refused and changes nothing', () => {
+  const { spec, point } = carryCase();
+  const whole = wholeRun(spec);
+  const { run, saves } = ownSaves(spec, [point], whole.lines);
+  const saved = /** @type {any} */ (saves.get(point));
+  const moving = saved.tick.actions[0];
+  const first = saved.tick.world.bodies[0];
+  const before = run.line();
+  for (const [planted, reason] of /** @type {Array<[any, RegExp]>} */ ([
+    [{ ...saved, tick: { ...saved.tick, seed: saved.tick.seed + 1 } }, /restore refused: the save is of a tick seeded/],
+    [{ ...saved, tick: { ...saved.tick, lanes: [1] } }, /restore refused: the lanes are two whole numbers/],
+    [{ ...saved, tick: { ...saved.tick, frame: { ...saved.tick.frame, tick: saved.tick.tick + 1 } } }, /restore refused: the frame is the committed frame at the saved tick/],
+    [{ ...saved, tick: { ...saved.tick, actions: [['walker', { effect: 'drive', remaining: 0 }]] } }, /restore refused: the actions are actor ids/],
+    [{ ...saved, tick: { ...saved.tick, actions: [[moving[0], { ...moving[1], aimX: 'east' }]] } }, /restore refused: the actions are actor ids/],
+    [{ ...saved, tick: { ...saved.tick, actions: [['nobody', moving[1]]] } }, /restore refused: the actions are actor ids/],
+    [{ ...saved, tick: { ...saved.tick, pending: -1 } }, /restore refused: the quanta owed are a whole number/],
+    [{ ...saved, tick: { ...saved.tick, minds: { ...saved.tick.minds, sight: [['walker', []]] } } }, /restore refused: the minds' sight is /],
+    [{ ...saved, tick: { ...saved.tick, memory: undefined } }, /restore refused: the memory is/],
+    [{ ...saved, tick: { ...saved.tick, memory: { ...saved.tick.memory, episodes: saved.tick.memory.episodes.concat([{ id: 'e9', tick: 'soon', kind: 'intent', detail: 'move walker' }]) } } }, /restore refused: the memory's episodes are /],
+    [{ ...saved, tick: { ...saved.tick, memory: { ...saved.tick.memory, beliefs: [{ id: 'b1', subject: 's', key: 'k', value: 'v', confidence: 2, source: 'e1' }] } } }, /restore refused: the memory's beliefs are /],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, bodies: [] } } }, /restore refused: the save does not have the 2 bodies of this world/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, bodies: [{ ...first, y: 'up' }].concat(saved.tick.world.bodies.slice(1)) } } }, /restore refused: body 0 \(walker\) is not a record of numbers/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, lifted: ['nobody'] } } }, /restore refused: the lifted bodies are body ids of this world/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, carried: [['walker']] } } }, /restore refused: the carried bodies are /],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, worldId: 'this one' } } }, /restore refused: the world id is a whole number/],
+    [{ ...saved, tick: { ...saved.tick, world: { ...saved.tick.world, image: null } } }, /restore refused: a product world restores from an image/],
+  ])) {
+    assert.throws(() => run.restore(planted), reason);
+    assert.equal(run.line(), before, 'a refused restore changes nothing');
+  }
+});
+
+/**
+ * The minds' part of a run's save: the tick's for a log, the session's for
+ * the product scene.
+ * @param {any} saved
+ * @param {any} [minds] when given, the save with these minds in place of its own
+ */
+function mindsOf(saved, minds) {
+  if ('next' in saved) {
+    return minds === undefined ? saved.tick.minds : { ...saved, tick: { ...saved.tick, minds } };
+  }
+  return minds === undefined ? saved.minds : { ...saved, minds };
+}
+
+test('a save with one malformed sight entry is refused before the restore changes anything, and the run traces on exactly as if no restore had been tried', (t) => {
+  for (const [name, spec] of /** @type {Array<[string, ReplaySpec]>} */ ([
+    ['behavior-minds', { seed: minds.seed, world: minds.world, log: minds.log }],
+    ['the product scene', { scene: 'product' }],
+  ])) {
+    const whole = wholeRun(spec);
+    const end = whole.lines.length - 1;
+    const point = Math.floor(end / 3);
+    const later = Math.floor((2 * end) / 3);
+    // The run saves itself at the point and goes on to `later`, where each
+    // planted save is tried: a restore that took one would move it back.
+    const run = replayTo(spec, point);
+    const saved = /** @type {any} */ (run.save());
+    const kept = mindsOf(saved);
+    assert.ok(kept.sight.length > 0 && kept.sight[0][1].length > 1, name + ': the save carries what a mind has seen');
+    while (run.tick < later) {
+      run.advance();
+    }
+    const [mind, seen] = kept.sight[0];
+    const [body, record] = seen[0];
+    /** @param {any} entry the one malformed entry, in place of the first */
+    const plant = (entry) => mindsOf(saved, { ...kept, sight: [entry].concat(kept.sight.slice(1)) });
+    const before = run.line();
+    const plants = [
+      // These two threw inside the minds' restore, after the world's.
+      plant(null),
+      plant([mind, null]),
+      plant([mind, [[body, { ...record, inSight: 'yes' }]].concat(seen.slice(1))]),
+      plant([mind, [[body, { ...record, zone: 7 }]].concat(seen.slice(1))]),
+      plant([mind, [['nobody', record]].concat(seen.slice(1))]),
+      plant(['nobody', seen]),
+    ];
+    for (const planted of plants) {
+      assert.throws(() => run.restore(planted), /^Error: restore refused: the minds' sight is /);
+      assert.equal(run.line(), before, name + ': a refused restore changes nothing');
+    }
+    assert.equal(diff(whole.lines.concat([endLine(whole.lines.length)]), rerun(whole.lines, run)), 'identical\n', name);
+    t.diagnostic(name + ': saved at ' + point + ', ' + plants.length + ' malformed sight entries refused at ' + later + ', and the run traced on to ' + end + ' identically');
+  }
+});
+
 test('behavior-1c is a 2D capture the loader refuses, so it has no run to restore', () => {
   const capture = JSON.parse(readFileSync('fixtures/behavior-1c.json', 'utf8'));
   assert.equal(typeof capture.world.bodies[0].z, 'undefined');
@@ -427,7 +719,7 @@ function stackCase() {
  * A refused restore throws with its reason and changes nothing: the same
  * instance, the same snapshot, the same records.
  * @param {Run} run
- * @param {WorldSave} save
+ * @param {WorldSave | SparseWorldSave} save
  * @param {RegExp} reason
  */
 function refused(run, save, reason) {
@@ -439,6 +731,136 @@ function refused(run, save, reason) {
   assert.deepEqual(snapshotBytes(), snap, 'the same snapshot');
   assert.equal(JSON.stringify(run.world.bodies), records, 'the same records');
 }
+
+/**
+ * The image digest as it was written before T6: one byte at a time, byte i
+ * to lane (i & 4) >> 2. The glue's word-at-a-time digest must equal it.
+ * @param {Uint8Array} data
+ */
+function byteDigest(data) {
+  let h0 = 0x811c9dc5;
+  let h1 = 0x811c9dc5;
+  const n = data.length;
+  for (let i = 0; i < 4; i = i + 1) {
+    const b = (n >>> (i * 8)) & 255;
+    h0 = Math.imul(h0 ^ b, 0x01000193) >>> 0;
+    h1 = Math.imul(h1 ^ b, 0x01000193) >>> 0;
+  }
+  for (let i = 0; i < n; i = i + 1) {
+    if ((i & 4) === 0) {
+      h0 = Math.imul(h0 ^ data[i], 0x01000193) >>> 0;
+    } else {
+      h1 = Math.imul(h1 ^ data[i], 0x01000193) >>> 0;
+    }
+  }
+  return h0.toString(16).padStart(8, '0') + h1.toString(16).padStart(8, '0');
+}
+
+test('the image digest, read a word at a time with a page of zeros as one multiplication, equals the byte loop at every length and alignment, and on a real image', () => {
+  let seed = 7;
+  const next = () => {
+    seed = (Math.imul(seed, 1103515245) + 12345) >>> 0;
+    return seed >>> 24;
+  };
+  for (const n of [0, 1, 7, 8, 9, 4095, 65535, 65536, 65537, 2 * 65536 + 12, 3 * 65536]) {
+    const buffer = new Uint8Array(n + 3);
+    for (let i = 0; i < buffer.length; i = i + 1) {
+      // Mostly zero, so whole zero pages occur beside pages with data.
+      buffer[i] = i % 97 === 0 || (i >= 65536 && i < 70000) ? next() : 0;
+    }
+    for (const offset of [0, 1, 2, 3]) {
+      const data = buffer.subarray(offset, offset + n);
+      assert.equal(imageDigest(data), byteDigest(data), n + ' bytes at offset ' + offset);
+    }
+    assert.equal(imageDigest(new Uint8Array(n)), byteDigest(new Uint8Array(n)), n + ' zero bytes');
+  }
+  const { image } = stackCase();
+  assert.equal(imageDigest(image.bytes), byteDigest(image.bytes));
+  assert.equal(image.digest, byteDigest(image.bytes));
+});
+
+test('a sparse image keeps only the pages in use, its digest is the whole memory\'s, and it restores in the process to the same memory', (t) => {
+  const { run } = stackCase();
+  const dense = imageSolver();
+  const sparse = imageSparse();
+  if (!dense || !sparse) {
+    throw new Error('no image');
+  }
+  const count = dense.bytes.length / 65536;
+  let marked = 0;
+  for (let p = 0; p < count; p = p + 1) {
+    /** @type {boolean} */
+    const kept = (sparse.pages[p >> 3] & (1 << (p & 7))) !== 0;
+    const used = dense.bytes.subarray(p * 65536, (p + 1) * 65536).some((byte) => byte !== 0);
+    assert.equal(kept, used, 'page ' + p);
+    marked = marked + (kept ? 1 : 0);
+  }
+  t.diagnostic(marked + ' of ' + count + ' pages in use; sparse ' + sparse.data.length + ' bytes against ' + dense.bytes.length);
+  assert.equal(sparse.data.length, marked * 65536);
+  assert.equal(sparse.digest, dense.digest);
+  assert.equal(sparseDigest(sparse.pages, sparse.data, count), dense.digest);
+  const before = instantiate();
+  assert.equal(restoreSparse(sparse), true, imageRefusal());
+  assert.notEqual(instantiate(), before, 'a fresh instance');
+  const again = imageSolver();
+  assert.ok(again);
+  assert.equal(again.digest, dense.digest, 'the restored memory is the imaged one, byte for byte');
+  assert.deepEqual(again.bytes, dense.bytes);
+  assert.ok(run.tick > 0);
+});
+
+test('a sparse image from another binary, with one byte changed, or not a whole number of the pages it marks is refused, and changes nothing', () => {
+  const { run } = stackCase();
+  const saved = run.world.saveSparse();
+  const image = saved.image;
+  if (!image) {
+    throw new Error('no image');
+  }
+  const other = image.binary.slice(0, 63) + (image.binary[63] === '0' ? '1' : '0');
+  refused(run, { ...saved, image: { ...image, binary: other } }, /restore refused: the image is from another binary/);
+  for (const at of [0, 65535, Math.floor(image.data.length / 2), image.data.length - 1]) {
+    const changed = image.data.slice();
+    changed[at] = changed[at] ^ 1;
+    refused(run, { ...saved, image: { ...image, data: changed } }, /restore refused: the bytes do not match the image digest/);
+  }
+  refused(run, { ...saved, image: { ...image, data: image.data.subarray(0, image.data.length - 8) } }, /restore refused: the length is not a whole number of pages: the bitmap marks \d+ and the data holds \d+ bytes/);
+  const extra = image.pages.slice();
+  const free = Array.from({ length: extra.length * 8 }, (_, p) => p).find((p) => !(extra[p >> 3] & (1 << (p & 7))));
+  extra[/** @type {number} */ (free) >> 3] = extra[/** @type {number} */ (free) >> 3] | (1 << (/** @type {number} */ (free) & 7));
+  refused(run, { ...saved, image: { ...image, pages: extra } }, /restore refused: the length is not a whole number of pages/);
+  refused(run, { ...saved, image: { ...image, pages: image.pages.subarray(0, image.pages.length - 1) } }, /restore refused: the page bitmap is \d+ bytes, not the \d+ that cover the 512 pages of the memory/);
+  // The true image still restores.
+  evict();
+  run.world.restore(saved);
+});
+
+test('the costs on record, pin 2: a dense restore digests the whole 32 MiB, a sparse one only the pages in use', (t) => {
+  replayTo({ scene: 'product' }, 3333);
+  const dense = imageSolver();
+  const sparse = imageSparse();
+  if (!dense || !sparse) {
+    throw new Error('no image');
+  }
+  /** @param {() => unknown} fn */
+  const time = (fn) => {
+    fn();
+    const t0 = performance.now();
+    for (let i = 0; i < 20; i = i + 1) {
+      fn();
+    }
+    return (performance.now() - t0) / 20;
+  };
+  const byte = time(() => byteDigest(dense.bytes));
+  const word = time(() => imageDigest(dense.bytes));
+  const out = time(() => imageSparse());
+  const inDense = time(() => restoreImage(dense));
+  const inSparse = time(() => restoreSparse(sparse));
+  t.diagnostic('the product scene at 3333: ' + sparse.data.length / 65536 + ' pages in use of 512');
+  t.diagnostic('digest of 32 MiB: ' + byte.toFixed(1) + ' ms by the byte loop written in this file, ' + word.toFixed(1) + ' ms by the glue, a word at a time with zero pages multiplied');
+  t.diagnostic('restore: ' + inDense.toFixed(2) + ' ms dense, ' + inSparse.toFixed(2) + ' ms sparse; a sparse image taken in ' + out.toFixed(2) + ' ms');
+  assert.ok(inSparse < inDense, 'the sparse restore is the cheaper');
+  assert.equal(restoreSparse(sparse), true);
+});
 
 test('an image from a binary with another digest is refused', () => {
   const { run, saved, image } = stackCase();

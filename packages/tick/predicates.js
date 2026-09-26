@@ -10,6 +10,21 @@ import { DT } from './world.js';
 const STEP_HEIGHT = 0.3;
 
 /**
+ * A body at rest sits a contact margin below the surface it rests on, deeper
+ * the more it holds up: the product law leaves a 0.25 box on a static floor
+ * 5.6e-5 low, and the product scene's lower box, with another stacked on it,
+ * 1.1e-4 low (measured, T6). A path tested at the centre's own height then
+ * starts inside the floor padded by the actor's half-extents, and every path
+ * reads as crossing the floor. So every path that starts at the actor's centre
+ * is tested this far above it: the character controller's skin, SKIN in
+ * solver/src/rapier_law.rs, inside which the controller already treats a
+ * surface as touching. Before T6 only pick-up allowed for this, by 1e-4, and a
+ * move, a push, a climb, or a use from a settled state was refused with "path
+ * crosses collider floor".
+ */
+export const REST_MARGIN = 0.01;
+
+/**
  * @typedef {import('../frame/types.js').IntentRule} IntentRule
  * @typedef {import('../frame/types.js').Intent} Intent
  * @typedef {import('../frame/types.js').Proposal} Proposal
@@ -146,16 +161,20 @@ function admitClimb(intent, actor, world, rule, busy) {
   if (rise > (rule.maxRise || 0)) {
     return { ok: false, reason: 'rise is past maxRise' };
   }
-  const stand = volumeClear(actor, point.x, support + actor.hy, point.z, world);
+  // The support comes from a ray cast, fromY - t0, which can land one unit in
+  // the last place below a collider's top (0.7999999999999999 for a top at
+  // 0.8, measured, T6), and a volume resting exactly there overlaps it. The
+  // volume is tested the rest margin above the support, where a body stands.
+  const stand = volumeClear(actor, point.x, support + actor.hy + REST_MARGIN, point.z, world);
   if (stand !== null) {
     return { ok: false, reason: 'standing volume is blocked' };
   }
   const pad = { hx: actor.hx, hy: actor.hy, hz: actor.hz };
-  const up = world.segmentHits(actor.x, actor.y, actor.z, actor.x, actor.y + rise, actor.z, pad);
+  const up = world.segmentHits(actor.x, actor.y + REST_MARGIN, actor.z, actor.x, actor.y + rise + REST_MARGIN, actor.z, pad);
   if (up !== null) {
     return { ok: false, reason: 'path crosses collider ' + up };
   }
-  const across = world.segmentHits(actor.x, actor.y + rise, actor.z, point.x, actor.y + rise, point.z, pad);
+  const across = world.segmentHits(actor.x, actor.y + rise + REST_MARGIN, actor.z, point.x, actor.y + rise + REST_MARGIN, point.z, pad);
   if (across !== null) {
     return { ok: false, reason: 'path crosses collider ' + across };
   }
@@ -219,7 +238,7 @@ function admitCarry(intent, actor, world, rule, busy) {
   if (rule.requiresClearPath) {
     // A sleeping body rests a contact-margin below the surface. The walk is
     // tested just above that, or a floor the actor is standing on reads as a wall.
-    const pathY = actor.y + 1e-4;
+    const pathY = actor.y + REST_MARGIN;
     const hit = world.segmentHits(actor.x, pathY, actor.z, face.x, pathY, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
     if (hit !== null) {
       return { ok: false, reason: 'path crosses collider ' + hit };
@@ -310,7 +329,7 @@ function admitEpisode(intent, actor, world, rule, busy) {
     return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
   }
   if (rule.requiresClearPath) {
-    const hit = world.segmentHits(actor.x, actor.y, actor.z, face.x, face.y, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
+    const hit = world.segmentHits(actor.x, actor.y + REST_MARGIN, actor.z, face.x, face.y + REST_MARGIN, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
     if (hit !== null) {
       return { ok: false, reason: 'path crosses collider ' + hit };
     }
@@ -378,7 +397,7 @@ export function admitIntent(intent, world, rules, retired, scheduled) {
       return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
     }
     if (rule.requiresClearPath) {
-      const hit = world.segmentHits(actor.x, actor.y, actor.z, face.x, face.y, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
+      const hit = world.segmentHits(actor.x, actor.y + REST_MARGIN, actor.z, face.x, face.y + REST_MARGIN, face.z, { hx: actor.hx, hy: actor.hy, hz: actor.hz });
       if (hit !== null) {
         return { ok: false, reason: 'path crosses collider ' + hit };
       }
@@ -398,7 +417,8 @@ export function admitIntent(intent, world, rules, retired, scheduled) {
       return { ok: false, reason: 'target is beyond ' + rule.verb + ' range ' + rule.maxDistance };
     }
     if (rule.requiresClearPath) {
-      const hit = world.segmentHits(actor.x, actor.y, actor.z, point.x, actor.y, point.z, {
+      const pathY = actor.y + REST_MARGIN;
+      const hit = world.segmentHits(actor.x, pathY, actor.z, point.x, pathY, point.z, {
         hx: actor.hx,
         hy: actor.hy,
         hz: actor.hz,

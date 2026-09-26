@@ -47,7 +47,7 @@ export function indexReason(scene, index) {
  * Lowest world-space corner of a collider, rotation included.
  * @param {import('../frame/types.js').StaticCollider} box
  */
-function lowest(box) {
+export function lowest(box) {
   const qx = box.qx ?? 0;
   const qy = box.qy ?? 0;
   const qz = box.qz ?? 0;
@@ -77,6 +77,29 @@ function lowest(box) {
 }
 
 /**
+ * The lowest collider's minimum: a body whose centre is below it has left the
+ * world. The settle hazard and the sweep (T6) both hold a body to it. The
+ * sweep passes the heightfield too, which the solver collides with as it does
+ * a box, so a world made of a heightfield alone has a floor at its lowest
+ * sample and not at infinity; a world file always has a box, and the settle
+ * hazard reads the boxes alone, as it did.
+ * @param {ReadonlyArray<import('../frame/types.js').StaticCollider>} colliders
+ * @param {{ heights: ReadonlyArray<number> } | null} [heightfield]
+ */
+export function worldFloor(colliders, heightfield) {
+  let floor = Infinity;
+  for (let i = 0; i < colliders.length; i = i + 1) {
+    floor = Math.min(floor, lowest(colliders[i]));
+  }
+  if (heightfield) {
+    for (let i = 0; i < heightfield.heights.length; i = i + 1) {
+      floor = Math.min(floor, heightfield.heights[i]);
+    }
+  }
+  return floor;
+}
+
+/**
  * @param {import('./scene.js').Scene} scene
  */
 export function settles(scene) {
@@ -86,10 +109,7 @@ export function settles(scene) {
     zones: scene.zones,
     heightfield: scene.heightfield,
   }, 'product');
-  let floor = Infinity;
-  for (let i = 0; i < scene.colliders.length; i = i + 1) {
-    floor = Math.min(floor, lowest(scene.colliders[i]));
-  }
+  const floor = worldFloor(scene.colliders);
   try {
     for (let i = 0; i < 512; i = i + 1) {
       world.step(new Set());

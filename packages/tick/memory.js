@@ -158,5 +158,100 @@ export function createMemory() {
     return { ok: true, belief: b };
   }
 
-  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite, mindBeliefs, admitMindBelief };
+  /**
+   * A copy of every record, for a tick's save (T6 pin 1). Each belief is
+   * copied, not shared, because a supersession writes into the belief it
+   * withdraws; a save that shared them would change when the run goes on.
+   * @returns {MemorySave}
+   */
+  function save() {
+    return {
+      beliefs: beliefs.map((item) => ({ ...item })),
+      episodes: episodes.map((item) => ({ ...item })),
+      minds: Array.from(byMind, ([mind, list]) => /** @type {[string, Belief[]]} */ ([mind, list.map((item) => ({ ...item }))])),
+    };
+  }
+
+  /**
+   * Puts a save back. The two exposed arrays keep their identity, so a
+   * holder of `beliefs` or `episodes` sees the restored records, and every
+   * record is copied again, so one save can be restored any number of times.
+   * @param {MemorySave} saved
+   */
+  function restore(saved) {
+    beliefs.length = 0;
+    for (const item of saved.beliefs) {
+      beliefs.push({ ...item });
+    }
+    episodes.length = 0;
+    for (const item of saved.episodes) {
+      episodes.push({ ...item });
+    }
+    byMind.clear();
+    for (const [mind, list] of saved.minds) {
+      byMind.set(mind, list.map((item) => ({ ...item })));
+    }
+  }
+
+  return { beliefs, episodes, episode, belief, recordEpisode, admitBeliefWrite, mindBeliefs, admitMindBelief, save, restore };
+}
+
+/**
+ * @typedef {{ beliefs: Belief[], episodes: Episode[], minds: Array<[string, Belief[]]> }} MemorySave
+ */
+
+/**
+ * Whether a value is an episode record.
+ * @param {any} item
+ */
+function isEpisode(item) {
+  return Boolean(item) && typeof item === 'object' && typeof item.id === 'string' && Number.isInteger(item.tick) && item.tick >= 0
+    && typeof item.kind === 'string' && typeof item.detail === 'string';
+}
+
+/**
+ * Whether a value is a belief record: the fixture room's, whose subject is a
+ * string, or a mind's, whose subject names a body or a zone.
+ * @param {any} item
+ */
+function isBelief(item) {
+  if (!item || typeof item !== 'object') {
+    return false;
+  }
+  const subject = item.subject;
+  const named = typeof subject === 'string' || (Boolean(subject) && typeof subject === 'object' && (typeof subject.body === 'string' || typeof subject.zone === 'string'));
+  const value = typeof item.value === 'string' || typeof item.value === 'number' || typeof item.value === 'boolean';
+  return typeof item.id === 'string' && named && typeof item.key === 'string' && value
+    && typeof item.confidence === 'number' && item.confidence >= 0 && item.confidence <= 1 && typeof item.source === 'string'
+    && (item.supersededBy === undefined || typeof item.supersededBy === 'string')
+    && (item.withdrawnBy === undefined || typeof item.withdrawnBy === 'string');
+}
+
+/**
+ * Why a value is not a memory save, or null. It checks every record, not
+ * only the lists, so a restore checks the whole save before it changes
+ * anything.
+ * @param {any} saved
+ * @returns {string | null}
+ */
+export function memorySaveProblem(saved) {
+  if (!saved || typeof saved !== 'object' || !Array.isArray(saved.beliefs) || !Array.isArray(saved.episodes) || !Array.isArray(saved.minds)) {
+    return 'the memory is beliefs, episodes, and each mind\'s beliefs';
+  }
+  if (!saved.episodes.every(isEpisode)) {
+    return 'the memory\'s episodes are each an id, a whole-numbered tick, a kind, and a detail';
+  }
+  const beliefs = 'the memory\'s beliefs are each an id, a subject, a key, a value, a confidence from 0 through 1, a source, and what superseded it, if anything';
+  if (!saved.beliefs.every(isBelief)) {
+    return beliefs;
+  }
+  for (const entry of saved.minds) {
+    if (!Array.isArray(entry) || entry.length !== 2 || typeof entry[0] !== 'string' || !Array.isArray(entry[1])) {
+      return 'each mind\'s beliefs are a body id and a list';
+    }
+    if (!entry[1].every(isBelief)) {
+      return beliefs;
+    }
+  }
+  return null;
 }

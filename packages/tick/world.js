@@ -1,7 +1,7 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
-import { imageRefusal, imageSolver, instantiate, loadSolver, restoreImage, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { imageRefusal, imageSolver, imageSparse, instantiate, loadSolver, restoreImage, restoreSparse, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
 import { subjectText } from './subject.js';
 import { goalsOf as goalsOfMind } from './minds.js';
 
@@ -11,6 +11,9 @@ export const MAX_SPEED = 2;
 // One multiply per quantum, on vx and on vz, for a body with no scheduled
 // action. Zero stops a pushed body. A driven body is left alone.
 export const UNDRIVEN_DRAG = 0;
+
+/** The number fields of a saved body record, each written back by restore. */
+const RECORD = /** @type {const} */ (['x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz']);
 
 /**
  * @typedef {import('../frame/types.js').Body} Body
@@ -540,8 +543,27 @@ export function createWorld(init, law) {
   /**
    * @typedef {{ id: string, x: number, y: number, z: number, vx: number, vy: number, vz: number, qx: number, qy: number, qz: number, qw: number, wx: number, wy: number, wz: number, solverMode: number | null }} SavedBody
    * @typedef {{ binary: string, digest: string, bytes: Uint8Array }} SolverImage
+   * @typedef {{ binary: string, digest: string, pages: Uint8Array, data: Uint8Array }} SparseSolverImage
    * @typedef {{ worldId: number, bodies: SavedBody[], lifted: string[], carried: Array<[string, string]>, image: SolverImage | null }} WorldSave
+   * @typedef {{ worldId: number, bodies: SavedBody[], lifted: string[], carried: Array<[string, string]>, image: SparseSolverImage | null }} SparseWorldSave
    */
+
+  /** The body records as plain numbers, and the lifted and carried sets as arrays. */
+  function records() {
+    return {
+      worldId: productId,
+      bodies: bodies.map((b) => {
+        const tagged = /** @type {Body & { solverMode?: number }} */ (b);
+        return {
+          id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz,
+          qx: b.qx, qy: b.qy, qz: b.qz, qw: b.qw, wx: b.wx, wy: b.wy, wz: b.wz,
+          solverMode: typeof tagged.solverMode === 'number' ? tagged.solverMode : null,
+        };
+      }),
+      lifted: Array.from(lifted),
+      carried: Array.from(carrying),
+    };
+  }
 
   /**
    * The solver half of a save: the body records as plain numbers, the lifted
@@ -560,40 +582,81 @@ export function createWorld(init, law) {
         throw new Error('save refused: ' + imageRefusal());
       }
     }
-    return {
-      worldId: productId,
-      bodies: bodies.map((b) => {
-        const tagged = /** @type {Body & { solverMode?: number }} */ (b);
-        return {
-          id: b.id, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, vz: b.vz,
-          qx: b.qx, qy: b.qy, qz: b.qz, qw: b.qw, wx: b.wx, wy: b.wy, wz: b.wz,
-          solverMode: typeof tagged.solverMode === 'number' ? tagged.solverMode : null,
-        };
-      }),
-      lifted: Array.from(lifted),
-      carried: Array.from(carrying),
-      image,
-    };
+    return { ...records(), image };
   }
 
   /**
-   * Puts a save back: the solver image first, then the records and the sets.
-   * Throws with the reason when the save is not of this world or the image is
-   * refused; nothing has changed then.
-   * @param {WorldSave} saved
+   * save() with the image in the sparse in-process form (T6 pin 2): a bitmap
+   * of the pages and the bytes of those in use. A tick's save keeps this one,
+   * which restores in about a millisecond; a bundle carries save()'s whole
+   * memory across processes.
+   * @returns {SparseWorldSave}
    */
-  function restore(saved) {
-    if (!saved || !Array.isArray(saved.bodies) || saved.bodies.length !== bodies.length) {
-      throw new Error('restore refused: the save does not have the ' + bodies.length + ' bodies of this world');
-    }
-    for (let i = 0; i < bodies.length; i = i + 1) {
-      if (saved.bodies[i].id !== bodies[i].id) {
-        throw new Error('restore refused: body ' + i + ' is ' + saved.bodies[i].id + ' in the save and ' + bodies[i].id + ' here');
+  function saveSparse() {
+    /** @type {SparseSolverImage | null} */
+    let image = null;
+    if (chosen === 'product') {
+      image = imageSparse();
+      if (!image) {
+        throw new Error('save refused: ' + imageRefusal());
       }
     }
+    return { ...records(), image };
+  }
+
+  /**
+   * Why a value is not a save of this world, or null. It checks everything
+   * restore reads but the image's bytes, which the solver glue checks before
+   * it writes anything, so restore changes nothing until it cannot fail. A
+   * tick or a session checks the rest of its save the same way first.
+   * @param {any} saved
+   * @returns {string | null}
+   */
+  function restoreProblem(saved) {
+    if (!saved || typeof saved !== 'object' || !Array.isArray(saved.bodies) || saved.bodies.length !== bodies.length) {
+      return 'the save does not have the ' + bodies.length + ' bodies of this world';
+    }
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const from = saved.bodies[i];
+      if (!from || typeof from !== 'object' || from.id !== bodies[i].id) {
+        return 'body ' + i + ' is ' + (from && typeof from === 'object' ? from.id : String(from)) + ' in the save and ' + bodies[i].id + ' here';
+      }
+      if (!RECORD.every((field) => typeof from[field] === 'number') || !(from.solverMode === null || typeof from.solverMode === 'number')) {
+        return 'body ' + i + ' (' + from.id + ') is not a record of numbers';
+      }
+    }
+    const ids = new Set(bodies.map((b) => b.id));
+    if (!Array.isArray(saved.lifted) || !saved.lifted.every((/** @type {unknown} */ id) => typeof id === 'string' && ids.has(id))) {
+      return 'the lifted bodies are body ids of this world';
+    }
+    if (!Array.isArray(saved.carried) || !saved.carried.every((/** @type {unknown} */ pair) => Array.isArray(pair) && pair.length === 2 && ids.has(pair[0]) && ids.has(pair[1]))) {
+      return 'the carried bodies are pairs of body ids of this world, each an actor and the body it carries';
+    }
+    if (!Number.isInteger(saved.worldId) || saved.worldId < 0) {
+      return 'the world id is a whole number';
+    }
+    if (chosen === 'product' && (!saved.image || typeof saved.image !== 'object')) {
+      return 'a product world restores from an image';
+    }
+    return null;
+  }
+
+  /**
+   * Puts a save back, from save() or saveSparse(): the solver image first,
+   * then the records and the sets. Throws with the reason when the save is
+   * not of this world or the image is refused; nothing has changed then.
+   * @param {WorldSave | SparseWorldSave} saved
+   */
+  function restore(saved) {
+    const why = restoreProblem(saved);
+    if (why !== null) {
+      throw new Error('restore refused: ' + why);
+    }
     if (chosen === 'product') {
-      if (!saved.image || !restoreImage(saved.image)) {
-        throw new Error('restore refused: ' + (saved.image ? imageRefusal() : 'a product world restores from an image'));
+      const image = /** @type {SolverImage | SparseSolverImage} */ (saved.image);
+      const put = 'pages' in image ? restoreSparse(image) : restoreImage(image);
+      if (!put) {
+        throw new Error('restore refused: ' + imageRefusal());
       }
       productId = saved.worldId;
       hold(productId);
@@ -931,7 +994,7 @@ export function createWorld(init, law) {
     mindsInstalled: false,
     minds,
     name,
-    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, restore, zoneOf, zoneIndex, law: chosen,
+    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, saveSparse, restoreProblem, restore, zoneOf, zoneIndex, law: chosen,
     lifted, carry, release, sleeping, holds, supportAt, linkIndex,
     /**
      * @param {string} mind

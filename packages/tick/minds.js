@@ -189,6 +189,93 @@ export function mixMinds(hasher, world, memory) {
 }
 
 /**
+ * @typedef {{ met: Array<Array<number | null>>, sight: Array<[string, Array<[string, { inSight: boolean, zone: string | null }]>]> }} MindsSave
+ */
+
+/**
+ * The minds' state that is not in the memory, for a tick's save (T6 pin 1):
+ * the quantum each goal was met, or null, and what each mind last saw of
+ * each body, which decides whether the next quantum's sight writes a belief.
+ * @param {ReturnType<import('./world.js').createWorld>} world
+ * @returns {MindsSave}
+ */
+export function saveMinds(world) {
+  const minds = world.minds || [];
+  const remembered = sightState.get(world);
+  return {
+    met: minds.map((mind) => mind.goals.map((goal) => (goal.metTick === undefined ? null : goal.metTick))),
+    sight: remembered
+      ? Array.from(remembered, ([mind, perBody]) => /** @type {[string, Array<[string, { inSight: boolean, zone: string | null }]>]} */ ([mind, Array.from(perBody, ([body, seen]) => /** @type {[string, { inSight: boolean, zone: string | null }]} */ ([body, { ...seen }]))]))
+      : [],
+  };
+}
+
+/**
+ * Why a value is not a save of these minds, or null. It checks everything
+ * restoreMinds reads, to the last sight record, so a save it passes restores
+ * without throwing: a restore checks the whole save before it changes
+ * anything, and one that threw partway would leave a run half restored.
+ * @param {ReturnType<import('./world.js').createWorld>} world
+ * @param {any} saved
+ * @returns {string | null}
+ */
+export function mindsSaveProblem(world, saved) {
+  const minds = world.minds || [];
+  if (!saved || typeof saved !== 'object' || !Array.isArray(saved.met) || !Array.isArray(saved.sight)) {
+    return 'the minds are each goal\'s met quantum and what each mind saw';
+  }
+  if (saved.met.length !== minds.length || minds.some((mind, m) => !Array.isArray(saved.met[m]) || saved.met[m].length !== mind.goals.length)) {
+    return 'the save has ' + saved.met.length + ' minds\' goals; this world has ' + minds.length + ' minds';
+  }
+  if (saved.met.some((/** @type {unknown[]} */ goals) => goals.some((met) => met !== null && !(Number.isInteger(met) && /** @type {number} */ (met) >= 0)))) {
+    return 'each goal is met at a whole-numbered quantum, or null';
+  }
+  for (const entry of saved.sight) {
+    const fits = Array.isArray(entry) && entry.length === 2 && minds.some((mind) => mind.body === entry[0]) && Array.isArray(entry[1])
+      && entry[1].every((/** @type {unknown} */ seen) => {
+        if (!Array.isArray(seen) || seen.length !== 2 || typeof seen[0] !== 'string' || !world.body(seen[0])) {
+          return false;
+        }
+        const record = seen[1];
+        return Boolean(record) && typeof record === 'object' && typeof record.inSight === 'boolean' && (record.zone === null || typeof record.zone === 'string');
+      });
+    if (!fits) {
+      return 'the minds\' sight is what each mind of this world has seen: for each body of this world, whether it is in sight, and its zone or null';
+    }
+  }
+  return null;
+}
+
+/**
+ * Puts back what saveMinds took. The caller checks it with mindsSaveProblem
+ * first, which is what makes this unable to throw.
+ * @param {ReturnType<import('./world.js').createWorld>} world
+ * @param {MindsSave} saved
+ */
+export function restoreMinds(world, saved) {
+  const minds = world.minds || [];
+  for (let m = 0; m < minds.length; m = m + 1) {
+    const goals = minds[m].goals;
+    for (let g = 0; g < goals.length; g = g + 1) {
+      const met = saved.met[m][g];
+      if (met === null) {
+        delete goals[g].metTick;
+      } else {
+        goals[g].metTick = met;
+      }
+    }
+  }
+  if (minds.length === 0) {
+    return;
+  }
+  const remembered = states(world);
+  remembered.clear();
+  for (const [mind, perBody] of saved.sight) {
+    remembered.set(mind, new Map(perBody.map(([body, seen]) => /** @type {[string, { inSight: boolean, zone: string | null }]} */ ([body, { ...seen }]))));
+  }
+}
+
+/**
  * @param {ReturnType<import('./world.js').createWorld>} world
  * @param {string} mind
  */
