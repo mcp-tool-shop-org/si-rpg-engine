@@ -30,12 +30,15 @@ test('a budget over the transport limit, an unknown transport, and a repeated fa
 });
 
 test('choose takes the seats not on standby by default, and named families without regard to case', () => {
-  assert.deepEqual(choose(PANEL, undefined).seats.map((s) => s.family), ['xAI', 'Google', 'Moonshot', 'Z.ai', 'DeepSeek', 'NVIDIA', 'MiniMax']);
+  const defaults = choose(PANEL, undefined).seats;
+  assert.deepEqual(defaults.map((s) => s.family), ['Moonshot', 'Z.ai', 'DeepSeek', 'NVIDIA', 'MiniMax', 'Mistral']);
+  assert.ok(defaults.every((s) => s.via === 'ollama'), 'a default seat is an Ollama seat');
+  assert.deepEqual(choose(PANEL, 'openai, google').seats.map((s) => s.model), ['gpt-oss:120b-cloud', 'gemma4:31b-cloud']);
   const withStandby = [...PANEL, { via: /** @type {const} */ ('ollama'), model: 'x:cloud', family: 'Spare', maxTokens: 1000, standby: true }];
   assert.equal(choose(withStandby, undefined).seats.some((s) => s.family === 'Spare'), false, 'a standby seat is left out by default');
   assert.deepEqual(choose(withStandby, 'spare').seats.map((s) => s.family), ['Spare']);
   const named = choose(PANEL, 'google, deepseek');
-  assert.deepEqual(named.seats.map((s) => s.family), ['Google', 'DeepSeek']);
+  assert.deepEqual(named.seats.map((s) => s.family), ['DeepSeek', 'Google']);
   assert.deepEqual(named.unknown, []);
 });
 
@@ -50,7 +53,7 @@ test('a think setting is one Ollama understands, and only on an Ollama seat', ()
   assert.deepEqual(panelProblems([{ via: 'openrouter', model: 'o', family: 'O', maxTokens: 1000, think: 'high' }]), ['o: think is an Ollama setting']);
   assert.deepEqual(panelProblems([{ via: 'ollama', model: 'n', family: 'N', maxTokens: 1000, think: 'high' }]), []);
 });
-
+
 test('the Ollama seats run at once, up to the plan\'s concurrency, which covers the whole panel', () => {
   assert.ok(Number.isInteger(OLLAMA_CONCURRENCY) && OLLAMA_CONCURRENCY >= 1);
   assert.ok(PANEL.filter((s) => s.via === 'ollama').length <= OLLAMA_CONCURRENCY);

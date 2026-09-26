@@ -8,9 +8,6 @@
 
 /** @type {Seat[]} */
 export const PANEL = [
-  { via: 'openrouter', model: 'x-ai/grok-4.7', family: 'xAI', maxTokens: 32000 },
-  // Gemini spent 30,717 of 32,000 output tokens reasoning on PR #68 and stopped before its verdict.
-  { via: 'openrouter', model: 'google/gemini-3.1-pro-preview', family: 'Google', maxTokens: 64000 },
   // Kimi K3 and GLM-5.3 accept 262,144 output tokens on Ollama Cloud (measured 2026-09-26).
   { via: 'ollama', model: 'kimi-k3:cloud', family: 'Moonshot', maxTokens: 262144 },
   { via: 'ollama', model: 'glm-5.3:cloud', family: 'Z.ai', maxTokens: 262144 },
@@ -26,6 +23,17 @@ export const PANEL = [
   // request merged, returned a BLOCK on two findings that the code refutes. A lone BLOCK is a
   // CHECK the coordinator verifies against the code, so it sits with the others.
   { via: 'ollama', model: 'minimax-m3:cloud', family: 'MiniMax', maxTokens: 131072 },
+  // Mistral joined the default panel on 2026-09-26. The daemon's name is
+  // mistral-large-3:675b-cloud; the parent id is not found. It accepts 262,144 output tokens,
+  // the daemon serves it as mistral-large-3:675b, and a one-word probe returned Pong.
+  { via: 'ollama', model: 'mistral-large-3:675b-cloud', family: 'Mistral', maxTokens: 262144 },
+  // OpenAI and Google sit out of a default run. Name them with --seats when a review needs that
+  // view. gpt-oss:120b is not found; gpt-oss:120b-cloud is, and an output budget over 131,072 is
+  // refused. A budget of 32 returns an empty answer, so the seat keeps the accepted maximum.
+  // gemma4:31b-cloud is the cloud model; the bare name is the local weight. It accepts 262,144
+  // output tokens, the daemon serves it as gemma4:31b, and a one-word probe returned pong.
+  { via: 'ollama', model: 'gpt-oss:120b-cloud', family: 'OpenAI', maxTokens: 131072, standby: true },
+  { via: 'ollama', model: 'gemma4:31b-cloud', family: 'Google', maxTokens: 262144, standby: true },
 ];
 
 /**

@@ -104,17 +104,18 @@ The handbook's testing page lists what is known and not yet proven.
 
 ### The review panel
 
-`tools/panel.js` seats seven families by default: xAI and Google through OpenRouter, and Moonshot, Z.ai, DeepSeek, NVIDIA, and MiniMax through Ollama Cloud.
+`tools/panel.js` seats six families by default, all through Ollama Cloud: Moonshot, Z.ai, DeepSeek, NVIDIA, MiniMax, and Mistral. OpenAI and Google sit on standby and are named with `--seats`.
 - **Concurrency.** The account's Ollama Max plan serves ten requests at once, so the Ollama seats review together. A review takes as long as its slowest seat: six minutes on #95, eleven on F5's larger diff, and ten on each of T7b's two passes.
 - **A large pull request** is reviewed in passes over disjoint files, one `--files <regex>` each (#112).
   - T7b's diff was about 480,000 characters, beside a frame of about 115,000, and the prompt cap is 400,000.
   - Each pass carried the whole dispatch, description, checklist, and evidence.
   - A dry run shows whether a pass fits.
 - **The receipt's hashes** are of the runner's files as they sit on disk. On Windows, under `autocrlf`, they hash the CRLF form.
-- **OpenRouter is retired.** The Director retired it on 2026-09-26, on cost, and cross-family panels now run on Ollama Cloud only.
-  - `tools/panel.js` still seats xAI and Google through OpenRouter by default. Those two seats return errors and the five Ollama families count, as on T7b's review; name the five with `--seats` to keep the summary clean.
-  - **The next session's first chore** is to move the defaults to Ollama Cloud only, as its own small pull request. Add Mistral, `mistral-large-3:675b`, as a family. For an OpenAI view use `gpt-oss:120b`, and for a Google view `gemma4:31b`, when a review needs one.
-  - Before seating a model, check it answers through the local daemon; the catalogue changes, as the models retired on 2026-07-15 showed.
+- **OpenRouter is retired.** It was retired on 2026-09-26, on cost, and cross-family panels run on Ollama Cloud only. The shipped panel has no OpenRouter seat.
+  - Mistral is `mistral-large-3:675b-cloud`. It accepts 262,144 output tokens, and the daemon serves it as `mistral-large-3:675b`.
+  - The OpenAI standby is `gpt-oss:120b-cloud`. An output budget over 131,072 is refused, and a budget of 32 returns an empty answer, so the seat keeps 131,072.
+  - The Google standby is `gemma4:31b-cloud`. The bare name is the local weight. It accepts 262,144 output tokens, and the daemon serves it as `gemma4:31b`.
+  - Seat a model only after it answers through the local daemon. `ollama list` still shows retired tags that return HTTP 410. The live catalog is the check.
 - **`--seats`** names families for one run.
 - **Measured behaviour:**
   - DeepSeek sometimes spends its whole 65,536-token budget thinking, and is then reported as not counted.
