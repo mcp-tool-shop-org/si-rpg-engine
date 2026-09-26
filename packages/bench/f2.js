@@ -15,7 +15,7 @@
 // branch's counts, and its own time, and leaves its report in the out
 // directory.
 
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,8 +37,23 @@ async function main(argv) {
   const t0 = performance.now();
   const checkout = resolve(fileURLToPath(new URL('../..', import.meta.url)));
   const i = argv.indexOf('--out');
+  // The base tree is scratch, removed when the run ends; the report stays.
   const dir = mkdtempSync(join(tmpdir(), 'si-rpg-bench-f2-'));
-  const out = i >= 0 && argv[i + 1] ? resolve(argv[i + 1]) : join(dir, 'out');
+  const out = i >= 0 && argv[i + 1] ? resolve(argv[i + 1]) : mkdtempSync(join(tmpdir(), 'si-rpg-bench-f2-report-'));
+  try {
+    await run(checkout, dir, out, t0);
+  } finally {
+    rmSync(dir, { recursive: true, force: true, maxRetries: 8, retryDelay: 250 });
+  }
+}
+
+/**
+ * @param {string} checkout
+ * @param {string} dir
+ * @param {string} out
+ * @param {number} t0
+ */
+async function run(checkout, dir, out, t0) {
   const base = copyCheckout(dir, 'base', { built: false });
   for (const e of F2_OFF) {
     plant(base, e.file, e.from, e.to);
