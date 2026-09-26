@@ -12,7 +12,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHasher } from '../frame/hash.js';
@@ -191,7 +191,7 @@ test('every world worlds/index.json lists hashes to its entry', () => {
   }
 });
 
-test('a world file edited after admission by adding a wall nothing touches at load is refused by indexReason, and the host refuses it before its first frame', () => {
+test('a world file edited after admission by adding a wall nothing touches at load is refused by indexReason, and the host refuses it before its first frame', (t) => {
   const index = readJson('worlds/index.json');
   const admitted = loadScene('worlds/crate-and-door.json');
   assert.ok(admitted.ok);
@@ -203,7 +203,9 @@ test('a world file edited after admission by adding a wall nothing touches at lo
   // and read back the way the host reads one.
   const file = readJson('worlds/crate-and-door.json');
   file.colliders.push(POST);
-  const path = join(mkdtempSync(join(tmpdir(), 'si-rpg-load-hash-')), 'crate-and-door.json');
+  const dir = mkdtempSync(join(tmpdir(), 'si-rpg-load-hash-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'crate-and-door.json');
   writeFileSync(path, JSON.stringify(file, null, 2) + '\n');
   const planted = loadScene(path);
   assert.ok(planted.ok, planted.ok ? '' : planted.reason);
