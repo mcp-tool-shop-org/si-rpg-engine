@@ -13,17 +13,30 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, wr
 import { dirname, join, resolve, sep } from 'node:path';
 
 /**
+ * What a git command says when another git process holds the repository for a
+ * moment, as `git worktree add` in a test beside it can: the command is run
+ * again after a pause, up to five times, since nothing it reads has changed.
+ */
+const TRANSIENT = /not a git repository|index\.lock|cannot lock ref|Unable to create|Permission denied/i;
+
+/**
  * Runs git in a directory. Throws with git's own words when it fails.
  * @param {string} cwd
  * @param {string[]} args
  * @returns {string}
  */
 export function git(cwd, args) {
-  const run = spawnSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 1 << 28 });
-  if (run.status !== 0) {
-    throw new Error('git ' + args.join(' ') + ' in ' + cwd + ' failed: ' + (run.stderr || run.stdout || 'status ' + run.status).trim());
+  for (let attempt = 1; ; attempt = attempt + 1) {
+    const run = spawnSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 1 << 28 });
+    if (run.status === 0) {
+      return run.stdout;
+    }
+    const words = (run.stderr || run.stdout || 'status ' + run.status).trim();
+    if (attempt >= 5 || !TRANSIENT.test(words)) {
+      throw new Error('git ' + args.join(' ') + ' in ' + cwd + ' failed: ' + words);
+    }
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 200 * attempt);
   }
-  return run.stdout;
 }
 
 /**
