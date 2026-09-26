@@ -245,7 +245,8 @@ export function modelChange(record, pin) {
  * How a call reads from its record, by the rules the seat applies as it
  * makes the record (seat.js runSession) and verifySession applies again to
  * check the call's line. In order: a call that failed reads call-failed, with
- * its failure as the reason; one cut off at its budget, timed-out; one whose
+ * its failure as the reason, and, when a reading names another model, that
+ * change named with the failure; one cut off at its budget, timed-out; one whose
  * reply held nothing, no-output; one whose readings of the loaded model name
  * another model, model-changed; and otherwise what the seat's parser reads of
  * the output under the manifest, whose proposal is what the seat submits.
@@ -255,7 +256,10 @@ export function modelChange(record, pin) {
  */
 export function callRead(record, manifest) {
   if (record.record === 2 && record.failure !== null) {
-    return { read: 'call-failed', reason: record.failure };
+    // The failure is still read first. A reading that names another model is
+    // named with it; a reading of the pin leaves the reason as the failure.
+    const changed = manifest.model === null ? null : modelChange(record, manifest.model.digest);
+    return { read: 'call-failed', reason: changed === null ? record.failure : record.failure + '; ' + changed };
   }
   if (record.timing.timedOut) {
     return { read: 'timed-out', reason: 'no output within ' + manifest.budget.secondsPerCall + ' s' };

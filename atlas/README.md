@@ -1,20 +1,26 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit 8776886.
+Mapped at 2026-09-26 from commit 1a17272.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-17 parts, mostly JavaScript (132 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
+17 parts, mostly JavaScript (134 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (450e262)
+## What changed since 2026-09-26 (8776886)
 
-Nothing structural changed since 2026-09-26; 22 files changed content.
+- bench now imports propose.
+- CI now also runs packages/bench/model.test.js.
+- fixtures/bench/room.json is now also read by packages/bench/model.test.js.
+- fixtures/roles/ is now also read by packages/bench/model.test.js.
+- fixtures/roles/instrument-copy.json is now read by packages/bench/model.test.js.
+- And 6 more new writers and readers of places.
+- 4 files added and 16 changed content, across 4 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 46 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
+1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 47 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -27,7 +33,7 @@ Nothing structural changed since 2026-09-26; 22 files changed content.
 
 ## What happens through CI
 
-1. The workflow runs 9 files in bench, 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
+1. The workflow runs 10 files in bench, 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
@@ -172,24 +178,24 @@ Only CI itself reads what it writes.
 - **frame** is imported by 2 parts (harness, tick) and sits on the path of 8 doors.
 - **harness** is imported by 1 part (propose), and by 1 more only from tests; it sits on the path of 4 doors.
 - **load** is imported by 1 part (harness), and by 1 more only from tests; it sits on the path of 3 doors.
+- **propose** is imported by 1 part (bench) and sits on the path of 2 doors.
 - **solver** is run as a child process by 1 part (bench) and sits on the path of 3 doors.
 - **bench** is imported by no other part and sits on the path of 2 doors.
-- **host** is imported by no other part and sits on the path of 2 doors.
 - **fixtures/golden.txt** is written by harness and read by harness and workflows; a hand edit reaches every reader.
 
 ## What tends to change together
 
-- **packages/bench/bench.js** and **packages/bench/neutral.test.js** changed together in 5 of 5 commits, inside the bench part.
+- **packages/bench/bench.js** and **packages/bench/neutral.test.js** changed together in 5 of 6 commits, inside the bench part.
+- **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 10 of 14 commits, inside the propose part.
 - **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 7 of 10 commits, inside the harness part.
-- **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 9 of 13 commits, inside the propose part.
+- **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 9 of 13 commits, inside the propose part.
 - **packages/host/host.test.js** and **packages/host/session.js** changed together in 8 of 12 commits, inside the host part.
-- **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 8 of 12 commits, inside the propose part.
 
-2 files changed together with their own tests, as expected.
+3 files changed together with their own tests, as expected.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
-Window: 180 days; a pair counts from 3 shared commits, since 13 source files reach 10 revisions; the floor rises to 10 when 25 do.
+Window: 180 days; a pair counts from 3 shared commits, since 14 source files reach 10 revisions; the floor rises to 10 when 25 do.
 
 ## What no test touches
 
@@ -224,10 +230,10 @@ Read those in order to follow one pull request end to end.
 ## What this map cannot see
 
 - 18 import sites could not be resolved.
-- 3 writes and 8 reads use paths built at run time and are not named here.
+- 3 writes and 9 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
-- 49 writes and 101 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 38 commands are built at run time and not followed, 32 of them in tests.
+- 51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
+- 41 commands are built at run time and not followed, 35 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.

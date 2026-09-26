@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os';
 import { isAbsolute, join, resolve } from 'node:path';
 import { copyProduct } from './build.js';
 import { stopAll } from './processes.js';
+import { cutReport } from './report.js';
 import { copyTree } from './trees.js';
 
 /** The checkout the tests run in. */
@@ -64,8 +65,8 @@ export async function teardown(dir) {
 export function leaks(out) {
   const report = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
   const text = readFileSync(join(out, 'report.md'), 'utf8');
-  const at = text.indexOf('\n## Environment\n');
-  const summary = at >= 0 ? text.slice(0, at) : text;
+  const cut = cutReport(text);
+  const summary = cut.ok ? cut.summary : '';
   const { environment, ...rest } = report;
   const json = JSON.stringify(rest);
   /** @type {Set<string>} */
@@ -85,6 +86,9 @@ export function leaks(out) {
   collect(environment);
   /** @type {string[]} */
   const found = [];
+  if (!cut.ok) {
+    found.push(cut.reason);
+  }
   for (const value of held) {
     for (const form of new Set([value, value.replace(/\\/g, '/')])) {
       if (json.includes(JSON.stringify(form).slice(1, -1))) {

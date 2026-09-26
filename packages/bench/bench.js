@@ -3,7 +3,9 @@
 // that reach the changed code, make the head's run differ from the base's, and
 // make the head fail where the base does not. Every verdict comes from the
 // engine: coverage, the step hash, the trace, and the findings the engine
-// checks. It calls no model, and imports nothing from packages/propose.
+// checks. It calls no model unless a run names --model. The only import of
+// packages/propose is packages/bench/model.js, loaded in the sweep process
+// when a run names it, never by a static import.
 //
 // runBench is the whole of a run, in this order:
 //   1. The anchors (anchors.js), and the trees' commits and digests.
@@ -40,7 +42,7 @@ import { MUTANT_CAP, applyEdits, makeMutants } from './mutants.js';
 import { BenchRefusal, oneTreePerProcess, startProcess } from './processes.js';
 import { coverageInfo, lineStats, mapWindow, normalize, countAt, regionAt } from './profile.js';
 import { lawSources, mappedLines, probeTable, reachOf } from './reach.js';
-import { describeDifference, floods, lateGain, markdown } from './report.js';
+import { describeDifference, floods, lateGain, markdown, MODEL_STALL_N, newFindings, stallIndex, withinCost } from './report.js';
 import { copyTree, listFiles, samePath, syncTree, treeCommit, treeDigest } from './trees.js';
 
 /**
@@ -88,6 +90,7 @@ export const DEFAULT_BUDGETS = {
  *   grammar?: { share?: number, pitch?: number, steps?: number, enabled?: boolean },
  *   proposers?: { sweep?: boolean, grammar?: boolean },
  *   mutants?: { enabled?: boolean, cap?: number },
+ *   model?: { enabled?: boolean, role?: string, catalog?: string, diff?: string, calls?: number, dispatch?: string, outputs?: string[] | null, cutOff?: boolean },
  *   work?: string,
  *   plant?: Record<string, any>,
  *   say?: (line: string) => void,
@@ -161,6 +164,15 @@ export async function runBench(options) {
   };
   const useSweep = !options.proposers || options.proposers.sweep !== false;
   const useGrammar = !options.proposers || options.proposers.grammar !== false;
+  const useModel = Boolean(options.model && options.model.enabled);
+  let modelRole = 'test-instrument';
+  let modelCatalog = resolve('predicates/roles');
+  let modelCalls = 0;
+  let diffText = '';
+  let dispatchText = '';
+  /** @type {string[] | null} */
+  let modelOutputs = null;
+  let modelCutOff = false;
   const cap = options.mutants && typeof options.mutants.cap === 'number' ? options.mutants.cap : MUTANT_CAP;
   const mutantsOn = !options.mutants || options.mutants.enabled !== false;
   /** @type {Record<string, number>} */
@@ -202,6 +214,36 @@ export async function runBench(options) {
   const records = [];
   writeFileSync(join(out, 'records.jsonl'), '');
   try {
+    if (useModel) {
+      const asked = options.model || {};
+      if (typeof asked.diff !== 'string' || asked.diff.length === 0) {
+        throw new BenchRefusal('--model without --diff is refused');
+      }
+      modelRole = asked.role || 'test-instrument';
+      modelCatalog = resolve(asked.catalog || 'predicates/roles');
+      dispatchText = asked.dispatch || '';
+      modelOutputs = Object.prototype.hasOwnProperty.call(asked, 'outputs') ? (asked.outputs || null) : null;
+      modelCutOff = asked.cutOff === true;
+      let manifest;
+      try {
+        diffText = readFileSync(resolve(asked.diff), 'utf8');
+        manifest = JSON.parse(readFileSync(join(modelCatalog, modelRole + '.json'), 'utf8'));
+      } catch (error) {
+        throw new BenchRefusal('the model run did not read: ' + (error instanceof Error ? error.message : String(error)));
+      }
+      const perSession = manifest && manifest.budget ? manifest.budget.callsPerSession : undefined;
+      if (!Number.isInteger(perSession)) {
+        throw new BenchRefusal('role ' + modelRole + ' names no callsPerSession');
+      }
+      if (asked.calls !== undefined && (!Number.isInteger(asked.calls) || asked.calls < 1)) {
+        throw new BenchRefusal('--model-calls takes a whole number of calls, at least 1');
+      }
+      if (typeof asked.calls === 'number' && asked.calls > perSession) {
+        throw new BenchRefusal('--model-calls ' + asked.calls + ' exceeds role ' + modelRole + '\'s callsPerSession of ' + perSession);
+      }
+      modelCalls = typeof asked.calls === 'number' ? asked.calls : perSession;
+      environment.model = { timeouts: 0, calls: [] };
+    }
     // 1. Trees and anchors.
     if (samePath(head, base)) {
       environment.trees = { head: { path: head }, base: { path: base } };
@@ -275,7 +317,7 @@ export async function runBench(options) {
     if (covProc) {
       procs.push(covProc);
     }
-    const sweepProc = await startProcess({ name: 'sweep', tree: head, build: coverage ? 'coverage' : 'product', coverage: true, probes: table.files, redirect, counters: coverage ? coverage.info.counters : null, modules: ['sweep'], plant: (plant.runner && plant.runner.sweep) || {} });
+    const sweepProc = await startProcess({ name: 'sweep', tree: head, build: coverage ? 'coverage' : 'product', coverage: true, probes: table.files, redirect, counters: coverage ? coverage.info.counters : null, modules: useModel ? ['sweep', 'model'] : ['sweep'], plant: (plant.runner && plant.runner.sweep) || {} });
     procs.push(sweepProc);
     for (const p of procs) {
       environment.processes[p.name] = { pid: p.pid, tree: p.tree, build: p.build };
@@ -480,9 +522,12 @@ export async function runBench(options) {
     /**
      * Runs one candidate on every tree and build, and writes its record.
      * @param {Candidate} c
+     * @param {boolean} [keep] whether both trees' sound run joins the mutant
+     *   runnable. The model and arm G do not: the main mutant pass stays the
+     *   model-off run.
      * @returns {Promise<{ record: CandidateRecord, finish: Promise<CandidateRecord> }>}
      */
-    const ladder = async (c) => {
+    const ladder = async (c, keep = true) => {
       const entries = c.witness.concat([c.intent]);
       const key = witnessKey(c.world, c.witness, c.witnessEnd);
       const args = { name: c.id, world: c.worldInit, seed: c.seed, entries, witness: c.witness.length, witnessEnd: c.witnessEnd, key, restoreCheck: true };
@@ -543,7 +588,12 @@ export async function runBench(options) {
             record.rungs[2] = null;
             record.notes.push('a rung-3 failure on the ' + tree + ' alone: ' + only.kind);
           }
-          runnable.set(c.id, { args, control: null, head: view(h), coverage: cv ? view(cv) : null });
+          const run = { args, control: null, head: view(h), coverage: cv ? view(cv) : null };
+          if (keep) {
+            runnable.set(c.id, run);
+          } else {
+            held.set(c.id, run);
+          }
         }
       }
       if (headSound && (record.rungs[2] || (record.rungs[3] && (record.rungs[3].catch || Object.values(record.rungs[3].failures).some(Boolean))))) {
@@ -642,6 +692,13 @@ export async function runBench(options) {
       sweep: { records: [], proposed: 0, refused: {}, unrun: [], groups: {} },
       grammar: { records: [], proposed: 0, refused: {}, unrun: [], groups: {} },
     };
+    if (useModel) {
+      byProposer.model = { records: [], proposed: 0, refused: {}, unrun: [], groups: {} };
+    }
+    /** Runs the model and arm G kept off the main mutant set, for the arm pass. */
+    const held = new Map();
+    /** @type {any[]} */
+    const arms = [];
     let candidateCount = 0;
     const worlds = options.worlds || [];
     for (const spec of worlds) {
@@ -659,6 +716,10 @@ export async function runBench(options) {
       let archiveCells = [];
       /** @type {Set<string>} */
       const reachedVerbs = new Set();
+      /** Function name to the verbs the sweep reached there, before any session. */
+      /** @type {Record<string, Set<string>>} */
+      const sweepAccess = {};
+      const codeKind = new Set(['js', 'law', 'top-level', 'deletion', 'law-top-level', 'law-deletion']);
       // The sweep runs whenever either proposer does: the grammar draws from
       // the states it archived and splits its verbs by the sweep's reach. Its
       // own candidates go through the ladder only when it proposes.
@@ -689,7 +750,10 @@ export async function runBench(options) {
           gather(reach, { source: 'window', candidate: candidateIdentity(c) });
           for (const id of reach.anchors) {
             reachedVerbs.add(sc.intent.proposal.verb);
-            void id;
+            const anchor = anchors.find((a) => a.id === id);
+            if (anchor && anchor.name && codeKind.has(anchor.kind)) {
+              (sweepAccess[anchor.name] = sweepAccess[anchor.name] || new Set()).add(sc.intent.proposal.verb);
+            }
           }
           if (reach.anchors.size > 0) {
             c.group = 1;
@@ -755,6 +819,153 @@ export async function runBench(options) {
         byProposer.grammar.unrun.push(...ran.unrun);
         lap('grammar ladder ' + worldName);
       }
+      if (useModel) {
+        const grammarHere = byProposer.grammar.records.filter((r) => r.world === worldName);
+        const stalled = stallIndex(grammarHere, MODEL_STALL_N);
+        const start = stalled === null ? grammarHere.length : stalled + 1;
+        const before = byProposer.sweep.records.filter((r) => r.world === worldName).concat(grammarHere.slice(0, start));
+        /** @type {Record<string, string[]>} */
+        const access = {};
+        for (const [name, verbs] of Object.entries(sweepAccess)) {
+          access[name] = Array.from(verbs).sort();
+        }
+        const opened = await sweepProc.call('model-open', {
+          catalog: modelCatalog,
+          role: modelRole,
+          world: input.world,
+          worldName,
+          seed: input.seed,
+          diff: diffText,
+          dispatch: dispatchText || (anchors.length > 0 ? 'The change aims at ' + anchors.map((a) => a.id).join(', ') + '.' : 'The change is the head against the base.'),
+          access,
+          calls: modelCalls,
+          outputs: modelOutputs,
+          cutOff: modelCutOff,
+        });
+        /** @type {CandidateRecord[]} */
+        const mRecords = [];
+        let mQuanta = 0;
+        let mRestores = 0;
+        let mCalls = 0;
+        if (opened.refused) {
+          byProposer.model.refused[opened.refused] = (byProposer.model.refused[opened.refused] || 0) + 1;
+        } else {
+          /**
+           * @param {CandidateRecord} record
+           */
+          const rungText = (record) => [
+            '0 head ' + (record.rungs[0] && record.rungs[0].head && record.rungs[0].head.ok ? 'ok' : 'failed'),
+            '0 base ' + (record.rungs[0] && record.rungs[0].base && record.rungs[0].base.ok ? 'ok' : 'failed'),
+            '1 ' + (record.rungs[1] ? 'reached' : 'not reached'),
+            '2 ' + (record.rungs[2] ? 'differs' : 'no difference'),
+            '3 ' + (record.rungs[3] && record.rungs[3].catch ? 'fails' : 'no failure'),
+          ];
+          for (;;) {
+            if (mCalls >= modelCalls || mQuanta >= budgets.ladder.quanta || mRestores >= budgets.ladder.restores) {
+              break;
+            }
+            const step = await sweepProc.call('model-step', {});
+            if (step.done) {
+              break;
+            }
+            mCalls = mCalls + 1;
+            environment.model.calls.push({ world: worldName, call: step.call, ms: step.ms, timedOut: step.timedOut });
+            if (step.timedOut) {
+              environment.model.timeouts = environment.model.timeouts + 1;
+            }
+            byProposer.model.proposed = byProposer.model.proposed + 1;
+            if (!step.proposal || step.read !== 'ok' || !step.admitted) {
+              const reason = step.reason || step.read;
+              byProposer.model.refused[reason] = (byProposer.model.refused[reason] || 0) + 1;
+              await sweepProc.call('model-note', { anchors: [], rungs: [] });
+              continue;
+            }
+            candidateCount = candidateCount + 1;
+            /** @type {Candidate} */
+            const c = {
+              id: 'c' + candidateCount, proposer: 'model', world: worldName, worldInit: input.world, seed: input.seed,
+              witness: step.witness, witnessEnd: step.witnessEnd, intent: { tick: step.intentTick, proposal: step.proposal },
+              cell: null, actor: step.proposal.actor, group: null, step: null,
+            };
+            const ran = await ladder(c, false);
+            mQuanta = mQuanta + ran.record.cost.quanta;
+            mRestores = mRestores + ran.record.cost.restores;
+            report.spent.quanta = report.spent.quanta + ran.record.cost.quanta;
+            report.spent.restores = report.spent.restores + ran.record.cost.restores;
+            const finished = await ran.finish;
+            records.push(finished);
+            mRecords.push(finished);
+            byProposer.model.records.push(finished);
+            writeFileSync(join(out, 'records.jsonl'), JSON.stringify(finished) + '\n', { flag: 'a' });
+            await sweepProc.call('model-note', { anchors: finished.anchors, rungs: rungText(finished) });
+          }
+          const slug = worldName.replace(/[^a-z0-9-]+/gi, '-');
+          await sweepProc.call('model-close', { dir: join(out, 'sessions', slug) });
+        }
+        /** @type {CandidateRecord[]} */
+        let gRecords = withinCost(grammarHere.slice(start), mQuanta, mRestores);
+        let extended = false;
+        if (start === grammarHere.length && (mQuanta > 0 || mRestores > 0) && archiveCells.length > 0) {
+          extended = true;
+          if (!(useGrammar && archiveCells.length > 0) && archiveCells.length > 0) {
+            await sweepProc.call('grammar-init', {
+              seed: seed ^ hashText(worldName),
+              share: grammarOptions.share,
+              pitch: grammarOptions.pitch,
+              steps: grammarOptions.steps,
+              cells: archiveCells.map((cell) => ({ key: cell.key, actor: cell.actor, tick: cell.tick, witness: stripHashes(cell.witness) })),
+              input,
+              reachedVerbs: Array.from(reachedVerbs),
+            });
+          }
+          /** @type {CandidateRecord[]} */
+          const extra = [];
+          let q = 0;
+          let r = 0;
+          let steps = 0;
+          if (archiveCells.length > 0) {
+            while (!(q >= mQuanta && r >= mRestores)) {
+              const made = await sweepProc.call('grammar-next', {});
+              if (made === null) {
+                break;
+              }
+              if (made.skipped) {
+                steps = steps + 1;
+                if (steps > 10000) {
+                  break;
+                }
+                continue;
+              }
+              const m = made.candidate;
+              candidateCount = candidateCount + 1;
+              /** @type {Candidate} */
+              const c = {
+                id: 'c' + candidateCount, proposer: 'grammar', world: worldName, worldInit: input.world, seed: input.seed,
+                witness: stripHashes(m.witness), witnessEnd: m.witnessEnd, intent: stripHashes([m.intent])[0],
+                cell: m.cell, actor: m.actor, group: null, step: m.step,
+              };
+              const ran = await ladder(c, false);
+              const finished = await ran.finish;
+              finished.notes.push('arm G');
+              q = q + finished.cost.quanta;
+              r = r + finished.cost.restores;
+              extra.push(finished);
+              writeFileSync(join(out, 'records.jsonl'), JSON.stringify(finished) + '\n', { flag: 'a' });
+            }
+          }
+          gRecords = extra;
+        }
+        const mFound = newFindings(before, mRecords);
+        const gFound = newFindings(before, gRecords);
+        arms.push({
+          world: worldName,
+          start: { index: start, candidate: start < grammarHere.length ? grammarHere[start].id : null },
+          beforeIds: before.map((rec) => rec.id),
+          M: { calls: mCalls, quanta: mQuanta, restores: mRestores, records: mRecords, findings: { lines: mFound.lines, differences: mFound.differences, mutants: [] } },
+          G: { quanta: gRecords.reduce((sum, rec) => sum + rec.cost.quanta, 0), restores: gRecords.reduce((sum, rec) => sum + rec.cost.restores, 0), extended, records: gRecords, findings: { lines: gFound.lines, differences: gFound.differences, mutants: [] } },
+        });
+        lap('model ' + worldName);
+      }
     }
 
     // 7. Control inputs.
@@ -770,8 +981,17 @@ export async function runBench(options) {
       if (spec.productScene) {
         runSpec = productSpec;
       } else {
-        file = /** @type {string} */ (spec.file);
-        const path = isAbsolute(file) ? file : join(head, file);
+        const askedFile = /** @type {string} */ (spec.file);
+        const path = isAbsolute(askedFile) ? askedFile : join(head, askedFile);
+        const abs = isAbsolute(askedFile) ? askedFile : resolve(head, askedFile);
+        const rel = relative(head, abs);
+        if (rel && !isAbsolute(rel) && !rel.startsWith('..')) {
+          file = rel.split('\\').join('/');
+        } else {
+          environment.paths.controls = environment.paths.controls || [];
+          environment.paths.controls.push(abs);
+          file = '<control ' + (controlRecords.length + 1) + '>';
+        }
         bundle = JSON.parse(readFileSync(path, 'utf8'));
         kind = bundle.run;
         runSpec = bundle.run === 'product' ? { scene: 'product', world: bundle.world, quanta: bundle.quanta }
@@ -859,10 +1079,13 @@ export async function runBench(options) {
     // 8. Mutants.
     /** @type {any[]} */
     let mutantResults = [];
+    /** @type {any[]} */
+    let scoredMutants = [];
     if (mutantsOn) {
       const made = makeMutants(anchors, head, base, lawMapped.size > 0 ? lawMapped : null);
       report.mutants.none = made.none;
       const scored = made.mutants.slice(0, cap);
+      scoredMutants = scored;
       report.mutants.leftOut = made.mutants.slice(cap).map((m) => ({ id: m.id, anchor: m.anchor, operator: m.operator, file: m.file, line: m.line }));
       mutantResults = await runMutants(scored, {
         head, work, runnable, coverage, anchors, linesReached, reachedBy, environment, plant, say,
@@ -875,6 +1098,44 @@ export async function runBench(options) {
       }
       report.mutants.byVerdict = byVerdict;
       lap('mutants');
+    }
+    if (useModel && mutantsOn && scoredMutants.length > 0) {
+      for (const arm of arms) {
+        for (const side of ['M', 'G']) {
+          /** @type {CandidateRecord[]} */
+          const armRecords = arm[side].records;
+          const armIds = new Set(armRecords.map((rec) => rec.id));
+          const order = new Map();
+          for (const id of arm.beforeIds) {
+            const run = runnable.get(id);
+            if (run) {
+              order.set(id, run);
+            }
+          }
+          for (const rec of armRecords) {
+            const run = runnable.get(rec.id) || held.get(rec.id);
+            if (run && !order.has(rec.id)) {
+              order.set(rec.id, run);
+            }
+          }
+          if (order.size === 0) {
+            continue;
+          }
+          const quiet = { ...environment, binaries: { ...environment.binaries }, lawRebuilds: {}, processes: { ...environment.processes } };
+          const again = await runMutants(scoredMutants, {
+            head, work, runnable: order, coverage, anchors, linesReached, reachedBy, environment: quiet, plant, say,
+          });
+          arm[side].findings.mutants = again.filter((m) => m.verdict === 'caught' && m.separatedBy && armIds.has(m.separatedBy.input)).map((m) => m.id);
+        }
+      }
+    }
+    if (useModel) {
+      report.arms = arms.map((arm) => ({
+        world: arm.world,
+        start: arm.start,
+        M: { calls: arm.M.calls, quanta: arm.M.quanta, restores: arm.M.restores, findings: arm.M.findings },
+        G: { quanta: arm.G.quanta, restores: arm.G.restores, extended: arm.G.extended, findings: arm.G.findings },
+      }));
     }
 
     // 9. The report.
@@ -1445,6 +1706,7 @@ async function runMutants(mutants, ctx) {
 /**
  * Runs one mutant's process over every input the ladder ran on the head, in
  * order, and stops at the first that separates the mutant from the head.
+ * The candidates offered are those both trees ran soundly.
  * Verdicts, the first that applies: not scored, marked, caught, survived, not
  * reached.
  * @param {import('./mutants.js').Mutant} m
