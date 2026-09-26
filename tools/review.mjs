@@ -39,8 +39,9 @@
 // its own contract. The fence lowers the chance of a reviewer being steered by accident; it is not
 // a security boundary (see prompt.js), which is why no verdict merges anything by itself.
 //
-// Reads OPENROUTER_API_KEY from the environment and never prints it. Ollama Cloud models go
-// through the local daemon at 127.0.0.1:11434, which is signed in to Ollama Cloud.
+// Reads OPENROUTER_API_KEY from the environment when a chosen seat goes through OpenRouter, and
+// never prints it. Ollama Cloud models go through the local daemon at 127.0.0.1:11434, which is
+// signed in to Ollama Cloud.
 
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -111,8 +112,8 @@ const panel = chosen.seats;
 if (!pr || !dispatchPath || !checklistPath) {
   stop('usage: ' + USAGE);
 }
-if (!process.env.OPENROUTER_API_KEY) {
-  stop('OPENROUTER_API_KEY is not set');
+if (panel.some((s) => s.via === 'openrouter') && !process.env.OPENROUTER_API_KEY) {
+  stop('OPENROUTER_API_KEY is not set, and a chosen seat goes through OpenRouter');
 }
 
 const sha = (/** @type {string | Buffer} */ s) => createHash('sha256').update(s).digest('hex');
