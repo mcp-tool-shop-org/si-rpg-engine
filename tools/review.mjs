@@ -59,7 +59,9 @@ guard(USAGE);
  * @typedef {Seat & { served?: string | null, servedOk?: boolean, provider?: unknown, ms: number, usage?: any, cost?: number | null, parsed?: Verdict | null, unparsed?: string | null, raw?: string, error?: string }} Result
  */
 
-const OMIT = [/^fixtures\/behavior-.*\.json$/, /^fixtures\/corpus\//, /^fixtures\/shape-traversal\.json$/, /^atlas\//, /package-lock\.json$/, /^README\.[a-zA-Z-]+\.md$/];
+// Recorded model sessions are outputs the record test checks in CI; a session's change.diff and
+// anything else beside them is still sent.
+const OMIT = [/^fixtures\/behavior-.*\.json$/, /^fixtures\/corpus\//, /^fixtures\/shape-traversal\.json$/, /^fixtures\/sessions\/[^/]+\/(session\.json$|records\/)/, /^atlas\//, /package-lock\.json$/, /^README\.[a-zA-Z-]+\.md$/];
 const MAX_FILE_DIFF = 60000;
 
 /**
@@ -266,7 +268,17 @@ if (process.argv.includes('--dry-run')) {
   process.exit(0);
 }
 process.stderr.write(`prompt ${prompt.length} characters; ${g.omitted.length} files not sent; calling ${panel.length} reviewers\n`);
-const results = await Promise.all(panel.map((seat) => review(seat, prompt)));
+// Ollama Cloud serves this account one request at a time: on #74 both Ollama seats waited on each
+// other for 300 s and failed with HTTP 429. So the Ollama seats take turns, beside the OpenRouter
+// seats. review() never throws, so one seat's failure does not stop the next one's turn.
+/** @type {Promise<unknown>} */
+let ollamaTurn = Promise.resolve();
+const results = await Promise.all(panel.map((seat) => {
+  if (seat.via !== 'ollama') return review(seat, prompt);
+  const turn = ollamaTurn.then(() => review(seat, prompt));
+  ollamaTurn = turn;
+  return turn;
+}));
 
 const counted = /** @type {Array<Result & { parsed: Verdict }>} */ (results.filter((r) => !r.error && r.servedOk && r.parsed));
 const aggregate = combine(counted).text;
