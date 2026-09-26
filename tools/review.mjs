@@ -288,7 +288,7 @@ const receipt = {
   runner: runnerSha,
   sha256: { dispatch: sha(g.dispatch), checklist: sha(checklist), evidence: sha(evidence), prompt: sha(prompt), system: sha(SYSTEM) },
   omitted: g.omitted, promptChars: prompt.length, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, aggregate,
-  panel: results.map((r) => ({ family: r.family, via: r.via, requested: r.model, maxTokens: r.maxTokens, served: r.served, servedOk: r.servedOk, provider: r.provider, ms: r.ms, usage: r.usage, cost: r.cost, error: r.error, verdict: r.parsed ? r.parsed.verdict : null, block_reason: r.parsed ? r.parsed.block_reason : null, items: r.parsed ? r.parsed.items : null, defects: r.parsed ? r.parsed.defects : null, raw: r.raw })),
+  panel: results.map((r) => ({ family: r.family, via: r.via, requested: r.model, maxTokens: r.maxTokens, served: r.served, servedOk: r.servedOk, provider: r.provider, ms: r.ms, usage: r.usage, cost: r.cost, error: r.error, verdict: r.parsed ? r.parsed.verdict : null, trailingCommas: r.parsed ? r.parsed.trailingCommas === true : null, block_reason: r.parsed ? r.parsed.block_reason : null, items: r.parsed ? r.parsed.items : null, defects: r.parsed ? r.parsed.defects : null, raw: r.raw })),
 };
 writeFileSync(outPath, JSON.stringify(receipt, null, 2));
 
@@ -301,7 +301,7 @@ lines.push('');
 lines.push('| Family | Model asked | Model served | Verdict | Time | Cost |');
 lines.push('|---|---|---|---|---|---|');
 for (const r of results) {
-  lines.push(`| ${r.family} | \`${r.model}\` | ${r.error ? 'error' : '`' + r.served + '`' + (r.servedOk ? '' : ' (mismatch, discarded)')} | ${r.error ? r.error.slice(0, 60) : r.parsed ? r.parsed.verdict : 'not counted: ' + r.unparsed} | ${Math.round(r.ms / 1000)} s | ${r.cost != null ? '$' + Number(r.cost).toFixed(4) : 'n/a'} |`);
+  lines.push(`| ${r.family} | \`${r.model}\` | ${r.error ? 'error' : '`' + r.served + '`' + (r.servedOk ? '' : ' (mismatch, discarded)')} | ${r.error ? r.error.slice(0, 60) : r.parsed ? r.parsed.verdict + (r.parsed.trailingCommas ? ' (read without its trailing commas)' : '') : 'not counted: ' + r.unparsed} | ${Math.round(r.ms / 1000)} s | ${r.cost != null ? '$' + Number(r.cost).toFixed(4) : 'n/a'} |`);
 }
 for (const r of counted) {
   const fails = r.parsed.items.filter((i) => i.result !== 'HOLDS');

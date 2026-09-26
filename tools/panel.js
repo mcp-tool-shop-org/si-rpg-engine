@@ -15,9 +15,10 @@ export const PANEL = [
   { via: 'ollama', model: 'glm-5.3:cloud', family: 'Z.ai', maxTokens: 131072 },
   // Standby seats, used only when named with --seats. deepseek-v4-pro thought past its output
   // budget on PR #59 (65,536 tokens of thought, no answer) and is standby until a run shows it
-  // answering a pull request of this size.
-  { via: 'ollama', model: 'deepseek-v4-pro:cloud', family: 'DeepSeek', maxTokens: 131072, standby: true },
-  { via: 'ollama', model: 'nemotron-3-ultra:cloud', family: 'NVIDIA', maxTokens: 131072, standby: true },
+  // answering a pull request of this size. Ollama Cloud serves both with at most 65,536 output
+  // tokens, and refused a larger budget with HTTP 400 on PR #95, so that is what they ask for.
+  { via: 'ollama', model: 'deepseek-v4-pro:cloud', family: 'DeepSeek', maxTokens: 65536, standby: true },
+  { via: 'ollama', model: 'nemotron-3-ultra:cloud', family: 'NVIDIA', maxTokens: 65536, standby: true },
 ];
 
 /** The largest output budget the runner will ask for, per transport. */
