@@ -19,7 +19,7 @@
 //   named defect against the code; a reviewer whose served model differs from the one asked for
 //   is discarded, never counted.
 // - NAMED_COMPENSATORS 2: the runner's only irreversible act is spending model tokens (bounded:
-//   one call per seat, seven seats, a size cap on the prompt, an owner-accepted cost recorded per
+//   one call per seat, six by default, a size cap on the prompt, an owner-accepted cost recorded per
 //   call). Posting the
 //   summary to the pull request is undone by deleting the comment (owner: coordinator).
 // - DECOMPOSE_BY_SECRETS 3: the panel (panel.js), the rubric and message (prompt.js), and the
@@ -29,9 +29,10 @@
 //   lone BLOCK is checked against the code by the coordinator; a corroborated BLOCK, or a BLOCK
 //   the coordinator cannot refute, goes back to the builder, and a disagreement about design goes
 //   to the Director, framed contrastively.
-// - EXTERNAL_VERIFIER 3: the panel is seven families other than the author's (xAI, Google,
-//   Moonshot, Z.ai, DeepSeek, NVIDIA, MiniMax), none sees the author's reasoning, and the
-//   served-model check is enforced.
+// - EXTERNAL_VERIFIER 3: the default panel is six Ollama Cloud families other than the author's
+//   (Moonshot, Z.ai, DeepSeek, NVIDIA, MiniMax, Mistral). OpenAI and Google sit on standby and
+//   are named with --seats. None sees the author's reasoning, and the served-model check is
+//   enforced.
 //
 // Text the pull request's author wrote, or its code printed, is fenced in the message as untrusted
 // data (prompt.js), and the dispatch comes from the base branch, so a pull request cannot rewrite
@@ -261,7 +262,8 @@ if (process.argv.includes('--dry-run')) {
 process.stderr.write(`prompt ${prompt.length} characters; ${g.omitted.length} files not sent; calling ${panel.length} reviewers\n`);
 // Ollama Cloud serves this account OLLAMA_CONCURRENCY requests at once (panel.js). Under the
 // earlier plan it served one: on #74 two seats at once failed with HTTP 429, and the seats took
-// turns. The Ollama seats now run together, up to that number, beside the OpenRouter seats.
+// turns. The Ollama seats now run together, up to that number. The shipped panel has no
+// OpenRouter seat.
 // review() never throws, so one seat's failure frees its slot for the next.
 let ollamaRunning = 0;
 /** @type {Array<() => void>} */
