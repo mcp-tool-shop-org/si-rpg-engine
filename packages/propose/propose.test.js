@@ -427,6 +427,7 @@ test('the source check goes red on a second way into the tick, however it is spe
   const hidden = [
     'export const quick = (tick, p) => /a\\//.test(p.verb) && tick.submit(p);\n',
     'export const quick = (tick, p) => /[/*]/.test(p.verb) && tick.submit(p);\n',
+    'export const quick = (tick, p) => /[/]*\\//.test(p.verb) && tick.submit(p);\n',
     'export const quick = (tick, p) => /\'/.test(p.verb) && p.url !== \'http://x\' && tick.submit(p);\n',
     'export function quick(tick, p) {\n  if (p) /a\\//.test(p.verb) && tick.submit(p);\n}\n',
     'export const quick = (tick, p) => `${`//`}` && tick.submit(p);\n',
