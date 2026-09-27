@@ -1,0 +1,428 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "fixtures/bench/room.json",
+  "lateQuanta": 0,
+  "seed": 5,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.75,
+        "y": 0.26,
+        "z": 0.75,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.75,
+        "y": 0.26,
+        "z": 0.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 4,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-west",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-east",
+        "minX": 3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-south",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-north",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": 2,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "ledge",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0,
+        "maxY": 0.35,
+        "minZ": 1.25,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "step",
+        "minX": 1.25,
+        "maxX": 2,
+        "minY": 0,
+        "maxY": 0.25,
+        "minZ": 1.5,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      }
+    ],
+    "zones": [
+      {
+        "id": "yard",
+        "minX": 0,
+        "maxX": 1.25,
+        "minY": 0,
+        "maxY": 2,
+        "minZ": 0,
+        "maxZ": 2
+      },
+      {
+        "id": "shelf",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0.35,
+        "maxY": 2,
+        "minZ": 1.25,
+        "maxZ": 2
+      }
+    ],
+    "name": "bench-room"
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "2b0ed709d8aaceb8e28176ad0cb2e9f07b852bc22cf96a56cb6b913ccd33dde0",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 1,
+      "record": "a6cca246092d19496e8a1211fe3c725ea37da7def280f8876ae284830a3fe7b5",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 2,
+      "record": "beac75f32b2b9ce9f9bac2e6364b0ebefc3c6f601284587b0fa2f835f72b1086",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 3,
+      "record": "1c728ce0a8e17e37b48feb7ae645d92b5c6696acac0065ea4eec064edfb5afcf",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider step",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 4,
+      "record": "39d5420a07430ad37505f2140218a6678d55d8ab2454288f00f0a6d59b2467aa",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider step",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 5,
+      "record": "3432119aa3c4fd96123c624dc7f0bf43b19b1057a265c0a1998cfb13c30098bb",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider step",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 6,
+      "record": "2bda58c3c00b8af5c2cef08d5697a75d14bb42de028ee0bbfe1da6a80d2a2c65",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 7,
+      "record": "b1593dfc9e2afb20c129335f7803a598671510f4248e07154b8a6126a139ead0",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider step",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "11f8e358cd7ab927573a0cd17fa2c2ad8338a6cf0a213ddbf3f5272a02b0d7f3",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider step",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "0443b9f666a643e6e6982d6b5e0bdd7afcf5e8f1af5f64650e9429b9b6a003f8",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider step",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "910d9a9cf273b2d2ce58ce3ec870a07feaa6586d5a6b704271ae578b550c022f",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "6b3a94a6784e3f6b75b2ed1c4311d088f11b34ced1ec59ce148e413bf10b9667",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 12,
+      "record": "acb98f60d25496e25b1f06800b88597893220f5ad95cffd7a92d270ac158f55a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "b17136ab77900babc7367c86a2c8c276ff7bdb3e911ff8175e91bfb944937045",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "5aff3130aef32ddb9551148c39616a13372d5e9edf10fee1db0282ea87063ffe",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "93883fbee393c4205a734c4784f6b3da016a5464b249484e8b8d76e1a16abff1",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 0,
+    "hash": "2b8902581c5659b7"
+  },
+  "frames": [
+    "2b8902581c5659b7"
+  ]
+}

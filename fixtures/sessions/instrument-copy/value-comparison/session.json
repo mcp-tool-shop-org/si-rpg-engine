@@ -1,0 +1,1004 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "fixtures/bench/room.json",
+  "lateQuanta": 0,
+  "seed": 5,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.75,
+        "y": 0.26,
+        "z": 0.75,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.75,
+        "y": 0.26,
+        "z": 0.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 4,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-west",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-east",
+        "minX": 3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-south",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-north",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": 2,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "ledge",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0,
+        "maxY": 0.35,
+        "minZ": 1.25,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "step",
+        "minX": 1.25,
+        "maxX": 2,
+        "minY": 0,
+        "maxY": 0.25,
+        "minZ": 1.5,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      }
+    ],
+    "zones": [
+      {
+        "id": "yard",
+        "minX": 0,
+        "maxX": 1.25,
+        "minY": 0,
+        "maxY": 2,
+        "minZ": 0,
+        "maxZ": 2
+      },
+      {
+        "id": "shelf",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0.35,
+        "maxY": 2,
+        "minZ": 1.25,
+        "maxZ": 2
+      }
+    ],
+    "name": "bench-room"
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "98c85743d211dc0e2db7050a77ca61de62bf35ee0da99efd163e5d6d678e6be4",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 1,
+      "record": "4cac3850c6610ff0e6d1e53d8c68502485cc9fe470c9211ba8c5e0836495ef48",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "target must name a body or a zone",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 2,
+      "record": "1e44e793f4c1e43f60b49c9b214f79be3b29b8a17aca2bc640613e4012dd9698",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 3,
+      "record": "1814ae3d3018b8806febadd37f6ef6c415868efb411893eb99e6d9f3170361e8",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 4,
+      "record": "f6b5a53baa2720f5a3c485c00595c8133c32a350fec5c3493301a4a71dd3a951",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 5,
+      "record": "83aaafd48728b306aac9300e6afb3b42b39b4994de7a63a663f8666bad82ee8f",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 6,
+      "record": "6bdfc9858818307b92979af9a5b34c540a2f067864958de57218bedee71ef73f",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 7,
+      "record": "cabc702ec05ff91a9e47a5c895abbc222ed9cae1898f0acb3c1392c7327ae42b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "6c96a96d68cac1a8b2f0887c66c9d690f402805ef0af6649ecec25a686d12785",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "6c306b05e1ec717c988b7f17da4e2c50c35919b6a7fe43304fc8cab8a01032ce",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "e52ba0faad61b3d5859336f3e824410eb9e036529fefdf26b3110ecfa6838dcd",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "5ca00c69faf9d7bbf5922239d6d1905821a4b658da4aac142a064b393315df07",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 12,
+      "record": "5c6981ae5138f2f3dfd06e3431f2033710ca45b296b1b74fc1c6856e555cc448",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "6908877199cbadbec8ab4f0495507f25bf14aae35719698f9c0dba7d28be3d42",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "d4f4856b6d21f7130b9906246d998673299928981d8e372b170a0319131ddd7d",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "b7ef56b51b72cbb3434714ffb2c265e2cefc2dbd26e33cf1548987e7f1ca53af",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 16,
+      "record": "851629dbe50ddd6363c3403d722e6f16578b95e5c8b4f80256e487cf5c2346a7",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 17,
+      "record": "3fd3881c3f7c5962bcfeb278a1a1e76989ebf35586ededfa2b52e877623a756b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 18,
+      "record": "d604d0dd9a0d8de304815458858db970292c8ee4ab739c34924d38317a75c134",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 19,
+      "record": "78ea3946b901cc25b023e1a714c96356a6fbefb8a7b21c35ca6ab3aae6977a02",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 20,
+      "record": "db538a5ab3881f61a4eeef09f8f4f5b8359276c463e0a1478ffc6bcb2ae8bd8d",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 21,
+      "record": "466f691b1b82aaff434b501112a307030b99a09f76af47573badd756bf4fdd3a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 22,
+      "record": "c81e210eee1e0d6ff5570c7ed6a032ca9e2918173f569814b0e779916b20086d",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 23,
+      "record": "1d7853d244908a95c142c59c93b29e029f0efce6b7ad54e2a19c69ac40e2b584",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 24,
+      "record": "be140fa412ed5e53f8de47203ed55108b3862373c2085905c0fcbdaf58dc6030",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 25,
+      "record": "23639706fc7346be693fb2c1c1494eab692843733f4e07ee0d0294dcc9dc3743",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 26,
+      "record": "ab12d4ad85635e02e790d428ed7fb681da8510edee4152937f818c0999b0570a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 27,
+      "record": "8bcdb07339d05093544bee09060aab587598668afe2e0edf0139fa4d5d91c999",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 28,
+      "record": "c402b0ee7f56e0c9b46a1c813c8750896e441a94af0006459d9b37f5ff7706fb",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 29,
+      "record": "3d9ab570341b5b669fb6b9fb7898933ddf98776b307dbfb5bfe678153ad2cd2e",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 30,
+      "record": "6526811cce42cc12d240759550a8bf6dc52a50abcf07390d443533e915adb17b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 31,
+      "record": "712bdcf9a9951270b1ebe2e9496e4915fbd0ea44bd2a6ab2c1809dd29aaafef0",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 32,
+      "record": "c36ec56fb29469ea9d290aa5f08e20ff07c09ae5a4169ac1469431119cea0846",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 33,
+      "record": "77f517d0e36e3ab4e5898d2b3d599e7951d0aa4bbd7959568394b727fa7dea67",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 34,
+      "record": "3d903f42507986345e60086c743cfe78f4845ff4fc6c5183c748298bd52ae413",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 35,
+      "record": "8a9f0b0f27d6f7291eb194924c33c21fc9c2710b3455ffa098dfad63cc354b6a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 36,
+      "record": "f22a6d6da1c67723bcc2dca5593e3b0b45f145d24cb78b5ade48309cc7950e14",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 37,
+      "record": "1835bcd1cdb1f47d8a0e06c5be4cffbddf5fefa828461397549405cc4b081d49",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 38,
+      "record": "343e4346e83d4350ff028de4739b0eeb5f3c114d29e2e8f3f980ba889c8af6e2",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 39,
+      "record": "4524eebb7af9998e8ee02283a3371407dca8afa05ca82be715aa73cf62a611b1",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 40,
+      "record": "0490550a73c4c4388a055df4c610ab1bd218802eb9096ed60e3a59e0c87997d8",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 41,
+      "record": "8f5daecb1bbc06bc2b1a3dae97684369cf30684c19b023956e354898fc579fd6",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 42,
+      "record": "a2831fb64b49b089912b5fc64bd9aca04f93f1d3982203670247b67b2491871a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 43,
+      "record": "5e991eb791ef557043371666500d84c1839120b9ca213a696f854d22b57b5289",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 44,
+      "record": "67795a376877669ac88b94feb763c71180b77d5458872ecedeeb827539c8b82c",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 45,
+      "record": "459cf758ed3dfe650569ef19b06ee1d278c246f2801f0deb238309a3f271802c",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 46,
+      "record": "d20999ec85a9faa4aaaee4c606945b311cac4c968f3ed6c9c70191094501b4e3",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 47,
+      "record": "8d42c817887f16d6282c4bb8b3f315fb2d873acedc148570ec740b58af7fd7c7",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 48,
+      "record": "a010976e065dea544f52e2ba580903d69bf5a86b38a4d8cd46d5e8bacbaaa4b1",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 49,
+      "record": "8f3b0a8c1b035fd41b70f3a68cab6bf69d7c207beefb9d839bcd6348351c9ac4",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 50,
+      "record": "9e281bba9459edd0027c68d43c7ee9b71e0893e848db83dabed50eab13163af9",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 51,
+      "record": "0255fdeb38e0f19285597afa499490647cd65818a6c7062b4377f5241dceec5a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 52,
+      "record": "0a9094b18e79a13a1438f328be1210bc2c18575f73844904ae645e7002fe614c",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 53,
+      "record": "89a29967fca391706c9e800dea55a7f7c3108419f27b68008b701020597d5a73",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 54,
+      "record": "041d90f8a010729dc6f5f6992f3b2a3b7d9e30f208112e17fb04e2308da50969",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 55,
+      "record": "f78f3fde0e3713ac16f06142a2612b015258ab61b840e0ae90b8cc4474f6f787",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 56,
+      "record": "08799319433b2a9a9118a24cfb6c152dadfe54f0dc13dc82678284ab98b6ea6f",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 57,
+      "record": "b689478dd9edf5482c82950ac0b1c3633dc23a86049917aca95183f32da1e98b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 58,
+      "record": "61e24a304be57d6976f97bfac25b9378041f707f4b45e9aaa48f242c46f90702",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 59,
+      "record": "d301aa08f64e0722099cdc47b40f1cd6d191a4da866cb6da9f7a3e01f6ace86e",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 60,
+      "record": "e51d77a2ffd75f9dea6ae7e1c19ab703154a60d6717ba8e8fbe4c5d79ab91693",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 61,
+      "record": "4025f6acc697345daa1fd0446bac4e1e25fd92d57bd8e6f4c16e5cededd21b01",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 62,
+      "record": "ab2cd0f5e10dd4ad06dc323ed27f216ed8cd8f9c9c7c88153f91ef21e6a27d1b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 63,
+      "record": "0bbab5a1612ff6e237b6d8eee792f278bbd04a26746cd050037cf5b97808aa70",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider ledge",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 0,
+    "hash": "2b8902581c5659b7"
+  },
+  "frames": [
+    "2b8902581c5659b7"
+  ]
+}

@@ -1,0 +1,777 @@
+{
+ "bench": 1,
+ "seed": 1,
+ "budgets": {
+  "sweep": {
+   "quanta": 6000,
+   "restores": 60
+  },
+  "ladder": {
+   "quanta": 12000,
+   "restores": 120
+  }
+ },
+ "grammar": {
+  "share": 0.5,
+  "pitch": 0.5,
+  "steps": 3
+ },
+ "refused": null,
+ "anchors": [
+  {
+   "id": "rule:predicates/intents/push.json:push",
+   "kind": "rule",
+   "file": "predicates/intents/push.json",
+   "name": "push",
+   "lines": [
+    [
+     3,
+     3
+    ]
+   ],
+   "side": "head",
+   "approximate": false,
+   "observable": "observable",
+   "why": "a rule decides an admission",
+   "executable": [
+    3
+   ],
+   "noExecutableChange": false,
+   "runsAtLoad": false,
+   "removed": false,
+   "identifiers": [],
+   "verb": "push",
+   "hazard": null,
+   "reachedBy": [
+    "restore",
+    "window"
+   ],
+   "entries": 44,
+   "linesReached": [
+    3
+   ],
+   "reached": true,
+   "verdict": "reached",
+   "differences": 16,
+   "wording": "no trace difference"
+  }
+ ],
+ "notAimed": [],
+ "worldsDiffer": [],
+ "binaries": {
+  "mode": "solver/ has no diff: every tree runs the head's product binary file, copied byte for byte"
+ },
+ "coverage": {
+  "made": false,
+  "why": "no law anchor",
+  "productScene": "",
+  "canary": null
+ },
+ "suite": {
+  "ran": false,
+  "differences": []
+ },
+ "worlds": [
+  {
+   "world": "fixtures/bench/room.json",
+   "sweep": {
+    "cells": 21,
+    "tried": 208,
+    "admitted": 59,
+    "refused": 149,
+    "quanta": 5791,
+    "restores": 60,
+    "complete": false,
+    "actionSet": "push at each body not carried; move to the centres of the 8 neighbouring cells; climb 1, 2, 3 cells out in 8 directions; pick-up at each body not carried; drop, while carrying, 1, 2, 3 cells out in 8 directions; use not swept; one actor at a time, the others taking no action, from settled states only",
+    "findings": []
+   },
+   "grammar": {
+    "verbs": [
+     "push",
+     "move",
+     "climb",
+     "pick-up",
+     "drop",
+     "use"
+    ],
+    "reachedVerbs": [
+     "push"
+    ],
+    "otherVerbs": [
+     "move",
+     "climb",
+     "pick-up",
+     "drop",
+     "use"
+    ]
+   }
+  }
+ ],
+ "proposers": {
+  "sweep": {
+   "proposed": 208,
+   "refused": 149,
+   "refusals": {
+    "move steps it": 130,
+    "nothing is under the point": 6,
+    "path crosses collider step": 5,
+    "path crosses collider wall-south": 3,
+    "path crosses collider wall-west": 3,
+    "path crosses collider ledge": 2
+   },
+   "admitted": 0,
+   "ran": 0,
+   "unrun": 0,
+   "groups": {
+    "fixtures/bench/room.json group 1": 6,
+    "fixtures/bench/room.json group 2": 53
+   },
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 0,
+    "differ": 0,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [],
+   "observable": {},
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "grammar": {
+   "proposed": 11,
+   "refused": 2,
+   "refusals": {
+    "actor is not in zone yard": 1,
+    "nothing is carried": 1
+   },
+   "admitted": 9,
+   "ran": 11,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 8,
+    "differ": 11,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [
+    "rule:predicates/intents/push.json:push"
+   ],
+   "observable": {
+    "rule:predicates/intents/push.json:push": "observable"
+   },
+   "mutants": {
+    "caught": [
+     "m1",
+     "m2",
+     "m3",
+     "m4"
+    ]
+   },
+   "linesReached": {
+    "rule:predicates/intents/push.json:push": [
+     3
+    ]
+   },
+   "floods": [],
+   "differences": [
+    {
+     "id": "c60",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 37, body walker, field x",
+     "block": "first difference at tick 37\nbody walker field x\n  head 3fe8bbad08e9cb31 0.7729096578681035\n  base 3fe87c2b8dd8894d 0.7651574869562779\n",
+     "bundle": "bundles/c60.bundle.json"
+    },
+    {
+     "id": "c61",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 37, body walker, field x",
+     "block": "first difference at tick 37\nbody walker field x\n  head 3fe8bbad08e9cb31 0.7729096578681035\n  base 3fe87c2b8dd8894d 0.7651574869562779\n",
+     "bundle": "bundles/c61.bundle.json"
+    },
+    {
+     "id": "c62",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 37, body walker, field x",
+     "block": "first difference at tick 37\nbody walker field x\n  head 3fe8bbad08e9cb31 0.7729096578681035\n  base 3fe87c2b8dd8894d 0.7651574869562779\n",
+     "bundle": "bundles/c62.bundle.json"
+    },
+    {
+     "id": "c63",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 105, body walker, field x",
+     "block": "first difference at tick 105\nbody walker field x\n  head 3fe8bd61fd9c51bc 0.7731180146534409\n  base 3fe87dd69f6cdc42 0.7653611291669977\n",
+     "bundle": "bundles/c63.bundle.json"
+    },
+    {
+     "id": "c64",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 105, body walker, field x",
+     "block": "first difference at tick 105\nbody walker field x\n  head 3fe8bd61fd9c51bc 0.7731180146534409\n  base 3fe87dd69f6cdc42 0.7653611291669977\n",
+     "bundle": "bundles/c64.bundle.json"
+    },
+    {
+     "id": "c65",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 105, body walker, field x",
+     "block": "first difference at tick 105\nbody walker field x\n  head 3fe8bd61fd9c51bc 0.7731180146534409\n  base 3fe87dd69f6cdc42 0.7653611291669977\n",
+     "bundle": "bundles/c65.bundle.json"
+    },
+    {
+     "id": "c66",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 37, body walker, field x",
+     "block": "first difference at tick 37\nbody walker field x\n  head 3fe8bbad08e9cb31 0.7729096578681035\n  base 3fe87c2b8dd8894d 0.7651574869562779\n",
+     "bundle": "bundles/c66.bundle.json"
+    },
+    {
+     "id": "c67",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 37, body walker, field x",
+     "block": "first difference at tick 37\nbody walker field x\n  head 3fe8bbad08e9cb31 0.7729096578681035\n  base 3fe87c2b8dd8894d 0.7651574869562779\n",
+     "bundle": "bundles/c67.bundle.json"
+    },
+    {
+     "id": "c68",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 37, body walker, field x",
+     "block": "first difference at tick 37\nbody walker field x\n  head 3fe8bbad08e9cb31 0.7729096578681035\n  base 3fe87c2b8dd8894d 0.7651574869562779\n",
+     "bundle": "bundles/c68.bundle.json"
+    },
+    {
+     "id": "c69",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 105, body walker, field x",
+     "block": "first difference at tick 105\nbody walker field x\n  head 3ff49c93a38503e6 1.2882267367824567\n  base 3ff47d05629a7d76 1.2805227138231579\n",
+     "bundle": "bundles/c69.bundle.json"
+    },
+    {
+     "id": "c70",
+     "world": "fixtures/bench/room.json",
+     "summary": "at tick 105, body walker, field x",
+     "block": "first difference at tick 105\nbody walker field x\n  head 3ff49c93a38503e6 1.2882267367824567\n  base 3ff47d05629a7d76 1.2805227138231579\n",
+     "bundle": "bundles/c70.bundle.json"
+    }
+   ],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": "c70",
+     "admittedBefore": 9,
+     "lateGain": {
+      "lines": 0,
+      "differences": 0
+     }
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "model": {
+   "proposed": 8,
+   "refused": 0,
+   "refusals": {},
+   "admitted": 8,
+   "ran": 8,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 8,
+    "differ": 8,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [
+    "rule:predicates/intents/push.json:push"
+   ],
+   "observable": {
+    "rule:predicates/intents/push.json:push": "observable"
+   },
+   "mutants": {},
+   "linesReached": {
+    "rule:predicates/intents/push.json:push": [
+     3
+    ]
+   },
+   "floods": [
+    {
+     "line": "every one of the 8 candidates compared differs the same way: at tick 1, body walker, field x",
+     "ids": [
+      "c71",
+      "c72",
+      "c73",
+      "c74",
+      "c75",
+      "c76",
+      "c77",
+      "c78"
+     ]
+    }
+   ],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "control": {
+   "proposed": 0,
+   "refused": 0,
+   "refusals": {},
+   "admitted": 0,
+   "ran": 0,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 0,
+    "differ": 0,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [],
+   "observable": {},
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  }
+ },
+ "controls": [],
+ "findings": {
+  "head": [],
+  "base": []
+ },
+ "spent": {
+  "quanta": 24820,
+  "restores": 20
+ },
+ "mutants": {
+  "note": "The mutants measure the candidates' sensitivity at the change, not the aim, which is the access map's to measure.",
+  "cap": 64,
+  "list": [
+   {
+    "id": "m1",
+    "anchor": "rule:predicates/intents/push.json:push",
+    "file": "predicates/intents/push.json",
+    "line": 3,
+    "operator": "numeric constant",
+    "detail": "1.5 to 1.5000000000000002, one unit in its last place up",
+    "kind": "data",
+    "marked": false,
+    "verdict": "caught",
+    "why": "separated by a trace difference at tick 37 on c60",
+    "separatedBy": {
+     "input": "c60",
+     "rung": "rung 2",
+     "by": "a trace difference at tick 37"
+    },
+    "build": "the head's product build"
+   },
+   {
+    "id": "m2",
+    "anchor": "rule:predicates/intents/push.json:push",
+    "file": "predicates/intents/push.json",
+    "line": 3,
+    "operator": "numeric constant",
+    "detail": "1.5 to 1.4999999999999998, one unit in its last place down",
+    "kind": "data",
+    "marked": false,
+    "verdict": "caught",
+    "why": "separated by a trace difference at tick 37 on c60",
+    "separatedBy": {
+     "input": "c60",
+     "rung": "rung 2",
+     "by": "a trace difference at tick 37"
+    },
+    "build": "the head's product build"
+   },
+   {
+    "id": "m3",
+    "anchor": "rule:predicates/intents/push.json:push",
+    "file": "predicates/intents/push.json",
+    "line": 3,
+    "operator": "numeric constant",
+    "detail": "1.5 to 1.6500000000000001, times 1.1",
+    "kind": "data",
+    "marked": false,
+    "verdict": "caught",
+    "why": "separated by a trace difference at tick 37 on c60",
+    "separatedBy": {
+     "input": "c60",
+     "rung": "rung 2",
+     "by": "a trace difference at tick 37"
+    },
+    "build": "the head's product build"
+   },
+   {
+    "id": "m4",
+    "anchor": "rule:predicates/intents/push.json:push",
+    "file": "predicates/intents/push.json",
+    "line": 3,
+    "operator": "numeric constant",
+    "detail": "1.5 to 1.35, times 0.9",
+    "kind": "data",
+    "marked": false,
+    "verdict": "caught",
+    "why": "separated by a trace difference at tick 37 on c60",
+    "separatedBy": {
+     "input": "c60",
+     "rung": "rung 2",
+     "by": "a trace difference at tick 37"
+    },
+    "build": "the head's product build"
+   }
+  ],
+  "leftOut": [],
+  "byVerdict": {
+   "caught": [
+    {
+     "id": "m1",
+     "operator": "numeric constant",
+     "file": "predicates/intents/push.json",
+     "line": 3,
+     "detail": "1.5 to 1.5000000000000002, one unit in its last place up",
+     "anchor": "rule:predicates/intents/push.json:push"
+    },
+    {
+     "id": "m2",
+     "operator": "numeric constant",
+     "file": "predicates/intents/push.json",
+     "line": 3,
+     "detail": "1.5 to 1.4999999999999998, one unit in its last place down",
+     "anchor": "rule:predicates/intents/push.json:push"
+    },
+    {
+     "id": "m3",
+     "operator": "numeric constant",
+     "file": "predicates/intents/push.json",
+     "line": 3,
+     "detail": "1.5 to 1.6500000000000001, times 1.1",
+     "anchor": "rule:predicates/intents/push.json:push"
+    },
+    {
+     "id": "m4",
+     "operator": "numeric constant",
+     "file": "predicates/intents/push.json",
+     "line": 3,
+     "detail": "1.5 to 1.35, times 0.9",
+     "anchor": "rule:predicates/intents/push.json:push"
+    }
+   ]
+  },
+  "none": []
+ },
+ "notMeasured": {
+  "notAimed": [],
+  "notSeenApproximate": [],
+  "notReached": [],
+  "runsAtLoad": [],
+  "noExecutableChange": [],
+  "removed": [],
+  "unrun": [],
+  "mutantsNotReached": [],
+  "mutantsNotScored": [],
+  "mutantsNone": []
+ },
+ "arms": [
+  {
+   "world": "fixtures/bench/room.json",
+   "start": {
+    "index": 11,
+    "candidate": null
+   },
+   "M": {
+    "calls": 8,
+    "quanta": 12240,
+    "restores": 8,
+    "findings": {
+     "lines": [],
+     "differences": [],
+     "mutants": []
+    }
+   },
+   "G": {
+    "quanta": 2965,
+    "restores": 8,
+    "extended": true,
+    "findings": {
+     "lines": [],
+     "differences": [],
+     "mutants": []
+    }
+   }
+  }
+ ],
+ "environment": {
+  "trees": {
+   "head": {
+    "path": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\push-head",
+    "commit": "df24f4d82b6e60c31abb66d98db0ac5f0d270b2d",
+    "digest": "638fa11135c4efc692e4b05fd855e2d63a7a0f8ac14558ef5ffe9fb774e4d891"
+   },
+   "base": {
+    "path": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\push-base",
+    "commit": "df24f4d82b6e60c31abb66d98db0ac5f0d270b2d",
+    "digest": "05438b1a465967367f2345eb640e4383fb414304d75a62cd5aacdba306d5919f"
+   }
+  },
+  "binaries": {
+   "head": "9ff6d183d8c76ead2a3b37ab59df3bf1f7336f654d854d6bf186e47e98b46f3e",
+   "base": "9ff6d183d8c76ead2a3b37ab59df3bf1f7336f654d854d6bf186e47e98b46f3e",
+   "files": {
+    "head": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "base": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf"
+   },
+   "jsMutants": {
+    "m1": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "m2": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "m3": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "m4": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf"
+   }
+  },
+  "host": {
+   "platform": "win32",
+   "arch": "x64",
+   "cpus": 24,
+   "node": "v22.22.3"
+  },
+  "times": {
+   "anchors": 1753,
+   "product builds": 385,
+   "processes": 548,
+   "sweep fixtures/bench/room.json": 1851,
+   "sweep ladder fixtures/bench/room.json": 1856,
+   "grammar ladder fixtures/bench/room.json": 3554,
+   "model fixtures/bench/room.json": 8102,
+   "controls": 0,
+   "mutants": 4322,
+   "total": 22371
+  },
+  "paths": {
+   "out": "E:\\AI\\si-verify\\t7c-runs\\value-push",
+   "work": "E:\\AI\\si-verify\\t7c-runs\\value-push\\work"
+  },
+  "processes": {
+   "head": {
+    "pid": 12176,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\push-head",
+    "build": "product",
+    "calls": 25,
+    "ms": 6135,
+    "quanta": 27785
+   },
+   "base": {
+    "pid": 30220,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\push-base",
+    "build": "product",
+    "calls": 25,
+    "ms": 2585,
+    "quanta": 27413
+   },
+   "sweep": {
+    "pid": 32784,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\push-head",
+    "build": "product"
+   }
+  },
+  "model": {
+   "timeouts": 0,
+   "calls": [
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 0,
+     "ms": 741.9391000000005,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 1,
+     "ms": 359.08549999999923,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 2,
+     "ms": 459.48119999999926,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 3,
+     "ms": 411.09630000000016,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 4,
+     "ms": 400.52509999999893,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 5,
+     "ms": 487.2566999999999,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 6,
+     "ms": 418.17029999999977,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 7,
+     "ms": 430.29269999999997,
+     "timedOut": false
+    }
+   ]
+  },
+  "mutants": {
+   "m1": {
+    "pid": 12076,
+    "ms": 212
+   },
+   "m2": {
+    "pid": 24528,
+    "ms": 218
+   },
+   "m3": {
+    "pid": 24536,
+    "ms": 210
+   },
+   "m4": {
+    "pid": 9572,
+    "ms": 211
+   }
+  }
+ }
+}

@@ -104,44 +104,30 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 1,
-      "changed": 22,
+      "added": 535,
+      "changed": 0,
       "moved": 0,
-      "parts": 4,
+      "parts": 1,
       "removed": 0
     },
     "items": [
       {
-        "kind": "cycle",
-        "sentence": "propose now imports bench, which closes the cycle propose → bench → propose.",
+        "kind": "landing",
+        "sentence": "fixtures/t7c-runs/ is now written by tools/coordinator/t7c-runs.mjs.",
         "subjects": [
-          "propose",
-          "bench"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "packages/bench/mutants.test.js now starts at quanta run; it started at on.",
-        "subjects": [
-          "packages/bench/mutants.test.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "packages/propose/record.test.js now starts at verify in head; it started at rekey.",
-        "subjects": [
-          "packages/propose/record.test.js"
+          "fixtures/t7c-runs/",
+          "tools/coordinator/t7c-runs.mjs"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "1 file added and 22 changed content, across 4 parts.",
+        "sentence": "535 files added, across 1 part.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "6abc0a564efdfa9ffffccba6fee3ce1aac1a8ab7",
-      "generatedAt": "2026-09-26T22:23:00.803Z"
+      "commit": "2f8e4dcbb5b58996558f6e03c59ed03f6a122632",
+      "generatedAt": "2026-09-27T00:30:09.256Z"
     },
     "unchanged": false
   },
@@ -228,7 +214,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 14 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "2f8e4dcbb5b58996558f6e03c59ed03f6a122632",
+  "commit": "aa90e0026358de8508117fbf3a725953fa39164c",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -810,13 +796,19 @@
       "writers": [
         "harness/corpus.mjs"
       ]
+    },
+    {
+      "place": "fixtures/t7c-runs/",
+      "writers": [
+        "tools/coordinator/t7c-runs.mjs"
+      ]
     }
   ],
-  "generatedAt": "2026-09-27T00:30:09.256Z",
+  "generatedAt": "2026-09-27T00:44:51.979Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 9 reads use paths built at run time and are not named here.",
-    "2 writes go to places this repository does not track, so they are not listed as generated.",
+    "1 write goes to places this repository does not track, so it is not listed as generated.",
     "51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
     "42 commands are built at run time and not followed, 36 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
@@ -2170,11 +2162,17 @@
       "writers": [
         "harness/law-runs.mjs"
       ]
+    },
+    {
+      "place": "fixtures/t7c-runs/",
+      "writers": [
+        "tools/coordinator/t7c-runs.mjs"
+      ]
     }
   ],
   "unreadFiles": 0,
   "unreadNote": [],
   "untested": [],
   "untestedNote": [],
-  "written": 5
+  "written": 6
 }

@@ -1,0 +1,872 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "fixtures/bench/room.json",
+  "lateQuanta": 0,
+  "seed": 5,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.75,
+        "y": 0.26,
+        "z": 0.75,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.75,
+        "y": 0.26,
+        "z": 0.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 4,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-west",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-east",
+        "minX": 3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-south",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-north",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": 2,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "ledge",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0,
+        "maxY": 0.35,
+        "minZ": 1.25,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "step",
+        "minX": 1.25,
+        "maxX": 2,
+        "minY": 0,
+        "maxY": 0.25,
+        "minZ": 1.5,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      }
+    ],
+    "zones": [
+      {
+        "id": "yard",
+        "minX": 0,
+        "maxX": 1.25,
+        "minY": 0,
+        "maxY": 2,
+        "minZ": 0,
+        "maxZ": 2
+      },
+      {
+        "id": "shelf",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0.35,
+        "maxY": 2,
+        "minZ": 1.25,
+        "maxZ": 2
+      }
+    ],
+    "name": "bench-room"
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "240b2d1b7c35521f79b4c4987334a05b03a5c8a9e22ceecce0b57e7c447d3294",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 0
+    },
+    {
+      "call": 1,
+      "record": "ae91a109ea1783785d2cdc6124a76ce58d572eec04b1c74f2e96019aba875013",
+      "builtAt": {
+        "tick": 128,
+        "hash": "ec3eac4ffe7a0130"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 128
+    },
+    {
+      "call": 2,
+      "record": "d089290ef6712649e72fd235fe1ca445f5787c8374a11432f3d12e38a116d9d3",
+      "builtAt": {
+        "tick": 161,
+        "hash": "433196e2738f57f0"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 3,
+      "record": "9e1da8c552da57fbffae8c24e700ba6933435fd7f7200f011a51563b5a5c51a8",
+      "builtAt": {
+        "tick": 161,
+        "hash": "433196e2738f57f0"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 4,
+      "record": "196510de8293dbe79e168fd52527970d5ebdcdc927b1290070d36f09d707748a",
+      "builtAt": {
+        "tick": 161,
+        "hash": "433196e2738f57f0"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 161
+    },
+    {
+      "call": 5,
+      "record": "7563814235e07f17807d82d192e371d8feb1e79be1be1db2fe96587ea5ede17b",
+      "builtAt": {
+        "tick": 194,
+        "hash": "39d0b051eee926e7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 6,
+      "record": "d86faabe0833b8fdd72d93e05712afdd46278346873a0221933edf2b0543465a",
+      "builtAt": {
+        "tick": 194,
+        "hash": "39d0b051eee926e7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 7,
+      "record": "bd673167fd6791481bf64cfed5d1b2486310f5b97553138a6630883451f1f7ae",
+      "builtAt": {
+        "tick": 194,
+        "hash": "39d0b051eee926e7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "b969461bba3f715844a7493ae0b82de5f2bf9587cc7531db41c756b85de0f005",
+      "builtAt": {
+        "tick": 194,
+        "hash": "39d0b051eee926e7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "e36789138b955238da84853588629ee7bd858bf6e927ef6a4b3790a24fcb9c41",
+      "builtAt": {
+        "tick": 194,
+        "hash": "39d0b051eee926e7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "53dda56eb155e72ec5dc971528e068144bed23bbb58fa90a3033a33c1645fa9d",
+      "builtAt": {
+        "tick": 194,
+        "hash": "39d0b051eee926e7"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "daa3e630e6f7f2e645b6bf49fbdc3f5466a11ccd4af6715621ba849b30f192eb",
+      "builtAt": {
+        "tick": 194,
+        "hash": "39d0b051eee926e7"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 194
+    },
+    {
+      "call": 12,
+      "record": "2d90881d3e149dce32a5329799d7564eab9ea730c1cc5c252e4ebeb4521dea6a",
+      "builtAt": {
+        "tick": 227,
+        "hash": "7ea5a24325763027"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "ddeac09ee5980b85d93dabbfe53d75279d592c2b819ff357979dc2d221a3c625",
+      "builtAt": {
+        "tick": 227,
+        "hash": "7ea5a24325763027"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "5d692e89224a1986d441b0034b6f9b6ee39a4452de1406bf6db191874dd1e4b7",
+      "builtAt": {
+        "tick": 227,
+        "hash": "7ea5a24325763027"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "896826a113c66cb8d5201d9e854f37cc1ba3f7bf7710cd7515792e1d2c3bd84e",
+      "builtAt": {
+        "tick": 227,
+        "hash": "7ea5a24325763027"
+      },
+      "read": "ok",
+      "reason": "path crosses collider wall-east",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [
+    {
+      "tick": 0,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.75,
+          "z": 0.75
+        },
+        "frameHash": "2b8902581c5659b7"
+      },
+      "hash": "2b8902581c5659b7",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "dd554d57e2bd7635fbb3a8991b147dbd35281b2ed08260e0aa67b09aa14de904",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "240b2d1b7c35521f79b4c4987334a05b03a5c8a9e22ceecce0b57e7c447d3294",
+        "output": "ac52f00a3969dbd72d4108a7b799eb2198c23ab1376e12f5baf08245cfdfcc1d",
+        "builtAt": {
+          "tick": 0,
+          "hash": "2b8902581c5659b7"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 128,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.75,
+          "z": 0.75
+        },
+        "frameHash": "ec3eac4ffe7a0130"
+      },
+      "hash": "ec3eac4ffe7a0130",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "7b88693dfd8a7736b3aa12717dfdaa611dc9a1007acf072c725af2300f249d63",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "ae91a109ea1783785d2cdc6124a76ce58d572eec04b1c74f2e96019aba875013",
+        "output": "9548a2fd08cfa404c7a2dbe5a916db9b9a380acc88be17dfc6ae4ef8a5ddd31e",
+        "builtAt": {
+          "tick": 128,
+          "hash": "ec3eac4ffe7a0130"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 161,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.75,
+          "z": 0.75
+        },
+        "frameHash": "433196e2738f57f0"
+      },
+      "hash": "433196e2738f57f0",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "88a4cde9e6afc619916978996e89f432b836a6c3ae30b7c3e7482ab6683441bb",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "196510de8293dbe79e168fd52527970d5ebdcdc927b1290070d36f09d707748a",
+        "output": "cd1bf35235d1d9c0d988a20ab06fd0eb564b8ce1d9c43a983c4afc7768843569",
+        "builtAt": {
+          "tick": 161,
+          "hash": "433196e2738f57f0"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 194,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.75,
+          "z": 0.75
+        },
+        "frameHash": "39d0b051eee926e7"
+      },
+      "hash": "39d0b051eee926e7",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "f8c2a69bb8c93b9b25442e0f6e75b7387db856799d36311ea83fa0711eff4801",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "daa3e630e6f7f2e645b6bf49fbdc3f5466a11ccd4af6715621ba849b30f192eb",
+        "output": "e43fafea72e1d013cfbec134b6919a9cd3178abab9bd1290e095a69e67fbcb87",
+        "builtAt": {
+          "tick": 194,
+          "hash": "39d0b051eee926e7"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    }
+  ],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 227,
+    "hash": "7ea5a24325763027"
+  },
+  "frames": [
+    "2b8902581c5659b7",
+    "6a03c12b333ecce6",
+    "6adaceec03026546",
+    "4905e6318c63a0a7",
+    "64add358a16dd26e",
+    "1cba86f806051c25",
+    "669ed2780f658bb2",
+    "e277dfbc4c1abca1",
+    "52a49013a95dbfab",
+    "a51a3ac11e7478e5",
+    "b9fd6d998c5a8096",
+    "73d42726aa236714",
+    "a09b9da7c7acc580",
+    "913251f1f10a5102",
+    "d39892a03628f421",
+    "a87dc510f18f2779",
+    "87520306ae974f6f",
+    "d6edeeb72e5901d7",
+    "78d71fec8837489c",
+    "a8d65018eef745c6",
+    "649cfc5700e35e8d",
+    "adcff5de9d06873e",
+    "1993e4184d07629e",
+    "4fa59c516fc4553a",
+    "ad3857119e86baa9",
+    "e2bac075efd24aae",
+    "e654398ad959d09d",
+    "fdba15d4999446e6",
+    "723c3976bb4ce0f2",
+    "5d683096780ca622",
+    "93f4b414a10606a3",
+    "347bb96694306819",
+    "a32703e2eb3491f2",
+    "349c2a343a573656",
+    "535b80ca198cc456",
+    "17cda2c262ce415f",
+    "0620f62a66088e97",
+    "c1547964eafbe424",
+    "c8e2b5e5bd33c0ec",
+    "ed81cb42c182d351",
+    "8f5e097fdafa124d",
+    "c0cad7beb84ddd44",
+    "2d53602d57fd7436",
+    "b96c64c8e9bf11a9",
+    "b037fbee983a904d",
+    "db72c41a546e4518",
+    "e4b77575c9cecef9",
+    "0c77344c493113a2",
+    "c0a38f1197f04b80",
+    "ec3a858e845bc170",
+    "b64fd5fa23222af0",
+    "9ba931695d40ebcc",
+    "75f5d938305d980f",
+    "29abd492323ecef0",
+    "bfd9b7cd459cd79f",
+    "9352154656c2cdae",
+    "b9a482e58cac37fd",
+    "63317acca2a86ede",
+    "b25c6ffec6ac35be",
+    "10b6ead7f368c518",
+    "5c9f139026d234ef",
+    "154556402c16fcad",
+    "0ac0e1679fe6aacd",
+    "581edbb2181faabc",
+    "a75441539d2ea398",
+    "cbbaf1ce4795a337",
+    "7813e695ebbf0ed5",
+    "91d870902b01e47a",
+    "5a1af2009b062e40",
+    "ca9142df11e6d707",
+    "ed62fa4623ecd46b",
+    "2fe218a27b737109",
+    "f43f8dec08c2334e",
+    "912202e9092cc362",
+    "0aca51dbd2b33652",
+    "3010f89c225d2d80",
+    "1a111661d2d1696d",
+    "a5246db33f14a56f",
+    "c4a57b76bbd7fedf",
+    "be1fb2effaffddfc",
+    "becc1d6e9e993624",
+    "bdb894c2fead5947",
+    "13e8655400b19111",
+    "a84f40086975bac9",
+    "e1e4a059f3ffabff",
+    "fc4a785a4cedd4a0",
+    "2558006bc4b61f85",
+    "4430956dc83a0735",
+    "1164dee8c68b670e",
+    "766c480aad66599a",
+    "5358663e2bb10b75",
+    "7e92dce1bb5f55fc",
+    "a797eac620d2de17",
+    "33a98b132b4535be",
+    "88bb2dc6c04e65a9",
+    "c1bce176df86038f",
+    "04dc4b833c749059",
+    "fe38c5a7e7622813",
+    "69412ad0e1a9b76b",
+    "db8990efadee04a6",
+    "9478460bd50de27b",
+    "28b03e4772aa6f21",
+    "407d234837d4bb12",
+    "7d25d9285a647010",
+    "76d91e7eba4fe3b6",
+    "2beaef0ab66cf143",
+    "68d4ae41f3edccb2",
+    "855aaa77ccf4819e",
+    "225c1c3124374790",
+    "d4867e67ab57af1a",
+    "9604358bfca4b696",
+    "baf0f72df7a15f07",
+    "b97f5d8ca0f5e6d2",
+    "6acea91e8bbb3db7",
+    "38676e90d4cbf733",
+    "f7d7e86da10159ac",
+    "2d913f10adbdf64a",
+    "28e5037f0179f394",
+    "691400838bfbc776",
+    "cea1f858b30081fb",
+    "e755908183d8416b",
+    "3388b1e87f7d9e05",
+    "2c45d8c4e2d4ebac",
+    "d1db80d791294bfb",
+    "ce62297f355d1ff5",
+    "890d1ef3441cc627",
+    "56bc93a30777174b",
+    "bb1078832c6edea5",
+    "ec3eac4ffe7a0130",
+    "6e54cb3d33d3223e",
+    "b5d3d62a2e68a881",
+    "29c4157a283766b0",
+    "611a008c692dca6c",
+    "dd93a55b8839ab25",
+    "b883b8b901b08a48",
+    "b38e3c5af868aefc",
+    "5bab24977452aec4",
+    "0ae8734cc30a7c08",
+    "449ba95107009087",
+    "a7bdef92418e6d8d",
+    "0adb17e5dc43cf07",
+    "98f84d5d645512fb",
+    "618174222362e7ba",
+    "5207c456ad1b0825",
+    "952ae35d881119ab",
+    "49fec6a5966c988f",
+    "bb029930503d3e45",
+    "fa809f6f3cba0ee1",
+    "3b6339e2961342a8",
+    "1502eebd0f4f9a07",
+    "105c9d3d43f2f205",
+    "94065e91f8bf0ded",
+    "063db802a0608abf",
+    "3b155ebf088dc1aa",
+    "1ee8fb26f1f6f58d",
+    "84ba86b100becbd5",
+    "e8e60ebb35fa9043",
+    "a555764da883b056",
+    "955c5b1aab036d39",
+    "6b647ed60751c52e",
+    "663774e013b177f4",
+    "433196e2738f57f0",
+    "b1b9878fc9ca7382",
+    "da6ef937188d671f",
+    "f8589aa665e8e4c7",
+    "4e347c79923edf9c",
+    "fe5460fe27cc64c6",
+    "cd702000e936eac7",
+    "dd466efd5c6ee4ec",
+    "c107cb07c795a894",
+    "0961e5c29d772673",
+    "195de679b94061ae",
+    "c2b7d7739420b726",
+    "8749760e9bf828b7",
+    "0b10290495bf79fc",
+    "df7caefd621cf30b",
+    "159393869227c0d3",
+    "31f554ec28b1ec49",
+    "ac1892f460380ef7",
+    "b0c4de143c1966cc",
+    "6985cb0470afcd1a",
+    "aa545483ad19cd1f",
+    "40580d952d8900c6",
+    "a4351f537bd586dd",
+    "b686a9596e967005",
+    "8ec4124014b54ceb",
+    "93bf3e321b80e6a4",
+    "1bb993627a4d7ba5",
+    "06281df965ce2c27",
+    "8e93736b443f1fdd",
+    "7d35341cf98b55f0",
+    "a1766aa75212e63b",
+    "0e23c0a3bce7f49e",
+    "478c616a1f7ac655",
+    "39d0b051eee926e7",
+    "09de3ab9fdc9c759",
+    "d15c523fd5c8dbdf",
+    "73ec5609465457ab",
+    "656b42e4fd8375d8",
+    "1c2313b1d6a82ff3",
+    "a1ec493bdce6f45e",
+    "5a8d2f9eb0d50bf2",
+    "003bbbae07037c17",
+    "b58e1674443d5d7a",
+    "79a66c547baa922b",
+    "3083a8ff56517069",
+    "92196cca11093ca4",
+    "d64176bbe3872ff2",
+    "578eaf0998033d93",
+    "ca3a25ec6384d2a5",
+    "39c34b24169ab1a1",
+    "6d2bd2a71c650d9f",
+    "cd733892c83f7d03",
+    "f10812ac0dc7d109",
+    "6264b5767c13fa02",
+    "4bb0b5fc3e32ce81",
+    "5049636f6695f97c",
+    "69042912a9c7bf94",
+    "9544037c6ae27a74",
+    "195ed845bcc2a6d4",
+    "87e333fbe68481b1",
+    "c9fffadaa5da88e5",
+    "e147e1d01217aaaf",
+    "c81aee78a9a9a8d5",
+    "99a2cdea68e11f57",
+    "cc467d19e81d44cf",
+    "7e0177c3ea193af2",
+    "7ea5a24325763027"
+  ]
+}

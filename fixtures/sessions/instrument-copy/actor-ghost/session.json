@@ -1,0 +1,799 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "fixtures/bench/room.json",
+  "lateQuanta": 0,
+  "seed": 5,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.75,
+        "y": 0.26,
+        "z": 0.75,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.75,
+        "y": 0.26,
+        "z": 0.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 4,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-west",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-east",
+        "minX": 3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-south",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-north",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": 2,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "ledge",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0,
+        "maxY": 0.35,
+        "minZ": 1.25,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "step",
+        "minX": 1.25,
+        "maxX": 2,
+        "minY": 0,
+        "maxY": 0.25,
+        "minZ": 1.5,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      }
+    ],
+    "zones": [
+      {
+        "id": "yard",
+        "minX": 0,
+        "maxX": 1.25,
+        "minY": 0,
+        "maxY": 2,
+        "minZ": 0,
+        "maxZ": 2
+      },
+      {
+        "id": "shelf",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0.35,
+        "maxY": 2,
+        "minZ": 1.25,
+        "maxZ": 2
+      }
+    ],
+    "name": "bench-room"
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "f542ec27fca0e5b1dcc90a852356eaa67b2b76b98962c357374c076c867c89ab",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 0
+    },
+    {
+      "call": 1,
+      "record": "dfea061fe48cd1e1d1c81b007da1143a2c7d1b7ba39e74d195eb1881456c3e81",
+      "builtAt": {
+        "tick": 96,
+        "hash": "951dd6ab8e615951"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 96
+    },
+    {
+      "call": 2,
+      "record": "7d51711514a9f382bcf5575bfd49be4277b9b0fc9294bc443b1b30704360bd67",
+      "builtAt": {
+        "tick": 97,
+        "hash": "1903f51f262cbe1c"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 97
+    },
+    {
+      "call": 3,
+      "record": "c7d8eef184f3b38d5ff4bcbc7b81d8bb6a88e5a8316fbda598e09c1f3fcb165c",
+      "builtAt": {
+        "tick": 98,
+        "hash": "266e823f33a82a9e"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 98
+    },
+    {
+      "call": 4,
+      "record": "d447071cf5ecdf205a1eb4708e3bf6d2b6cc4f942301f312e016df17ff7bb214",
+      "builtAt": {
+        "tick": 99,
+        "hash": "c09edfe4b01abc9e"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 99
+    },
+    {
+      "call": 5,
+      "record": "bb14b037fc55eb365127295f354962e0a6fd2dfb32fbb01418ae323d363ff3ad",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 6,
+      "record": "27fde4fa8fa1975fc2fbe24ed7e9c255e0eb6fb66c9b9e36b37ee1014a00bdb8",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 7,
+      "record": "c43ebe5fffb27c5dd2a730a242803559647ed81334f41d9094476aad16bc3a89",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "3a213e654915e8e7c5d05b47218ba82519feec8beb7d123225f99312c0d2dc18",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "3e46e27eedd295801a0fa2426918b804efa45d826ee2228ab5d26f32a754c62f",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "d48b3712ace822f709edef28b47aa187a3e4d396ff54c4a97d614f841cb8462f",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "67073f1a252cbf1c8d1e96a7d6889ede8272bd0b88d40863f1b26387826e6d21",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 12,
+      "record": "93157a1ddbbccdb7c70d7ded593147c56f9b4487094b6f33e2d9b5544121f0c9",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "f630c136103bad7c977e52582cd665225e17530e05e48bbf844e0b1b3093768d",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "0ba03b0ada6d2cf33981684a6339946bebb06dfc62c71180992f54b953ddc46b",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "695aa12917e699a0806dce5f38e36ff56328300a6b2554bd46bebce4d6510251",
+      "builtAt": {
+        "tick": 100,
+        "hash": "c3cea15adf586910"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [
+    {
+      "tick": 0,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.25,
+          "z": 0.75
+        },
+        "frameHash": "2b8902581c5659b7"
+      },
+      "hash": "2b8902581c5659b7",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "6473c2b3416d8ddbe25d8d89d3f23dfeaa7d3752543c80285390ba6078fa0648",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "f542ec27fca0e5b1dcc90a852356eaa67b2b76b98962c357374c076c867c89ab",
+        "output": "7388850310b58308e68711e304eb43a4cd90f9ae0c9eb78837c16dfcb63fd67b",
+        "builtAt": {
+          "tick": 0,
+          "hash": "2b8902581c5659b7"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 96,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.25,
+          "z": 0.75
+        },
+        "frameHash": "951dd6ab8e615951"
+      },
+      "hash": "951dd6ab8e615951",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "19078dc971758b7c259c6d5232ed5533ad57c99831042e75009d388f6fd4bf70",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "dfea061fe48cd1e1d1c81b007da1143a2c7d1b7ba39e74d195eb1881456c3e81",
+        "output": "77c3d4c3d37f8a968f8c8a419adf9a4b2e70d1ee1d409377732b8176bf184bbe",
+        "builtAt": {
+          "tick": 96,
+          "hash": "951dd6ab8e615951"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 97,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.25,
+          "z": 0.75
+        },
+        "frameHash": "1903f51f262cbe1c"
+      },
+      "hash": "1903f51f262cbe1c",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "f2c606efddb84f815fbdd2f7c8d0f29d3c5c30584ac3b384c3f417eb05c6db62",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "7d51711514a9f382bcf5575bfd49be4277b9b0fc9294bc443b1b30704360bd67",
+        "output": "77c3d4c3d37f8a968f8c8a419adf9a4b2e70d1ee1d409377732b8176bf184bbe",
+        "builtAt": {
+          "tick": 97,
+          "hash": "1903f51f262cbe1c"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 98,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.25,
+          "z": 0.75
+        },
+        "frameHash": "266e823f33a82a9e"
+      },
+      "hash": "266e823f33a82a9e",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "772c8e581cca8c751c8e31d1c323edab6eb9628c10093c5476aa858cfcbd0a65",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "c7d8eef184f3b38d5ff4bcbc7b81d8bb6a88e5a8316fbda598e09c1f3fcb165c",
+        "output": "ce0921b111ca739592ebe3e7113b6b0d546d715ffeed61ab86368ea057d36003",
+        "builtAt": {
+          "tick": 98,
+          "hash": "266e823f33a82a9e"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 99,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2.25,
+          "z": 0.75
+        },
+        "frameHash": "c09edfe4b01abc9e"
+      },
+      "hash": "c09edfe4b01abc9e",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "934962f2e21bf7134baa59b676e628087cd1f9a94151d132f36fdacbcc4f96cd",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "d447071cf5ecdf205a1eb4708e3bf6d2b6cc4f942301f312e016df17ff7bb214",
+        "output": "ce0921b111ca739592ebe3e7113b6b0d546d715ffeed61ab86368ea057d36003",
+        "builtAt": {
+          "tick": 99,
+          "hash": "c09edfe4b01abc9e"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    }
+  ],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 100,
+    "hash": "c3cea15adf586910"
+  },
+  "frames": [
+    "2b8902581c5659b7",
+    "113ebf7376b735be",
+    "4aa0b0c411071bae",
+    "b1bb76b9a6b204ff",
+    "b8843e008b80d976",
+    "7e39e2a0f0ac3ded",
+    "9372bc805888e4fa",
+    "c43c54d41857c0a9",
+    "afe3b43b05948823",
+    "87982299ea13783d",
+    "a77124c1628a2a6e",
+    "cf6e2b7e62bd36cc",
+    "5e1f8a7f92324de8",
+    "5f678b39fd90efaa",
+    "8a10466854601e59",
+    "66b93398b7557a31",
+    "d7d33abe2952c267",
+    "05ea9a9f2a0a9f5f",
+    "d510aa44c1eaa4d4",
+    "a46b70d05e15bfce",
+    "2d7f744fdd532405",
+    "81b060c6cec884a6",
+    "6712f110cbb6d026",
+    "1c52ac59f0e58f62",
+    "959630594650ef41",
+    "3504f7ddd0b6c586",
+    "e06d01228877f285",
+    "2ac19e8c3736e30e",
+    "dee257ee624749aa",
+    "8a45114ea4ffdb4a",
+    "edcf304c11a587eb",
+    "1a41119ea2f18d91",
+    "5cb6b31acaf5afda",
+    "2f8bda2cac77c79e",
+    "77b0eb628e7f47fe",
+    "aca3749a090f8717",
+    "8563212219411b2f",
+    "9098379ce82776fc",
+    "9f49365dc1785b94",
+    "9839ad2a67bd2119",
+    "a7f1ca777212b625",
+    "f5541a664dd3a0dc",
+    "077d6ff5521857ee",
+    "f5a88c00027e0f81",
+    "3bc20e96ab51b095",
+    "99dcc9723b926a70",
+    "74c9131d5bd120a1",
+    "64cd681422b8855a",
+    "61245f39ca8e8988",
+    "ef7dcea6a060d628",
+    "7177d1a2aea839e8",
+    "348e0b616a435404",
+    "c0b7e4309c9c7077",
+    "882dee7a3a8aff88",
+    "e4ba71857d0dd567",
+    "2491e17e11421c86",
+    "6110281dd10ab835",
+    "ccd1a864e82e84f6",
+    "34536656c1a2f736",
+    "92dd82cf7313b700",
+    "e18cce98355a8197",
+    "2e9a4408f2fd72e5",
+    "eee4cb6f18843915",
+    "6ebf7f2ae606ad04",
+    "be02b5bb93e8b200",
+    "aa27c46699f0ef3f",
+    "351f0ead9578a5ad",
+    "474c5f385d8183c2",
+    "a6f29e7860a43598",
+    "b4c07077b177144f",
+    "443d6dae745b3da3",
+    "6b49c81a3456f4b1",
+    "78b9d314bf8e7fd6",
+    "d1769411f8cc001a",
+    "4288b2a3514f2fda",
+    "fd77aae4c3725968",
+    "9e029b79bde58a05",
+    "6bc5d4ebd1bc8d77",
+    "7270164e271a73c7",
+    "ea7bf55710093364",
+    "8d78fda6fdc43bfc",
+    "fadca70a9297c5ff",
+    "6f5aac5cfc0693a9",
+    "834275207a4e3961",
+    "5f2d3ae1c8a12c97",
+    "f57b062229886b28",
+    "a70e200384cfd8dd",
+    "45e3697585fa519d",
+    "9b7c66706a88f926",
+    "4f3b3c8213679d42",
+    "ce73c876ccbfaa0d",
+    "31be89b96c47cb74",
+    "711c607e1eb74eef",
+    "782ac29b20a940e6",
+    "69d590be097b8401",
+    "9b3443ae72635827",
+    "951dd6ab8e615951",
+    "1903f51f262cbe1c",
+    "266e823f33a82a9e",
+    "c09edfe4b01abc9e",
+    "c3cea15adf586910"
+  ]
+}
