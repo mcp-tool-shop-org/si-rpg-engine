@@ -303,8 +303,10 @@ function admitRelease(intent, actor, world, rule) {
     }
   }
   // The drive stops short of the target by enough that the carried box, set
-  // down on the surface under the point, does not overlap the actor. One step
-  // of the drive is left outside the touching faces, which are not an overlap.
+  // down on the surface under the point, does not overlap the actor. Four
+  // steps of the drive are left outside the touching faces, which are not an
+  // overlap. A walk that already fills the rule's maxQuanta leaves no quanta
+  // for the landing, and the cap cuts them.
   const approach = releaseApproach(actor, carried, point.x, point.z, rule.speed);
   const walk = quantaFor(approach.travel, rule);
   const quanta = walk + RELEASE_LAND > rule.maxQuanta ? rule.maxQuanta : walk + RELEASE_LAND;

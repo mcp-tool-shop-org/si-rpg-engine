@@ -295,6 +295,45 @@ test('the verb fixture replays frame for frame', () => {
   }
 });
 
+test('a drop whose actor starts exactly on the target backs out and sets the crate down clear of the actor', () => {
+  const world = createWorld({
+    bodies: [
+      { id: 'walker', x: 0, y: 0.3, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+      { id: 'crate', x: 0.8, y: 0.26, z: 0, vx: 0, vy: 0, vz: 0, hx: 0.12, hy: 0.2, hz: 0.12 },
+    ],
+    colliders: [{ id: 'floor', minX: -2, maxX: 4, minY: -1, maxY: 0, minZ: -2, maxZ: 2 }],
+  });
+  const rules = loadIntentRules().rules;
+  const tick = createTick({ seed: 1, world, rules, memory: createMemory() });
+  for (let i = 0; i < 128 && !world.sleeping('crate'); i = i + 1) {
+    tick.advance();
+  }
+  const pick = tick.submit({ kind: 'intent', verb: 'pick-up', actor: 'walker', target: { body: 'crate' }, frameHash: tick.frame().hash });
+  assert.equal(pick.admitted, true, pick.admitted ? '' : pick.reason);
+  settle(tick);
+  const walkerAt = world.body('walker');
+  assert.ok(walkerAt);
+  if (!walkerAt) {
+    return;
+  }
+  const aimX = walkerAt.x;
+  const aimZ = walkerAt.z;
+  const drop = tick.submit({ kind: 'intent', verb: 'drop', actor: 'walker', target: { x: aimX, z: aimZ }, frameHash: tick.frame().hash });
+  assert.equal(drop.admitted, true, drop.admitted ? '' : drop.reason);
+  settle(tick);
+  const walker = world.body('walker');
+  const crate = world.body('crate');
+  assert.ok(walker && crate);
+  if (!walker || !crate) {
+    return;
+  }
+  assert.equal(world.carryingOf('walker'), null);
+  assert.ok(Math.hypot(crate.x - aimX, crate.z - aimZ) <= 0.05, 'crate at (' + crate.x + ', ' + crate.z + '), drop was (' + aimX + ', ' + aimZ + ')');
+  assert.ok(Math.hypot(walker.x - aimX, walker.z - aimZ) > 0.2, 'the walker did not back out, still at x ' + walker.x);
+  const overlaps = Math.abs(crate.x - walker.x) < crate.hx + walker.hx && Math.abs(crate.y - walker.y) < crate.hy + walker.hy && Math.abs(crate.z - walker.z) < crate.hz + walker.hz;
+  assert.equal(overlaps, false, 'the walker is still on the crate at x ' + walker.x);
+});
+
 test('a release whose placement overlaps the actor leaves the body carried', () => {
   const world = createWorld({
     bodies: [

@@ -41,7 +41,7 @@ import { createRestorableTick } from '../packages/tick/tick.js';
 import { createWorld } from '../packages/tick/world.js';
 import { costLine, replayWitness, sceneInput, sweep, sweepVerdict } from '../packages/load/sweep.js';
 import { LOAD_BUDGET, considerWorld } from '../packages/load/world.js';
-import { SWEEP_BUDGET, issueText, readSweepRecord, runCorpus, sweepCorpus, sweepWorlds } from './corpus.mjs';
+import { SWEEP_BUDGET, captureResult, issueText, readSweepRecord, runCorpus, sweepCorpus, sweepWorlds } from './corpus.mjs';
 
 const dir = mkdtempSync(join(tmpdir(), 'si-rpg-sweep-'));
 
@@ -339,7 +339,8 @@ test('load world refuses a zone nothing reaches and a body leaving the world, na
   // admitted, with no zone refused as unreached.
   const deferred = considerWorld(loaded.scene, { budget: { quanta: 2000, restores: 20 }, bundles: null });
   assert.equal(deferred.ok, true);
-  assert.ok(deferred.lines.some((line) => /^sweep: sweep deferred: the budget of 2000 quanta and 20 restores ran out with \d+ cells archived and \d+ left in the frontier/.test(line)), deferred.lines.join('\n'));
+  assert.ok(deferred.lines.some((line) => /^sweep: sweep deferred: the budget of 2000 quanta and 20 restores ran out with \d+ cells archived and \d+ left in the frontier; the scheduled job sweeps the world again under its larger budget and fails when the verdict differs from the record in fixtures\/sweep\/verdicts.json$/.test(line)), deferred.lines.join('\n'));
+  assert.equal(deferred.lines.some((line) => line.includes('the scheduled sweep finishes it')), false);
 });
 
 test('a throw planted after an admitted push is refused by load world with a throw finding and its bundle, and replay on the bundle reproduces the throw', () => {
@@ -434,6 +435,18 @@ test('the scheduled sweep holds each world to its record: the recorded verdict p
       process.env.SI_RPG_BUNDLES = was;
     }
   }
+});
+
+test('a 2D capture the loader accepts is a failure whose block names the capture, and the issue the job writes quotes that block', () => {
+  const result = captureResult('planted-2d.json', 1, { ok: true }, 1);
+  assert.equal(result.status, 'different');
+  assert.equal(result.block, 'the capture planted-2d.json was not refused at load: loaded\n');
+  const issue = issueText([result]);
+  assert.equal(issue.title, 'corpus: planted-2d.json: the capture planted-2d.json was not refused at load: loaded');
+  assert.ok(issue.body.includes('```\n' + String(result.block).trim() + '\n```'), issue.body);
+  const held = captureResult('real-2d.json', 2, { ok: false, reason: 'a body record is three-dimensional' }, 1);
+  assert.equal(held.status, 'ok');
+  assert.equal(held.block, undefined);
 });
 
 test('a sweep that throws in the scheduled job fails with a block naming the world and the throw, and the issue the job writes for the run quotes it', () => {

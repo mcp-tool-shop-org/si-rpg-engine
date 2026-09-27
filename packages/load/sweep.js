@@ -900,7 +900,7 @@ export function sweepVerdict(report) {
       }
     }
   } else if (report.actors.length > 0 && report.settledAtLoad) {
-    notes.push('sweep deferred: the budget of ' + report.budget.quanta + ' quanta and ' + report.budget.restores + ' restores ran out with ' + report.cells + ' cells archived and ' + report.frontier + ' left in the frontier; the scheduled sweep finishes it');
+    notes.push('sweep deferred: the budget of ' + report.budget.quanta + ' quanta and ' + report.budget.restores + ' restores ran out with ' + report.cells + ' cells archived and ' + report.frontier + ' left in the frontier; the scheduled job sweeps the world again under its larger budget and fails when the verdict differs from the record in fixtures/sweep/verdicts.json');
   }
   return { admitted: reasons.length === 0, reasons, notes };
 }

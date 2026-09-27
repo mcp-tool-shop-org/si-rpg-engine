@@ -985,10 +985,7 @@ export function runCorpus(options) {
       goal: { actor: 'walker', zone: { minX: -1, maxX: 1, minY: -1, maxY: 0, minZ: -1, maxZ: 1 } },
     });
     const ms = performance.now() - t0;
-    const reason = got.ok ? 'loaded' : got.reason;
-    record(bodies.length > 0 && reason === 'a body record is three-dimensional'
-      ? { name: file, kind: 'capture', status: 'ok', ms, detail: 'refused at load, as it should be: ' + reason }
-      : { name: file, kind: 'capture', status: 'different', ms, detail: 'a 2D capture must be refused for its body records; the loader said: ' + reason });
+    record(captureResult(file, bodies.length, got, ms));
   }
 
   // 3. The product scene, long.
@@ -1024,6 +1021,36 @@ export function imageCounts(results) {
   const skipped = count('skipped');
   const unreached = count('unreached');
   return { used, skipped, unreached, line: 'stored images: ' + used + ' used, ' + skipped + ' skipped (recorded on another binary; a fresh image restored instead)' + (unreached > 0 ? ', ' + unreached + ' not reached' : '') };
+}
+
+/**
+ * The issue's title and body for a failed run.
+ * @param {Result[]} results
+ */
+/**
+ * What the corpus records for one 2D capture. A capture the loader refuses
+ * because its body records are not three-dimensional is ok. One it accepts
+ * is a failure whose block names the capture, so the job's issue quotes it.
+ * @param {string} file
+ * @param {number} bodies
+ * @param {{ ok: boolean, reason?: string }} got
+ * @param {number} ms
+ * @returns {Result}
+ */
+export function captureResult(file, bodies, got, ms) {
+  const reason = got.ok ? 'loaded' : /** @type {string} */ (got.reason);
+  if (bodies > 0 && reason === 'a body record is three-dimensional') {
+    return { name: file, kind: 'capture', status: 'ok', ms, detail: 'refused at load, as it should be: ' + reason };
+  }
+  const detail = 'a 2D capture must be refused for its body records; the loader said: ' + reason;
+  return {
+    name: file,
+    kind: 'capture',
+    status: 'different',
+    ms,
+    detail,
+    block: 'the capture ' + file + ' was not refused at load: ' + reason + '\n',
+  };
 }
 
 /**
