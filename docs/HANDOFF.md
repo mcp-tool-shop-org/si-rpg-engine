@@ -58,11 +58,11 @@ The handbook's testing page lists what is known and not yet proven.
 2. **Dispatch 128 is on main.** The carried box stays at speed 0 (`895b2bf`). The law slice is `a0fceca`. A driven collider is solver group 3 and does not solve against group 2. A dynamic collider is group 2 and does not solve against group 3. Statics keep Rapier's default. Collision groups are unchanged, and there is no JavaScript switch. The step-up boxes stay under 1 m/s. The refusals walker is not thrown. Only red room A's law run moved.
 3. **v0.3.0 is tagged** at `8d9a8a3`. GitHub release only. The package is not published to npm. `test-instrument` stays frozen.
 4. **#97, #109, #129, and #131** share one builder. The deferred sweep note names the scheduled comparison. A capture the loader accepts has a block. Outcome 4d locks its measured height. A drop that starts on its target backs out. The coverage builds report no `law_coverage` warning.
-5. **The Rapier 0.36.0 bump,** as its own slice, measured by T7b's bench. `solver/FLAGS.md` says a bump reruns the copies' control tests first.
+5. **The Rapier 0.36.0 bump is this slice.** The controller control test and the push control test passed. SEPARATE is retired. EFFECTIVE stays. The course and the outcome tests passed, and the product golden did not move. The Linux digest is written from CI, not from a Windows build. `solver/FLAGS.md` is the record.
    - 0.36.0 carries #1004, so `impulses.rs`'s first change becomes Rapier's own.
    - #1020 is still open, so the effective mass stays.
    - F2's branch (#1019) and F4's retry (parry#452) still apply: the bump's parry has the same `gjk.rs`.
-   - Fold #101 into the same re-pin.
+   - #101 is in this slice: `warm_broadphase`'s comment names the native record-order test.
 6. **Mesh collision.** Collision against textured glb meshes, validated at load. It is a later slice with no dispatch yet.
 
 ## How the work runs

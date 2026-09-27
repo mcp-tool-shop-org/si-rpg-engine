@@ -7,8 +7,8 @@ License (LICENSE at the repository root), except for the two files below.
 solver/src/kcc.rs is a modified copy of part of Rapier, licensed under the
 Apache License, Version 2.0. The licence text is solver/LICENSE-APACHE-2.0.
 
-  Source:    rapier3d-f64 0.35.3, src/control/character_controller.rs
-             (https://github.com/dimforge/rapier, tag v0.35.3)
+  Source:    rapier3d-f64 0.36.0, src/control/character_controller.rs
+             (https://github.com/dimforge/rapier, tag v0.36.0)
   Copyright: Sébastien Crozet and Dimforge. Rapier's LICENSE carries the
              notice "Copyright 2020 Sébastien Crozet"; Dimforge publishes
              Rapier.
@@ -47,8 +47,8 @@ What si-rpg-engine changed, 2026-09-25 and 2026-09-26:
 solver/src/impulses.rs is a modified copy of part of Rapier, licensed under
 the Apache License, Version 2.0. The licence text is solver/LICENSE-APACHE-2.0.
 
-  Source:    rapier3d-f64 0.35.3, src/control/character_controller.rs and
-             src/utils/mod.rs (https://github.com/dimforge/rapier, tag v0.35.3)
+  Source:    rapier3d-f64 0.36.0, src/control/character_controller.rs and
+             src/utils/mod.rs (https://github.com/dimforge/rapier, tag v0.36.0)
   Copyright: Sébastien Crozet and Dimforge. Rapier's LICENSE carries the
              notice "Copyright 2020 Sébastien Crozet"; Dimforge publishes
              Rapier.
@@ -59,16 +59,11 @@ solve_single_character_collision_impulse, with the private method
 predict_ground, the body of the private method CharacterLength::eval, and the
 crate-private function utils::inv with its constant.
 
-What si-rpg-engine changed, 2026-09-26:
+What si-rpg-engine changed, 2026-09-26 and 2026-09-27:
 
 - Rapier's own fix, pull request https://github.com/dimforge/rapier/pull/1004
-  (commit bd7a2f2e, released in rapier 0.36.0). Each dynamic collider's
-  contact manifolds are computed into a vec of their own, then moved onto the
-  shared list with that collider's body, normal, and pose. At 0.35.3 every
-  collider in range shares one vec and the routine assumes parry appends to
-  it; for a convex pair parry writes into the vec's first manifold instead,
-  so with two dynamic bodies near the character the second body's manifold
-  replaces the first's, and the first body is pushed at the second's points.
+  (commit bd7a2f2e), is in rapier 0.36.0. The copy follows that source. The
+  local switch that carried the fix on 0.35.3 is retired.
 - The push's mass, which Rapier has not fixed. The report upstream is
   https://github.com/dimforge/rapier/issues/1020, open at rapier 0.36.0.
   For each contact point Rapier's routine sizes the impulse with the two
