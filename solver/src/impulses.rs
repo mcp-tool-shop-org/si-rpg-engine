@@ -1,10 +1,11 @@
 // The engine's copy of Rapier's character push: the routine
 // `KinematicCharacterController::solve_character_collision_impulses` and the
-// private function it calls for one collision, with two changes: upstream's
-// own (F3, docs/dispatch-f3-character-push.md), and the push's mass (F5,
-// docs/dispatch-f5-push-mass.md), which Rapier has not fixed.
+// private function it calls for one collision. rapier 0.36.0 carries
+// upstream's own fix (F3, dimforge/rapier#1004), so that change is retired.
+// The copy keeps the push's mass (F5, docs/dispatch-f5-push-mass.md), which
+// Rapier has not fixed.
 //
-// Source. rapier3d-f64 0.35.3, src/control/character_controller.rs, from the
+// Source. rapier3d-f64 0.36.0, src/control/character_controller.rs, from the
 // crate as published: the methods solve_character_collision_impulses (lines
 // 880-897) and solve_single_character_collision_impulse (904-977), the
 // private method predict_ground (491-493), and the private method
@@ -94,16 +95,17 @@ impl Pusher for Shove {
         character_mass: Real,
         collisions: &[CharacterCollision],
     ) {
-        Impulses::<true, true>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions)
+        Impulses::<true>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions)
     }
 }
 
 /// Rapier's controller settings, pushing through the copy of its routine.
-/// SEPARATE is #1004 and EFFECTIVE the push's mass: true in the law, and false
-/// only in the tests, which is how each is held to what it changes.
-pub(crate) struct Impulses<'c, const SEPARATE: bool, const EFFECTIVE: bool = false>(pub(crate) &'c KinematicCharacterController);
+/// EFFECTIVE is the push's mass: true in the law, and false only in the tests.
+/// rapier 0.36.0 carries #1004, so the copy no longer has a SEPARATE switch.
+/// With EFFECTIVE off the copy is Rapier's routine.
+pub(crate) struct Impulses<'c, const EFFECTIVE: bool = false>(pub(crate) &'c KinematicCharacterController);
 
-impl<const SEPARATE: bool, const EFFECTIVE: bool> Deref for Impulses<'_, SEPARATE, EFFECTIVE> {
+impl<const EFFECTIVE: bool> Deref for Impulses<'_, EFFECTIVE> {
     type Target = KinematicCharacterController;
 
     fn deref(&self) -> &KinematicCharacterController {
@@ -131,7 +133,7 @@ fn inv(val: Real) -> Real {
     }
 }
 
-impl<const SEPARATE: bool, const EFFECTIVE: bool> Impulses<'_, SEPARATE, EFFECTIVE> {
+impl<const EFFECTIVE: bool> Impulses<'_, EFFECTIVE> {
     fn predict_ground(&self, up_extends: Real) -> Real {
         length(self.offset, up_extends) + 0.05
     }
@@ -184,8 +186,9 @@ impl<const SEPARATE: bool, const EFFECTIVE: bool> Impulses<'_, SEPARATE, EFFECTI
         // World pose of the collider each manifold was computed against: the `local_p2`
         // points are in the collider’s frame, which differs from its body’s when offset.
         let mut manifold_collider_poses: Vec<Pose> = vec![];
-        // output vec for contact manifolds returned by parry
-        // (#1004; with SEPARATE off it stays empty, as the source has no such vec)
+        // output vec for contact manifolds returned by parry.
+        // rapier 0.36.0 carries #1004, so each collider's manifolds are computed
+        // into a vec of their own. The 0.35.3 shared list is retired.
         let mut pair_manifolds: Vec<ContactManifold> = vec![];
         let character_aabb = character_shape
             .compute_aabb(&collision.character_pos)
@@ -196,41 +199,21 @@ impl<const SEPARATE: bool, const EFFECTIVE: bool> Impulses<'_, SEPARATE, EFFECTI
                 if let Some(body) = queries.bodies.get(parent) {
                     if body.is_dynamic() {
                         let pos12 = collision.character_pos.inv_mul(collider.position());
-                        if SEPARATE {
-                            // #1004: this collider's manifolds, in a vec of their own.
-                            pair_manifolds.clear();
-                            let _ = dispatcher.contact_manifolds(
-                                &pos12,
-                                character_shape,
-                                collider.shape(),
-                                prediction,
-                                &mut pair_manifolds,
-                                &mut None,
-                            );
+                        pair_manifolds.clear();
+                        let _ = dispatcher.contact_manifolds(
+                            &pos12,
+                            character_shape,
+                            collider.shape(),
+                            prediction,
+                            &mut pair_manifolds,
+                            &mut None,
+                        );
 
-                            for mut m in pair_manifolds.drain(..) {
-                                m.data.rigid_body2 = Some(parent);
-                                m.data.normal = collision.character_pos.rotation * m.local_n1;
-                                manifolds.push(m);
-                                manifold_collider_poses.push(*collider.position());
-                            }
-                        } else {
-                            // rapier3d-f64 0.35.3.
-                            let prev_manifolds_len = manifolds.len();
-                            let _ = dispatcher.contact_manifolds(
-                                &pos12,
-                                character_shape,
-                                collider.shape(),
-                                prediction,
-                                &mut manifolds,
-                                &mut None,
-                            );
-
-                            for m in &mut manifolds[prev_manifolds_len..] {
-                                m.data.rigid_body2 = Some(parent);
-                                m.data.normal = collision.character_pos.rotation * m.local_n1;
-                            }
-                            manifold_collider_poses.resize(manifolds.len(), *collider.position());
+                        for mut m in pair_manifolds.drain(..) {
+                            m.data.rigid_body2 = Some(parent);
+                            m.data.normal = collision.character_pos.rotation * m.local_n1;
+                            manifolds.push(m);
+                            manifold_collider_poses.push(*collider.position());
                         }
                     }
                 }

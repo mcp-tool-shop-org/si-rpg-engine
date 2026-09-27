@@ -4,7 +4,7 @@
 // docs/dispatch-f2-walker-stride.md) and a second cast in move_shape (F4,
 // docs/dispatch-f4-floor-cast.md).
 //
-// Source. rapier3d-f64 0.35.3, src/control/character_controller.rs, from the
+// Source. rapier3d-f64 0.36.0, src/control/character_controller.rs, from the
 // crate as published: the methods check_and_fix_penetrations (lines 240-293),
 // move_shape (297-455), snap_to_ground (457-489), predict_ground (491-493),
 // detect_grounded_status_and_apply_friction (496-600),
@@ -944,7 +944,7 @@ mod tests {
 
     fn floor_hit(normal_y: f64) -> ShapeCastHit {
         let normal = Vector::new(0.0, normal_y, 0.0);
-        ShapeCastHit { time_of_impact: 0.0, witness1: Vector::ZERO, witness2: Vector::ZERO, normal1: normal, normal2: -normal, status: ShapeCastStatus::PenetratingOrWithinTargetDist }
+        ShapeCastHit { time_of_impact: 0.0, witness1: Vector::ZERO, witness2: Vector::ZERO, normal1: normal, normal2: -normal, status: ShapeCastStatus::PenetratingOrWithinTargetDist, subshape1: 0, subshape2: 0 }
     }
 
     /// What handle_slopes keeps of one quantum's step on a floor hit at

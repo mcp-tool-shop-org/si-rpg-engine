@@ -423,7 +423,9 @@ fn warm_broadphase(world: &mut PhysicsWorld) {
     // step, so in the quantum of a switch a removed body is gone from them at
     // once, and a dropped body is not in them until that step's broad phase
     // takes it in, whatever the record order of a pick-up in the same quantum
-    // (#71, switch_in_place). harness/switch.test.js holds both.
+    // (#71, switch_in_place). harness/switch.test.js holds the minds fixture.
+    // The record-order case is the native test
+    // a_body_put_down_as_another_is_picked_up_enters_the_queries_at_the_step_in_either_record_order.
     for (_, body) in world.bodies.iter_mut() {
         if !body.is_fixed() {
             body.wake_up(true);
@@ -3085,9 +3087,9 @@ mod tests {
         fn push(&mut self, controller: &KinematicCharacterController, dt: f64, queries: &mut QueryPipelineMut, character_shape: &dyn Shape, character_mass: f64, collisions: &[CharacterCollision]) {
             match self {
                 Routine::Rapier => controller.solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions),
-                Routine::Off => Impulses::<false, false>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions),
-                Routine::Linear => Impulses::<true, false>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions),
-                Routine::Law => Impulses::<true, true>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions),
+                Routine::Off => Impulses::<false>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions),
+                Routine::Linear => Impulses::<false>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions),
+                Routine::Law => Impulses::<true>(controller).solve_character_collision_impulses(dt, queries, character_shape, character_mass, collisions),
             }
         }
     }
@@ -3558,16 +3560,12 @@ mod tests {
         assert_eq!(noted.pushed.first(), Some(&24), "the walker does not first push the shade at 24");
         assert_eq!(parting(&law, &linear), Some(24), "the law did not part from F3's push at the walker's first push");
 
-        // F3's red, kept: through Rapier's routine the replay of red room A is
-        // main's binary's run before F3 (harness/law-runs.mjs, run on main's
-        // binary at 5d6bbea, records it with this load and these edits and the
-        // digest below). That binary is the groups-off law. The product replay
-        // above stays groups on. #1004 acts on each of the quanta 42 to 53
-        // that have the crate and the shade near the walker and on no other,
-        // and the crate leaves 53 at 26.06416630354704. On 42 to 44 #1004
-        // gathers the shade's manifold as its own, which marks the shade
-        // modified; none of its points is within the prediction distance, so
-        // no velocity differs until 45.
+        // rapier 0.36.0 carries #1004, so Rapier's routine is the old F3 push.
+        // On the groups-off law the replay's digest is that push's
+        // 2693d776cda14f88, not the pre-F3 run bade6b0b91814181, and the crate
+        // no longer leaves quantum 53 above 10. #1004 is Rapier's own, so it
+        // does not show up as a difference from Rapier's routine. The product
+        // replay above stays groups on.
         let crate_at = run.ids.iter().position(|id| id == "crate").expect("red room A has a crate");
         let mut control = PushControl { run: run.name.clone(), moves: Moves::Rapier, ..PushControl::default() };
         let mut launch = None;
@@ -3582,19 +3580,19 @@ mod tests {
             control.near, control.two, launch, control.separate, control.separate_moved, control.pushed_rapier.len(), control.pushed_rapier.first()
         );
         judge(&control);
-        let two: Vec<usize> = (42..=53).collect();
-        assert_eq!(rapier_digest, "bade6b0b91814181", "through Rapier's routine the replay is not main's binary's run before F3");
-        assert_eq!(control.near, 208, "collisions with a dynamic collider near the walker");
+        let two: Vec<usize> = (42..=63).chain(74..=113).collect();
+        assert_eq!(rapier_digest, "2693d776cda14f88", "through Rapier's routine the replay is not the old F3 push");
+        assert_eq!(control.near, 281, "collisions with a dynamic collider near the walker");
         assert_eq!(control.two, two, "the quanta with the crate and the shade near the walker");
-        assert_eq!(control.separate, two, "the quanta #1004 acts on");
-        assert_eq!(control.separate_moved, (45..=53).collect::<Vec<usize>>(), "the quanta #1004 pushes differently");
-        assert_eq!(launch, Some((53, 26.06416630354704)), "through Rapier's routine the crate does not leave quantum 53 as main's binary recorded it before F3");
+        assert!(control.separate.is_empty(), "#1004 is Rapier's routine, and it acted on {:?}", control.separate);
+        assert!(control.separate_moved.is_empty(), "#1004 changed velocities on {:?}", control.separate_moved);
+        assert_eq!(launch, None, "through Rapier's routine the crate exceeds 10 at {launch:?}");
         assert_eq!(control.pushed_rapier.first(), Some(&24));
         let (off, _) = replay_moved(&mut turn, &run, &mut Stride, &mut Routine::Off, false, |_, _, _| {}, |_, _, _| {});
         let (linear_off, _) = replay_moved(&mut turn, &run, &mut Stride, &mut Routine::Linear, false, |_, _, _| {}, |_, _, _| {});
         let (law_off, _) = replay_moved(&mut turn, &run, &mut Stride, &mut Shove, false, |_, _, _| {}, |_, _, _| {});
         assert_eq!(parting(&off, &rapier), None, "the law pushing through the copy with both changes off parted from the law pushing through Rapier's routine");
-        assert_eq!(parting(&linear_off, &rapier), Some(45), "F3's push did not part from Rapier's routine at 45");
+        assert_eq!(parting(&linear_off, &rapier), None, "F3's push parted from Rapier's routine, and rapier 0.36.0 carries #1004");
         assert_eq!(parting(&law_off, &rapier), Some(24), "the law's push did not part from Rapier's routine at the walker's first push");
     }
 
@@ -3941,6 +3939,8 @@ mod tests {
                 normal1: Vector::new(1.0, 0.0, 0.0),
                 normal2: Vector::new(-1.0, 0.0, 0.0),
                 status: ShapeCastStatus::Converged,
+                subshape1: 0,
+                subshape2: 0,
             },
         };
         let collisions = vec![collision; listed];
@@ -4275,7 +4275,7 @@ mod tests {
                 let collider = queries.colliders.get(handle).expect("the collider the retry hit");
                 let pos12 = character_pos.inv_mul(collider.position());
                 let distance = queries.dispatcher.distance(&pos12, character_shape, collider.shape()).expect("a distance from the character to the collider");
-                self.boundary = self.boundary.max((distance - SKIN).abs());
+                self.boundary = self.boundary.max((distance.distance - SKIN).abs());
             }
             collisions.extend(ours);
             on
