@@ -41,11 +41,12 @@ v0.2.0 is Phase 2 so far: the suite that measures the engine, and the fixes to t
 - the Linux digest, `fd4b46bb45f299894d31e8745a3649f986c08b95ad3acba7ec20d70bfef2fde2`;
 - 494 node tests and 36 native tests.
 
+**The law slice's pin.** Dispatch 128's law slice is on main at `a0fceca`. The Linux digest is `fab06138921df81dbe269aac68cee653292ef9d60310af996687ea4621821a71`. The product golden is still `69a671f962665563`.
+
 **Open issues.**
 - **#97:** two leftovers from #83.
 - **#109:** tightening F4's tests.
 - **#101:** a doc comment in `warm_broadphase`, for the next slice that re-pins the digest.
-- **#128 and #121:** a driven character in deep contact with a dynamic body turns kinematic motion into dynamic speed: a stored squeeze released at the in-place switch (#128), and the autostep's pose change (#121). The sweep records them as `thrown walker by walker` and `thrown crate by walker` in the refusals world. Dispatch 128 (#136) is the law slice.
 - **#129:** a drop started with the actor exactly on the target clears the back-out velocity, and the release is refused.
 - **#131:** the coverage build's `law_coverage` warning count is not asserted.
 
@@ -54,8 +55,8 @@ The handbook's testing page lists what is known and not yet proven.
 ## What comes next, in order
 
 1. **T7c's result is on main** at `5ef97f9`. The bars were recomputed from the committed reports. Safety passes: 80 outputs, every proposal an intent for the walker with a catalog verb, and the 9 admissions are walker moves. Value fails: arm M and arm G are 0 and 0 on all seven changes. `test-instrument` stays frozen. The prompt, the stall rule, and the model stay as they were.
-2. **Dispatch 128 is on main** at `895b2bf`. The red is an overlapping box, or a box that meets the head and is not carried. A carried box stays at speed 0. The law slice is the next build. It rebases onto this main.
-3. **v0.3.0.** It is cut after #144 and dispatch 128's slice have landed, so one release carries the T7c result and the throw fix on a settled law. The README, its translations, the handbook, and the CHANGELOG land before the tag.
+2. **Dispatch 128 is on main.** The carried box stays at speed 0 (`895b2bf`). The law slice is `a0fceca`. A driven collider is solver group 3 and does not solve against group 2. A dynamic collider is group 2 and does not solve against group 3. Statics keep Rapier's default. Collision groups are unchanged, and there is no JavaScript switch. The step-up boxes stay under 1 m/s. The refusals walker is not thrown. Only red room A's law run moved.
+3. **v0.3.0** is next. The README, its seven translations, the handbook, and the CHANGELOG land before the tag. The release is a GitHub release. The package is not published to npm. `test-instrument` stays frozen.
 4. **#97, #109, #129, and #131,** small hardening slices that can share a builder.
 5. **The Rapier 0.36.0 bump,** as its own slice, measured by T7b's bench. `solver/FLAGS.md` says a bump reruns the copies' control tests first.
    - 0.36.0 carries #1004, so `impulses.rs`'s first change becomes Rapier's own.
