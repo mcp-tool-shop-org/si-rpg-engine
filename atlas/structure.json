@@ -59,7 +59,7 @@
             "withoutPaths",
             "witnessKey"
           ],
-          "hash": "b4a04abe324383fa135a26d8f96bcf0f88731e1ed1eb57280b2583b3c00fb24e",
+          "hash": "2ffe2760f5e5206ba32cb7f7c84fea2d88366cd59d3f24ea4720f96525b591fb",
           "importsFiles": [
             "packages/bench/anchors.js",
             "packages/bench/build.js",
@@ -660,6 +660,8 @@
           "sequences": []
         },
         {
+          "entry": "main",
+          "entryRule": 1,
           "exports": [
             "choose"
           ],
@@ -669,7 +671,76 @@
             "packages/bench/plant.js",
             "packages/bench/plants.js"
           ],
-          "path": "packages/bench/measure.js"
+          "path": "packages/bench/measure.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 82,
+                  "name": "copyCheckout",
+                  "target": {
+                    "file": "packages/bench/plant.js"
+                  }
+                },
+                {
+                  "line": 84,
+                  "name": "apply",
+                  "target": {
+                    "file": "packages/bench/plants.js"
+                  }
+                },
+                {
+                  "line": 84,
+                  "name": "plant",
+                  "passed": true,
+                  "target": {
+                    "file": "packages/bench/plant.js"
+                  }
+                },
+                {
+                  "line": 86,
+                  "name": "apply",
+                  "target": {
+                    "file": "packages/bench/plants.js"
+                  }
+                },
+                {
+                  "line": 86,
+                  "name": "plant",
+                  "passed": true,
+                  "target": {
+                    "file": "packages/bench/plant.js"
+                  }
+                },
+                {
+                  "line": 87,
+                  "name": "apply",
+                  "target": {
+                    "file": "packages/bench/plants.js"
+                  }
+                },
+                {
+                  "line": 87,
+                  "name": "plant",
+                  "passed": true,
+                  "target": {
+                    "file": "packages/bench/plant.js"
+                  }
+                },
+                {
+                  "line": 93,
+                  "name": "runBench",
+                  "target": {
+                    "file": "packages/bench/bench.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "main"
+            }
+          ]
         },
         {
           "exports": [
@@ -695,10 +766,11 @@
         {
           "entry": "bench",
           "entryRule": 1,
-          "hash": "6b29d03d66c603fb065388d06c728e77bba93355b4d2285e91a404849cab3d93",
+          "hash": "19cb8715aad616bc8e10d682ff6c112a4aa57980a68bd93965de9d010270dbb0",
           "importsFiles": [
             "packages/bench/bench.js",
             "packages/bench/plant.js",
+            "packages/bench/plants.js",
             "packages/bench/report.js"
           ],
           "path": "packages/bench/model.test.js",
@@ -793,7 +865,7 @@
                     }
                   ],
                   "innerTruncated": true,
-                  "line": 36,
+                  "line": 39,
                   "name": "runBench",
                   "target": {
                     "file": "packages/bench/bench.js"
@@ -823,9 +895,9 @@
           "path": "packages/bench/mutants.js"
         },
         {
-          "entry": "on",
+          "entry": "quantaRun",
           "entryRule": 1,
-          "hash": "20b7ed8e58c5d305bb35123c5ee7f66c8b8a6cd82cfb93e3efdd9f38a4600386",
+          "hash": "08bc06042e73791a99033728602b4ec735f187d20b51f69eca017c054de7c87d",
           "importsFiles": [
             "packages/bench/anchors.js",
             "packages/bench/bench.js",
@@ -834,7 +906,110 @@
             "packages/bench/plants.js"
           ],
           "path": "packages/bench/mutants.test.js",
-          "sequences": []
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "inner": [
+                    {
+                      "line": 248,
+                      "name": "samePath",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 253,
+                      "name": "oneTreePerProcess",
+                      "target": {
+                        "file": "packages/bench/processes.js"
+                      }
+                    },
+                    {
+                      "line": 255,
+                      "name": "listFiles",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 257,
+                      "name": "readAnchors",
+                      "target": {
+                        "file": "packages/bench/anchors.js"
+                      }
+                    },
+                    {
+                      "line": 259,
+                      "name": "treeCommit",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 259,
+                      "name": "treeDigest",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 260,
+                      "name": "treeCommit",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 260,
+                      "name": "treeDigest",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 272,
+                      "name": "productGlue",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    },
+                    {
+                      "line": 273,
+                      "name": "buildProduct",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    },
+                    {
+                      "line": 275,
+                      "name": "copyProduct",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    },
+                    {
+                      "line": 278,
+                      "name": "buildProduct",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    }
+                  ],
+                  "innerTruncated": true,
+                  "line": 230,
+                  "name": "runBench",
+                  "target": {
+                    "file": "packages/bench/bench.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "quantaRun"
+            }
+          ]
         },
         {
           "entry": "anchor",
@@ -1033,7 +1208,7 @@
             "stallIndex",
             "withinCost"
           ],
-          "hash": "821793d0c0957d6d318933931af764df52411033f586a9adcf28a4923db6b3cc",
+          "hash": "442da8d8b50bd3909d3712403e2ab1248393ff378bee563711a1079a7c60158b",
           "path": "packages/bench/report.js"
         },
         {
@@ -1377,7 +1552,7 @@
       "outsideReads": 62,
       "outsideWrites": 37,
       "role": "code",
-      "testedBy": 10,
+      "testedBy": 11,
       "unresolvedSites": 3
     },
     {
@@ -1469,12 +1644,16 @@
           "path": "docs/dispatch-114-drop-clearance.md"
         },
         {
-          "hash": "9957a6f09a0bc8a1e3023b435e0e947474eb673dfe2d9ef0c06e5c60b88aae98",
+          "hash": "ce66b42308e5b63f8dd03a2221118d7399a5f133d383140903d6a9e5ef87441f",
           "path": "docs/dispatch-127-thrown.md"
         },
         {
           "hash": "a1c8fe9ae4fcdce95817f37253fd9af2bff9ebbc3d5d8cb4863d4677da811e61",
           "path": "docs/dispatch-132-arm-cut.md"
+        },
+        {
+          "hash": "70503e6372f18dc70ab49b0aec86b31ca5c38ebb1847ab0661d981d5286a18f3",
+          "path": "docs/dispatch-137-mutant-throw.md"
         },
         {
           "hash": "8f4261d163efdf172538e63a2dccb02dc2a6565e33133ebf6400a8344474fdf9",
@@ -1868,63 +2047,63 @@
           "path": "fixtures/roles/test-instrument.txt"
         },
         {
-          "hash": "78a048d3b9c3f63767c0cedfc3bade67a9025a96cdc523c19fa6681aea9cdcbd",
+          "hash": "0b55895cd35504c9ca3809d299701117db4549385f70765e663d280ef9d3089f",
           "path": "fixtures/sessions/instrument-copy/actor-ghost/change.diff"
         },
         {
-          "hash": "c4df938a21c011aa24981cbd124560736402e5ed4596971d7c404ad711530787",
+          "hash": "7d7bfc171a87a6cba52160fd2b39a0c321095a1ff84c9a3e19a1118f03a61964",
           "path": "fixtures/sessions/instrument-copy/actor-ghost/dispatch.txt"
         },
         {
-          "hash": "9ca08b65e0cd07ac4abfb594ae54ef9677b7240d3cb5cd5b2febcc3a6dc5b523",
+          "hash": "dc0586453e510676f14b3d255fe31bfa5431d5920b1e6750098f7f1f1f956335",
           "path": "fixtures/sessions/instrument-copy/actor-ghost/spec.json"
         },
         {
-          "hash": "82bc7db4339265e3799cea5408e563f65736b26a114b40a1556068a6e5b8396e",
+          "hash": "4dcda6456dcd0e73ab9ca2dc8e9e514c7bdade4ca0cd9a5e72707793abc70831",
           "path": "fixtures/sessions/instrument-copy/class-body/change.diff"
         },
         {
-          "hash": "897119d84c851f80ec94081d725c2fa521daab0bc9e5f499a2349f13c9cae0aa",
+          "hash": "382627451cd0cf756f54e1f39187f11209b95f95d35dbaec4cab294b0c299f29",
           "path": "fixtures/sessions/instrument-copy/class-body/dispatch.txt"
         },
         {
-          "hash": "6fd28500cc80d8f1b1f82341ddd33e8a17c308401aeaa5b9ad02f1c3e623bd45",
+          "hash": "da13c8f9ec07be2b0ea97480dc1bb9348e026599d79acbbcb5aae824e4df4daa",
           "path": "fixtures/sessions/instrument-copy/class-body/spec.json"
         },
         {
-          "hash": "ed4da96ed4064679ad36e52dedd288e427785d942b0f9b09fb878733aa8d5e4f",
+          "hash": "fda06e2ffdf3cdbc400cdfcaec90d73a9a2a7ae7845ed9489ca36540c0c586a4",
           "path": "fixtures/sessions/instrument-copy/outcome-hash/change.diff"
         },
         {
-          "hash": "360346ca99e370ac6f74a97b31a38f555f5d1af6b090c5d4e44f20d9bec584d5",
+          "hash": "fedef7ab7f3da9053227e3174945a8add35ceb889d1130c2bce931a65511ce4c",
           "path": "fixtures/sessions/instrument-copy/outcome-hash/dispatch.txt"
         },
         {
-          "hash": "6490e9be8fab49a57e4cc3a8af0c7c29fabc86be1a64dd69bde5569db16129b5",
+          "hash": "3375ff9e83f01c127bbf5fe2f81584bc12574c82597a31e67e8680919948d501",
           "path": "fixtures/sessions/instrument-copy/outcome-hash/spec.json"
         },
         {
-          "hash": "9859460d1575a3aa0f01252cf3de545f4773a7825031ec4141ec26d6fb206a80",
+          "hash": "2b77dac19922442e9fd121fd0fc2e837d582854d366f79fae5f0d69a7c40d767",
           "path": "fixtures/sessions/instrument-copy/target-missing/change.diff"
         },
         {
-          "hash": "60ea63fbf44a70f03726ec0b4538a1cb3d4cb6ab7f7b94e88794a97d54d8ea04",
+          "hash": "95093ee3fab6ebc1a4ed6a8dc2219d06e111ac77b63628f78b2cec24bac1db47",
           "path": "fixtures/sessions/instrument-copy/target-missing/dispatch.txt"
         },
         {
-          "hash": "cb67fcf18bf7537a53fc6bb5e4406be8a3b0740d54ea734d2221a1c9823d6bdd",
+          "hash": "dfae74fb4a42f95054f92802ad47fe10e9c0823cacc24864324c448eaa532f5d",
           "path": "fixtures/sessions/instrument-copy/target-missing/spec.json"
         },
         {
-          "hash": "3136dc04352c611474cb6c4b54ee058298884246afa5f52b4da6038eb405914a",
+          "hash": "408459bea97dad31dc018d99a15db40fc74b564c0a3470f741b8e804bc1fd21e",
           "path": "fixtures/sessions/instrument-copy/verb-teleport/change.diff"
         },
         {
-          "hash": "64fc9146dbb5cf9769546508da8289b35472cc92603e6f3ac25a7ed0aa80cce2",
+          "hash": "fa76640e65c97ef64da277e540368ae8fc609db9f5a6b7fd6a9c0a3abda5ad5a",
           "path": "fixtures/sessions/instrument-copy/verb-teleport/dispatch.txt"
         },
         {
-          "hash": "d90c17f2f3059fbe25722c9014e3337e05678da8a95d48730ebf3964e9079f76",
+          "hash": "79da7787b2540b0749d84b35022278b47f8680e7d7da768acd6d7e31d159d091",
           "path": "fixtures/sessions/instrument-copy/verb-teleport/spec.json"
         },
         {
@@ -6281,8 +6460,8 @@
     },
     {
       "dynamicReads": 1,
-      "dynamicSpawns": 10,
-      "dynamicSpawnsInTests": 10,
+      "dynamicSpawns": 11,
+      "dynamicSpawnsInTests": 11,
       "dynamicWrites": 0,
       "entryPoints": [
         "packages/propose/bin/propose.js"
@@ -7034,10 +7213,13 @@
           ]
         },
         {
-          "entry": "rekey",
+          "entry": "verifyInHead",
           "entryRule": 1,
-          "hash": "bdb905f6f1367cfd218f58c45d29fb0ecaed15f15681d4c4e295a70ab9ee8826",
+          "hash": "fe0144fecc28d6022aeeb79ac44e422045c9b93f342faaa7edfb1c71cef13a17",
           "importsFiles": [
+            "packages/bench/measure.js",
+            "packages/bench/plant.js",
+            "packages/bench/plants.js",
             "packages/propose/parse.js",
             "packages/propose/record.js",
             "packages/tick/gate.js",
@@ -7049,23 +7231,7 @@
             {
               "calls": [
                 {
-                  "inner": [
-                    {
-                      "line": 153,
-                      "name": "canonical",
-                      "target": {
-                        "file": "packages/tick/canonical.js"
-                      }
-                    },
-                    {
-                      "line": 153,
-                      "name": "sha256",
-                      "target": {
-                        "file": "packages/tick/roles.js"
-                      }
-                    }
-                  ],
-                  "line": 82,
+                  "line": 85,
                   "name": "recordKey",
                   "target": {
                     "file": "packages/propose/record.js"
@@ -7080,7 +7246,7 @@
             {
               "calls": [
                 {
-                  "line": 106,
+                  "line": 109,
                   "name": "verifySession",
                   "target": {
                     "file": "packages/propose/record.js"
@@ -7095,7 +7261,7 @@
             {
               "calls": [
                 {
-                  "line": 113,
+                  "line": 116,
                   "name": "readSession",
                   "target": {
                     "file": "packages/propose/record.js"
@@ -7106,6 +7272,204 @@
               "invokedAtTopLevel": true,
               "isDefaultExport": false,
               "name": "firstAdmitted"
+            },
+            {
+              "calls": [
+                {
+                  "line": 226,
+                  "name": "find",
+                  "target": {
+                    "file": "packages/bench/measure.js"
+                  }
+                },
+                {
+                  "branch": "!p || p.inBase",
+                  "inner": [
+                    {
+                      "line": 357,
+                      "name": "manifestHash",
+                      "target": {
+                        "file": "packages/tick/roles.js"
+                      }
+                    },
+                    {
+                      "line": 362,
+                      "name": "validateManifest",
+                      "target": {
+                        "file": "packages/tick/roles.js"
+                      }
+                    },
+                    {
+                      "line": 153,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      },
+                      "via": "recordKey"
+                    },
+                    {
+                      "line": 153,
+                      "name": "sha256",
+                      "target": {
+                        "file": "packages/tick/roles.js"
+                      },
+                      "via": "recordKey"
+                    },
+                    {
+                      "line": 161,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      },
+                      "via": "promptHash"
+                    },
+                    {
+                      "line": 161,
+                      "name": "sha256",
+                      "target": {
+                        "file": "packages/tick/roles.js"
+                      },
+                      "via": "promptHash"
+                    },
+                    {
+                      "line": 169,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      },
+                      "via": "schemaHash"
+                    },
+                    {
+                      "line": 169,
+                      "name": "sha256",
+                      "target": {
+                        "file": "packages/tick/roles.js"
+                      },
+                      "via": "schemaHash"
+                    },
+                    {
+                      "line": 427,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      }
+                    },
+                    {
+                      "line": 442,
+                      "name": "readRoleOutput",
+                      "target": {
+                        "file": "packages/propose/parse.js"
+                      }
+                    },
+                    {
+                      "line": 571,
+                      "name": "stampProposal",
+                      "target": {
+                        "file": "packages/propose/parse.js"
+                      }
+                    },
+                    {
+                      "line": 572,
+                      "name": "canonical",
+                      "target": {
+                        "file": "packages/tick/canonical.js"
+                      }
+                    }
+                  ],
+                  "innerTruncated": true,
+                  "line": 228,
+                  "name": "verifySession",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                },
+                {
+                  "inner": [
+                    {
+                      "line": 114,
+                      "name": "copyTree",
+                      "target": {
+                        "file": "packages/bench/trees.js"
+                      }
+                    },
+                    {
+                      "line": 116,
+                      "name": "copyProduct",
+                      "target": {
+                        "file": "packages/bench/build.js"
+                      }
+                    }
+                  ],
+                  "line": 230,
+                  "name": "copyCheckout",
+                  "target": {
+                    "file": "packages/bench/plant.js"
+                  }
+                },
+                {
+                  "line": 231,
+                  "name": "apply",
+                  "target": {
+                    "file": "packages/bench/plants.js"
+                  }
+                },
+                {
+                  "line": 231,
+                  "name": "plant",
+                  "passed": true,
+                  "target": {
+                    "file": "packages/bench/plant.js"
+                  }
+                },
+                {
+                  "line": 233,
+                  "name": "apply",
+                  "target": {
+                    "file": "packages/bench/plants.js"
+                  }
+                },
+                {
+                  "line": 233,
+                  "name": "plant",
+                  "passed": true,
+                  "target": {
+                    "file": "packages/bench/plant.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "verifyInHead"
+            },
+            {
+              "calls": [
+                {
+                  "line": 247,
+                  "name": "readSession",
+                  "target": {
+                    "file": "packages/propose/record.js"
+                  }
+                },
+                {
+                  "line": 249,
+                  "name": "catalogFromLog",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                },
+                {
+                  "line": 255,
+                  "name": "roleRefusal",
+                  "target": {
+                    "file": "packages/tick/gate.js"
+                  }
+                }
+              ],
+              "exported": false,
+              "invokedAtTopLevel": true,
+              "isDefaultExport": false,
+              "name": "checkAdmitted"
             }
           ]
         },
@@ -8737,6 +9101,8 @@
           ]
         },
         {
+          "entry": "roleRefusal",
+          "entryRule": 4,
           "exports": [
             "beliefLabel",
             "budgetRefusal",
@@ -8749,7 +9115,39 @@
             "packages/tick/roles.js",
             "packages/tick/trust.js"
           ],
-          "path": "packages/tick/gate.js"
+          "path": "packages/tick/gate.js",
+          "sequences": [
+            {
+              "calls": [
+                {
+                  "line": 175,
+                  "name": "findRole",
+                  "target": {
+                    "file": "packages/tick/roles.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "roleRefusal"
+            },
+            {
+              "calls": [
+                {
+                  "line": 287,
+                  "name": "lowerLabel",
+                  "target": {
+                    "file": "packages/tick/trust.js"
+                  }
+                }
+              ],
+              "exported": true,
+              "invokedAtTopLevel": false,
+              "isDefaultExport": false,
+              "name": "beliefLabel"
+            }
+          ]
         },
         {
           "entry": "roleTick",
@@ -11882,6 +12280,12 @@
     },
     {
       "from": "propose",
+      "fromTests": true,
+      "kind": "file",
+      "to": "bench"
+    },
+    {
+      "from": "propose",
       "kind": "file",
       "to": "harness"
     },
@@ -11909,8 +12313,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "6abc0a564efdfa9ffffccba6fee3ce1aac1a8ab7",
-    "tracked": 381
+    "commit": "2f8e4dcbb5b58996558f6e03c59ed03f6a122632",
+    "tracked": 382
   },
   "landings": [
     {
@@ -14989,7 +15393,7 @@
       "path": "tools/coordinator/check-translations.test.js"
     },
     {
-      "hash": "347dbb5ef1921b9746174663410033a5ce3819c93d7ec587d2ee806a470b233d",
+      "hash": "af1a4d26cdd9d70227fa7cbd3cdd9dcf8186abbb1ad2f7cc89aef59264d29c1e",
       "importsFiles": [
         "packages/bench/bench.js",
         "packages/bench/measure.js",

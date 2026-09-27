@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-26 from commit 6abc0a5.
+Mapped at 2026-09-27 from commit 2f8e4dc.
 
 ## What this is
 
@@ -8,14 +8,12 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (1a17272)
+## What changed since 2026-09-26 (6abc0a5)
 
-- fixtures/t7c-runs/* is now written by tools/coordinator/t7c-runs.mjs.
-- fixtures/bench/room.json is now also read by tools/coordinator/t7c-runs.mjs.
-- fixtures/corpus/walker-stall-flat-ground.bundle.json is now also read by tools/coordinator/t7c-runs.mjs.
-- And 4 more new writers and readers of places.
-- tools/coordinator/t7c-runs.mjs is new and belongs to no part, so atlas check fails on it against the previous map.
-- 18 files added and 12 changed content, across 5 parts.
+- propose now imports bench, which closes the cycle propose → bench → propose.
+- packages/bench/mutants.test.js now starts at quanta run; it started at on.
+- packages/propose/record.test.js now starts at verify in head; it started at rekey.
+- 1 file added and 22 changed content, across 4 parts.
 
 ## What comes in
 
@@ -100,8 +98,24 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       9. loaded
       10. record (3 steps)
    17. **Settle** (tick) runs, in order: idle and advance.
-   18. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
-   19. **Create tick** runs, in order:
+   18. Inside packages/propose/record.test.js, verify in head does, in order: find (bench), copy checkout, apply and apply.
+   19. Or, when `!p || p.inBase`, verify in head does verify session instead.
+   20. **Verify session** runs, in order:
+      1. manifest hash (tick)
+      2. validate manifest
+      3. canonical
+      4. sha 256
+      5. canonical
+      6. sha 256
+      7. canonical
+      8. sha 256
+      9. canonical
+      10. read role output
+      11. stamp proposal
+      12. canonical
+   21. **Copy checkout** (bench) runs, in order: copy tree and copy product.
+   22. Inside packages/tick/gate.test.js, role tick does, in order: catalog of, load intent rules, create memory, fixture world, create world and create tick.
+   23. **Create tick** runs, in order:
       1. create hasher (frame)
       2. install minds
       3. mix load
@@ -110,9 +124,9 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       6. u 32
       7. commit frame
       8. least label
-   20. Inside packages/tick/load-hash.test.js, snapshot at load does, in order: create world and create hasher (frame).
-   21. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
-   22. **Create tick** runs, in order:
+   24. Inside packages/tick/load-hash.test.js, snapshot at load does, in order: create world and create hasher (frame).
+   25. Inside packages/tick/order.test.js, first hashes does, in order: create world, load intent rules, create memory and create tick.
+   26. **Create tick** runs, in order:
       1. create hasher (frame)
       2. install minds
       3. mix load
@@ -121,8 +135,8 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       6. u 32
       7. commit frame
       8. least label
-   23. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
-   24. **Create tick** runs, in order:
+   27. Inside packages/tick/tick.test.js, fresh does, in order: fixture world, create world, load intent rules, create memory and create tick.
+   28. **Create tick** runs, in order:
       1. create hasher (frame)
       2. install minds
       3. mix load
@@ -131,7 +145,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       6. u 32
       7. commit frame
       8. least label
-   25. Inside solver/lint.mjs, lint wasm does, in order:
+   29. Inside solver/lint.mjs, lint wasm does, in order:
       1. byte
       2. signed
       3. byte
@@ -179,18 +193,18 @@ Only CI itself reads what it writes.
 - **load** is imported by 1 part (harness), and by 1 more only from tests; it sits on the path of 3 doors.
 - **propose** is imported by 1 part (bench) and sits on the path of 2 doors.
 - **solver** is run as a child process by 1 part (bench) and sits on the path of 3 doors.
-- **bench** is imported by no other part and sits on the path of 2 doors.
+- **bench** is imported only from tests, by 1 part (propose), and sits on the path of 2 doors.
 - **fixtures/golden.txt** is written by harness and read by harness and workflows; a hand edit reaches every reader.
 
 ## What tends to change together
 
-- **packages/bench/bench.js** and **packages/bench/neutral.test.js** changed together in 5 of 6 commits, inside the bench part.
 - **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 10 of 14 commits, inside the propose part.
 - **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 7 of 10 commits, inside the harness part.
 - **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 9 of 13 commits, inside the propose part.
 - **packages/host/host.test.js** and **packages/host/session.js** changed together in 8 of 12 commits, inside the host part.
+- **packages/bench/law.test.js** and **packages/bench/neutral.test.js** changed together in 4 of 6 commits, inside the bench part.
 
-3 files changed together with their own tests, as expected.
+2 files changed together with their own tests, as expected.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
@@ -232,7 +246,7 @@ Read those in order to follow one pull request end to end.
 - 3 writes and 9 reads use paths built at run time and are not named here.
 - 2 writes go to places this repository does not track, so they are not listed as generated.
 - 51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
-- 41 commands are built at run time and not followed, 35 of them in tests.
+- 42 commands are built at run time and not followed, 36 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
 Regenerate with `npx --yes @dogfood-lab/atlas map`.
