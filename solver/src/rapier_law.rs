@@ -9,7 +9,9 @@
 // bodies it touched through the engine's copy of Rapier's impulse routine,
 // impulses.rs, which gathers each collider's contact manifolds apart, as
 // Rapier's #1004 does (F3), and sizes each impulse with the effective mass at
-// its point (F5, rapier#1020). The box step in lib.rs is a separate export.
+// its point (F5, rapier#1020). A driven collider does not solve against a
+// dynamic one (dispatch 128). The exports pass that on; a test can step the
+// same law with it off. The box step in lib.rs is a separate export.
 //
 // Pins: rapier3d-f64, enhanced-determinism, f64, no SIMD feature, dt = 1/64,
 // sleep threshold = 32 quanta, rotations locked, contact clustering off so the
@@ -448,7 +450,9 @@ fn collider_shape(driven: bool, shape: u32, half: Vector) -> SharedShape {
 /// Dynamic: the record's position, velocities, and rotation through
 /// canon_quat, sleeping after 32 quanta at rest. A drop at a switch inserts
 /// exactly this (F1 pin 2), so a body put back is the body a build would make.
-fn body_for(b: &[f64; BODY_STRIDE], driven: bool, shape: u32) -> Result<(RigidBody, Collider), Refusal> {
+/// `separate` is dispatch 128's solver groups, the same value the build and
+/// the switch pass.
+fn body_for(b: &[f64; BODY_STRIDE], driven: bool, shape: u32, separate: bool) -> Result<(RigidBody, Collider), Refusal> {
     let pos = Vector::new(b[0], b[1], b[2]);
     let vel = Vector::new(b[3], b[4], b[5]);
     let half = Vector::new(b[HX], b[HY], b[HZ]);
@@ -479,15 +483,17 @@ fn body_for(b: &[f64; BODY_STRIDE], driven: bool, shape: u32) -> Result<(RigidBo
     let co = solver_grouped(
         ColliderBuilder::new(collider_shape(driven, shape, half)).restitution(0.0).friction(0.8),
         driven,
-        SEPARATE_DRIVEN,
+        separate,
     )
     .build();
     Ok((body, co))
 }
 
-/// On in the product law (dispatch 128). Off, a body's collider keeps
-/// Rapier's default solver groups, membership and filter both all, which is
-/// the law before this slice.
+/// On in the product law (dispatch 128). `ensure` and `step_law` pass it, and
+/// the wasm exports call those, so the product steps with the groups on. A
+/// test passes false through `ensure_separated` and `step_separated`. Off, a
+/// body's collider keeps Rapier's default solver groups, membership and
+/// filter both all, which is the law before this slice.
 const SEPARATE_DRIVEN: bool = true;
 
 /// Solver groups for one body. A driven body is group 3 and does not solve
@@ -517,8 +523,10 @@ fn solver_grouped(builder: ColliderBuilder, driven: bool, separate: bool) -> Col
     }
 }
 
-fn set_body_solver_groups(co: &mut Collider, driven: bool) {
-    if SEPARATE_DRIVEN {
+/// Writes dispatch 128's solver groups onto a collider that just switched
+/// driven mode. Off, the groups are left as the build wrote them.
+fn set_body_solver_groups(co: &mut Collider, driven: bool, separate: bool) {
+    if separate {
         co.set_solver_groups(body_solver_groups(driven));
     }
 }
@@ -612,7 +620,7 @@ fn held(loaded: &Loaded, i: usize) -> Result<(RigidBodyHandle, ColliderHandle), 
 /// collider becomes the capsule and a dynamic body's the box, as build_world
 /// would make them. The load pass is never run here (S1 pin 12); see
 /// warm_broadphase for what that costs.
-fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(), Refusal> {
+fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64, separate: bool) -> Result<(), Refusal> {
     let shape = loaded.signature.shape;
     let mut plan: Vec<(usize, Transition)> = Vec::new();
     for i in 0..loaded.n_bodies {
@@ -628,7 +636,7 @@ fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(),
                 if loaded.handles[i].is_some() {
                     return Err(Refusal::Handle);
                 }
-                let (body, co) = body_for(&body_at(i), now_driven, shape)?;
+                let (body, co) = body_for(&body_at(i), now_driven, shape, separate)?;
                 Transition::Drop(body, co, now_driven)
             }
         } else if now_carried || was_driven == now_driven {
@@ -667,7 +675,7 @@ fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(),
                     if shape == 1 {
                         co.set_shape(collider_shape(true, shape, loaded.halves[i]));
                     }
-                    set_body_solver_groups(co, true);
+                    set_body_solver_groups(co, true, separate);
                 }
                 loaded.kinematic[i] = true;
             }
@@ -677,7 +685,7 @@ fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(),
                     if shape == 1 {
                         co.set_shape(collider_shape(false, shape, loaded.halves[i]));
                     }
-                    set_body_solver_groups(co, false);
+                    set_body_solver_groups(co, false, separate);
                 }
                 loaded.kinematic[i] = false;
             }
@@ -698,7 +706,7 @@ fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(),
     Ok(())
 }
 
-fn build_world(sig: Signature) -> Result<Loaded, Refusal> {
+fn build_world(sig: Signature, separate: bool) -> Result<Loaded, Refusal> {
     let n_bodies = sig.n_bodies as usize;
     let n_colliders = sig.n_colliders as usize;
     let mut world = PhysicsWorld::new();
@@ -784,7 +792,7 @@ fn build_world(sig: Signature) -> Result<Loaded, Refusal> {
             halves.push(half);
             continue;
         }
-        let (body, co) = body_for(&b, driven, sig.shape)?;
+        let (body, co) = body_for(&b, driven, sig.shape, separate)?;
         let (handle, ch) = world.insert(body, co);
         collider_handles.push(ch);
         handles.push(Some(handle));
@@ -1030,7 +1038,17 @@ fn push_contact(out: &mut Vec<u8>, data: &ContactData) {
 /// bodies in place (F1 pins 1 and 2) and stores the new masks. Anything else
 /// (no world yet, another world id, other counts, grid, geometry, or
 /// character shape) builds a new world from the records and counts the build.
+/// The solver groups are `SEPARATE_DRIVEN`, on. A test that builds with them
+/// off calls `ensure_separated`.
 fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32) -> Result<Load, Refusal> {
+    ensure_separated(world_id, n_bodies, n_colliders, rows, cols, cell, shape, SEPARATE_DRIVEN)
+}
+
+/// `ensure` with dispatch 128's solver groups named. The build and every
+/// driven switch of this call use `separate`. Off, both leave Rapier's
+/// default solver groups. A world already built has to be stepped with the
+/// same value: a kept world does not rewrite the groups it was built with.
+fn ensure_separated(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, separate: bool) -> Result<Load, Refusal> {
     let sig = signature(world_id, n_bodies, n_colliders, rows, cols, cell, shape)?;
     let solver = unsafe { &mut *(&raw mut SOLVER) };
     if let Some(loaded) = solver.loaded.as_mut() {
@@ -1038,12 +1056,12 @@ fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, 
             if loaded.signature.driven == sig.driven && loaded.signature.carried == sig.carried {
                 return Ok(Load::Kept);
             }
-            switch_in_place(loaded, sig.driven, sig.carried)?;
+            switch_in_place(loaded, sig.driven, sig.carried, separate)?;
             rebuild_snapshot(loaded, &mut solver.snapshot)?;
             return Ok(Load::Switched);
         }
     }
-    let loaded = build_world(sig)?;
+    let loaded = build_world(sig, separate)?;
     solver.loaded = Some(loaded);
     unsafe {
         let builds = &raw mut BUILDS;
@@ -1057,8 +1075,16 @@ fn ensure(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, 
 
 /// The quantum `solver_step` runs, with the character's movement and push
 /// named: the export passes `Stride` and `Shove`; only the tests pass others.
+/// The solver groups are `SEPARATE_DRIVEN`, on. A test that steps with them
+/// off calls `step_separated`.
 fn step_law(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, mover: &mut impl Mover, pusher: &mut impl Pusher) -> Result<(), Refusal> {
-    ensure(world_id, n_bodies, n_colliders, rows, cols, cell, shape)?;
+    step_separated(world_id, n_bodies, n_colliders, rows, cols, cell, shape, mover, pusher, SEPARATE_DRIVEN)
+}
+
+/// `step_law` with dispatch 128's solver groups named. Off, the build and
+/// every driven switch leave Rapier's default solver groups.
+fn step_separated(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u32, cell: f64, shape: u32, mover: &mut impl Mover, pusher: &mut impl Pusher, separate: bool) -> Result<(), Refusal> {
+    ensure_separated(world_id, n_bodies, n_colliders, rows, cols, cell, shape, separate)?;
     let solver = unsafe { &mut *(&raw mut SOLVER) };
     let loaded = solver.loaded.as_mut().ok_or(Refusal::Unloaded)?;
     integrate(loaded, mover, pusher)?;
@@ -1146,6 +1172,11 @@ pub extern "C" fn solver_rebuilds() -> u32 {
 // off moves the character as the law before F4 did, bit for bit; with the
 // retry on, the law parts from that only on a call where the retry fired and
 // hit, and every hit starts on the skin; and the costs are printed.
+//
+// Dispatch 128, the driven body's solver groups: the product law passes
+// SEPARATE_DRIVEN, on, and the wasm exports call that path. With the groups
+// off, every law run matches the groups-on law quantum for quantum where no
+// driven body touches a dynamic one, and the two part where one does.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1766,7 +1797,7 @@ mod tests {
         record[WX] = 0.125;
         record[WY] = -0.5;
         record[WZ] = 0.25;
-        let Ok((mut body, _)) = body_for(&record, true, 0) else {
+        let Ok((mut body, _)) = body_for(&record, true, 0, SEPARATE_DRIVEN) else {
             return false;
         };
         let Ok(rotation) = quat_from_body(&record) else {
@@ -2945,6 +2976,7 @@ mod tests {
     /// be stepped; `after` sees the pusher and the quantum once it has stepped.
     /// Returns each quantum's digest of its records and snapshot, and the
     /// run's digest over all of them, as harness/law-runs.mjs computes it.
+    /// The solver groups are `SEPARATE_DRIVEN`, on.
     fn replay<M: Mover, P: Pusher>(
         turn: &mut u32,
         run: &LawRun,
@@ -2953,16 +2985,18 @@ mod tests {
         mut before: impl FnMut(&mut P, usize),
         mut after: impl FnMut(&mut P, usize),
     ) -> (Vec<String>, String) {
-        replay_moved(turn, run, mover, pusher, |_, p, q| before(p, q), |_, p, q| after(p, q))
+        replay_moved(turn, run, mover, pusher, SEPARATE_DRIVEN, |_, p, q| before(p, q), |_, p, q| after(p, q))
     }
 
-    /// `replay` with the mover named: `before` and `after` see the mover,
-    /// the pusher, and the quantum.
+    /// `replay` with the mover named, and with dispatch 128's solver groups
+    /// when `separate` is on. `replay` passes `SEPARATE_DRIVEN`. `before` and
+    /// `after` see the mover, the pusher, and the quantum.
     fn replay_moved<M: Mover, P: Pusher>(
         turn: &mut u32,
         run: &LawRun,
         mover: &mut M,
         pusher: &mut P,
+        separate: bool,
         mut before: impl FnMut(&mut M, &mut P, usize),
         mut after: impl FnMut(&mut M, &mut P, usize),
     ) -> (Vec<String>, String) {
@@ -2975,7 +3009,7 @@ mod tests {
         }
         set_heights(&run.heights);
         let (n, m) = (run.bodies.len() as u32, run.colliders.len() as u32);
-        assert_eq!(ensure(*turn, n, m, run.rows, run.cols, run.cell, run.shape), Ok(Load::Built), "{}", run.name);
+        assert_eq!(ensure_separated(*turn, n, m, run.rows, run.cols, run.cell, run.shape, separate), Ok(Load::Built), "{}", run.name);
         let mut lanes = Lanes::new();
         let mut quanta = Vec::with_capacity(run.quanta);
         let mut edits = run.edits.iter().peekable();
@@ -2993,7 +3027,7 @@ mod tests {
                 edits.next();
             }
             before(mover, pusher, q);
-            assert_eq!(step_law(*turn, n, m, run.rows, run.cols, run.cell, run.shape, mover, pusher), Ok(()), "{} at quantum {q}", run.name);
+            assert_eq!(step_separated(*turn, n, m, run.rows, run.cols, run.cell, run.shape, mover, pusher, separate), Ok(()), "{} at quantum {q}", run.name);
             let records = record_bytes(run.bodies.len());
             let snap = snapshot();
             let mut one = Lanes::new();
@@ -3277,6 +3311,93 @@ mod tests {
             assert_eq!(digest, run.digest, "{}: the replay is not the product binary's run", run.name);
             println!("{}: {} quanta, {} edits, {} pins, digest {digest}", run.name, run.quanta, run.edits.len(), run.pins.len());
         }
+    }
+
+    /// An active narrow-phase contact between a driven body and a dynamic one,
+    /// and whether any of its manifold points carries a warm-start. Solver
+    /// groups do not remove the pair. The groups-on law leaves that warm-start
+    /// at zero; a non-zero warm-start is the groups-off law solving the touch.
+    fn driven_dynamic_touch() -> (bool, bool) {
+        let solver = unsafe { &*(&raw const SOLVER) };
+        let Some(loaded) = solver.loaded.as_ref() else {
+            return (false, false);
+        };
+        let mut driven = Vec::new();
+        let mut dynamic = Vec::new();
+        for (i, handle) in loaded.handles.iter().enumerate() {
+            let Some(handle) = *handle else { continue };
+            let Some(body) = loaded.world.bodies.get(handle) else { continue };
+            let Some(collider) = body.colliders().first().copied() else { continue };
+            if loaded.kinematic[i] {
+                driven.push(collider);
+            } else {
+                dynamic.push(collider);
+            }
+        }
+        let mut active = false;
+        let mut warm = false;
+        for pair in loaded.world.narrow_phase.contact_pairs() {
+            let between = (driven.contains(&pair.collider1) && dynamic.contains(&pair.collider2)) || (driven.contains(&pair.collider2) && dynamic.contains(&pair.collider1));
+            if !between || !pair.has_any_active_contact() {
+                continue;
+            }
+            active = true;
+            for manifold in pair.solver_manifolds() {
+                for point in &manifold.points {
+                    let t = &point.data.warmstart_tangent_impulse;
+                    if point.data.warmstart_impulse != 0.0 || t.x != 0.0 || t.y != 0.0 || point.data.warmstart_twist_impulse != 0.0 {
+                        warm = true;
+                    }
+                }
+            }
+        }
+        (active, warm)
+    }
+
+    // Dispatch 128, the control. With the groups off, a law run keeps the
+    // groups-on law's per-quantum digest where that law writes no warm-start
+    // between a driven body and a dynamic one. Where it does, the two part,
+    // and the test names the run. The product law writes none: a warm-start
+    // there fails the test.
+    #[test]
+    fn with_the_groups_off_a_law_run_matches_the_groups_on_law_unless_a_driven_body_touches_a_dynamic_one() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let runs = law_runs();
+        assert!(runs.iter().any(|run| run.name == "product-scene"), "fixtures/law-runs/ has no product scene");
+        let mut clear = Vec::new();
+        let mut touched = Vec::new();
+        for run in &runs {
+            let mut on_warm = false;
+            let (on, on_digest) = replay(&mut turn, run, &mut Stride, &mut Shove, |_, _| {}, |_, _| {
+                on_warm |= driven_dynamic_touch().1;
+            });
+            let mut off_warm = false;
+            let (off, off_digest) = replay_moved(&mut turn, run, &mut Stride, &mut Shove, false, |_, _, _| {}, |_, _, _| {
+                off_warm |= driven_dynamic_touch().1;
+            });
+            assert_eq!(on.len(), off.len(), "{}: the two laws did not step the same quanta", run.name);
+            assert!(!on_warm, "{}: the groups-on law warm-started a driven body against a dynamic one", run.name);
+            let part = parting(&on, &off);
+            if off_warm {
+                let Some(at) = part else {
+                    panic!("{}: a driven body solves against a dynamic one and the per-quantum digests still match", run.name);
+                };
+                println!(
+                    "{name}: groups off parts at quantum {at}; groups-on {on_digest}, groups-off {off_digest}, committed {committed}",
+                    name = run.name,
+                    committed = run.digest
+                );
+                touched.push(run.name.as_str());
+            } else {
+                assert!(part.is_none(), "{}: no driven body solves against a dynamic one and the groups-off law parts at quantum {part:?}", run.name);
+                assert_eq!(off_digest, on_digest, "{}: no driven-dynamic solve and the digests differ", run.name);
+                clear.push(run.name.as_str());
+            }
+        }
+        println!("groups off matches the groups-on law: {clear:?}");
+        println!("groups off parts where a driven body solves against a dynamic one: {touched:?}");
+        assert!(clear.contains(&"product-scene"), "the product scene solved a driven body against a dynamic one; parted: {touched:?}");
+        assert_eq!(touched, ["red-room-a"], "the groups-off law parted on {touched:?}");
     }
 
     // F3 pin 4 and F5 pin 2, the control test.
@@ -3813,7 +3934,7 @@ mod tests {
         };
         let collisions = vec![collision; listed];
         let mut world = PhysicsWorld::new();
-        let (body, co) = body_for(&record, false, 0).expect("the crate's record");
+        let (body, co) = body_for(&record, false, 0, SEPARATE_DRIVEN).expect("the crate's record");
         let (handle, _) = world.insert(body, co);
         warm_broadphase(&mut world);
         let PhysicsWorld { broad_phase, narrow_phase, bodies, colliders, .. } = &mut world;
@@ -4208,7 +4329,7 @@ mod tests {
     /// on the run is the law's, so a recorded digest must be the run's.
     fn count_replayed(turn: &mut u32, run: &LawRun) -> Counted {
         let mut control = RetryControl { run: run.name.clone(), ..RetryControl::default() };
-        let (law, digest) = replay_moved(turn, run, &mut control, &mut Shove, |c, _, q| c.quantum = q, |_, _, _| {});
+        let (law, digest) = replay_moved(turn, run, &mut control, &mut Shove, SEPARATE_DRIVEN, |c, _, q| c.quantum = q, |_, _, _| {});
         if !run.digest.is_empty() {
             assert_eq!(digest, run.digest, "{}: the run under the control is not the product binary's", run.name);
         }
