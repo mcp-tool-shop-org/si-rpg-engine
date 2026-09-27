@@ -26,5 +26,5 @@
   "log": [
     { "tick": 0, "hash": "35cdd48435cdd484", "proposal": { "kind": "intent", "verb": "push", "actor": "walker", "target": { "body": "shade" }, "frameHash": "35cdd48435cdd484" } }
   ],
-  "hash": "69cc8d12a240069f"
+  "hash": "4f33610323f8d7ba"
 }
