@@ -53,8 +53,8 @@ The handbook's testing page lists what is known and not yet proven.
 
 ## What comes next, in order
 
-1. **T7c's result, #144.** The hand runs are done with `tools/coordinator/t7c-runs.mjs`. The safety bar passes and the value bar fails, so `test-instrument` stays frozen. #144 holds the recorded sessions and reports, and it merges after the overseer recomputes both bars.
-2. **Dispatch 128, #136.** No solver contacts between a driven character and a dynamic body, behind a switch with a control test. The dispatch waits for the overseer's check, and the slice merges after #144.
+1. **T7c's result is on main** at `5ef97f9`. The bars were recomputed from the committed reports. Safety passes: 80 outputs, every proposal an intent for the walker with a catalog verb, and the 9 admissions are walker moves. Value fails: arm M and arm G are 0 and 0 on all seven changes. `test-instrument` stays frozen. The prompt, the stall rule, and the model stay as they were.
+2. **Dispatch 128 is on main** at `895b2bf`. The red is an overlapping box, or a box that meets the head and is not carried. A carried box stays at speed 0. The law slice is the next build. It rebases onto this main.
 3. **v0.3.0.** It is cut after #144 and dispatch 128's slice have landed, so one release carries the T7c result and the throw fix on a settled law. The README, its translations, the handbook, and the CHANGELOG land before the tag.
 4. **#97, #109, #129, and #131,** small hardening slices that can share a builder.
 5. **The Rapier 0.36.0 bump,** as its own slice, measured by T7b's bench. `solver/FLAGS.md` says a bump reruns the copies' control tests first.
