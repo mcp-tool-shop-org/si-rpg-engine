@@ -185,7 +185,23 @@ export function stepBodies(bodies, colliders, driven) {
   return ok === 1;
 }
 
-function writeInputs(exp, bodies, colliders, heightfield, driven) {
+function writeMesh(exp, mesh) {
+  const nVerts = mesh ? mesh.positions.length / 3 : 0;
+  const nIdx = mesh ? mesh.indices.length : 0;
+  if (exp.mesh_prepare(nVerts, nIdx) !== 1) {
+    return false;
+  }
+  if (!mesh) {
+    return true;
+  }
+  const positions = new Float64Array(exp.memory.buffer, exp.mesh_positions_ptr(), mesh.positions.length);
+  positions.set(mesh.positions);
+  const indices = new Uint32Array(exp.memory.buffer, exp.mesh_indices_ptr(), mesh.indices.length);
+  indices.set(mesh.indices);
+  return true;
+}
+
+function writeInputs(exp, bodies, colliders, heightfield, driven, mesh) {
   const memory = exp.memory;
   const view = new Float64Array(memory.buffer);
   const bodyBase = exp.bodies_ptr() / 8;
@@ -233,6 +249,9 @@ function writeInputs(exp, bodies, colliders, heightfield, driven) {
       view[hBase + i] = heightfield.heights[i];
     }
   }
+  if (!writeMesh(exp, mesh)) {
+    return null;
+  }
   return { rows, cols, cell: heightfield ? heightfield.cell : 0 };
 }
 
@@ -265,10 +284,15 @@ function readBodies(exp, bodies) {
  * @param {Array<{ minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number }>} colliders
  * @param {{ rows: number, cols: number, cell: number, heights: number[] } | null} heightfield
  * @param {ReadonlySet<string>} driven
+ * @param {number} [shapeId]
+ * @param {{ positions: number[], indices: number[] } | null} [mesh]
  */
-export function loadSolver(worldId, bodies, colliders, heightfield, driven, shapeId) {
+export function loadSolver(worldId, bodies, colliders, heightfield, driven, shapeId, mesh = null) {
   const exp = instantiate().exports;
-  const shape = writeInputs(exp, bodies, colliders, heightfield, driven);
+  const shape = writeInputs(exp, bodies, colliders, heightfield, driven, mesh || null);
+  if (!shape) {
+    return false;
+  }
   const ok = exp.solver_load(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0);
   return ok === 1;
 }
@@ -280,10 +304,15 @@ export function loadSolver(worldId, bodies, colliders, heightfield, driven, shap
  * @param {Array<{ minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number }>} colliders
  * @param {{ rows: number, cols: number, cell: number, heights: number[] } | null} heightfield
  * @param {ReadonlySet<string>} driven
+ * @param {number} [shapeId]
+ * @param {{ positions: number[], indices: number[] } | null} [mesh]
  */
-export function stepSolver(worldId, bodies, colliders, heightfield, driven, shapeId) {
+export function stepSolver(worldId, bodies, colliders, heightfield, driven, shapeId, mesh = null) {
   const exp = instantiate().exports;
-  const shape = writeInputs(exp, bodies, colliders, heightfield, driven);
+  const shape = writeInputs(exp, bodies, colliders, heightfield, driven, mesh || null);
+  if (!shape) {
+    return false;
+  }
   const ok = exp.solver_step(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0);
   readBodies(exp, bodies);
   return ok === 1;

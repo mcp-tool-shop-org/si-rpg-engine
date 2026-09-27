@@ -174,6 +174,15 @@ test('a world file is refused for each load reason', () => {
   const empty = structuredClone(base);
   empty.bodies[0].id = '';
   assert.match(/** @type {{ reason: string }} */ (validateScene(empty)).reason, /non-empty/);
+  const mesh = structuredClone(base);
+  mesh.mesh = { positions: [0, 0, 0, 2, 0, 0, 0, 0, 2], indices: [0, 1, 2] };
+  assert.equal(validateScene(mesh).ok, true);
+  const repeated = structuredClone(base);
+  repeated.mesh = { positions: [0, 0, 0, 2, 0, 0, 0, 0, 2], indices: [0, 0, 1] };
+  assert.match(/** @type {{ reason: string }} */ (validateScene(repeated)).reason, /repeats an index/);
+  const over = structuredClone(base);
+  over.mesh = { positions: [0, 0, 0, 2, 0, 0, 0, 0, 2], indices: Array.from({ length: 999475 * 3 }, (_, i) => i % 3) };
+  assert.match(/** @type {{ reason: string }} */ (validateScene(over)).reason, /999474/);
 });
 
 test('zoneOf is one answer, and zone bounds move the quantum hash', () => {

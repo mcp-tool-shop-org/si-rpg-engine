@@ -57,6 +57,19 @@ const SCALE_BELOW: f64 = 1.0e-270;
 
 pub(crate) static mut HEIGHTS: [f64; MAX_HEIGHTS] = [0.0; MAX_HEIGHTS];
 
+/// The mesh the last `mesh_prepare` named. Empty unless a world has one.
+/// The survey's maximum is 999474 triangles. The bytes are allocated when a
+/// mesh is prepared, not as a static of that size: the binary's memory is
+/// 512 pages and does not grow.
+struct MeshInput {
+    positions: Vec<f64>,
+    indices: Vec<u32>,
+}
+
+static mut MESH: MeshInput = MeshInput { positions: Vec::new(), indices: Vec::new() };
+
+const MAX_MESH_TRIANGLES: u32 = 999474;
+
 // The driven and carried masks hold one bit per body, and `1u64 << 64` is 1
 // on host and wasm with overflow checks off, so a limit above 64 would alias
 // body 64 onto body 0. S1 pin 3.
@@ -144,6 +157,33 @@ fn finite(x: f64) -> Result<(), Refusal> {
 #[unsafe(no_mangle)]
 pub extern "C" fn heights_ptr() -> *mut f64 {
     (&raw mut HEIGHTS).cast::<f64>()
+}
+
+/// Sizes the mesh buffers. Zero clears them, which a world without a mesh
+/// must do so the previous world's mesh does not stay loaded.
+#[unsafe(no_mangle)]
+pub extern "C" fn mesh_prepare(n_verts: u32, n_idx: u32) -> u32 {
+    if n_idx % 3 != 0 {
+        return 0;
+    }
+    let triangles = n_idx / 3;
+    if triangles > MAX_MESH_TRIANGLES || n_verts > MAX_MESH_TRIANGLES.saturating_mul(3) {
+        return 0;
+    }
+    let mesh = unsafe { &mut *(&raw mut MESH) };
+    mesh.positions.resize(n_verts as usize * 3, 0.0);
+    mesh.indices.resize(n_idx as usize, 0);
+    1
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mesh_positions_ptr() -> *mut f64 {
+    unsafe { (*(&raw mut MESH)).positions.as_mut_ptr() }
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mesh_indices_ptr() -> *mut u32 {
+    unsafe { (*(&raw mut MESH)).indices.as_mut_ptr() }
 }
 
 #[unsafe(no_mangle)]
@@ -327,6 +367,24 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
         let h = unsafe { HEIGHTS[i] };
         finite(h)?;
         geometry.push(canon(h).to_bits());
+    }
+    let (n_verts, n_idx) = unsafe {
+        let mesh = &*(&raw const MESH);
+        (mesh.positions.len() / 3, mesh.indices.len())
+    };
+    geometry.push(n_verts as u64);
+    geometry.push(n_idx as u64);
+    if n_idx > 0 {
+        unsafe {
+            let mesh = &*(&raw const MESH);
+            for v in &mesh.positions {
+                finite(*v)?;
+                geometry.push(canon(*v).to_bits());
+            }
+            for ix in &mesh.indices {
+                geometry.push(*ix as u64);
+            }
+        }
     }
     Ok(Signature {
         world_id,
@@ -776,6 +834,27 @@ fn build_world(sig: Signature, separate: bool) -> Result<Loaded, Refusal> {
             .restitution(0.0)
             .friction(0.8)
             .build();
+        let (_b, ch) = world.insert(body, co);
+        collider_handles.push(ch);
+    }
+
+    let n_idx = unsafe { (*(&raw const MESH)).indices.len() };
+    if n_idx > 0 {
+        let (vertices, indices) = unsafe {
+            let mesh = &*(&raw const MESH);
+            let n_verts = mesh.positions.len() / 3;
+            let mut vertices = Vec::with_capacity(n_verts);
+            for i in 0..n_verts {
+                vertices.push(Vector::new(mesh.positions[i * 3], mesh.positions[i * 3 + 1], mesh.positions[i * 3 + 2]));
+            }
+            let mut indices = Vec::with_capacity(n_idx / 3);
+            for t in 0..n_idx / 3 {
+                indices.push([mesh.indices[t * 3], mesh.indices[t * 3 + 1], mesh.indices[t * 3 + 2]]);
+            }
+            (vertices, indices)
+        };
+        let co = ColliderBuilder::trimesh(vertices, indices).map_err(|_| Refusal::Extent)?.restitution(0.0).friction(0.8).build();
+        let body = RigidBodyBuilder::fixed().build();
         let (_b, ch) = world.insert(body, co);
         collider_handles.push(ch);
     }

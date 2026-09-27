@@ -39,7 +39,7 @@ function hold(id) {
 }
 
 /**
- * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; shape?: 'box' | 'capsule'; name?: string; minds?: import('./minds.js').Mind[] }} init
+ * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; mesh?: { positions: number[], indices: number[] } | null; shape?: 'box' | 'capsule'; name?: string; minds?: import('./minds.js').Mind[] }} init
  * @param {'product' | 'box' | 'reference'} [law] product is the Rapier step; box is the E1 binary; reference is the JavaScript kernel
  */
 export function createWorld(init, law) {
@@ -97,6 +97,11 @@ export function createWorld(init, law) {
     cols: init.heightfield.cols,
     cell: init.heightfield.cell,
     heights: init.heightfield.heights.slice(),
+  } : null;
+  /** @type {{ positions: number[], indices: number[] } | null} */
+  const mesh = init.mesh ? {
+    positions: init.mesh.positions.slice(),
+    indices: init.mesh.indices.slice(),
   } : null;
 
   /** @param {string} id */
@@ -175,7 +180,7 @@ export function createWorld(init, law) {
     }
     if (chosen === 'product') {
       solverModes(driving);
-      const stepped = stepSolver(productId, bodies, colliders, heightfield, driving, shapeId);
+      const stepped = stepSolver(productId, bodies, colliders, heightfield, driving, shapeId, mesh);
       hold(productId);
       if (!stepped) {
         throw new Error('NaN');
@@ -531,8 +536,20 @@ export function createWorld(init, law) {
         }
       }
     }
+    if (mesh) {
+      hasher.u32(mesh.positions.length);
+      hasher.u32(mesh.indices.length);
+      for (let i = 0; i < mesh.positions.length; i = i + 1) {
+        if (!hasher.float(mesh.positions[i])) {
+          throw new Error('NaN');
+        }
+      }
+      for (let i = 0; i < mesh.indices.length; i = i + 1) {
+        hasher.u32(mesh.indices[i]);
+      }
+    }
     if (chosen === 'product') {
-      const loaded = loadSolver(productId, bodies, colliders, heightfield, driven || new Set(), shapeId);
+      const loaded = loadSolver(productId, bodies, colliders, heightfield, driven || new Set(), shapeId, mesh);
       hold(productId);
       if (!loaded) {
         throw new Error('NaN');
@@ -1015,7 +1032,7 @@ export function createWorld(init, law) {
     mindsInstalled: false,
     minds,
     name,
-    bodies, colliders, heightfield, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, saveSparse, restoreProblem, restore, zoneOf, zoneIndex, law: chosen,
+    bodies, colliders, heightfield, mesh, zones, body, step, segmentHits, overlaps, mixLoad, snapshot, save, saveSparse, restoreProblem, restore, zoneOf, zoneIndex, law: chosen,
     lifted, carry, release, sleeping, holds, supportAt, linkIndex,
     /**
      * @param {string} mind
