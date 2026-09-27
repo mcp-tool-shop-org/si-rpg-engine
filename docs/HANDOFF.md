@@ -1,10 +1,10 @@
 # Handoff
 
-2026-09-26, at v0.2.0. This is for the next coordinator session, and for anyone who picks the work up. It says where the engine stands, what comes next and in what order, and how the work runs, with the scripts that run it. `docs/PHASE-2.md` holds the plan and its reasons; this file holds the working state.
+2026-09-27, at v0.3.0. This is for the next session, and for anyone who picks the work up. It says where the engine stands, what comes next and in what order, and how the work runs, with the scripts that run it. `docs/PHASE-2.md` holds the plan and its reasons; this file holds the working state.
 
 ## Where the engine stands
 
-v0.2.0 is Phase 2 so far: the suite that measures the engine, and the fixes to the law that the suite found. Every slice below merged from a written dispatch in `docs/`, was verified on a fresh checkout, and was reviewed by other model families before it merged.
+v0.3.0 is the v0.2.0 suite with dispatch 128's law slice on it. v0.2.0 was Phase 2 so far: the suite that measures the engine, and the fixes to the law that the suite found. Every slice below merged from a written dispatch in `docs/`, was verified on a fresh checkout, and was reviewed by other model families before it merged.
 
 **The suite.**
 - **T1, the first difference** (#41). Per-quantum traces in exact bits, and a tool that names the first quantum, body, and field where two runs part.

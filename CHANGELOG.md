@@ -7,14 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Changed
+## [0.3.0] - 2026-09-27
 
-- A drop stops short of its target and sets the carried body down clear of the actor. A placement that overlaps another body or a collider is refused, and the body stays carried.
-- A coverage seed keeps file times and compiles only si-solver. A build that compiles nothing fails the gate.
+The suite from 0.2.0, with dispatch 128's law slice on it. A driven body and a dynamic body do not share a solver contact. `test-instrument` stays frozen. The package is not published to npm.
 
 ### Added
 
 - **A model proposer in the bench.** `bench run --model --diff <file>` runs one seat session per world beside the grammar, starting where the grammar goes eight admitted candidates with nothing new or runs out of budget. The report lists what the model's arm and an equal-cost grammar arm each newly find. It is off unless named, the role it runs must be thawed, and `test-instrument` stays frozen. A thawed test-only copy lives in `fixtures/roles/`.
+
+### Changed
+
+- **A driven body does not solve against a dynamic body.** A driven collider is solver group 3 and excludes group 2. A dynamic collider is group 2 and excludes group 3. Statics keep Rapier's default. Collision groups are unchanged, so the narrow phase still finds the pair, and the collider's handle does not change when the groups are written. The groups follow the body when it switches in place. There is no JavaScript switch. With the groups off, every law run matches the groups-on law except red room A, where a driven body touches a dynamic one. The traces part at quantum 43, and only the crate's final pose moves.
+- **The step-up boxes stay under 1 m/s.** On the room from #121, a dynamic box that overlaps the walker, or meets its head and is not carried, used to leave near 16 m/s. That 16 m/s is the walker's own step: 0.25 m in one quantum of 1/64 s. Both boxes now stay under 1 m/s. A carried box stays at speed 0.
+- **The refusals sweep no longer records a thrown walker or a thrown crate.** At tick 356 the walker's vertical speed goes from 0 to -0.125 and its rise is 0.750, under the climb rule. The other worlds in the sweep did not move.
+- **Red room A's push run ends at `4f33610323f8d7ba`.** The speed guard still holds: the walker peaks at 1 m/s, the crate at 0.428 m/s, and the shade at 0.599 m/s.
+- **The Linux solver digest is `fab06138921df81dbe269aac68cee653292ef9d60310af996687ea4621821a71`.** The product golden stays `69a671f962665563`. The arithmetic golden stays `0d38671370d12d1e`.
+- **A drop stops short of its target** and sets the carried body down clear of the actor. A placement that overlaps another body or a collider is refused, and the body stays carried.
+- **A coverage seed keeps file times and compiles only si-solver.** A build that compiles nothing fails the gate.
+- **T7c's recorded runs are on main.** Safety passes: 80 outputs, every proposal an intent for the walker with a catalog verb, and the 9 admissions are walker moves. Value fails: both arms are 0 of 0 on all seven changes. The prompt, the stall rule, and the model stay as they were.
+- **The law plant's diff keeps a span of 4000 lines,** so the planted edits stay the lines they change. The plant makes 34 mutants.
+- **503 tests,** from the green engines job on this tree.
+
+### Golden hashes at this release
+
+| Harness | Hash |
+|---|---|
+| `harness/sim.mjs` (product) | `69a671f962665563` |
+| `harness/arith.mjs` (arithmetic contract) | `0d38671370d12d1e` |
+| `fixtures/solver.sha256` (Linux binary) | `fab06138921df81dbe269aac68cee653292ef9d60310af996687ea4621821a71` |
 
 ## [0.2.0] - 2026-09-26
 
@@ -102,6 +122,7 @@ The first release. Version numbers before 0.1.0 were internal slice counters and
 | `harness/arith.mjs` (arithmetic contract) | `0d38671370d12d1e` |
 | `fixtures/solver.sha256` (Linux binary) | `ede99ea1e51ec3ca12afa407764a66acf98eda3d7c36ac70397a6105c76fb5f0` |
 
-[Unreleased]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/releases/tag/v0.2.0
 [0.1.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/releases/tag/v0.1.0

@@ -9,7 +9,7 @@ export const config: SiteConfig = {
   footerText: 'MIT Licensed — built by <a href="https://mcp-tool-shop.github.io/" style="color:var(--color-muted);text-decoration:underline">MCP Tool Shop</a>',
 
   hero: {
-    badge: 'Open source · MIT · 0.2.0',
+    badge: 'Open source · MIT · 0.3.0',
     headline: 'A 3D physics world',
     headlineAccent: 'that replays exactly.',
     description: 'si-rpg-engine steps physics at a fixed 64 steps per second, records a fingerprint of the world after every step, and can rebuild any run from its starting seed and the inputs it accepted, bit for bit. The physics is Rust compiled to WebAssembly, and the same build gives the same answer in the JavaScript engines behind Chrome, Firefox, and Safari, and on both x64 and ARM processors.',
@@ -33,7 +33,7 @@ export const config: SiteConfig = {
         { title: 'Exact replay', desc: 'A run is its starting seed plus the inputs that were accepted. Replaying them rebuilds every step, and when two runs differ, the tools name the first step, body, and value where they part. A failing check saves one file that reproduces the failure with a single command.' },
         { title: 'Save and restore', desc: 'Restore a world by replaying its inputs, by copying the physics module\'s memory, or from the tick\'s own save of its whole state. Each is tested to continue exactly as the original run did.' },
         { title: 'Real 3D physics', desc: 'Boxes fall, slide, stack, tip, and tumble; a character climbs steps and slopes and walks over terrain. The physics is the Rapier engine in its deterministic mode, compiled to one WebAssembly file with a pinned checksum.' },
-        { title: 'Physics fixed where it was wrong', desc: 'The suite found four ways the physics went wrong: a walker losing its stride, a push landing at another body\'s contact points, a push that left out how a body turns, and a step that sank into the floor. Each is fixed in the engine\'s own copy of the routine, and a test shows the copy without its fix moves exactly as Rapier does.' },
+        { title: 'Physics fixed where it was wrong', desc: 'The suite found where the physics went wrong: a walker losing its stride, a push landing at another body\'s contact points, a push that left out how a body turns, and a step that sank into the floor. Each of those is fixed in the engine\'s own copy of the routine, and a test shows the copy without its fix moves exactly as Rapier does. A driven body and a dynamic body no longer share a solver contact, so a step no longer launches an overlapping box.' },
         { title: 'Worlds explored before they run', desc: 'Before a world is admitted, the engine explores every state its characters can reach with the actions it allows. A zone nothing can reach, or a body pushed out of the world, is refused with a recording that reproduces it.' },
         { title: 'A change measured against its parent', desc: 'The bench runs a change and the build before it side by side, each in a process of its own, and reports which inputs reach the change, where the two runs first part, and what fails only on the change. Every verdict comes from the engine, none from a model, and its tests plant changes with known effects to check that it reports each one.' },
         { title: 'Content checked before it runs', desc: 'World files and new character actions are validated when they load. A file that fails is rejected with the reason, and the running world does not change.' },
