@@ -20,11 +20,9 @@
 // the issue the job writes quotes the block.
 //
 // #127: a body the law throws out of the world is a `thrown` finding, not a
-// `leaves` one. The walker thrown to y 8.9 in the verb fixture's refusals
-// case (#128) is thrown, load world refuses it with a bundle replay
-// reproduces, the scheduled comparison names it against a record that held
-// it as leaves, and --record-sweep names it; a crate pushed off an unwalled
-// edge stays leaves.
+// `leaves` one. #128: the refusals walker is not thrown, and no body in that
+// run rises past the climb rule's maxRise. A record that still lists the old
+// throw is named as gone. A crate pushed off an unwalled edge stays leaves.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -34,9 +32,13 @@ import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { readBundle, specOf } from '../packages/tick/bundle.js';
+import { createMemory } from '../packages/tick/memory.js';
+import { loadIntentRules } from '../packages/tick/predicates.js';
 import { replayTo } from '../packages/tick/runs.js';
 import { settles } from '../packages/tick/admit-world.js';
 import { loadScene, validateScene } from '../packages/tick/scene.js';
+import { createRestorableTick } from '../packages/tick/tick.js';
+import { createWorld } from '../packages/tick/world.js';
 import { costLine, replayWitness, sceneInput, sweep, sweepVerdict } from '../packages/load/sweep.js';
 import { LOAD_BUDGET, considerWorld } from '../packages/load/world.js';
 import { SWEEP_BUDGET, issueText, readSweepRecord, runCorpus, sweepCorpus, sweepWorlds } from './corpus.mjs';
@@ -461,69 +463,147 @@ test('a sweep that throws in the scheduled job fails with a block naming the wor
   assert.ok(issue.body.includes('```\n' + String(thrown.block).trim() + '\n```'), issue.body);
 });
 
-test('#127: the walker the law throws in the verb fixture\'s refusals case is a thrown finding naming its rise, its largest jump and that jump\'s tick, and load world\'s verdict refuses it with a bundle replay reproduces', (t) => {
-  // #128: at t356, with nothing lifting it, the walker's vertical speed
-  // jumps from 0 to 11.1 and it rises 8.6 above its height at the load. On
-  // main the sweep recorded it as `leaves walker by walker`. The case is
-  // swept as the scheduled job sweeps it; it is not a world file load world
-  // could read, since its zones rise above its colliders, so its refusal is
-  // held at sweepVerdict, whose reasons load world prints.
-  const world = sweepWorlds().find((item) => item.name === 'fixture behavior-verbs refusals');
-  const input = /** @type {SweepInput} */ (world && world.input);
+/**
+ * The refusals witness: move, move, climb, move. On main the walker's
+ * vertical speed jumped past 11 at tick 356, in the settle after that last
+ * move, and it rose about 8.6. Returns that tick, and each body's highest
+ * rise above the load.
+ * @param {SweepInput} input
+ */
+function refusalsAtThrowTick(input) {
+  const catalog = loadIntentRules();
+  const world = createWorld(input.world, 'product');
+  const tick = createRestorableTick({ seed: input.seed, world, rules: catalog.rules, retired: catalog.retired, memory: createMemory() });
+  /** @type {Record<string, number>} */
+  const startY = {};
+  /** @type {Record<string, number>} */
+  const highest = {};
+  for (const body of world.bodies) {
+    startY[body.id] = body.y;
+    highest[body.id] = 0;
+  }
+  function see() {
+    for (const body of world.bodies) {
+      const rise = body.y - startY[body.id];
+      if (rise > highest[body.id]) {
+        highest[body.id] = rise;
+      }
+    }
+  }
+  function asleep() {
+    return world.bodies.every((body) => world.sleeping(body.id) || world.carriedByOf(body.id) !== null);
+  }
+  /** @type {{ before: number, after: number, rise: number, lifted: boolean, scheduling: boolean } | null} */
+  let seen = null;
+  /**
+   * @param {boolean} scheduling true while an action is still running
+   */
+  function advanceSeen(scheduling) {
+    const walker = world.body('walker');
+    if (!walker) {
+      throw new Error('no walker');
+    }
+    const before = walker.vy;
+    const at = tick.frame().tick;
+    tick.advance();
+    see();
+    if (at + 1 !== 356) {
+      return;
+    }
+    const after = world.body('walker');
+    if (!after) {
+      throw new Error('no walker');
+    }
+    seen = { before, after: after.vy, rise: after.y - startY.walker, lifted: world.lifted.has('walker'), scheduling };
+  }
+  function runOut() {
+    let n = 0;
+    while (!tick.idle()) {
+      advanceSeen(true);
+      n = n + 1;
+      if (n > 8000) {
+        throw new Error('the refusals witness did not go idle');
+      }
+    }
+    for (let i = 0; i < 512 && !asleep(); i = i + 1) {
+      advanceSeen(false);
+    }
+  }
+  runOut();
+  const moves = [
+    { verb: 'move', target: { x: 0.75, z: -0.25 } },
+    { verb: 'move', target: { x: 1.25, z: 0.25 } },
+    { verb: 'climb', target: { x: 1.75, z: 0.25 } },
+    { verb: 'move', target: { x: 1.25, z: 0.25 } },
+  ];
+  for (const move of moves) {
+    const admitted = tick.submit({ kind: 'intent', verb: move.verb, actor: 'walker', target: move.target, frameHash: tick.frame().hash });
+    if (!admitted.admitted) {
+      throw new Error(move.verb + ' refused: ' + admitted.reason);
+    }
+    runOut();
+  }
+  if (!seen) {
+    throw new Error('the refusals witness never reached tick 356; it ended at ' + tick.frame().tick);
+  }
+  return { at356: seen, highest };
+}
+
+test('#128: the walker in the verb fixture\'s refusals case is not thrown, and no body rises past the climb rule\'s maxRise', (t) => {
+  // On main, at t356, with nothing lifting it, the walker's vertical speed
+  // jumped from 0 to 11.1 and it rose 8.6 above its height at the load. The
+  // case is swept as the scheduled job sweeps it.
+  const climb = loadIntentRules().rules.get('climb');
+  if (!climb || typeof climb.maxRise !== 'number') {
+    throw new Error('no climb rule');
+  }
+  const maxRise = climb.maxRise;
+  const foundWorld = sweepWorlds().find((item) => item.name === 'fixture behavior-verbs refusals');
+  if (!foundWorld || !foundWorld.input) {
+    throw new Error('no refusals world');
+  }
+  const input = foundWorld.input;
+  const witness = refusalsAtThrowTick(input);
+  t.diagnostic('refusals walker at tick 356: vertical speed ' + witness.at356.before + ' to ' + witness.at356.after + ', rise ' + witness.at356.rise);
+  assert.equal(witness.at356.lifted, false, 'a climb lifts the walker at the old throw');
+  assert.ok(witness.at356.before <= 0 && witness.at356.after <= 0, 'the walker\'s vertical speed goes from ' + witness.at356.before + ' to ' + witness.at356.after + ' at t356');
+  assert.ok(witness.at356.rise <= maxRise, 'at tick 356 the walker has risen ' + witness.at356.rise + ', past ' + maxRise);
+  for (const id of Object.keys(witness.highest)) {
+    assert.ok(witness.highest[id] <= maxRise, id + ' rose ' + witness.highest[id] + ' on the old throw\'s path, past ' + maxRise);
+  }
   const report = sweep(input, { budget: SWEEP_BUDGET, bundles: dir });
-  const verdict = sweepVerdict(report);
-  assert.equal(verdict.admitted, false);
-  const reasons = verdict.reasons;
-  const thrown = reasons.filter((line) => line.startsWith('a body is thrown out of the world: walker '));
-  assert.equal(thrown.length, 1, reasons.join('\n'));
-  t.diagnostic(thrown[0]);
-  const found = /^a body is thrown out of the world: walker is thrown out of the world after move \(1\.25, 0\.25\) by walker: it rose (8\.6\d\d) above its height at the load, where a climb rises 1\.5, and its largest jump in upward speed while no action lifted it was (11\.1\d\d) at tick 356, where a throw is past 2; its centre is at y -1\.\d+, below the lowest collider minimum -1, at tick \d+ at \(x, z\) \(-?\d+\.\d+, -?\d+\.\d+\), past the edge of every collider( \(and \d+ more like it\))?; bundle (.+\.bundle\.json)$/.exec(thrown[0]);
-  assert.ok(found, thrown[0]);
-  const finding = report.findings.find((item) => item.kind === 'thrown' && item.body === 'walker');
-  assert.ok(finding && finding.height && finding.bundle);
-  assert.deepEqual(finding.witness.log.map((entry) => {
-    const intent = /** @type {import('../packages/frame/types.js').Intent} */ (entry.proposal);
-    return intent.verb + ' ' + JSON.stringify(intent.target);
-  }), ['move {"x":0.75,"z":-0.25}', 'move {"x":1.25,"z":0.25}', 'climb {"x":1.75,"z":0.25}', 'move {"x":1.25,"z":0.25}']);
-  assert.equal(finding.height.jumpTick, 356);
-  // `replay <bundle>` reproduces it, and the bundle's run has the jump at t356.
-  const replayed = spawnSync(process.execPath, ['packages/tick/bin/replay.js', finding.bundle], { encoding: 'utf8' });
-  assert.equal(replayed.status, 0, replayed.stdout + replayed.stderr);
-  assert.equal(replayed.stdout, 'bundle ok\n');
-  const bundle = readBundle(finding.bundle);
-  const run = replayTo(specOf(bundle), 355);
-  const before = /** @type {import('../packages/frame/types.js').Body} */ (run.world.body('walker')).vy;
-  run.advance();
-  const after = /** @type {import('../packages/frame/types.js').Body} */ (run.world.body('walker')).vy;
-  assert.ok(before <= 0 && after > 11, 'the walker\'s vertical speed goes from ' + before + ' to ' + after + ' at t356');
-  assert.equal(run.world.lifted.has('walker'), false, 'no climb lifts it');
-  // What else the sweep of refusals finds: the walker also walks off the
-  // unwalled floor, a fall, and the crate leaves the world both ways.
-  assert.deepEqual(report.findings.map((item) => item.kind + ' ' + item.body + ' by ' + item.actor).sort(), ['leaves crate by walker', 'leaves walker by walker', 'thrown crate by walker', 'thrown walker by walker']);
-  const fall = report.findings.find((item) => item.kind === 'leaves' && item.body === 'walker');
-  assert.ok(fall && fall.height && fall.height.rise <= 1.5 && fall.height.jump <= 2, JSON.stringify(fall && fall.height));
+  assert.equal(report.complete, true, 'the refusals sweep did not finish: ' + report.frontier + ' left of ' + report.cells + ' cells');
+  const thrownWalker = report.findings.filter((item) => item.kind === 'thrown' && item.body === 'walker');
+  assert.deepEqual(thrownWalker.map((item) => (item.height ? item.body + ' rose ' + item.height.rise + ' jump ' + item.height.jump + ' at ' + item.height.jumpTick + '; ' + item.detail : item.detail)), []);
+  for (const finding of report.findings) {
+    if (!finding.height) {
+      continue;
+    }
+    assert.ok(finding.height.rise <= maxRise, finding.body + ' rose ' + finding.height.rise + ' above its start, past ' + maxRise + '; jump ' + finding.height.jump + ' at tick ' + finding.height.jumpTick);
+  }
+  t.diagnostic(report.findings.map((item) => item.kind + ' ' + item.body + (item.height ? ' rise ' + item.height.rise + ' jump ' + item.height.jump : '')).join('; '));
 });
 
-test('#127: the scheduled comparison names a thrown finding its record holds as leaves, and the record-sweep names each thrown finding it writes', () => {
+test('#128: a record that still holds the refusals walker as thrown names that finding as gone', () => {
   const name = 'fixture behavior-verbs refusals';
   const record = readSweepRecord();
-  // The record as main had it, before #127.
-  const main = { ...record.worlds[name], findings: ['leaves crate by walker', 'leaves walker by walker'] };
+  const recorded = record.worlds[name];
+  assert.ok(recorded, 'verdicts.json has no refusals world');
+  // #127's record of this world: the throw this slice takes off the law.
+  const held = { ...recorded, findings: ['leaves crate by walker', 'leaves walker by walker', 'thrown crate by walker', 'thrown walker by walker'] };
   const was = process.env.SI_RPG_BUNDLES;
   process.env.SI_RPG_BUNDLES = dir;
   try {
-    const swept = sweepCorpus({ budget: SWEEP_BUDGET, record: { ...record, worlds: { ...record.worlds, [name]: main } }, wanted: (each) => each === 'sweep ' + name, say: () => {} });
+    const swept = sweepCorpus({ budget: SWEEP_BUDGET, record: { ...record, worlds: { ...record.worlds, [name]: held } }, wanted: (each) => each === 'sweep ' + name, say: () => {} });
     assert.equal(swept.results.length, 1);
     const result = swept.results[0];
-    assert.equal(result.status, 'different');
-    assert.match(String(result.block), /^thrown, recorded as leaves: walker by walker$/m);
-    assert.match(String(result.block), /^ {2}a body is thrown out of the world: walker is thrown out of the world after move \(1\.25, 0\.25\) by walker: it rose 8\.6\d\d above its height at the load/m);
-    assert.deepEqual(swept.summaries[name].findings.filter((finding) => finding.startsWith('thrown ')), ['thrown crate by walker', 'thrown walker by walker']);
-    // What --record-sweep prints of each thrown finding it writes.
+    const summary = swept.summaries[name];
+    assert.ok(summary, 'the refusals sweep wrote no summary');
+    assert.equal(summary.findings.some((finding) => finding.startsWith('thrown walker')), false, summary.findings.join(', '));
+    assert.equal(result.status, 'different', result.detail);
+    assert.match(String(result.block), /^recorded finding gone: thrown walker by walker$/m, String(result.block));
     const lines = swept.thrown || [];
-    assert.equal(lines.length, 2, lines.join('\n'));
-    assert.ok(lines.some((line) => line.startsWith(name + ': thrown walker by walker: walker is thrown out of the world after move (1.25, 0.25) by walker: it rose 8.6')), lines.join('\n'));
-    assert.ok(lines.some((line) => line.startsWith(name + ': thrown crate by walker: crate is thrown out of the world after ')), lines.join('\n'));
+    assert.equal(lines.some((line) => line.includes('thrown walker by walker')), false, lines.join('\n'));
   } finally {
     if (was === undefined) {
       delete process.env.SI_RPG_BUNDLES;
