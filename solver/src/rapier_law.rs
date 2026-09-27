@@ -2365,8 +2365,15 @@ mod tests {
     }
 
     /// `drive` with the push named: `before` sees the mover, the pusher, and
-    /// the quantum about to be stepped.
-    fn drive_pushed<M: Mover, P: Pusher>(turn: &mut u32, run: &Run, mover: &mut M, pusher: &mut P, mut before: impl FnMut(&mut M, &mut P, usize), mut after: impl FnMut(usize)) {
+    /// the quantum about to be stepped. The solver groups are on.
+    fn drive_pushed<M: Mover, P: Pusher>(turn: &mut u32, run: &Run, mover: &mut M, pusher: &mut P, before: impl FnMut(&mut M, &mut P, usize), after: impl FnMut(usize)) {
+        drive_separated(turn, run, mover, pusher, SEPARATE_DRIVEN, before, after);
+    }
+
+    /// `drive_pushed` with dispatch 128's solver groups named. Off, the build
+    /// and every driven switch leave Rapier's default solver groups. That is
+    /// the law the recording at 48da598 was made on.
+    fn drive_separated<M: Mover, P: Pusher>(turn: &mut u32, run: &Run, mover: &mut M, pusher: &mut P, separate: bool, mut before: impl FnMut(&mut M, &mut P, usize), mut after: impl FnMut(usize)) {
         *turn += 1;
         for (i, b) in run.bodies.iter().enumerate() {
             set_body(i, *b);
@@ -2376,7 +2383,7 @@ mod tests {
         }
         let (n, m) = (run.bodies.len() as u32, run.colliders.len() as u32);
         run.edit(0);
-        assert_eq!(ensure(*turn, n, m, 0, 0, 0.0, run.shape), Ok(Load::Built), "{}", run.name);
+        assert_eq!(ensure_separated(*turn, n, m, 0, 0, 0.0, run.shape, separate), Ok(Load::Built), "{}", run.name);
         if let Some(up) = run.up {
             let solver = unsafe { &mut *(&raw mut SOLVER) };
             solver.loaded.as_mut().expect("a loaded world").controller.up = up;
@@ -2386,7 +2393,7 @@ mod tests {
                 run.edit(q);
             }
             before(mover, pusher, q + 1);
-            assert_eq!(step_law(*turn, n, m, 0, 0, 0.0, run.shape, mover, pusher), Ok(()), "{} at quantum {}", run.name, q + 1);
+            assert_eq!(step_separated(*turn, n, m, 0, 0, 0.0, run.shape, mover, pusher, separate), Ok(()), "{} at quantum {}", run.name, q + 1);
             after(q + 1);
         }
     }
@@ -2586,14 +2593,15 @@ mod tests {
         // The capsule carry: the copy matches in a capsule world, and the
         // replay under Rapier's controller, pushed through Rapier's routine as
         // the fixture's run was, ends where the fixture's run ended at
-        // 48da598, so it is that run. A bump that moves that run fails the
-        // last check, not the copy, and its edits are recorded again from the
-        // tick. Pushed through the law's push instead, the same carry parts
-        // from that run at the first quantum on which the walker pushes the
+        // 48da598, so it is that run. That recording is the groups-off law.
+        // A bump that moves that run fails the last check, not the copy, and
+        // its edits are recorded again from the tick. Pushed through the law's
+        // push on the product law, groups on, the same carry parts from
+        // Rapier's routine at the first quantum on which the walker pushes the
         // crate, and not before (F5).
         let (run, finals) = capsule_carry();
         let mut control = Control { run: run.name.clone(), ..Control::default() };
-        drive_pushed(&mut turn, &run, &mut control, &mut Routine::Rapier, |c, _, q| c.quantum = q, |_| {});
+        drive_separated(&mut turn, &run, &mut control, &mut Routine::Rapier, false, |c, _, q| c.quantum = q, |_| {});
         println!("{}: {} calls, the branch changes {} quanta", run.name, control.calls, control.branch.len());
         assert_eq!(control.parted, None, "the copy with its branch off parted from Rapier");
         for (i, want) in finals.iter().enumerate() {
@@ -3553,16 +3561,17 @@ mod tests {
         // F3's red, kept: through Rapier's routine the replay of red room A is
         // main's binary's run before F3 (harness/law-runs.mjs, run on main's
         // binary at 5d6bbea, records it with this load and these edits and the
-        // digest below), #1004 acts on each of the quanta 42 to 53 that have
-        // the crate and the shade near the walker and on no other, and the
-        // crate leaves 53 at 26.06416630354704. On 42 to 44 #1004 gathers the
-        // shade's manifold as its own, which marks the shade modified; none of
-        // its points is within the prediction distance, so no velocity differs
-        // until 45.
+        // digest below). That binary is the groups-off law. The product replay
+        // above stays groups on. #1004 acts on each of the quanta 42 to 53
+        // that have the crate and the shade near the walker and on no other,
+        // and the crate leaves 53 at 26.06416630354704. On 42 to 44 #1004
+        // gathers the shade's manifold as its own, which marks the shade
+        // modified; none of its points is within the prediction distance, so
+        // no velocity differs until 45.
         let crate_at = run.ids.iter().position(|id| id == "crate").expect("red room A has a crate");
         let mut control = PushControl { run: run.name.clone(), moves: Moves::Rapier, ..PushControl::default() };
         let mut launch = None;
-        let (rapier, rapier_digest) = replay(&mut turn, &run, &mut Stride, &mut control, |c, q| c.quantum = q, |_, q| {
+        let (rapier, rapier_digest) = replay_moved(&mut turn, &run, &mut Stride, &mut control, false, |_, c, q| c.quantum = q, |_, _, q| {
             let speed = speed_of(body_at(crate_at));
             if launch.is_none() && speed > 10.0 {
                 launch = Some((q, speed));
@@ -3581,10 +3590,12 @@ mod tests {
         assert_eq!(control.separate_moved, (45..=53).collect::<Vec<usize>>(), "the quanta #1004 pushes differently");
         assert_eq!(launch, Some((53, 26.06416630354704)), "through Rapier's routine the crate does not leave quantum 53 as main's binary recorded it before F3");
         assert_eq!(control.pushed_rapier.first(), Some(&24));
-        let (off, _) = replay(&mut turn, &run, &mut Stride, &mut Routine::Off, |_, _| {}, |_, _| {});
+        let (off, _) = replay_moved(&mut turn, &run, &mut Stride, &mut Routine::Off, false, |_, _, _| {}, |_, _, _| {});
+        let (linear_off, _) = replay_moved(&mut turn, &run, &mut Stride, &mut Routine::Linear, false, |_, _, _| {}, |_, _, _| {});
+        let (law_off, _) = replay_moved(&mut turn, &run, &mut Stride, &mut Shove, false, |_, _, _| {}, |_, _, _| {});
         assert_eq!(parting(&off, &rapier), None, "the law pushing through the copy with both changes off parted from the law pushing through Rapier's routine");
-        assert_eq!(parting(&linear, &rapier), Some(45), "F3's push did not part from Rapier's routine at 45");
-        assert_eq!(parting(&law, &rapier), Some(24), "the law's push did not part from Rapier's routine at the walker's first push");
+        assert_eq!(parting(&linear_off, &rapier), Some(45), "F3's push did not part from Rapier's routine at 45");
+        assert_eq!(parting(&law_off, &rapier), Some(24), "the law's push did not part from Rapier's routine at the walker's first push");
     }
 
     /// One push the guard measured: the body's speed as a multiple of its
