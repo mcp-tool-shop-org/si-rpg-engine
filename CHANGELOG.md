@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **A scene may name a mesh.** Load accepts `{ positions, indices }` up to 999,474 triangles, the survey's maximum, and refuses a repeated index, a non-finite position, or an index out of range. The law builds one fixed trimesh. A box set on a two-triangle floor sleeps on it. Worlds that do not name a mesh are unchanged, and the product golden stays `69a671f962665563`.
+
 ### Changed
 
 - **rapier3d-f64 is 0.36.0**, with parry3d-f64 0.31.1. 0.36.0 carries dimforge/rapier#1004, so the copy's separate-manifold switch is retired and the push's mass stays. The controller copy still keeps the stride branch and the floor-cast retry. The course and the outcome tests pass, and the product golden stays `69a671f962665563`. The Linux digest is `65aa5d91a76c09df00e667b4026f0d5e5d5fc8bcfc9f344b9d5c4aba4e96faad`. `warm_broadphase`'s comment names the native test that holds the record-order case.
