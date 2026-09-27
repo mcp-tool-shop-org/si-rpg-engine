@@ -8,12 +8,14 @@
 // base range an insertion, and one with both a replacement. When the part
 // that differs is too large for the trace the algorithm keeps, it is one
 // replacement hunk, which names every line in it as changed: coarser, never
-// wrong about which lines changed.
+// wrong about which lines changed. The cap holds a span of 4000 lines. The
+// law plant's first edit is the gravity const and its last is the step, with
+// the law between them; a smaller cap reads that plant as the whole file.
 //
 // No imports: the orchestrator and the tests both read it.
 
 /** The most cells of trace the diff keeps before it calls the middle one hunk. */
-const TRACE_CAP = 4000000;
+const TRACE_CAP = 16000000;
 
 /**
  * A text's lines, each without its line ending. A final line ending does not
