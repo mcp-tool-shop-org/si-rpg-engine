@@ -63,7 +63,7 @@ The handbook's testing page lists what is known and not yet proven.
    - #1020 is still open, so the effective mass stays.
    - F2's branch (#1019) and F4's retry (parry#452) still apply: the bump's parry has the same `gjk.rs`.
    - #101 is in this slice: `warm_broadphase`'s comment names the native record-order test.
-6. **Mesh collision.** Collision against textured glb meshes, validated at load. It is a later slice with no dispatch yet.
+6. **Mesh collision** is `docs/dispatch-mesh-collision.md`. The survey's eleven canon glbs are render meshes with no collision sibling. A scene that names a mesh is refused on main with `unknown field: mesh`.
 
 ## How the work runs
 
