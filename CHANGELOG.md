@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- **A scene may name a mesh.** Load accepts `{ positions, indices }` up to 999,474 triangles, the survey's maximum, and refuses a repeated index, a non-finite position, or an index out of range. The law builds one fixed trimesh. A box set on a two-triangle floor sleeps on it. Worlds that do not name a mesh are unchanged, and the product golden stays `69a671f962665563`.
+- **A scene may name a mesh.** Load accepts `{ positions, indices }` up to 999,474 triangles, the survey's maximum, and refuses a repeated index, a non-finite position, or an index out of range. The law builds one fixed trimesh. A box set on a two-triangle floor sleeps on it. Worlds that do not name a mesh are unchanged, and the product golden stays `69a671f962665563`. The Linux digest is `5a886be5608abfc385dc986da7aec5876a4eae86a2111ac239e2eb77673d5c8d`.
 
 ### Changed
 
