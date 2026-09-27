@@ -30,7 +30,9 @@
 //      that refuses a world is not failed again every week for a finding
 //      already on record, and a world whose content is fixed changes its
 //      record in the same commit. --record-sweep rewrites the record from
-//      this build and prints what moved.
+//      this build and prints what moved, and names each thrown finding it
+//      writes (#127); a thrown finding where the record has the same body
+//      and actor leaving is named as a leave that became a throw.
 // It prints the wall time of each, the replay cost per quantum, the sparse
 // image sizes, the restore times, and each sweep's costs. A failure writes a
 // bundle into $SI_RPG_BUNDLES (harness/bundle.mjs) and exits 1; --summary and --title
@@ -742,6 +744,14 @@ export function summaryDifferences(recorded, swept) {
       lines.push('zone ' + zone + ': recorded ' + (a === undefined ? 'absent' : a ? 'reached' : 'not reached') + ', swept ' + (b === undefined ? 'absent' : b ? 'reached' : 'not reached'));
     }
   }
+  // A throw the record held as a body leaving is named as that, not only as
+  // a new finding (#127).
+  for (const finding of swept.findings) {
+    const left = finding.startsWith('thrown ') ? 'leaves ' + finding.slice('thrown '.length) : null;
+    if (left && !recorded.findings.includes(finding) && recorded.findings.includes(left)) {
+      lines.push('thrown, recorded as leaves: ' + finding.slice('thrown '.length));
+    }
+  }
   for (const finding of swept.findings) {
     if (!recorded.findings.includes(finding)) {
       lines.push('new finding: ' + finding);
@@ -766,13 +776,15 @@ export function readSweepRecord() {
 /**
  * Sweeps every world the job sweeps and compares each verdict with the record.
  * @param {{ budget: { quanta: number, restores: number }, record: ReturnType<typeof readSweepRecord>, wanted: (name: string) => boolean, say: (line: string) => void }} options
- * @returns {{ results: Result[], summaries: Record<string, SweepSummary> }}
+ * @returns {{ results: Result[], summaries: Record<string, SweepSummary>, thrown: string[] }} thrown: a line for each thrown finding, naming its world and saying what threw it
  */
 export function sweepCorpus(options) {
   /** @type {Result[]} */
   const results = [];
   /** @type {Record<string, SweepSummary>} */
   const summaries = {};
+  /** @type {string[]} */
+  const thrown = [];
   for (const world of sweepWorlds()) {
     const name = 'sweep ' + world.name;
     if (!options.wanted(name)) {
@@ -799,6 +811,11 @@ export function sweepCorpus(options) {
     }
     const summary = sweepSummary(input, report);
     summaries[world.name] = summary;
+    for (const finding of report ? report.findings : []) {
+      if (finding.kind === 'thrown') {
+        thrown.push(world.name + ': thrown ' + finding.body + ' by ' + finding.actor + ': ' + finding.detail);
+      }
+    }
     const differences = summaryDifferences(options.record.worlds[world.name], summary);
     const ms = performance.now() - t0;
     const verdict = report ? sweepVerdict(report) : null;
@@ -829,7 +846,7 @@ export function sweepCorpus(options) {
     results.push(result);
     options.say('FAIL  ' + name + ': ' + result.detail + '\n' + block + paths.map((path) => 'bundle: ' + path + '\n').join(''));
   }
-  return { results, summaries };
+  return { results, summaries, thrown };
 }
 
 // ---------------------------------------------------------------------------
@@ -1068,6 +1085,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     writeFileSync(SWEEP_RECORD, JSON.stringify(record, null, 2) + '\n');
     const moved = swept.results.filter((result) => result.status !== 'ok');
     process.stdout.write('wrote ' + SWEEP_RECORD + ': ' + Object.keys(swept.summaries).length + ' worlds, ' + moved.length + ' moved' + (moved.length > 0 ? ': ' + moved.map((result) => result.name).join(', ') : '') + '\n');
+    for (const line of swept.thrown) {
+      process.stdout.write('recorded a thrown finding: ' + line + '\n');
+    }
     process.exit(0);
   }
   const started = performance.now();

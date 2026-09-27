@@ -18,6 +18,13 @@
 // order, with bundles equal byte for byte (#83); and a sweep that throws in
 // the scheduled job fails with a block naming the world and the throw, and
 // the issue the job writes quotes the block.
+//
+// #127: a body the law throws out of the world is a `thrown` finding, not a
+// `leaves` one. The walker thrown to y 8.9 in the verb fixture's refusals
+// case (#128) is thrown, load world refuses it with a bundle replay
+// reproduces, the scheduled comparison names it against a record that held
+// it as leaves, and --record-sweep names it; a crate pushed off an unwalled
+// edge stays leaves.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -452,4 +459,108 @@ test('a sweep that throws in the scheduled job fails with a block naming the wor
   const issue = issueText(results);
   assert.equal(issue.title, 'corpus: sweep ' + name + ': the sweep of ' + name + ' threw: ' + message);
   assert.ok(issue.body.includes('```\n' + String(thrown.block).trim() + '\n```'), issue.body);
+});
+
+test('#127: the walker the law throws in the verb fixture\'s refusals case is a thrown finding naming its rise, its largest jump and that jump\'s tick, and load world\'s verdict refuses it with a bundle replay reproduces', (t) => {
+  // #128: at t356, with nothing lifting it, the walker's vertical speed
+  // jumps from 0 to 11.1 and it rises 8.6 above its height at the load. On
+  // main the sweep recorded it as `leaves walker by walker`. The case is
+  // swept as the scheduled job sweeps it; it is not a world file load world
+  // could read, since its zones rise above its colliders, so its refusal is
+  // held at sweepVerdict, whose reasons load world prints.
+  const world = sweepWorlds().find((item) => item.name === 'fixture behavior-verbs refusals');
+  const input = /** @type {SweepInput} */ (world && world.input);
+  const report = sweep(input, { budget: SWEEP_BUDGET, bundles: dir });
+  const verdict = sweepVerdict(report);
+  assert.equal(verdict.admitted, false);
+  const reasons = verdict.reasons;
+  const thrown = reasons.filter((line) => line.startsWith('a body is thrown out of the world: walker '));
+  assert.equal(thrown.length, 1, reasons.join('\n'));
+  t.diagnostic(thrown[0]);
+  const found = /^a body is thrown out of the world: walker is thrown out of the world after move \(1\.25, 0\.25\) by walker: it rose (8\.6\d\d) above its height at the load, where a climb rises 1\.5, and its largest jump in upward speed while no action lifted it was (11\.1\d\d) at tick 356, where a throw is past 2; its centre is at y -1\.\d+, below the lowest collider minimum -1, at tick \d+ at \(x, z\) \(-?\d+\.\d+, -?\d+\.\d+\), past the edge of every collider( \(and \d+ more like it\))?; bundle (.+\.bundle\.json)$/.exec(thrown[0]);
+  assert.ok(found, thrown[0]);
+  const finding = report.findings.find((item) => item.kind === 'thrown' && item.body === 'walker');
+  assert.ok(finding && finding.height && finding.bundle);
+  assert.deepEqual(finding.witness.log.map((entry) => {
+    const intent = /** @type {import('../packages/frame/types.js').Intent} */ (entry.proposal);
+    return intent.verb + ' ' + JSON.stringify(intent.target);
+  }), ['move {"x":0.75,"z":-0.25}', 'move {"x":1.25,"z":0.25}', 'climb {"x":1.75,"z":0.25}', 'move {"x":1.25,"z":0.25}']);
+  assert.equal(finding.height.jumpTick, 356);
+  // `replay <bundle>` reproduces it, and the bundle's run has the jump at t356.
+  const replayed = spawnSync(process.execPath, ['packages/tick/bin/replay.js', finding.bundle], { encoding: 'utf8' });
+  assert.equal(replayed.status, 0, replayed.stdout + replayed.stderr);
+  assert.equal(replayed.stdout, 'bundle ok\n');
+  const bundle = readBundle(finding.bundle);
+  const run = replayTo(specOf(bundle), 355);
+  const before = /** @type {import('../packages/frame/types.js').Body} */ (run.world.body('walker')).vy;
+  run.advance();
+  const after = /** @type {import('../packages/frame/types.js').Body} */ (run.world.body('walker')).vy;
+  assert.ok(before <= 0 && after > 11, 'the walker\'s vertical speed goes from ' + before + ' to ' + after + ' at t356');
+  assert.equal(run.world.lifted.has('walker'), false, 'no climb lifts it');
+  // What else the sweep of refusals finds: the walker also walks off the
+  // unwalled floor, a fall, and the crate leaves the world both ways.
+  assert.deepEqual(report.findings.map((item) => item.kind + ' ' + item.body + ' by ' + item.actor).sort(), ['leaves crate by walker', 'leaves walker by walker', 'thrown crate by walker', 'thrown walker by walker']);
+  const fall = report.findings.find((item) => item.kind === 'leaves' && item.body === 'walker');
+  assert.ok(fall && fall.height && fall.height.rise <= 1.5 && fall.height.jump <= 2, JSON.stringify(fall && fall.height));
+});
+
+test('#127: the scheduled comparison names a thrown finding its record holds as leaves, and the record-sweep names each thrown finding it writes', () => {
+  const name = 'fixture behavior-verbs refusals';
+  const record = readSweepRecord();
+  // The record as main had it, before #127.
+  const main = { ...record.worlds[name], findings: ['leaves crate by walker', 'leaves walker by walker'] };
+  const was = process.env.SI_RPG_BUNDLES;
+  process.env.SI_RPG_BUNDLES = dir;
+  try {
+    const swept = sweepCorpus({ budget: SWEEP_BUDGET, record: { ...record, worlds: { ...record.worlds, [name]: main } }, wanted: (each) => each === 'sweep ' + name, say: () => {} });
+    assert.equal(swept.results.length, 1);
+    const result = swept.results[0];
+    assert.equal(result.status, 'different');
+    assert.match(String(result.block), /^thrown, recorded as leaves: walker by walker$/m);
+    assert.match(String(result.block), /^ {2}a body is thrown out of the world: walker is thrown out of the world after move \(1\.25, 0\.25\) by walker: it rose 8\.6\d\d above its height at the load/m);
+    assert.deepEqual(swept.summaries[name].findings.filter((finding) => finding.startsWith('thrown ')), ['thrown crate by walker', 'thrown walker by walker']);
+    // What --record-sweep prints of each thrown finding it writes.
+    const lines = swept.thrown || [];
+    assert.equal(lines.length, 2, lines.join('\n'));
+    assert.ok(lines.some((line) => line.startsWith(name + ': thrown walker by walker: walker is thrown out of the world after move (1.25, 0.25) by walker: it rose 8.6')), lines.join('\n'));
+    assert.ok(lines.some((line) => line.startsWith(name + ': thrown crate by walker: crate is thrown out of the world after ')), lines.join('\n'));
+  } finally {
+    if (was === undefined) {
+      delete process.env.SI_RPG_BUNDLES;
+    } else {
+      process.env.SI_RPG_BUNDLES = was;
+    }
+  }
+});
+
+test('#127: a planted fall, a crate pushed off an unwalled edge, stays leaves, with its rise and its largest jump measured under the throw\'s', () => {
+  // A room walled on three sides and open at x = 2.5: the walker pushes the
+  // crate off the open edge, and walks off it.
+  /** @type {SweepInput} */
+  const input = {
+    name: 'planted fall',
+    seed: 3,
+    world: {
+      bodies: [
+        { id: 'walker', x: 0.75, y: 0.3, z: 0.5, vx: 0, vy: 0, vz: 0, hx: 0.25, hy: 0.25, hz: 0.25 },
+        { id: 'crate', x: 1.75, y: 0.35, z: 0.5, vx: 0, vy: 0, vz: 0, hx: 0.3, hy: 0.3, hz: 0.3 },
+      ],
+      colliders: [
+        { id: 'floor', minX: -1, maxX: 2.5, minY: -1, maxY: 0, minZ: -1, maxZ: 2 },
+        { id: 'wall-west', minX: -1, maxX: 0, minY: 0, maxY: 3.5, minZ: -1, maxZ: 2 },
+        { id: 'wall-south', minX: -1, maxX: 2.5, minY: 0, maxY: 3.5, minZ: -1, maxZ: -0.5 },
+        { id: 'wall-north', minX: -1, maxX: 2.5, minY: 0, maxY: 3.5, minZ: 1.5, maxZ: 2 },
+      ],
+      zones: [],
+    },
+    actors: ['walker'],
+  };
+  const report = sweep(input, { budget: LOAD_BUDGET, bundles: null });
+  assert.equal(report.complete, true);
+  assert.deepEqual(report.findings.map((item) => item.kind + ' ' + item.body + ' by ' + item.actor), ['leaves crate by walker', 'leaves walker by walker']);
+  const crate = report.findings[0];
+  assert.deepEqual(crate.action, { verb: 'push', target: { body: 'crate' } });
+  assert.ok(crate.height, 'the finding carries the height it left from');
+  assert.ok(crate.height.rise <= 1.5 && crate.height.jump <= 2, JSON.stringify(crate.height));
+  assert.equal(sweepVerdict(report).reasons.filter((line) => line.startsWith('a body is thrown')).length, 0);
 });

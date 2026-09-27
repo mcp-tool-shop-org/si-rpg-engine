@@ -68,6 +68,19 @@
 // reproduces. The first finding of each kind for each body and actor writes a
 // bundle; the rest are counted.
 //
+// Thrown (#127). A body that leaves the world is `thrown`, not `leaves`, when
+// on the way out it rose more than the loaded climb rule's maxRise above its
+// height at the load, or its vertical speed jumped upward by more than
+// THROW_JUMP (2 m/s) within one quantum while no action lifted it. A climb
+// lifts its own actor at 1 m/s in the quanta of its rise, and nothing else.
+// The jump is in upward speed, the vertical speed where it is upward and 0
+// where it is not, so a landing, which stops a fall, is not a jump.
+// Both are read from the quanta the sweep runs, from the load to the quantum
+// the body leaves: each archived state keeps, for every body, the highest its
+// centre got and the largest upward jump on its path from the load, and a
+// restore puts them back with the tick. `thrown` is not `throws`, a tick that
+// threw.
+//
 // Budget (pin 9). A sweep may run budget.quanta quanta and make
 // budget.restores restores. The actors share it: each may spend an equal part
 // of what the actors before it left, so an actor that finishes early passes
@@ -103,6 +116,8 @@ export const AT_REST = 1e-2;
 export const DIRECTIONS = /** @type {ReadonlyArray<readonly [number, number]>} */ ([[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]]);
 /** How many cells out a climb or a drop aims: a ledge's edge need not fall on the next cell. */
 export const REACHES = /** @type {ReadonlyArray<number>} */ ([1, 2, 3]);
+/** The upward jump in vertical speed within one quantum, no action lifting the body, past which a body that leaves the world was thrown. */
+export const THROW_JUMP = 2;
 
 /**
  * @typedef {import('../tick/runs.js').WorldInit} WorldInit
@@ -113,10 +128,12 @@ export const REACHES = /** @type {ReadonlyArray<number>} */ ([1, 2, 3]);
  * @typedef {{ quanta: number, restores: number }} Budget
  * @typedef {{ tick: number, hash: string }} PathPoint
  * @typedef {{ actor: string, log: LogEntry[], tick: number, hash: string, path: PathPoint[] }} Witness
- * @typedef {{ key: string, actor: string, parent: Cell | null, entry: LogEntry | null, tick: number, hash: string, state: TickSave | null }} Cell
+ * @typedef {{ top: number[], jump: number[], at: number[] }} Marks for each body in body order: the highest its centre got, the largest jump in its upward speed in one quantum no action lifted it, and that quantum's tick, -1 for none
+ * @typedef {{ key: string, actor: string, parent: Cell | null, entry: LogEntry | null, tick: number, hash: string, state: TickSave | null, marks: Marks | null }} Cell
  * @typedef {{ verb: string, target: { x: number, z: number } | { body: string } }} Action
- * @typedef {'leaves' | 'throws' | 'unsettled'} FindingKind
- * @typedef {{ kind: FindingKind, actor: string, body: string | null, action: Action | null, from: string | null, tick: number, hash: string, detail: string, witness: Witness, count: number, bundle: string | null }} Finding
+ * @typedef {'leaves' | 'thrown' | 'throws' | 'unsettled'} FindingKind
+ * @typedef {{ rise: number, jump: number, jumpTick: number | null }} Height of a body that left: how far above its height at the load it rose, its largest upward jump, and that jump's tick
+ * @typedef {{ kind: FindingKind, actor: string, body: string | null, action: Action | null, from: string | null, tick: number, hash: string, detail: string, witness: Witness, count: number, bundle: string | null, height: Height | null }} Finding
  * @typedef {{ id: string, reached: boolean, body: string | null, actor: string | null, witness: Witness | null }} ZoneVerdict
  * @typedef {{ actor: string, pitch: number, cells: number, tried: number, admitted: number, quanta: number, restores: number, complete: boolean, frontier: number }} ActorCosts
  * @typedef {{
@@ -387,6 +404,11 @@ export function sweep(input, options) {
   const world = createWorld(input.world, 'product');
   const tick = createRestorableTick({ seed: input.seed, world, rules, retired: catalog.retired, memory: createMemory() });
   const floor = worldFloor(world.colliders, world.heightfield);
+  const maxRise = Math.max(0, ...Array.from(rules.values()).filter((rule) => rule.effect === 'climb').map((rule) => rule.maxRise || 0));
+  const starts = world.bodies.map((body) => body.y);
+  /** @type {Marks} */
+  let marks = { top: starts.slice(), jump: starts.map(() => 0), at: starts.map(() => -1) };
+  const vys = starts.map(() => 0);
   const put = options.restore || ((t, saved) => t.restore(saved));
   const budget = options.budget;
   const counts = { tried: 0, admitted: 0, refused: 0, quanta: 0, restores: 0, saves: 0, restoreMs: 0, saveMs: 0 };
@@ -413,6 +435,10 @@ export function sweep(input, options) {
 
   /** @returns {'ok' | { kind: 'throws', message: string } | { kind: 'leaves', body: string, y: number }} */
   function step() {
+    const bodies = world.bodies;
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      vys[i] = Math.max(0, bodies[i].vy);
+    }
     try {
       tick.advance();
     } catch (error) {
@@ -420,6 +446,21 @@ export function sweep(input, options) {
       return { kind: 'throws', message: error instanceof Error ? error.message : String(error) };
     }
     counts.quanta = counts.quanta + 1;
+    // The tick puts a climb's actor in the lifted set for each quantum of its
+    // rise and takes it out at the start of the next, so after the step the
+    // set names the bodies this quantum lifted.
+    const now = tick.frame().tick;
+    for (let i = 0; i < bodies.length; i = i + 1) {
+      const body = bodies[i];
+      if (body.y > marks.top[i]) {
+        marks.top[i] = body.y;
+      }
+      const jump = Math.max(0, body.vy) - vys[i];
+      if (jump > marks.jump[i] && !(world.lifted && world.lifted.has(body.id))) {
+        marks.jump[i] = jump;
+        marks.at[i] = now;
+      }
+    }
     for (const body of world.bodies) {
       if (body.y < floor) {
         return { kind: 'leaves', body: body.id, y: body.y };
@@ -495,16 +536,32 @@ export function sweep(input, options) {
    * @param {string | null} from
    * @param {Witness} witness
    * @param {string} detail
+   * @param {Height | null} [height] a body that left: how it got there
    */
-  function note(kind, actor, body, action, from, witness, detail) {
+  function note(kind, actor, body, action, from, witness, detail, height = null) {
     const key = kind + ' ' + actor + ' ' + (body || '-');
     const known = found.get(key);
     if (known) {
       known.count = known.count + 1;
       return;
     }
-    found.set(key, { kind, actor, body, action, from, tick: witness.tick, hash: witness.hash, detail, witness, count: 1, bundle: null });
+    found.set(key, { kind, actor, body, action, from, tick: witness.tick, hash: witness.hash, detail, witness, count: 1, bundle: null, height });
     say('finding: ' + detail);
+  }
+
+  /**
+   * A body that left the world: how it got there, and so whether it left or
+   * was thrown, with the words that say it.
+   * @param {string} id
+   * @returns {{ kind: 'leaves' | 'thrown', height: Height, words: string }}
+   */
+  function heightOf(id) {
+    const i = world.bodies.findIndex((body) => body.id === id);
+    const height = { rise: marks.top[i] - starts[i], jump: marks.jump[i], jumpTick: marks.at[i] === -1 ? null : marks.at[i] };
+    const thrown = height.rise > maxRise || height.jump > THROW_JUMP;
+    const words = 'it rose ' + height.rise.toFixed(3) + ' above its height at the load, where a climb rises ' + maxRise + ', and '
+      + (height.jumpTick === null ? 'its upward speed never jumped while no action lifted it' : 'its largest jump in upward speed while no action lifted it was ' + height.jump.toFixed(3) + ' at tick ' + height.jumpTick + ', where a throw is past ' + THROW_JUMP);
+    return { kind: thrown ? 'thrown' : 'leaves', height, words };
   }
 
   /**
@@ -544,8 +601,17 @@ export function sweep(input, options) {
     return out;
   }
 
-  /** @param {TickSave} saved */
-  function restoreTo(saved) {
+  /** @param {Marks} from */
+  function copyMarks(from) {
+    return { top: from.top.slice(), jump: from.jump.slice(), at: from.at.slice() };
+  }
+
+  /**
+   * @param {TickSave} saved
+   * @param {Marks} kept the marks of the state saved
+   */
+  function restoreTo(saved, kept) {
+    marks = copyMarks(kept);
     const r0 = performance.now();
     put(tick, saved);
     counts.restoreMs = counts.restoreMs + performance.now() - r0;
@@ -575,7 +641,8 @@ export function sweep(input, options) {
     complete = false;
     const actor = input.actors[0] || '-';
     if (loadEnd.kind === 'leaves') {
-      note('leaves', actor, loadEnd.body, null, null, rootWitness(), loadEnd.body + ' leaves the world after the load, below ' + floor + ' at tick ' + tick.frame().tick + whereLeft(loadEnd.body));
+      const how = heightOf(loadEnd.body);
+      note(how.kind, actor, loadEnd.body, null, null, rootWitness(), loadEnd.body + (how.kind === 'thrown' ? ' is thrown out of the world after the load: ' + how.words + ';' : ' leaves the world after the load,') + ' below ' + floor + ' at tick ' + tick.frame().tick + whereLeft(loadEnd.body), how.height);
     } else if (loadEnd.kind === 'throws') {
       note('throws', actor, null, null, null, { ...rootWitness(), tick: tick.frame().tick + 1, hash: 'NAN' }, 'the tick throws after the load at tick ' + (tick.frame().tick + 1) + ': ' + loadEnd.message);
     } else {
@@ -587,6 +654,7 @@ export function sweep(input, options) {
   const rootTick = tick.frame().tick;
   const rootHash = tick.frame().hash;
   const root = settledAtLoad ? save() : null;
+  const rootMarks = copyMarks(marks);
   if (root) {
     seeZones(() => ({ actor: input.actors[0] || '-', log: [], tick: rootTick, hash: rootHash, path: [{ tick: rootTick, hash: rootHash }] }), input.actors[0] || '-');
   }
@@ -605,12 +673,12 @@ export function sweep(input, options) {
       quanta: before.quanta + (budget.quanta - before.quanta) / left,
       restores: before.restores + (budget.restores - before.restores) / left,
     };
-    restoreTo(/** @type {TickSave} */ (root));
+    restoreTo(/** @type {TickSave} */ (root), rootMarks);
     /** @type {Map<string, Cell>} */
     const archive = new Map();
     /** @type {Cell[]} */
     const order = [];
-    const first = /** @type {Cell} */ ({ key: cellKey(world, actorId, pitch), actor: actorId, parent: null, entry: null, tick: rootTick, hash: rootHash, state: root });
+    const first = /** @type {Cell} */ ({ key: cellKey(world, actorId, pitch), actor: actorId, parent: null, entry: null, tick: rootTick, hash: rootHash, state: root, marks: rootMarks });
     archive.set(first.key, first);
     order.push(first);
     at = first.key;
@@ -620,7 +688,7 @@ export function sweep(input, options) {
       const cell = order[next];
       next = next + 1;
       if (at !== cell.key) {
-        restoreTo(/** @type {TickSave} */ (cell.state));
+        restoreTo(/** @type {TickSave} */ (cell.state), /** @type {Marks} */ (cell.marks));
         at = cell.key;
       }
       const actions = actionsFor(actorId, pitch);
@@ -631,7 +699,7 @@ export function sweep(input, options) {
           break;
         }
         if (at !== cell.key) {
-          restoreTo(/** @type {TickSave} */ (cell.state));
+          restoreTo(/** @type {TickSave} */ (cell.state), /** @type {Marks} */ (cell.marks));
           at = cell.key;
         }
         counts.tried = counts.tried + 1;
@@ -661,7 +729,8 @@ export function sweep(input, options) {
           return { actor: actorId, log: logOf(cell).concat([entry]), tick: now.tick, hash: now.hash, path };
         };
         if (end.kind === 'leaves') {
-          note('leaves', actorId, end.body, action, cell.key, here(), end.body + ' leaves the world after ' + describe(action) + ' by ' + actorId + ': its centre is at y ' + end.y + ', below the lowest collider minimum ' + floor + ', at tick ' + now.tick + whereLeft(end.body));
+          const how = heightOf(end.body);
+          note(how.kind, actorId, end.body, action, cell.key, here(), end.body + (how.kind === 'thrown' ? ' is thrown out of the world after ' + describe(action) + ' by ' + actorId + ': ' + how.words + '; its centre is at y ' : ' leaves the world after ' + describe(action) + ' by ' + actorId + ': its centre is at y ') + end.y + ', below the lowest collider minimum ' + floor + ', at tick ' + now.tick + whereLeft(end.body), how.height);
           continue;
         }
         if (end.kind === 'throws') {
@@ -677,7 +746,7 @@ export function sweep(input, options) {
         seeZones(() => ({ ...here(), path: here().path.concat([{ tick: now.tick, hash: now.hash }]) }), actorId);
         const key = cellKey(world, actorId, pitch);
         if (!archive.has(key)) {
-          const made = /** @type {Cell} */ ({ key, actor: actorId, parent: cell, entry, tick: now.tick, hash: now.hash, state: save() });
+          const made = /** @type {Cell} */ ({ key, actor: actorId, parent: cell, entry, tick: now.tick, hash: now.hash, state: save(), marks: copyMarks(marks) });
           archive.set(key, made);
           order.push(made);
           at = key;
@@ -686,6 +755,7 @@ export function sweep(input, options) {
       if (!stopped && cell !== first) {
         // Explored: its state is no longer needed, only its path.
         cell.state = null;
+        cell.marks = null;
       }
     }
     const unexplored = order.length - next;
@@ -695,6 +765,7 @@ export function sweep(input, options) {
     for (const cell of order.slice(0, next)) {
       if (cell !== first) {
         cell.state = null;
+        cell.marks = null;
       }
     }
     perActor.push({
@@ -788,7 +859,7 @@ export function findingBundle(input, finding, dir) {
 
 /**
  * What `load world` does with a report (pin 9). Refused: a body that leaves
- * the world, a throw, and, when the frontier emptied within the budget, an
+ * the world or is thrown out of it, a throw, and, when the frontier emptied within the budget, an
  * authored zone no explored state reached. Admitted with a note: a world that
  * does not settle after an action, until the scheduled job shows how often it
  * happens, and a sweep the budget cut short. The scheduled job sweeps that
@@ -796,7 +867,7 @@ export function findingBundle(input, finding, dir) {
  * harness/corpus.mjs) and fails when the verdict differs from the one
  * fixtures/sweep/verdicts.json records; that budget may cut the sweep short
  * too, and then the record holds it deferred.
- * A leave or a throw found before the budget ran out is refused even so: its
+ * A leave, a body thrown, or a throw found before the budget ran out is refused even so: its
  * bundle is a proof, which a cut-short sweep cannot take back.
  * @param {SweepReport} report
  * @returns {{ admitted: boolean, reasons: string[], notes: string[] }}
@@ -814,6 +885,8 @@ export function sweepVerdict(report) {
   for (const finding of report.findings) {
     if (finding.kind === 'leaves') {
       reasons.push('a body leaves the world: ' + finding.detail + more(finding) + bundle(finding));
+    } else if (finding.kind === 'thrown') {
+      reasons.push('a body is thrown out of the world: ' + finding.detail + more(finding) + bundle(finding));
     } else if (finding.kind === 'throws') {
       reasons.push('the tick throws: ' + finding.detail + more(finding) + bundle(finding));
     } else {
