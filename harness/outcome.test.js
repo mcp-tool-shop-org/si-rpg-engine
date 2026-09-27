@@ -614,9 +614,11 @@ bundled('outcome 4d: the product walker with its skin on the product floor 3 uni
   const y = unitsUnder(0.26, 3);
   assert.equal(y, 0.25999999999999984);
   const run = oneQuantum(7.51119, y);
-  recordQuantum(run.init);
   t.diagnostic('from (7.51119, ' + y + ', 0) the walker ends the quantum at x ' + run.x + ', y ' + run.y);
-  assert.ok(!run.sank, 'the walker sank to ' + run.y + ', ' + (PRODUCT_WALKER.y - run.y) + ' under its start');
+  if (run.sank) {
+    recordQuantum(run.init);
+  }
+  assert.equal(run.y, 0.2601000000000001);
   assert.ok(Math.abs(run.x - 7.51119 - STRIDE) <= STRIDE * 1e-6, 'the walker travelled ' + (run.x - 7.51119) + ', not its stride ' + STRIDE);
 });
 

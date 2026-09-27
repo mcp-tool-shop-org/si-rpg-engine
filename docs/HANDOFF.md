@@ -56,8 +56,8 @@ The handbook's testing page lists what is known and not yet proven.
 
 1. **T7c's result is on main** at `5ef97f9`. The bars were recomputed from the committed reports. Safety passes: 80 outputs, every proposal an intent for the walker with a catalog verb, and the 9 admissions are walker moves. Value fails: arm M and arm G are 0 and 0 on all seven changes. `test-instrument` stays frozen. The prompt, the stall rule, and the model stay as they were.
 2. **Dispatch 128 is on main.** The carried box stays at speed 0 (`895b2bf`). The law slice is `a0fceca`. A driven collider is solver group 3 and does not solve against group 2. A dynamic collider is group 2 and does not solve against group 3. Statics keep Rapier's default. Collision groups are unchanged, and there is no JavaScript switch. The step-up boxes stay under 1 m/s. The refusals walker is not thrown. Only red room A's law run moved.
-3. **v0.3.0** is next. The README, its seven translations, the handbook, and the CHANGELOG land before the tag. The release is a GitHub release. The package is not published to npm. `test-instrument` stays frozen.
-4. **#97, #109, #129, and #131,** small hardening slices that can share a builder.
+3. **v0.3.0 is tagged** at `8d9a8a3`. GitHub release only. The package is not published to npm. `test-instrument` stays frozen.
+4. **#97, #109, #129, and #131** share one builder. The deferred sweep note names the scheduled comparison. A capture the loader accepts has a block. Outcome 4d locks its measured height. A drop that starts on its target backs out. The coverage builds report no `law_coverage` warning.
 5. **The Rapier 0.36.0 bump,** as its own slice, measured by T7b's bench. `solver/FLAGS.md` says a bump reruns the copies' control tests first.
    - 0.36.0 carries #1004, so `impulses.rs`'s first change becomes Rapier's own.
    - #1020 is still open, so the effective mass stays.

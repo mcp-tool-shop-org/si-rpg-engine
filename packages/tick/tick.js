@@ -329,7 +329,14 @@ function buildTick(init) {
           const overlaps = (/** @type {number} */ x, /** @type {number} */ z) => (yHits(actor.y) || yHits(stanceY))
             && Math.abs(x - action.aimX) < actor.hx + carried.hx
             && Math.abs(z - action.aimZ) < actor.hz + carried.hz;
-          const movingAway = actor.vx * (actor.x - action.aimX) + actor.vz * (actor.z - action.aimZ) > 0;
+          const ox = actor.x - action.aimX;
+          const oz = actor.z - action.aimZ;
+          // Exactly on the target the offset is zero, so a velocity toward
+          // the stand point does not show up as a positive dot. That velocity
+          // is the back-out.
+          const movingAway = ox === 0 && oz === 0
+            ? actor.vx !== 0 || actor.vz !== 0
+            : actor.vx * ox + actor.vz * oz > 0;
           const here = overlaps(actor.x, actor.z);
           const next = overlaps(actor.x + actor.vx * DT * RELEASE_MARGIN_STEPS, actor.z + actor.vz * DT * RELEASE_MARGIN_STEPS);
           if (movingAway) {

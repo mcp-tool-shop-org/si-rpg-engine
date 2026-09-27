@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- A drop whose actor starts exactly on the target backs out and sets the carried body down clear of the actor. The approach leaves four steps outside the touching faces.
+- The deferred sweep note says the scheduled job sweeps the world again and fails when the verdict differs from `fixtures/sweep/verdicts.json`.
+- A 2D capture the loader accepts is a failure whose block names the capture, and the job's issue quotes that block.
+- Outcome 4d requires the walker to end at y `0.2601000000000001`, and writes a bundle only when the walker sinks.
+- The coverage builds report no `law_coverage` warning.
+
 ## [0.3.0] - 2026-09-27
 
 The suite from 0.2.0, with dispatch 128's law slice on it. A driven body and a dynamic body do not share a solver contact. `test-instrument` stays frozen. The package is not published to npm.

@@ -43,6 +43,12 @@ let access;
 let seededUnits = [];
 /** @type {string[]} */
 let unfilteredUnits = [];
+/** @type {number} */
+let headWarnings = -1;
+/** @type {number} */
+let seededWarnings = -1;
+/** @type {number} */
+let unfilteredWarnings = -1;
 /** @type {any[]} */
 let records;
 
@@ -77,12 +83,14 @@ before(async () => {
   lawHead = copyCheckout(dir, 'law-head');
   apply(plant, lawHead, [...LAW.operator, ...LAW.constant, ...LAW.comment, ...LAW.deleted, ...LAW.unused, ...LAW.copied, ...NEUTRAL.hazard, ...NOT_AIMED_SOLVER.cargoToml, ...NOT_AIMED_SOLVER.cargoLock, ...SKEW]);
   await build(lawHead);
-  buildCoverage(lawHead, 'law head');
+  const headCoverage = buildCoverage(lawHead, 'law head');
+  headWarnings = headCoverage.cfgWarnings;
   if (!seedCoverage(lawHead, lawBase)) {
     throw new Error('the law base has no coverage seed');
   }
   const seeded = buildCoverage(lawBase, 'law base');
   seededUnits = seeded.compiling;
+  seededWarnings = seeded.cfgWarnings;
   if (seededUnits.length !== 1 || seededUnits[0] !== 'si-solver') {
     throw new Error('a seeded coverage build compiled ' + (seededUnits.join(', ') || 'nothing') + ', not exactly si-solver');
   }
@@ -90,6 +98,7 @@ before(async () => {
   copyProduct(lawHead, control);
   const raw = buildCoverage(control, 'unfiltered');
   unfilteredUnits = raw.compiling;
+  unfilteredWarnings = raw.cfgWarnings;
   if (unfilteredUnits.length !== 0) {
     throw new Error('an unfiltered seed compiled ' + unfilteredUnits.join(', ') + ', and the gate requires nothing');
   }
@@ -133,6 +142,9 @@ after(() => teardown(dir));
 test('the law base coverage seed compiles exactly si-solver, and an unfiltered seed compiles nothing', () => {
   assert.deepEqual(seededUnits, ['si-solver']);
   assert.deepEqual(unfilteredUnits, []);
+  assert.equal(headWarnings, 0, 'the law head coverage build warned');
+  assert.equal(seededWarnings, 0, 'the seeded coverage build warned');
+  assert.equal(unfilteredWarnings, 0, 'the unfiltered coverage build warned');
 });
 
 /**
