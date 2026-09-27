@@ -28,6 +28,12 @@
 2. verify script, `npm audit` in CI, version 0.1.0 matching the tag (D).
 3. Landing page, handbook, translations, metadata (E).
 
+## At v0.3.0
+
+The tag is `v0.3.0`. The product stays pre-1.0. Shipcheck's old "promote v0.x to v1.0.0" line does not apply. The support line in the README says there is no compatibility promise between releases.
+
+Coverage stays the measurement recorded at v0.2.0. It is not uploaded, and no third workflow is added. Push-triggered workflows stay `ci.yml` and `pages.yml`.
+
 ## At v0.2.0
 
 `npx @mcptoolshop/shipcheck audit` on 2026-09-26: 22 items checked, 17 skipped with a reason each, none unchecked, a pass rate of 100%. The executed gates:

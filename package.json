@@ -1,6 +1,6 @@
 {
   "name": "si-rpg-engine",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "A deterministic, hashed, replayable 3D simulation engine: a fixed-timestep tick with a Rust-to-WebAssembly physics law, worlds swept before they run, a bench that measures each change against its parent, and a checker that admits what a model proposes.",
