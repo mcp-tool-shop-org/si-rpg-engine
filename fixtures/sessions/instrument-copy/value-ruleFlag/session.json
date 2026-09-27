@@ -1,0 +1,1219 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "fixtures/bench/room.json",
+  "lateQuanta": 0,
+  "seed": 5,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.75,
+        "y": 0.26,
+        "z": 0.75,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.75,
+        "y": 0.26,
+        "z": 0.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 4,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-west",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-east",
+        "minX": 3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-south",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-north",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": 2,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "ledge",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0,
+        "maxY": 0.35,
+        "minZ": 1.25,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "step",
+        "minX": 1.25,
+        "maxX": 2,
+        "minY": 0,
+        "maxY": 0.25,
+        "minZ": 1.5,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      }
+    ],
+    "zones": [
+      {
+        "id": "yard",
+        "minX": 0,
+        "maxX": 1.25,
+        "minY": 0,
+        "maxY": 2,
+        "minZ": 0,
+        "maxZ": 2
+      },
+      {
+        "id": "shelf",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0.35,
+        "maxY": 2,
+        "minZ": 1.25,
+        "maxZ": 2
+      }
+    ],
+    "name": "bench-room"
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "7f642693a7c0f7d1bb740a786873f56306a8c0cd824f828fb9b9f3c76bad8b77",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 1,
+      "record": "af94c05567475e88131683b5c261ff68750ac995308d427d2495426b493a9904",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 0
+    },
+    {
+      "call": 2,
+      "record": "3e63421651985611a3f8fc314a9f7728b7c2d387cb7120f78bf6681feacccc14",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 3,
+      "record": "a2b1708f9b2f8945de2e51f091143b0a147fba6580c1cd473c529827290f3845",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "nothing is carried",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 4,
+      "record": "93fc1fe87e30159114d93d0b2eb86acdac22ed16706204198de5483076c65573",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 5,
+      "record": "71eefec80ca078d45d505b3d5a31c4df31a92769b1ea5de7474fd252a3b824f1",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 6,
+      "record": "ce397061b86eb2eb01f171ac7b7bd9bc5bc2404104cddd6167d735f8c5d88707",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 7,
+      "record": "d5ef0cffe343f6a625f19b97cf99653528ee4909da5143c55a3474d78a78e578",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "bbbd973906e2bcee8cabe0cd588f48d2c7b4b463dd0a3def88792a136b483f2d",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "cf34f5c5d7db6002c66107be691385ea70e470c7dbaed44a1dd611dce6feb45f",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "f509f606315f62d05286b880b7b9ee3eab7faf4a13abb56a972c5fd820295ee8",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "e67e635d73b543e9ee8952de01b55de7b3f6316d34e0634a3b17637e7c228683",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 12,
+      "record": "719d5a9e867d940c029a2a8ad800f5a1e0c5906c0ce66cdb3f00bd6aff0180ff",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "f75eb5073abd22062860349e61591249730a64cb811fa0f6dd9385c77dc90e87",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "41011ac41548c5198ae3134f3aa140c786dff16601ba531c3c9a26a82e94da06",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "9fdf3d11ca35251f64cb8be6f95f03408c49add6d8c0a11d83159e92a288883f",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 16,
+      "record": "7e353315ee9debd5f477d52d4dfbd5935112c66d90bc9fb58defb3fe2b028f1d",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 17,
+      "record": "afbdd5818d55894ec36dd980dc8b36222605b02d215b380daa5e50313b55ff33",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 18,
+      "record": "3df37ffd0fddd6c217f397f8b29ff245140c4c97cf770a84cc1f07b47954bb61",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 19,
+      "record": "50c48a1c2e84f528cd6bb0c774889e413cd0c043f8d569b46a395d45836a15d5",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 20,
+      "record": "2b446fe3a3710534195070801b3ab6fd80de204fdae33eb436fe99f72440a4ad",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 21,
+      "record": "4f299f1238d9c2096561f86b121ec2a7acdbb889081beb043db6635fb873a08f",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 22,
+      "record": "5b04e5258b657e6587d7a11581086bfb1e9d07aca0cd6e50764467eaf079b83e",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 23,
+      "record": "86241065d5e3d9b94f95d5873bd5e2505aa55a574a536120cbfd9a461ae0819b",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 24,
+      "record": "ae87b8a215b994d6f9eb8625c1c6d7684c1ae54a0eef9dce1a293884796c5289",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 25,
+      "record": "27ca2271defa636d06ccd83fd6a0094fd44d71b9805f8032ee87e4a4c3cde2ef",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 26,
+      "record": "0da31c64980715dc1dcb04fcef718f4f0db4f86ff2070e26f66fad42a14eee85",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 27,
+      "record": "260e7a28aa1e93aa4a9b7edc120fa80bf9bc428a42562c550a175306fc25a2bc",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 28,
+      "record": "54255302cfe4802ab90c0cd12db6cc8b095e0ac60d70475abdcd1256c43e7a16",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 29,
+      "record": "d06bb245c17466ba69b2f66cb2c61e4680334ed7a3a408eb9b6dcacf1ebbbd3a",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 30,
+      "record": "e99bce92a1d3fda6940735e666793f87709bda67661fa5786cb60b402f41a5a5",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 31,
+      "record": "3a8246f5f6a0886ca4c435575ca8e186db0dc1af71abef483ae93ef6194a7b47",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 32,
+      "record": "8339a5e3ed65851127d272cc8a6907225dde5981b09727c49b52d020f4c1b56d",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 33,
+      "record": "1f1aa240066d3be26c13117c484602c784fadf1989cceecc690ee33a8ee830cf",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 34,
+      "record": "3b3742facac3562ea45aca0b8aaf8a495c03a3f0d02abb2c32d8af407b9d8fbc",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 35,
+      "record": "9bc1e79166c1dc9ecfd3387346b2f154afbc97f029f6c48868fff3c83f2c2bf3",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 36,
+      "record": "a923f2e12facc1fdc094420201d7a0149197c7b15ded456a4dbf9f1155d10ee6",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 37,
+      "record": "7af636e04350e3e922ba38f52f7aa242abe41d5ce02550b340c6ff197c2eab3a",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 38,
+      "record": "87234b543b4ba3cea1c761c5ebd01c370634dd8a73893f5ec1cad17406205c79",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 39,
+      "record": "5ab6d05fcc1eb6212871b53369c132c6ae7a6ef032005813064e5e91978f2905",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 40,
+      "record": "b04496f2eeb9af63e90bcb998f2b0e211acdf0902d6364707a04ad3e84ea66db",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 41,
+      "record": "c8b37c0a436a251808768328608b96d35ab033fa8279296069676c5fc9849699",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 42,
+      "record": "824f5d4d64531d7209f101d55a2b6bfb979df8ef84e6c957b5dd7b1802d43851",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 43,
+      "record": "f46a02f726a0fb82e5370865822994a381cfce63db9e8a07590859734ac87cbd",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 44,
+      "record": "b358d7cbd3f36a37b79b98bc14d6d9bb84f26ed6b3ec935f7817c31730e7aa83",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 45,
+      "record": "a9e324536cdd39cf17d64d9d211c74ae732e16dd7da9dece62133ded94d9a788",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 46,
+      "record": "b401e5e37cf00d2d3e9fe4c044fb7642d9eea0de126b6f33983963b83235cb0b",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 47,
+      "record": "47767ac594408818d4227ffa48f737fb8700a43d9934407b8446d178e1f3134c",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 48,
+      "record": "04de18c8fdc51c1ba1e2f337e9b4d7f883fc781a48627b23fc34dc67d4b920d1",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 49,
+      "record": "62063e8b6631dd7323fa1edbae1842bd21f7058128a181ac50cb3b1649ebee2e",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 50,
+      "record": "c831ec72ef5360acae38d9a936323202c45ad90abbe97da97a13d13bfeea38a6",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 51,
+      "record": "ce6229918b4801553c95ce962d3d2c5ab223073df5835137c4fed1d39165d02f",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 52,
+      "record": "cc6ccaeb34f2a22223c7a0e263572059850a31cc71fffec461d8eeb21d57f2f9",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 53,
+      "record": "60785d5ffd412ff98bdffadd741685ec4ce22846ed168a87fa6100c440416c8a",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 54,
+      "record": "8441edf389f65b79616eb2d69e09f3d6d130e626e9c526ed8ed972b3d6a48988",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 55,
+      "record": "bcfc56efa16ada4b9c4e5dcf496885833ead65716a25c3369b141391da4981fb",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 56,
+      "record": "5c6490eda82c9c537d04bcf51170cd160b3948eb8a706c0a0561f8454b678fbe",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "target must be a point",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 57,
+      "record": "ff95f83f16b580b6cbc2c2eaefef58967254709c92bf80e7d8ac8a344fb35ecb",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 58,
+      "record": "58859d5feb651aaf4c9e3ad56e5831a18f0b28e53593dd30c975b94bbc40cb23",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 59,
+      "record": "2eec210dbdd684fc3142876586452fd358333ae82216b40d01b5cd9bdb9a8dfc",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 60,
+      "record": "2f8b9b3b8c201e5f497e19382ea2d1311f7cc6a71024646a9d77626b6ae57955",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 61,
+      "record": "3752e3787c03af44ce331953cae1222437949cb55d339898ce2cf7fb9cfa7850",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 62,
+      "record": "3ae991f618c889d209e6d1dbdb29dd3ae681ccfa5d63fe37e0932032ac199881",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 63,
+      "record": "a17d0a6a878e2b038ec7b3c1bf835e4560450ae564b6740db42f2b0b0349540d",
+      "builtAt": {
+        "tick": 160,
+        "hash": "25bae0793752681c"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [
+    {
+      "tick": 0,
+      "proposal": {
+        "kind": "intent",
+        "verb": "climb",
+        "actor": "walker",
+        "target": {
+          "x": 2.75,
+          "z": 0.75
+        },
+        "frameHash": "2b8902581c5659b7"
+      },
+      "hash": "2b8902581c5659b7",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "2c130bbf6d46ca837c4d5499e64f6526d1aa3758d82ba3b8197e700c6ca0f85f",
+        "schema": "a54ede33b9c0004999089442ae2e3e21129d967a90148657c27168442b2b6837",
+        "record": "af94c05567475e88131683b5c261ff68750ac995308d427d2495426b493a9904",
+        "output": "2a3263e7c947f545c7655ea59452c3adcef90f8f11ca5f3bd38ca385c8865000",
+        "builtAt": {
+          "tick": 0,
+          "hash": "2b8902581c5659b7"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    }
+  ],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 160,
+    "hash": "25bae0793752681c"
+  },
+  "frames": [
+    "2b8902581c5659b7",
+    "7ae3c01046913b25",
+    "d8ebf8ab1ef3b6f3",
+    "568e939cd19f9a8d",
+    "478c9d877a57e6d0",
+    "68830218c2064427",
+    "25217e3ee7d8a286",
+    "73d4ac779e05881b",
+    "453baed9a7266f1b",
+    "51622ef2f8cfd0e0",
+    "db09976952f071fc",
+    "954344a059282bb0",
+    "880474ea21112a53",
+    "882659db80e86df8",
+    "9972bf585526a913",
+    "515d442ee7ce419d",
+    "075c887a98375a4a",
+    "5e5832bfc0049df2",
+    "149434356e33f790",
+    "26d804ec4e3a059e",
+    "c8fa028d0a60df4c",
+    "bc9654131ed04a3a",
+    "dd01ffb06f82f308",
+    "41aed415fdd3d0ab",
+    "fbc5fb7001dcc857",
+    "1fd1a1cf93926444",
+    "8047a28973b5faf2",
+    "c098b4aad78f3b67",
+    "326353dd4d5cd05c",
+    "4bc14f9267e17d1c",
+    "4e17d8d42144dcb6",
+    "c596235fc5e90473",
+    "94483e16946478d4",
+    "54c94f0f307db597",
+    "16da7add17adf052",
+    "f6d75d384a014b4e",
+    "cafbe76f9bd6f903",
+    "cca0ed3df184e74f",
+    "2e24048621bada48",
+    "6a6db730dc8bbaa6",
+    "32ca4ee260c633f7",
+    "f16e66619790bce7",
+    "36380ff0cf4bdd44",
+    "a24322f09a67bd7e",
+    "ca26748412bd62a3",
+    "cbf785dd377bf7ef",
+    "1313aa9a8eeeb700",
+    "50ec5cb849f372f6",
+    "99187daea5105dff",
+    "846a6f29c2c86887",
+    "c5af745d1b83ff40",
+    "78542e6470b198e6",
+    "2b1cf127602d9e1f",
+    "01e90ae1ea6c0237",
+    "869dfdc1d8f29c28",
+    "ce205c5c2eeb30ce",
+    "21d9c4912fdbeef7",
+    "f91e6a5dbc13dc2f",
+    "6b8e6752a4116578",
+    "5e69c8e0bc6ef2ce",
+    "4c11f278f6db2cb7",
+    "3f5a4e95395a1e0f",
+    "61cd888f4053b850",
+    "d995f79438ec7b16",
+    "7195ab73db9e9f4b",
+    "1c079df102e898bf",
+    "b5cbc0ac823f5b2c",
+    "970a8598e0eec656",
+    "2d2abcea061d2073",
+    "a656b4395f661797",
+    "40390c3ad4fc68a4",
+    "5b6fa3346d5acafe",
+    "3db33fcaa3c328a3",
+    "5f4871cd252fd707",
+    "32a2d05160104424",
+    "795e7e8884f1538e",
+    "d8197443f978866b",
+    "7f83f83d0747f39f",
+    "631fff6c0c625b5c",
+    "1fa0380c578619d6",
+    "754d9064089c0c13",
+    "07ab34117e04b4ef",
+    "54a5b4335e44732c",
+    "0e37e0d02d095f26",
+    "50f54a0d27ebd493",
+    "85c9564934a9f027",
+    "d0dab7b784c7326c",
+    "e42819703e07395e",
+    "d28ec20baccfebdb",
+    "d939369ddcb3b087",
+    "5b83983c2e412944",
+    "df38d3cc6329d24e",
+    "978687128fdb1f0b",
+    "f99d4e55858880df",
+    "44626a3916dc2cf4",
+    "10ad808869f10396",
+    "54d1544d4ab7918b",
+    "2211ae813a919b2f",
+    "1db75cf6dd78951c",
+    "e0bf107485eb6ff6",
+    "ec9d159454471d43",
+    "aa07cac19d20f3d7",
+    "f199d09c1f322d14",
+    "7168e21818bd2a4e",
+    "75b67070506547d3",
+    "b199d52d964cf4c7",
+    "43e860df01b747e4",
+    "5707bbeced1d70fe",
+    "5539b6419af21cab",
+    "50de152500bc7acf",
+    "900bb45a0d3da2cc",
+    "34b45570c90e4d56",
+    "eea09ff1e148ee51",
+    "aa37de81703e8033",
+    "3550cb5220b9ba0e",
+    "c0d3ad64204ad3ca",
+    "618c5ea1b385eac9",
+    "db64d05d69fa6b9f",
+    "2cfa984b629c1886",
+    "12f30ee48008256e",
+    "9e4df37596cc41e5",
+    "9e3721953d9fdcd3",
+    "6d9127b679b48432",
+    "ba4c1fb4dbcd7ebe",
+    "94199c15ad25f20d",
+    "2d3cefe5ad79618b",
+    "dd876576c07f9e12",
+    "c4179120071ec19a",
+    "7ee5561708b05172",
+    "62be8701a63f3a74",
+    "1e214dedcc73bbdb",
+    "de031b764bcc6a07",
+    "89995018e17758c9",
+    "1b830b42e826a5be",
+    "d45cba2c5e4fe1a1",
+    "419371e1bbc382e5",
+    "6b2ce814ced5a721",
+    "c18d49dd744a1fe6",
+    "5180982c62184424",
+    "64af95641c02df07",
+    "7d926a5d22cffa8d",
+    "74050069290bed99",
+    "53482da1f96c5913",
+    "5805cd5957520769",
+    "533b437c67271ebf",
+    "03e54f1118c7247d",
+    "5a65de96dffc828f",
+    "ef912238d8c35a9f",
+    "c9781d8591bc344d",
+    "c363a9abc17145ef",
+    "6014c3827c7c494b",
+    "e78439d524826045",
+    "e9b0dd36fffc9615",
+    "7beb3bdbea9eb251",
+    "6dad066f7f3e3092",
+    "fa08a96376c6eb8e",
+    "1f34f2d319860d51",
+    "86d118492d0c9970",
+    "60692ece1a72135d",
+    "a0c94e31a7de66cc",
+    "25bae0793752681c"
+  ]
+}

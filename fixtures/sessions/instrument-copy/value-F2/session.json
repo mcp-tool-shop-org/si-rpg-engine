@@ -1,0 +1,1039 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "product scene",
+  "lateQuanta": 0,
+  "seed": 0,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 10,
+        "y": 0.26,
+        "z": 0,
+        "vx": 0.4,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "lower",
+        "x": 6,
+        "y": 0.3,
+        "z": 3,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "upper",
+        "x": 6,
+        "y": 0.85,
+        "z": 3,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "tip",
+        "x": 8.15,
+        "y": 0.7,
+        "z": -1.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "slider",
+        "x": 22.53760930650349,
+        "y": 2.3347518010647184,
+        "z": 4,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.12,
+        "hy": 0.12,
+        "hz": 0.12
+      },
+      {
+        "id": "climber",
+        "x": 2,
+        "y": 0.3,
+        "z": 5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.2,
+        "hy": 0.2,
+        "hz": 0.2
+      },
+      {
+        "id": "parcel",
+        "x": 14,
+        "y": 0.3,
+        "z": 2,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.2,
+        "hy": 0.2,
+        "hz": 0.2
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": 4,
+        "maxX": 80,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -2,
+        "maxZ": 6
+      },
+      {
+        "id": "rail",
+        "minX": 7.7,
+        "maxX": 8,
+        "minY": 0,
+        "maxY": 0.4,
+        "minZ": -1.8,
+        "maxZ": -1.2
+      },
+      {
+        "id": "ramp",
+        "minX": 20.6,
+        "maxX": 23.4,
+        "minY": 0.5424621202458748,
+        "maxY": 1.2424621202458748,
+        "minZ": 3.5,
+        "maxZ": 4.5,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0.3826834323650898,
+        "qw": 0.9238795325112867
+      },
+      {
+        "id": "pad",
+        "minX": 1,
+        "maxX": 3,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": 4,
+        "maxZ": 6
+      }
+    ],
+    "heightfield": {
+      "rows": 2,
+      "cols": 3,
+      "cell": 1,
+      "heights": [
+        0,
+        0.25,
+        0.5,
+        0,
+        0.25,
+        0.5
+      ]
+    },
+    "zones": [
+      {
+        "id": "west",
+        "minX": 4,
+        "maxX": 40,
+        "minY": -1,
+        "maxY": 4,
+        "minZ": -2,
+        "maxZ": 6
+      },
+      {
+        "id": "east",
+        "minX": 40,
+        "maxX": 80,
+        "minY": -1,
+        "maxY": 4,
+        "minZ": -2,
+        "maxZ": 6
+      }
+    ],
+    "name": "product",
+    "minds": [
+      {
+        "body": "lower",
+        "sight": 80,
+        "goals": [
+          {
+            "kind": "reach",
+            "zone": "east"
+          }
+        ],
+        "beliefs": []
+      }
+    ]
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "3609ad6dc6b56b4a326ebfda3071139239c80c281aa31fbad11be531bb9b311e",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 1,
+      "record": "46c020a70bb9ae7e805bfa81d28f83488ae6f3df93b9c175dde48726c016760b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 2,
+      "record": "f7b10a02a00e1431dec42de0d5fb73848d669479b134c6776a45f6e4863cf3cd",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 3,
+      "record": "27bf024bd4c7ff5309703def188dbd3b92b32353e4ab06a8bae2afa92b01cd47",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 4,
+      "record": "7e2bdea853e8c8df1fe87df3aa04eb06a0fe5c3d93d63cc7fdf8e43d6ef6c19f",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 5,
+      "record": "bda19e34ef447ff85b2b8f677dcefb20bcdd7fa4164ea9d951d0327ece988fc8",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 6,
+      "record": "bb4ecdb5204068eb7e82368c5561310fbe20165e1ac8d3d6e362d4a6e450ca04",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond climb range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 7,
+      "record": "6edea1970a35f5f514451b4fa9998c315e83d4d5fdfa8957e1910b35c9039396",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "5572b02f00d2c22915d04455579882f312773fe05529a411b4858ba393ce9467",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "276bbb4f157fc19d8b2657509770bbca3e59c5606be7dd9b5c4c6e8ac40b83b7",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "084a3aed1dd848493ca9787d1753bbf90ddf74febc69119393cdced88d3e810e",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "47f1bffbb20fa2b26ade02fcdbf6705eb911a0872baed21458b74fed217c4549",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 12,
+      "record": "9579a9b4ca3bd8dbaeb751eb5118b7089a53a50cbffd818f5fbf4d19a95bb02d",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "a278edf340bece09c62bc842b9e2651643f2626abe46a4ab0a78ae587fa80982",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is the actor",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "3e20c92eb62a4824b6d450f1ad647dff404fbfb650fc159b2c82d49a14015ae8",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target must name a body",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "741d5009472cf5f8b45c26f48b66b34f699748e80a3fc5a2edae06a98ab24696",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 16,
+      "record": "804a99fec00e59aec43af937c23c43025d83b9d2e5d6d8e5ea91ee04f5565714",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 17,
+      "record": "ede2ad7c86f2df6d5bf9132c6d5cab729488426819a3219eae420f22190c9f12",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 18,
+      "record": "acc94488ec163990daa3d7c8e926e27f5a716d58218c7eddd77a3c574037a760",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 19,
+      "record": "353deee2b0f04a1c0fed860f07b8fd8a8f0b1a54da195c5c3fa8802b4885660b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 20,
+      "record": "7f9cb2f8f99b2d649af340a996d3f8179dbc3f410b3b60147d29ab464ac00fbb",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 21,
+      "record": "dee93117f0c2d8349ecc0fe6b8bcce74acaf38bffef8a741b361ebcc1405b6e1",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 22,
+      "record": "673eb23bc9eba98a1d6def745973a8ad09321cb05369a4741c4fa5b47281bd92",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 23,
+      "record": "5fe7b35ac7f7070cc362d134ed9566809f67bbb30a2743f8fac67c50ab42216b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 24,
+      "record": "f9bf5bd81f3e7c138186f80a2aab8b260ceadd48176f7d62182eeb1d125f3e8a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 25,
+      "record": "eec25ddf3c2ee0c7dab03202d6607abd4ca3a698af25cb47d830413da1bee05b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 26,
+      "record": "9bb3313b1a7a98904b73f5bae9a1e1a6e4837682b89cc4ba60889f8242cd7e76",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 27,
+      "record": "1dbf64325a0816069f490ac49cb27746a164d37517994f8a3507ba5ebd7d4451",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 28,
+      "record": "844f7eba14e8143974d747514133980f9f67f633c6078c42992f410b1acda201",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 29,
+      "record": "1007179199540eb3bb6e9146bf86cb97904953f3c6b010b8cc82cedd1a52f968",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 30,
+      "record": "d2eadc5bcd18e79e211133b76c043f1a557445a4a96d4688f618a099f78d36ca",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 31,
+      "record": "8523d315a693c05670f8b85ef0f941e79b760c2fe8d7e8eec1a8b20a9a5d2fdc",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 32,
+      "record": "312dcacbd7ce53f73d12b07aad7a9fd185909374164fcf8d46a0358f91390ca1",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 33,
+      "record": "3052a5f2d45e8c5f8f56b9fe97292a9151eec0778f06b17c168740c19d6e7c0f",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 34,
+      "record": "dd4675dfb88ad08ae7a6c4b14f334a0812d20ab83d419ea53c1e822565528ae4",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 35,
+      "record": "52bc45e98c0311b73948d75094af187be50896a775a5dc33eacab998a77abfcb",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 36,
+      "record": "176cb21d3af2bec7566cf237163ab4699b7c79db2a58649c59d3799e0ecc6b14",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 37,
+      "record": "f2e8cb02d33b5ca331d3affa83f3695aedf3fd65d0afedf7e772c22be7a10216",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 38,
+      "record": "d44c5571425b499b8f69d1fdbba074180f99c00496bfe5000fb5bed92ce70716",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 39,
+      "record": "c8bd20692fc1ee111118d2a22d38117d4fbdb3f0e2547317bed21b8cbfd71907",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 40,
+      "record": "f14ce9aed321f4c5aa3c5b4c4e887e88a866d0a5fde6d2678d333edb5e056b53",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 41,
+      "record": "9cd7056732acf046b597c634692addef1d7b072beff17007cc644c26150c217c",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 42,
+      "record": "8063236afcd781954c72dffd2ece27e021321a81bac25ce5e2f55913c43ead67",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 43,
+      "record": "49f59d379f54ba01f68b2fdd3b129f2c84d28425d1d2352f6b9f51efce18060a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 44,
+      "record": "e0a341c4c512a61286bccaf1adf68ab6e714f3efce1617ead3427719c55906b4",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 45,
+      "record": "2c9785b4bfb4f82f377475121fda067071946d1266f80f080e4ef5e36a6cf33c",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 46,
+      "record": "82a290700c43be240229f21a17839e8a4714a8b876a854f772519e79b491f225",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 47,
+      "record": "a3a833c5b7a23ca8f740ab41a86f3b32c5be51a2fdf8f398a14357fcfec92017",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 48,
+      "record": "34dfbc4da3f9c950282b6f993573d400a29ac7402f54a33177cb38493b2b9590",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 49,
+      "record": "62b3fd5739df727a6182b819e55b7bae853de68cb1bfdd6d8f210a894c1f700a",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 50,
+      "record": "36d352bcdbbff34f735c9996e6655a688642d244b9a0538ee6ffe36ba794e1f2",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 51,
+      "record": "3c38e84c558ba30f95fda2bebe80810dd21e06c74218582a5e8d883fbc1fe861",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 52,
+      "record": "817b57bfe2e43e3f97642df52ad7b22bc37333d913b20f6da22daec1b0cdd5e6",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 53,
+      "record": "eeb27ecffa315ef824c98efa2879f27c1e06a309315c5ce45ff0086b26ce7323",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 54,
+      "record": "9a3c4facd285645783ac2992b403e1b8c4a39a328aa90a2f863355f8ef971341",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 55,
+      "record": "57ae71aab69891e4ac2745b231efb09d64739ded2346fe5ceb74bb40e93e7bfb",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 56,
+      "record": "2672595658ffae260a3f6493e236b6d4420c054471ae042150955dbcbceb67df",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 57,
+      "record": "90b0bc0aad9b31348fa4cebb07ab04462d58d1537501989cd1c1503dc1e72b07",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 58,
+      "record": "5a0ee679253da1851f4d5114544c994ca98d7d9056791f89b1459c2447e1c9af",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 59,
+      "record": "0660469ef4574a19f403557e66f600076bde0fb16ce03a57d028bd78a29832de",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 60,
+      "record": "ac44bc7d345f03ea5719cd19c07e446795882912fe4e77eefdf8327ba5688b09",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 61,
+      "record": "9ebd6b59abae7062c403469ad2212d79970a09c54e33bf6f2ddd36a78bc07f4b",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 62,
+      "record": "088ecc508353fffaebeed5689bc1cde18c2c60cea1e19ed037fecaea2100e7de",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 63,
+      "record": "b22a84cebfe0df4f34cf3509020278a2874dad7bab40b688e65f42101a35569c",
+      "builtAt": {
+        "tick": 0,
+        "hash": "70c9e2bb5de87042"
+      },
+      "read": "ok",
+      "reason": "target is beyond push range 3",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 0,
+    "hash": "70c9e2bb5de87042"
+  },
+  "frames": [
+    "70c9e2bb5de87042"
+  ]
+}

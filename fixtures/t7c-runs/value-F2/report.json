@@ -1,0 +1,1049 @@
+{
+ "bench": 1,
+ "seed": 1,
+ "budgets": {
+  "sweep": {
+   "quanta": 6000,
+   "restores": 60
+  },
+  "ladder": {
+   "quanta": 12000,
+   "restores": 120
+  }
+ },
+ "grammar": {
+  "share": 0.5,
+  "pitch": 0.5,
+  "steps": 3
+ },
+ "refused": null,
+ "anchors": [
+  {
+   "id": "law:solver/src/kcc.rs:Stride::move_shape:137",
+   "kind": "law",
+   "file": "solver/src/kcc.rs",
+   "name": "Stride::move_shape",
+   "lines": [
+    [
+     137,
+     137
+    ]
+   ],
+   "side": "head",
+   "approximate": false,
+   "observable": "unknown",
+   "why": "the law: the rule does not follow what a Rust function writes",
+   "executable": [
+    137
+   ],
+   "noExecutableChange": false,
+   "runsAtLoad": false,
+   "removed": false,
+   "identifiers": [],
+   "verb": null,
+   "hazard": null,
+   "reachedBy": [
+    "restore",
+    "window"
+   ],
+   "entries": 80,
+   "linesReached": [
+    137
+   ],
+   "reached": true,
+   "verdict": "reached",
+   "differences": 8,
+   "wording": "no trace difference"
+  }
+ ],
+ "notAimed": [],
+ "worldsDiffer": [],
+ "binaries": {
+  "mode": "solver/ differs: each tree built its own binary from its own source, in its own target directory"
+ },
+ "coverage": {
+  "made": true,
+  "why": "",
+  "productScene": "its product-scene trace equals the head product build's, frame for frame, over 10000 quanta",
+  "canary": {
+   "relation": "equal",
+   "measured": {
+    "count": 10000,
+    "quanta": 10000
+   }
+  }
+ },
+ "suite": {
+  "ran": false,
+  "differences": []
+ },
+ "worlds": [
+  {
+   "world": "product scene",
+   "sweep": {
+    "cells": 29,
+    "tried": 194,
+    "admitted": 56,
+    "refused": 138,
+    "quanta": 4730,
+    "restores": 60,
+    "complete": false,
+    "actionSet": "move to the centres of the 8 neighbouring cells; push at each body not carried; climb 1, 2, 3 cells out in 8 directions; pick-up at each body not carried; drop, while carrying, 1, 2, 3 cells out in 8 directions; use not swept; one actor at a time, the others taking no action, from settled states only",
+    "findings": [
+     {
+      "kind": "leaves",
+      "actor": "walker",
+      "body": "walker",
+      "detail": "walker leaves the world after push tip by walker: its centre is at y -1.0124775794039487, below the lowest collider minimum -1, at tick 434 at (x, z) (8.727, -2.485), past the edge of every collider",
+      "count": 1
+     }
+    ]
+   },
+   "grammar": {
+    "verbs": [
+     "move",
+     "push",
+     "climb",
+     "pick-up",
+     "drop",
+     "use"
+    ],
+    "reachedVerbs": [
+     "move",
+     "push",
+     "climb",
+     "pick-up"
+    ],
+    "otherVerbs": [
+     "drop",
+     "use"
+    ]
+   }
+  }
+ ],
+ "proposers": {
+  "sweep": {
+   "proposed": 194,
+   "refused": 138,
+   "refusals": {
+    "move steps it": 80,
+    "target is beyond pick-up range 3": 22,
+    "target is beyond push range 3": 22,
+    "nothing is under the point": 14
+   },
+   "admitted": 0,
+   "ran": 0,
+   "unrun": 0,
+   "groups": {
+    "product scene group 1": 56,
+    "product scene group 2": 0
+   },
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 0,
+    "differ": 0,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [],
+   "observable": {},
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "grammar": {
+   "proposed": 15,
+   "refused": 9,
+   "refusals": {
+    "actor is not in zone east": 1,
+    "actor is not in zone west": 1,
+    "move steps it": 1,
+    "nothing is under the point": 1,
+    "target is beyond climb range 3": 1,
+    "target is beyond move range 3": 1,
+    "target is beyond pick-up range 3": 1,
+    "target is beyond push range 3": 1,
+    "target is beyond use range 2": 1
+   },
+   "admitted": 6,
+   "ran": 15,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 6,
+    "differ": 12,
+    "fail": 1,
+    "catches": 0
+   },
+   "anchorsReached": [
+    "law:solver/src/kcc.rs:Stride::move_shape:137"
+   ],
+   "observable": {
+    "law:solver/src/kcc.rs:Stride::move_shape:137": "unknown"
+   },
+   "mutants": {},
+   "linesReached": {
+    "law:solver/src/kcc.rs:Stride::move_shape:137": [
+     137
+    ]
+   },
+   "floods": [],
+   "differences": [
+    {
+     "id": "c58",
+     "world": "product scene",
+     "summary": "at tick 190, body climber, field x",
+     "block": "first difference at tick 190\nbody climber field x\n  head 400010190c955d43 2.007860277469861\n  base 3ffffa883ca30b39 1.9986650818470493\n",
+     "bundle": "bundles/c58.bundle.json"
+    },
+    {
+     "id": "c61",
+     "world": "product scene",
+     "summary": "at tick 307, body walker, field x",
+     "block": "first difference at tick 307\nbody walker field x\n  head 40231db495496d28 9.558018365109618\n  base 40232356b41175d7 9.569020869380365\n",
+     "bundle": "bundles/c61.bundle.json"
+    },
+    {
+     "id": "c62",
+     "world": "product scene",
+     "summary": "at tick 223, body walker, field x",
+     "block": "first difference at tick 223\nbody walker field x\n  head 40245960ca3cf08e 10.174566574038433\n  base 40245700ea1a8711 10.169928851831658\n",
+     "bundle": "bundles/c62.bundle.json"
+    },
+    {
+     "id": "c63",
+     "world": "product scene",
+     "summary": "at tick 223, body walker, field x",
+     "block": "first difference at tick 223\nbody walker field x\n  head 40245960ca3cf08e 10.174566574038433\n  base 40245700ea1a8711 10.169928851831658\n",
+     "bundle": "bundles/c63.bundle.json"
+    },
+    {
+     "id": "c64",
+     "world": "product scene",
+     "summary": "at tick 223, body walker, field x",
+     "block": "first difference at tick 223\nbody walker field x\n  head 40245960ca3cf08e 10.174566574038433\n  base 40245700ea1a8711 10.169928851831658\n",
+     "bundle": "bundles/c64.bundle.json"
+    },
+    {
+     "id": "c65",
+     "world": "product scene",
+     "summary": "at tick 195, body walker, field x",
+     "block": "first difference at tick 195\nbody walker field x\n  head 402436136159524d 10.105616609719755\n  base 40242e80fcbc4195 10.090827844601145\n",
+     "bundle": "bundles/c65.bundle.json"
+    },
+    {
+     "id": "c66",
+     "world": "product scene",
+     "summary": "at tick 195, body walker, field x",
+     "block": "first difference at tick 195\nbody walker field x\n  head 402436136159524d 10.105616609719755\n  base 40242e80fcbc4195 10.090827844601145\n",
+     "bundle": "bundles/c66.bundle.json"
+    },
+    {
+     "id": "c67",
+     "world": "product scene",
+     "summary": "at tick 195, body walker, field x",
+     "block": "first difference at tick 195\nbody walker field x\n  head 402436136159524d 10.105616609719755\n  base 40242e80fcbc4195 10.090827844601145\n",
+     "bundle": "bundles/c67.bundle.json"
+    },
+    {
+     "id": "c68",
+     "world": "product scene",
+     "summary": "at tick 190, body climber, field x",
+     "block": "first difference at tick 190\nbody climber field x\n  head 40001d441e51859c 2.014290081847049\n  base 3ffffa883ca30b39 1.9986650818470493\n",
+     "bundle": "bundles/c68.bundle.json"
+    },
+    {
+     "id": "c69",
+     "world": "product scene",
+     "summary": "at tick 190, body climber, field x",
+     "block": "first difference at tick 190\nbody climber field x\n  head 40001d441e51859c 2.014290081847049\n  base 3ffffa883ca30b39 1.9986650818470493\n",
+     "bundle": "bundles/c69.bundle.json"
+    },
+    {
+     "id": "c70",
+     "world": "product scene",
+     "summary": "at tick 190, body climber, field x",
+     "block": "first difference at tick 190\nbody climber field x\n  head 40001d441e51859c 2.014290081847049\n  base 3ffffa883ca30b39 1.9986650818470493\n",
+     "bundle": "bundles/c70.bundle.json"
+    },
+    {
+     "id": "c71",
+     "world": "product scene",
+     "summary": "at tick 221, body walker, field x",
+     "block": "first difference at tick 221\nbody walker field x\n  head 40235377c9577f5b 9.663023273402066\n  base 40235921333a1ad0 9.674081421702255\n",
+     "bundle": "bundles/c71.bundle.json"
+    }
+   ],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "model": {
+   "proposed": 64,
+   "refused": 64,
+   "refusals": {
+    "target is beyond push range 3": 49,
+    "target must name a body": 8,
+    "target is beyond move range 3": 5,
+    "target is beyond climb range 3": 1,
+    "target is the actor": 1
+   },
+   "admitted": 0,
+   "ran": 0,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 0,
+    "differ": 0,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [],
+   "observable": {},
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "control": {
+   "proposed": 2,
+   "refused": 0,
+   "refusals": {},
+   "admitted": 2,
+   "ran": 2,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 2,
+    "differ": 2,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [
+    "law:solver/src/kcc.rs:Stride::move_shape:137"
+   ],
+   "observable": {
+    "law:solver/src/kcc.rs:Stride::move_shape:137": "unknown"
+   },
+   "mutants": {},
+   "linesReached": {
+    "law:solver/src/kcc.rs:Stride::move_shape:137": [
+     137
+    ]
+   },
+   "floods": [
+    {
+     "line": "every one of the 2 candidates compared differs the same way: at tick 98, body walker, field x",
+     "ids": [
+      "c72",
+      "c73"
+     ]
+    }
+   ],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  }
+ },
+ "controls": [
+  {
+   "id": "c72",
+   "control": {
+    "kind": "play",
+    "file": "fixtures/corpus/walker-stall-flat-ground.bundle.json"
+   },
+   "notes": [
+    "its recorded hashes match the head's run"
+   ],
+   "difference": "at tick 98, body walker, field x",
+   "block": "first difference at tick 98\nbody walker field x\n  head 40253999999999a4 10.612500000000018\n  base 4025369057cd0736 10.606569999482968\n",
+   "bundle": "bundles/c72.bundle.json"
+  },
+  {
+   "id": "c73",
+   "control": {
+    "kind": "product",
+    "file": "product scene"
+   },
+   "notes": [],
+   "difference": "at tick 98, body walker, field x",
+   "block": "first difference at tick 98\nbody walker field x\n  head 40253999999999a4 10.612500000000018\n  base 4025369057cd0736 10.606569999482968\n",
+   "bundle": "bundles/c73.bundle.json"
+  }
+ ],
+ "findings": {
+  "head": [],
+  "base": []
+ },
+ "spent": {
+  "quanta": 38681,
+  "restores": 23
+ },
+ "mutants": {
+  "note": "The mutants measure the candidates' sensitivity at the change, not the aim, which is the access map's to measure.",
+  "cap": 64,
+  "list": [],
+  "leftOut": [],
+  "byVerdict": {},
+  "none": [
+   {
+    "anchor": "law:solver/src/kcc.rs:Stride::move_shape:137",
+    "file": "solver/src/kcc.rs",
+    "line": 137,
+    "reason": "a changed executable line no operator applies to"
+   }
+  ]
+ },
+ "notMeasured": {
+  "notAimed": [],
+  "notSeenApproximate": [],
+  "notReached": [],
+  "runsAtLoad": [],
+  "noExecutableChange": [],
+  "removed": [],
+  "unrun": [],
+  "mutantsNotReached": [],
+  "mutantsNotScored": [],
+  "mutantsNone": [
+   {
+    "anchor": "law:solver/src/kcc.rs:Stride::move_shape:137",
+    "reason": "a changed executable line no operator applies to (line 137)"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "world": "product scene",
+   "start": {
+    "index": 15,
+    "candidate": null
+   },
+   "M": {
+    "calls": 64,
+    "quanta": 0,
+    "restores": 0,
+    "findings": {
+     "lines": [],
+     "differences": [],
+     "mutants": []
+    }
+   },
+   "G": {
+    "quanta": 0,
+    "restores": 0,
+    "extended": false,
+    "findings": {
+     "lines": [],
+     "differences": [],
+     "mutants": []
+    }
+   }
+  }
+ ],
+ "environment": {
+  "trees": {
+   "head": {
+    "path": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\F2-head",
+    "commit": "df24f4d82b6e60c31abb66d98db0ac5f0d270b2d",
+    "digest": "cd76bfb997b5326c5c82b81960251de015fbddd395eeb678109a181585d19c79"
+   },
+   "base": {
+    "path": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\F2-base",
+    "commit": "df24f4d82b6e60c31abb66d98db0ac5f0d270b2d",
+    "digest": "8f49d683fc768fa95f3b7880316a83a524de1521b66f81eb28bc18f5a3665b61"
+   }
+  },
+  "binaries": {
+   "head": "9ff6d183d8c76ead2a3b37ab59df3bf1f7336f654d854d6bf186e47e98b46f3e",
+   "base": "c414222444052c7e9f58821c6bba088479251d55fef8c195b4ff16e711e2c682",
+   "files": {
+    "head": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "base": "98c287a5670419b631af11123698e2747fa8076395a289f20d804ca7f76328ab"
+   },
+   "coverage": "1229b744efc2635ce9d4f7bdc0c2b8f53bd35e68c2cbb12aa31950fc0be47f03"
+  },
+  "host": {
+   "platform": "win32",
+   "arch": "x64",
+   "cpus": 24,
+   "node": "v22.22.3"
+  },
+  "times": {
+   "anchors": 2117,
+   "product builds": 60778,
+   "coverage build": 37265,
+   "processes": 743,
+   "coverage check": 2506,
+   "sweep product scene": 3050,
+   "sweep ladder product scene": 4433,
+   "grammar ladder product scene": 7238,
+   "model product scene": 32158,
+   "controls": 6872,
+   "mutants": 4,
+   "total": 157164
+  },
+  "paths": {
+   "out": "E:\\AI\\si-verify\\t7c-runs\\value-F2",
+   "work": "E:\\AI\\si-verify\\t7c-runs\\value-F2\\work"
+  },
+  "processes": {
+   "head": {
+    "pid": 35296,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\F2-head",
+    "build": "product",
+    "calls": 15,
+    "ms": 4836,
+    "quanta": 12081
+   },
+   "base": {
+    "pid": 34984,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\F2-base",
+    "build": "product",
+    "calls": 15,
+    "ms": 2032,
+    "quanta": 12101
+   },
+   "head coverage": {
+    "pid": 46088,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\F2-head",
+    "build": "coverage",
+    "calls": 15,
+    "ms": 2273,
+    "quanta": 12081
+   },
+   "sweep": {
+    "pid": 23616,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\F2-head",
+    "build": "coverage"
+   }
+  },
+  "model": {
+   "timeouts": 0,
+   "calls": [
+    {
+     "world": "product scene",
+     "call": 0,
+     "ms": 848.8719999999994,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 1,
+     "ms": 380.3140000000003,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 2,
+     "ms": 321.83550000000105,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 3,
+     "ms": 275.41049999999996,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 4,
+     "ms": 407.6419999999998,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 5,
+     "ms": 340.8014000000003,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 6,
+     "ms": 404.20750000000044,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 7,
+     "ms": 381.6421999999984,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 8,
+     "ms": 551.3113000000012,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 9,
+     "ms": 533.179500000002,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 10,
+     "ms": 519.4519999999975,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 11,
+     "ms": 526.6446999999971,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 12,
+     "ms": 526.3614999999991,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 13,
+     "ms": 415.83309999999983,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 14,
+     "ms": 475.9147000000012,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 15,
+     "ms": 436.21240000000034,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 16,
+     "ms": 398.20850000000064,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 17,
+     "ms": 412.02609999999913,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 18,
+     "ms": 441.31760000000213,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 19,
+     "ms": 423.46259999999893,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 20,
+     "ms": 398.29449999999997,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 21,
+     "ms": 476.5191999999988,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 22,
+     "ms": 428.7957999999999,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 23,
+     "ms": 407.51840000000084,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 24,
+     "ms": 404.54729999999836,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 25,
+     "ms": 395.71770000000106,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 26,
+     "ms": 397.59969999999885,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 27,
+     "ms": 389.89240000000063,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 28,
+     "ms": 393.6444999999985,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 29,
+     "ms": 478.9572999999982,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 30,
+     "ms": 388.7331000000013,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 31,
+     "ms": 420.704099999999,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 32,
+     "ms": 452.1241000000009,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 33,
+     "ms": 397.78939999999784,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 34,
+     "ms": 422.7939000000006,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 35,
+     "ms": 478.00510000000213,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 36,
+     "ms": 460.7201000000023,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 37,
+     "ms": 398.9974000000002,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 38,
+     "ms": 514.261599999998,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 39,
+     "ms": 514.7866999999969,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 40,
+     "ms": 395.18560000000434,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 41,
+     "ms": 483.2780999999959,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 42,
+     "ms": 482.00760000000446,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 43,
+     "ms": 519.6372000000047,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 44,
+     "ms": 413.8081999999995,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 45,
+     "ms": 516.3597000000009,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 46,
+     "ms": 461.2569999999978,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 47,
+     "ms": 439.8724000000002,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 48,
+     "ms": 430.6030000000028,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 49,
+     "ms": 449.30920000000333,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 50,
+     "ms": 471.2300999999934,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 51,
+     "ms": 441.61880000000383,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 52,
+     "ms": 459.4699000000037,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 53,
+     "ms": 473.66689999999653,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 54,
+     "ms": 544.9484000000011,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 55,
+     "ms": 445.83320000000094,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 56,
+     "ms": 412.04879999999685,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 57,
+     "ms": 404.43159999999625,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 58,
+     "ms": 413.76230000000214,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 59,
+     "ms": 460.20529999999417,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 60,
+     "ms": 461.5023000000001,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 61,
+     "ms": 503.7992000000013,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 62,
+     "ms": 381.42489999999816,
+     "timedOut": false
+    },
+    {
+     "world": "product scene",
+     "call": 63,
+     "ms": 411.5243000000046,
+     "timedOut": false
+    }
+   ]
+  },
+  "mapping": {
+   "windows": 91,
+   "ms": 47908
+  }
+ }
+}

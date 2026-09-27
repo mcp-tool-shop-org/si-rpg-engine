@@ -1,0 +1,1610 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "fixtures/bench/room.json",
+  "lateQuanta": 0,
+  "seed": 5,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.75,
+        "y": 0.26,
+        "z": 0.75,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.75,
+        "y": 0.26,
+        "z": 0.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 4,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-west",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-east",
+        "minX": 3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-south",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-north",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": 2,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "ledge",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0,
+        "maxY": 0.35,
+        "minZ": 1.25,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "step",
+        "minX": 1.25,
+        "maxX": 2,
+        "minY": 0,
+        "maxY": 0.25,
+        "minZ": 1.5,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      }
+    ],
+    "zones": [
+      {
+        "id": "yard",
+        "minX": 0,
+        "maxX": 1.25,
+        "minY": 0,
+        "maxY": 2,
+        "minZ": 0,
+        "maxZ": 2
+      },
+      {
+        "id": "shelf",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0.35,
+        "maxY": 2,
+        "minZ": 1.25,
+        "maxZ": 2
+      }
+    ],
+    "name": "bench-room"
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "182781eced1dd9249d8199a660f73acfd9eb5c186fe422ec75bf123835f702fa",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 0
+    },
+    {
+      "call": 1,
+      "record": "a2638ce692221e56ff2d8f06b6de3fb81ba448df1ca44ed87723c64ab14fe746",
+      "builtAt": {
+        "tick": 116,
+        "hash": "3e541323c16b3811"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 116
+    },
+    {
+      "call": 2,
+      "record": "9be09d98363215dbb201bf0e2d843d7c73028f9b4ad53252ad61f4405006bb59",
+      "builtAt": {
+        "tick": 153,
+        "hash": "d8802fb55557eb3e"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 153
+    },
+    {
+      "call": 3,
+      "record": "f115abe0479aa08275e88754e6a79aeb717f550f58eb769a754c76b1412f2384",
+      "builtAt": {
+        "tick": 186,
+        "hash": "8272d0c68f613a07"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 4,
+      "record": "d723ef29fe64fd7c32411edaed395b337a2cd5992f6e5c2e835cab80af0b962c",
+      "builtAt": {
+        "tick": 186,
+        "hash": "8272d0c68f613a07"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 5,
+      "record": "6d89fb5e23b2834c2c129869d6549984157041a0ee28658411717391fd41aa8a",
+      "builtAt": {
+        "tick": 186,
+        "hash": "8272d0c68f613a07"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 186
+    },
+    {
+      "call": 6,
+      "record": "a407a0e2af0110ada278e82da4c6980a9a6cd8bffd00abb81b5ee9949dc27b06",
+      "builtAt": {
+        "tick": 222,
+        "hash": "ccc1ec2cce5afe6c"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 222
+    },
+    {
+      "call": 7,
+      "record": "e73b62af1069fa257464ac1e57878b3bf836a291d55e62a9680fc6f7607c7d04",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "de274eda3101ab3dc06c1447ddb1d0eb813664b5db5a874e4bae2ef8ad31dc8d",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "2b8eb2b5a5ccdc42c18090c573542daf83bc3a50330c4ee26da13d2db1cc340c",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "0ef00d6b29a5ae69447a1f7425405c96b5da79e765fc8b681d6d7ebf8f0b856a",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "64746d3d1a726f31aa3b6056b3fb14b765aa53704badb9859dd90f5250e6bc1f",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 12,
+      "record": "beb5c65dadca9510292e3c4545b55cf7db31d03915c4da82fb34565cc63c5099",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "18be6d6289c469714986fcf29a6b5ca473140608655e0a3232b1997db4ff86d4",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "1df62814d7e78cd4f70a5c9e9e96a0379e807398e9aef5aff3f8b58625cc0ba3",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "4cdf8250b951da39fe7aef8048974eaeb6a6a3377ed1e75eac771a97725f319b",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 16,
+      "record": "472bf83ecd9a3afb964453d3e6c91b516e844a778e59ed6314517faea6caf8d9",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 17,
+      "record": "b0268e1799c5f78a9bceca8feb38f4246ae8c40754fdd1844963542fe17fb524",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 18,
+      "record": "cbdf3d34275892cddb6835912923b3579c91045611f206706074290353d24adb",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 19,
+      "record": "39f3aa3466fcfd2ac0c933ba7c21d4392fc097c0be64935c2ad219c981575cfc",
+      "builtAt": {
+        "tick": 223,
+        "hash": "68a0918b50930959"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 223
+    },
+    {
+      "call": 20,
+      "record": "73a378882e76196a9774ba8024b9f92b33017b71ce5dcd00288a562ef64e867a",
+      "builtAt": {
+        "tick": 226,
+        "hash": "ff1ad2a0a9c36980"
+      },
+      "read": "ok",
+      "reason": "move steps it",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 21,
+      "record": "6baf856685cb75105604264887cb7eaad2457f34e0ec8a98fbb8ac47807ab023",
+      "builtAt": {
+        "tick": 226,
+        "hash": "ff1ad2a0a9c36980"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 226
+    },
+    {
+      "call": 22,
+      "record": "12ab4677120a4f616221213fa591a14b85468db82cc5f8371db78daedbff92ef",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 23,
+      "record": "e3e155e802a5bb05f93481971ab52888c01ef895f095bef86bb653715926b3d0",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 24,
+      "record": "181fb54522bc804e32cbc6aadcfd313b6324cf8844ed9764f910a9b0edb194f2",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 25,
+      "record": "24059a0716fc50d6b708b7c98f03bddceda2dc4c9ac73ae8b9a4bca707c85cbe",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 26,
+      "record": "03e22ebfb3dc9837be4cb2a879f5ef88bc61a309c4310f4c52a66caa3bc18a80",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 27,
+      "record": "00fdb4034a29fad873725ff6bbd0277f31118006943905d629f81e6341d98faf",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 28,
+      "record": "034409f6000a0b9ec38781ded8b16ff85b1d89c00b71d8f23c2cb5511c7f9b61",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 29,
+      "record": "9d97043ffa7b748cd352fbce826ad8d2914ee9b69617d569be3bc6251974ffbd",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 30,
+      "record": "3e72602365c7d8f52e750548e193970ef4014146168e67b92f86ab95f10524a2",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 31,
+      "record": "d5d28572aec5e03ea2fce50f1ee236295f5c2b6e9c1586b4743d83454fad85b8",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 32,
+      "record": "1be5d61409f294149cd7211884af2d79a43b8114c3f893823b7c2f53a702b864",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 33,
+      "record": "568efecf1a43a9c92d428dcb327641576610e3d93cd6fed9842e59fd22a718dc",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 34,
+      "record": "0d1c8e857e8ff9145c03a7296c6b6dbf19220e5b7edf552ee202ab76568494e8",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 35,
+      "record": "aa617fd64c2cb918046a410ebff986cef334b9b920adab238e2dc59e1cd0d74e",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 36,
+      "record": "a95a1c13b05c82a2db1aaac905624528ed7d69ca5b6600553cebb842cec48db0",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 37,
+      "record": "c558488b38db8927aedf96db9711734e425f4fc975ecedaa6a13b36ca25bf4a3",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 38,
+      "record": "1692f5a3eda0320a7e15310898e547f60a3e9d6acda1bcd131f7324efed4f23b",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 39,
+      "record": "aa18fb0d9aae2c2b3bba11a380eb88affb1a19b752e3aa31a9d2b75ff78cdf5b",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 40,
+      "record": "2ade795dfa7df6707eda708cdc1115cde9ff3cae649933e4168b865ff659ea51",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 41,
+      "record": "7497109e3e3247859089bac9548f07d55706ed7fa1a14a1b9b63ae19c9410682",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 42,
+      "record": "ac3b5d3f8f609a1052adba630f8665c3749f14179d1b38fdfa43933b41637ef9",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 43,
+      "record": "beb3c66fffaa4f6eb4a4840770bc60e616e1d7b8e3254b0af6f9b1daa5f1a9c8",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 44,
+      "record": "9d8e2dd2f06a38cc15b23478e2258e5d82dbddbefc093545af42534767da5859",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 45,
+      "record": "78e13d654efc05edeac1fecfe1900dcd213652b1a10ba9aa623ca178367302b7",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 46,
+      "record": "1c9df7b1b5fefd8d516925d086d1cca9d787423801e3c6b6b6e5f6acc5f34eb8",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 47,
+      "record": "ac1e435d36bc1715186f52a6e2bcc7935d9fd8a7a89ca85312d303967b555d51",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 48,
+      "record": "22687cdb3d88c80c142d1ff598d3770b0311764a792a51495a36d01702909e6a",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 49,
+      "record": "40452635b65d533da981501a5731e6e55654c33ceb90f68b65efcb2090e66b80",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 50,
+      "record": "af207588417529295286d44fe7b86ff3461df7fd0d9d1bf5c124c96dc6479b5b",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 51,
+      "record": "d5ddc5c5dd8eb4537ab385e404fd02a227ecce500ae100181ab106546bd051a2",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 52,
+      "record": "1d5db363ef9bc65f76dd16937519144736851f0e66b3df3fb50288f27d3ddfc7",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 53,
+      "record": "7d0543f82b0d3cb174ba90ce198e7db05beda4bc7770d8b3b90b734b0949c42b",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 54,
+      "record": "8566c5768e4b74f6cedc8b9f430bafab2952ee19d0fbd8abe4f6823b0845838b",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 55,
+      "record": "87572955affee8eb6215720ef9902ef9b10bacb7ce6f5159cf0ceaeb6a8c9aba",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 56,
+      "record": "6f0cc9725e0341edea2e2c147eee82518dea5403fab2a8b13472efd15c0c8071",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 57,
+      "record": "c850ffb45345e48fa4d206c3e8e01226b7d897e9243bbf07d5593242b0440e35",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 58,
+      "record": "075e9e4306a3c9062f0dcd1c65a94f9981d7b35e74029fdadd4e2a7c566610c0",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 59,
+      "record": "a42de6ac2d800926b55b2f20b77ab972703a6ca39a767d98d84463f9eab56e5d",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 60,
+      "record": "23e19b886e480a124659ea3a24ad8ef9dc6aec878de7f00bca82b43d39ac5a1a",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 61,
+      "record": "bfab2b9b022725e79e6814025dfb205e1b7efbb6f7e977a06a17583f7cbce163",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 62,
+      "record": "61e259bd05276ea1af5d5c10e004fd41e9cd5ac289fb6fa3bd10466f78acb000",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 63,
+      "record": "4b660afcaf82cc545814190b868c87254df555bcc2e171395e3286818791dd5f",
+      "builtAt": {
+        "tick": 227,
+        "hash": "d303b462529ff96d"
+      },
+      "read": "ok",
+      "reason": "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [
+    {
+      "tick": 0,
+      "proposal": {
+        "kind": "intent",
+        "verb": "climb",
+        "actor": "walker",
+        "target": {
+          "x": 2,
+          "z": 1.5
+        },
+        "frameHash": "2b8902581c5659b7"
+      },
+      "hash": "2b8902581c5659b7",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "0dfdc344f79053a7842ecb6680633f0783132760adbef270485953ead701969e",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "182781eced1dd9249d8199a660f73acfd9eb5c186fe422ec75bf123835f702fa",
+        "output": "9662c8eb1077ead2986b20ea610a0eb02d23f5f48c8af066936fb7c39733046d",
+        "builtAt": {
+          "tick": 0,
+          "hash": "2b8902581c5659b7"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 116,
+      "proposal": {
+        "kind": "intent",
+        "verb": "climb",
+        "actor": "walker",
+        "target": {
+          "x": 2,
+          "z": 1.5
+        },
+        "frameHash": "3e541323c16b3811"
+      },
+      "hash": "3e541323c16b3811",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "da08fe126f7d58daac661d7457821f4345ea8877688407d84a87e64886e4bf67",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "a2638ce692221e56ff2d8f06b6de3fb81ba448df1ca44ed87723c64ab14fe746",
+        "output": "88dd883174d94c4ae569060b65bfac1d9e45af0360082ef8256142b4f4de8a95",
+        "builtAt": {
+          "tick": 116,
+          "hash": "3e541323c16b3811"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 153,
+      "proposal": {
+        "kind": "intent",
+        "verb": "climb",
+        "actor": "walker",
+        "target": {
+          "x": 2,
+          "z": 1.5
+        },
+        "frameHash": "d8802fb55557eb3e"
+      },
+      "hash": "d8802fb55557eb3e",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "785e0373b58ad0d3cc834feb269b5af710b99b47d5ce947786afa3802e4a1e1f",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "9be09d98363215dbb201bf0e2d843d7c73028f9b4ad53252ad61f4405006bb59",
+        "output": "a64f19d368f7dae1b4471817568f9246bd2aa8f60af09d3b812502fcfc46fbd2",
+        "builtAt": {
+          "tick": 153,
+          "hash": "d8802fb55557eb3e"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 186,
+      "proposal": {
+        "kind": "intent",
+        "verb": "climb",
+        "actor": "walker",
+        "target": {
+          "x": 2,
+          "z": 1.55
+        },
+        "frameHash": "8272d0c68f613a07"
+      },
+      "hash": "8272d0c68f613a07",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "061e0d5873dba8e40d414775c9eee925a09fdd3040a72f4dfd02502dc75d8486",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "6d89fb5e23b2834c2c129869d6549984157041a0ee28658411717391fd41aa8a",
+        "output": "1cee1ba44a3735a878b3795702fb60f1c7f06cf4879633b9fb5cee7c388b0a67",
+        "builtAt": {
+          "tick": 186,
+          "hash": "8272d0c68f613a07"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 222,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2,
+          "z": 1.55
+        },
+        "frameHash": "ccc1ec2cce5afe6c"
+      },
+      "hash": "ccc1ec2cce5afe6c",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "5f43d1162411526252bba504b4a8fe4db0af62344b82465f4aed8cb15e12a474",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "a407a0e2af0110ada278e82da4c6980a9a6cd8bffd00abb81b5ee9949dc27b06",
+        "output": "ec6e17b3389125f515e92d32eed7195c311fa55796146555b86ed0a329c6a327",
+        "builtAt": {
+          "tick": 222,
+          "hash": "ccc1ec2cce5afe6c"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 223,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2,
+          "z": 1.5
+        },
+        "frameHash": "68a0918b50930959"
+      },
+      "hash": "68a0918b50930959",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "e17bc4fc5be8fe4854ee605862b40e68d86737c3c3d110e1aa5ebf813fc3fa2f",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "39f3aa3466fcfd2ac0c933ba7c21d4392fc097c0be64935c2ad219c981575cfc",
+        "output": "b52fbe6dd494b63d2b1093d2950e6e7058726f8cc54f634f21a3c398dfd21058",
+        "builtAt": {
+          "tick": 223,
+          "hash": "68a0918b50930959"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 226,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 2,
+          "z": 1.5
+        },
+        "frameHash": "ff1ad2a0a9c36980"
+      },
+      "hash": "ff1ad2a0a9c36980",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "3c34a3e0b65c375ef84e615f69126b3baef004af84c76bff4b0892a308b3b10a",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "6baf856685cb75105604264887cb7eaad2457f34e0ec8a98fbb8ac47807ab023",
+        "output": "388757a684f1295b955fd1d2590e8102f4721ee0e88f38a6508acd01314ab9ca",
+        "builtAt": {
+          "tick": 226,
+          "hash": "ff1ad2a0a9c36980"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    }
+  ],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 227,
+    "hash": "d303b462529ff96d"
+  },
+  "frames": [
+    "2b8902581c5659b7",
+    "88c8069806bbfe8d",
+    "d863e4639da35bab",
+    "292d9a043e460bd5",
+    "56f720df1eea1a48",
+    "9f449560566f630f",
+    "79a6d876f7cd5a0e",
+    "e3d76b7f5b593ab3",
+    "3eec5351adba9023",
+    "005e475aa77e5968",
+    "6478197198156194",
+    "2476cb7847606fe8",
+    "5dd57b82e31ad67b",
+    "5edb03a3c7279d40",
+    "04745f2023dbd95b",
+    "748ab1b69c526055",
+    "8c8722025f53fb92",
+    "c3c01ca7442df79a",
+    "147f3fdde655ca48",
+    "58177544ddbfa766",
+    "ab2bcef59beaa094",
+    "52de6ffb6bd46d32",
+    "6ff50468b0b9a510",
+    "ec2e4a7e69c97bbe",
+    "103dfdea524261aa",
+    "de480d6e221b7f7c",
+    "f7c951812e42c5e6",
+    "9eb1c7f8a20bbcca",
+    "03317d42ace9a0cf",
+    "2a36d64634f35dae",
+    "6651317870c34d40",
+    "3d0749474e120ac7",
+    "6ac52c2230afe7ef",
+    "a3641a9372acee78",
+    "a5719cb56c155564",
+    "ff79727df41d4d17",
+    "883ffa23047301b5",
+    "26fe8b0148fc0f25",
+    "a2dfeecb6d4f40cb",
+    "eb00f623813e2ada",
+    "ceb042f915cbd1dc",
+    "557b2a58ba044534",
+    "4bb13b121b18a15e",
+    "6805cd0bbdc260ee",
+    "6614253f163fedc0",
+    "94eac9f957674727",
+    "3fa759b50f5316a5",
+    "07b2ceed6d74053b",
+    "7c607acb29dae16b",
+    "118e98d5d595f07f",
+    "9e9808e00be3185d",
+    "78a56b99cef3cf37",
+    "effa635afceddd89",
+    "23112768bcf8aa78",
+    "f144a29d051f7cc6",
+    "5c4fe8d9fe7eeda3",
+    "91ee6f75976c3c25",
+    "ee1095b575e061d5",
+    "d4140f3a762fb1f1",
+    "726deef4284f6772",
+    "ef1ae4332e76db4c",
+    "80f5ba6344f463af",
+    "95ab7832f596eedb",
+    "20f9adf3d309bd0d",
+    "263ad81619b3b8c4",
+    "25a17a4a3d5f5f83",
+    "0d04abf96e982234",
+    "4145fb8a791240ec",
+    "471e8e0c63ddbf63",
+    "e7de2cb0911db8f1",
+    "cd6f3f39316f5a6b",
+    "59c2ab1fb4033455",
+    "13876c4b898646b3",
+    "0c1494c9e122be9e",
+    "b18158472ca1c650",
+    "8f15163bb6085021",
+    "938cb371bef5e48c",
+    "65473001af2c50c7",
+    "4de1bf7ca5a61738",
+    "f16fb94b0bd923b8",
+    "8b30a421fbb61085",
+    "4d7ec8b8926160c2",
+    "e2d31bd2f195a439",
+    "648c2ec42ba54a67",
+    "4b0efd189c94acb8",
+    "a81a628776a501bf",
+    "f4e32aedb292f1ac",
+    "802125f633ca0ed6",
+    "13fdd9498b2eb0e0",
+    "c9b9e0cddbd19d7b",
+    "cadc0cfb43d8c659",
+    "99f2ced81c0b5f6c",
+    "a560f9f10d37e739",
+    "e41773f05d4f1481",
+    "7b739e529376b820",
+    "29bced2f180c344e",
+    "7f2424684684c4e9",
+    "8bf433cb875b8f36",
+    "800943f3e36fb778",
+    "63223de26080a53d",
+    "4ab82a1ac8af849f",
+    "863ad647abe7deb9",
+    "b2dfc2ffcfe0e2b2",
+    "77279cfa2e1bdf20",
+    "f5ede274d54d161e",
+    "f932415d5b19a90a",
+    "3c1fe32936a7df5f",
+    "096ebb017192731e",
+    "20f42bd80e02e2f8",
+    "467bb516c1afdc93",
+    "9f0fff040b299c10",
+    "7379b81ede43a96c",
+    "4f9e3fad0576597a",
+    "dbd4132414d8720e",
+    "5d1578216ab9a3aa",
+    "2e91e6fbdfff5719",
+    "3e541323c16b3811",
+    "733b0653a2f5ba8d",
+    "5ea22846418b2d54",
+    "9cce4753ed58ae68",
+    "b3ba22b1109fdb73",
+    "cf5aa8b19c75825d",
+    "b5038a529e54c654",
+    "8fcd8fc9d34c61b8",
+    "d66085f5dbdffef3",
+    "7a941a3f1824b245",
+    "4d6f6ece9b70e974",
+    "c511c3dfcfe754b8",
+    "8b0e2b195661e933",
+    "a7b816ed4302a595",
+    "348b14ca1d948e0c",
+    "b10e2365a2c3e7f8",
+    "ae0a56edc9c23b7b",
+    "3714949bc7eb07fd",
+    "f229c596ed8c3704",
+    "9f3a383b53cd4ef8",
+    "7838ee716540c833",
+    "9e932b491791a47d",
+    "75a59822566c59b4",
+    "72d08d41daddf9f8",
+    "c165cba5554f6f33",
+    "95d711aaf4b2f6ac",
+    "4ad129e6706acc18",
+    "9a76f457a0be6971",
+    "d82a7645252b6c37",
+    "ce8ea257640ea758",
+    "444fc3024c629824",
+    "fa107d4e094c4b8d",
+    "3a6d0bb5e301c7db",
+    "6e4bc0f877877c88",
+    "ce09557d3e16e22e",
+    "d005f3f22519fc0f",
+    "9ed4310e36a44d32",
+    "d8802fb55557eb3e",
+    "4d91cfc9f41ba47f",
+    "7539ffa0f511b0dc",
+    "4cd60d3ae3f85708",
+    "4aee91614fd77a71",
+    "ca28b5c9d52b4133",
+    "687966b533eed15c",
+    "d88485be9f51a90c",
+    "1102fb487f606051",
+    "eded3be9756563c7",
+    "273ac8ee38665f74",
+    "10e648aeed7a4ab0",
+    "09a88b535f73efd1",
+    "0dd89e79084cd57b",
+    "3930a58bec98bb4c",
+    "1a91753a1af56f94",
+    "eef1d78ace09edd9",
+    "a231c8f919a7088f",
+    "384a69a494a79b24",
+    "81a748326025b708",
+    "153d0a6dabf9f9b9",
+    "836add39715d6123",
+    "d8a65cf1e7324da4",
+    "cbb1c48eb214180c",
+    "3ab9f22c45b8e5f9",
+    "1cad8dc9bf0ad437",
+    "7568567242ae998c",
+    "dc5550eeec7ab150",
+    "439690cf5f2b5ad9",
+    "6f2806f9b67feb8b",
+    "5365db57fe3930e4",
+    "9a4303f2035ed184",
+    "3eecc8be20ffccf1",
+    "8272d0c68f613a07",
+    "d0ca1bf0c17e4d7f",
+    "1c89eb288d193b12",
+    "b3d012157189ed4e",
+    "cbd8c227597203d1",
+    "828306440c9e0beb",
+    "b6074bc1a4583f3a",
+    "de16b0ad4a52fe8a",
+    "a1e2001aca5eddb9",
+    "82c074c83f49eda7",
+    "bfa2182e065f891e",
+    "4bf514e1c8ef9736",
+    "499953f53f2b325d",
+    "9dc01b8441c0daf3",
+    "9916cf0fc5c9cd06",
+    "6d1f7591b6ae299a",
+    "245bba50eaf30bfd",
+    "da4fe25032a7795f",
+    "216302dc626c55ba",
+    "3b611ec51232e6be",
+    "05c6ff83d0281821",
+    "247a796cdffd5ef3",
+    "e6496d9d58c830fa",
+    "e002c40dbd14de42",
+    "86b8d6ee84e6bed1",
+    "49278198afbea897",
+    "ea87b8de39b0db41",
+    "64db32d183344906",
+    "9ec7795d69e2abaa",
+    "ff2b73447e48a0c3",
+    "83b6336ed5052989",
+    "fccca5ed366ffe6a",
+    "cc3b570d3174ef4a",
+    "b2b9abb9b5d33581",
+    "4647c3638b8cda86",
+    "0b1fcde13ad0f187",
+    "ccc1ec2cce5afe6c",
+    "68a0918b50930959",
+    "ba3283d6853910c0",
+    "67e689db11e86c8a",
+    "ff1ad2a0a9c36980",
+    "d303b462529ff96d"
+  ]
+}

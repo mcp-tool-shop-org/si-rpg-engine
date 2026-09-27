@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-27 from commit 2f8e4dc.
+Mapped at 2026-09-27 from commit aa90e00.
 
 ## What this is
 
@@ -8,12 +8,10 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-26 (6abc0a5)
+## What changed since 2026-09-27 (2f8e4dc)
 
-- propose now imports bench, which closes the cycle propose → bench → propose.
-- packages/bench/mutants.test.js now starts at quanta run; it started at on.
-- packages/propose/record.test.js now starts at verify in head; it started at rekey.
-- 1 file added and 22 changed content, across 4 parts.
+- fixtures/t7c-runs/ is now written by tools/coordinator/t7c-runs.mjs.
+- 535 files added, across 1 part.
 
 ## What comes in
 
@@ -217,6 +215,7 @@ Every code part is imported by at least one test.
 ## Written but never read
 
 - **fixtures/law-runs/** is written by harness/law-runs.mjs and read by nothing else in this repository.
+- **fixtures/t7c-runs/** is written by tools/coordinator/t7c-runs.mjs and read by nothing else in this repository.
 
 ## Helpers that look duplicated
 
@@ -229,6 +228,7 @@ No two parts export a helper that looks alike.
 - **fixtures/law-runs/** is written by harness/law-runs.mjs.
 - **fixtures/solver.sha256** has a block written by solver/build.mjs when run without --check.
 - **fixtures/sweep/verdicts.json** has a block written by harness/corpus.mjs.
+- **fixtures/t7c-runs/** is written by tools/coordinator/t7c-runs.mjs.
 
 ## Hand-authored
 
@@ -244,7 +244,7 @@ Read those in order to follow one pull request end to end.
 
 - 18 import sites could not be resolved.
 - 3 writes and 9 reads use paths built at run time and are not named here.
-- 2 writes go to places this repository does not track, so they are not listed as generated.
+- 1 write goes to places this repository does not track, so it is not listed as generated.
 - 51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.
 - 42 commands are built at run time and not followed, 36 of them in tests.
 - Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window.

@@ -1,0 +1,1170 @@
+{
+  "session": "model-session",
+  "role": "instrument-copy",
+  "catalog": "E:\\AI\\si-dispatch-fixes\\fixtures\\roles",
+  "instance": "walker",
+  "worldFrom": "fixtures/bench/room.json",
+  "lateQuanta": 0,
+  "seed": 5,
+  "law": "product",
+  "world": {
+    "bodies": [
+      {
+        "id": "walker",
+        "x": 0.75,
+        "y": 0.26,
+        "z": 0.75,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      },
+      {
+        "id": "crate",
+        "x": 2.75,
+        "y": 0.26,
+        "z": 0.5,
+        "vx": 0,
+        "vy": 0,
+        "vz": 0,
+        "hx": 0.25,
+        "hy": 0.25,
+        "hz": 0.25
+      }
+    ],
+    "colliders": [
+      {
+        "id": "floor",
+        "minX": -1,
+        "maxX": 4,
+        "minY": -1,
+        "maxY": 0,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-west",
+        "minX": -1,
+        "maxX": 0,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-east",
+        "minX": 3,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-south",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": -1,
+        "maxZ": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "wall-north",
+        "minX": -1,
+        "maxX": 4,
+        "minY": 0,
+        "maxY": 3,
+        "minZ": 2,
+        "maxZ": 3,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "ledge",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0,
+        "maxY": 0.35,
+        "minZ": 1.25,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      },
+      {
+        "id": "step",
+        "minX": 1.25,
+        "maxX": 2,
+        "minY": 0,
+        "maxY": 0.25,
+        "minZ": 1.5,
+        "maxZ": 2,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1
+      }
+    ],
+    "zones": [
+      {
+        "id": "yard",
+        "minX": 0,
+        "maxX": 1.25,
+        "minY": 0,
+        "maxY": 2,
+        "minZ": 0,
+        "maxZ": 2
+      },
+      {
+        "id": "shelf",
+        "minX": 2,
+        "maxX": 3,
+        "minY": 0.35,
+        "maxY": 2,
+        "minZ": 1.25,
+        "maxZ": 2
+      }
+    ],
+    "name": "bench-room"
+  },
+  "calls": [
+    {
+      "call": 0,
+      "record": "0f9cf083e87725fdb044451388d9b6cc92ffcba8e7ed8393db218d857ad345d7",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 1,
+      "record": "40f06de51b9ec848decde599d6b136e74402657800457a4b6eb0e283b6cafb47",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 2,
+      "record": "347b7432dec802f6b2dfe649021fc4401981c910c51f6bd2f950112f33071fe3",
+      "builtAt": {
+        "tick": 0,
+        "hash": "2b8902581c5659b7"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 0
+    },
+    {
+      "call": 3,
+      "record": "30f5b185226f43f9aab8e54945c493d54d11f8f904352c1c552ec67b73415789",
+      "builtAt": {
+        "tick": 1,
+        "hash": "fac204a6a78c02ab"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 1
+    },
+    {
+      "call": 4,
+      "record": "2ffc4b89183d1a37be65489124e4d444686f45157ed80845b376aa1556f2931a",
+      "builtAt": {
+        "tick": 2,
+        "hash": "06d41a91d7336bba"
+      },
+      "read": "ok",
+      "reason": null,
+      "admitted": true,
+      "at": 2
+    },
+    {
+      "call": 5,
+      "record": "acbc04fd2b7b6821010e360276bf55e014bc74b5322fcec864a24acc3b321b82",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 6,
+      "record": "d9e4c9ad27c260909528273e20ab3263a986560ff9e6f8937984cc764f504abd",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 7,
+      "record": "30f56ae81f38386009be19dae9770ffe43ef091158714e9a2c3837ea6caaa783",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 8,
+      "record": "7ef73097e2e9cc6d93e281ffa996458dae263e083f94c4d1b0deb66ab18fd055",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 9,
+      "record": "ecc276dea2ac13c81a138621b281f5e9cf61fd13cc4083f5c21f4c5c22760974",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 10,
+      "record": "b9504a85305cf10b94e6139500f28a6ee18514e5916c9445068274bb60ee5e6b",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 11,
+      "record": "3360cf2c4401f9f8a858f9c5825b629a1760f7d454f32a674fe960f5d3a0519b",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 12,
+      "record": "3ae385c2619ceede99e6731fe83a6b9e25df92e62a3e2f2099bed3e51926016f",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 13,
+      "record": "87c102aa0b7af8f0e26b157213ad07c1d01f2787878b1f8972bad04cb626cc95",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 14,
+      "record": "c5ca9239d267a20ae12ed3e3543f16914819988a1e607a249c051fd1021a05d5",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 15,
+      "record": "9d232bb9e43c3632a9f296ab4fff54b8c068642bc3de4df1b8e0e68a0c7b98e6",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 16,
+      "record": "dda236534bcc78d28aea53c164d8d60b50a8386724c6e80d5e4a2428696e5538",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 17,
+      "record": "e11e68d68ec16fbbc3795360d0221b2827f45b251da38272ee5385703f479c80",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 18,
+      "record": "f053b583bff5ee63db28eabb4aaf926dc469a55eca8e2e005079e382e0b572d2",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 19,
+      "record": "d7ef41063fe320e3df93d88dd2abc05b5250a9295999af2e4c142a9afb212e36",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 20,
+      "record": "1da086b3efd597cc21c1dfa83aafd79f631af539e44ce034627b04ffd4479de4",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 21,
+      "record": "fee7326aa68bec00964bc6b364e4d7c5fc3a0838562428e7805284c55235cc03",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 22,
+      "record": "986bc08fe3cd920cf9858ed87f6b0660bea6cde8c3358b09c01cd7f698c4f4fd",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 23,
+      "record": "2e341111461a15934f86d5fd6547bfa25a14205e591c5a81b7e5cebcf7db18f1",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 24,
+      "record": "89fffc90e5b4926d74af59aac1bc2e2914e96f275184fe97e4e6ab07befb74fd",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 25,
+      "record": "ccfad07531c278eb4ef1810b60595ffa7e1b08a685745a9e0d82a16f54f582c7",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 26,
+      "record": "7be9ebd5fd769fe52f193bef1a3ab46d2537fbb805d4e9d66e6747ae3718ca8a",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 27,
+      "record": "1b51f8650d0611a74393dec47b2155150ce46a9b29825d2c97f8ebbaf9982ff5",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 28,
+      "record": "52683beed59cf6161aa80a2af5f9924e27131be52bec903b27054c2a689e9930",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 29,
+      "record": "10dbd85517bf1ac117bbe59612dc3a87f49bfd1bf617483b5f20734f1867dcce",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 30,
+      "record": "5153d224ea16176553f3710e11bd3130c7125cf3005ef4fcd8f8a20e1c1b90d9",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 31,
+      "record": "f255852c6d8f72e14053c0bd6990b1a01ae7aaeef7f99a5842211c0e86eacda3",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 32,
+      "record": "3acf18cf83876acbe2ee9e9f85e4f49639cab88bd2800560842b113c1d5dc121",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 33,
+      "record": "ac5493f2c5619ade66fc7742ffb4d346921151d91b1c8805dc90d1b9573dd635",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 34,
+      "record": "cae1d815d41307e97eb29b69f0ccec3f5eab33755645a23798b90aef19976dfe",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 35,
+      "record": "65f96744ec35c58dab602340c2169cfdd9a7dbc21f1ea29942c72ecb9defa8b7",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 36,
+      "record": "aa701b856d9cda40614bb3d9eb8a5a97f6be09f0be35189e66beea654320ea9f",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 37,
+      "record": "df2a1f873d3805e896e1d8849ba7616991e5bfcd4841ab461b805b5709459af4",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 38,
+      "record": "dd033d6cf1fab82edb306af55cb111a93c03c715ab5950512238d3902f66457e",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 39,
+      "record": "da0ac4dc2f1f9584bf23f7c4f640e535866ad978b825c52db4dfa777afc0c76c",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 40,
+      "record": "240eaac8038f8fd2ccc08c6217642095daab9f1827011458247e6afe5cd301fd",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 41,
+      "record": "328abea47ef1f186bcd3f581dcc3b0d7cdfb88aa1850a58f2c7d2cd22e06aba3",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 42,
+      "record": "f06d5b3e2190240d6c982b3cb78f80f8fb3bbc57b22f96024a8f216854c8152e",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 43,
+      "record": "9d3eb9494e428b01b785e16a669840ec8b361de6d4c12fd9d49650eb0c52064b",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 44,
+      "record": "6cced5ccd0b32ed57071f1500e38017e29740431170fda0e13d5e374ce1c4f98",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 45,
+      "record": "318bfa6d081967de49eb970935f02d4d6f9b9b7d08c89972df52048f0cd88522",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 46,
+      "record": "8cee9e9ba3f171177857753584c6d8a36d8c438b4f2d8363ad49ba49ca186197",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 47,
+      "record": "085f0613ef28ac3256f84862c97149661f275f47b229b3af3de8d9643cdc01ac",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 48,
+      "record": "b42d1da91c31fa9cb4ca78e5732d007fab0b6d23dad7233b7ab1296b9aa113cd",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 49,
+      "record": "10ac83a39c61c1994e308910c0ffe8b692adcc195323a07919f9bd1283ec3743",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 50,
+      "record": "c5f3eacb9780a03f0dcd3631f056fedd5f93a80d672a6410594b2fdc28165d4b",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 51,
+      "record": "26edfc9ea66b4c21384a123a765d75423b7916fb2de5ecebc6e5561c0764afe1",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 52,
+      "record": "8b02621e6b647f5ea71501cacf9f6b6b8d7062237c03a6da9c0d423e39084ff3",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 53,
+      "record": "4d29d6739b2875f3dbb8d9352b4ab32a2303d48effa247e2c4c93e752c22a5c5",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 54,
+      "record": "7165464985d6d46936d4e49f2e6075bff9c9bcfaa1517d08e658b378a139b128",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 55,
+      "record": "be1a3db8655f2f1d24bab4049e7d972a77ba899c6c1c5ce6c0abd92bcb5cfd44",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 56,
+      "record": "b519378a6580f467a1fb9f16da42462a21957220be419ab5e7f3145247b2b688",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 57,
+      "record": "709f5fc0d9d3dc5cec9c628d01e62fccc6742c161a5649a632913bac83a86c9a",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 58,
+      "record": "9267dfd52cc549702d238ffdb4d125fb165c7cab7b9b87d701731e5027694406",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 59,
+      "record": "631c7261c21e1c7610c01fc8b4709a6fba62ad3738a4ec06f023e386d19b0713",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 60,
+      "record": "c8029a2a48fd08eaeb983fa78970dea0ddfdc52145ac50d99d402bc46d89d29a",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 61,
+      "record": "727ba32480067a7b4fb3fb311a3b487f6630766018330b54b1af45ce0f9b83b4",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 62,
+      "record": "fbebd32477fd737e3c34933e2666fcf5fa5efa2af5aacb9b40162c5ba06ea6b2",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    },
+    {
+      "call": 63,
+      "record": "850b298d93ede261d31f28e72004565bf5a44022ffe637928904a3f187e573bd",
+      "builtAt": {
+        "tick": 3,
+        "hash": "5704179f1d147bc7"
+      },
+      "read": "ok",
+      "reason": "target is beyond move range 0.0001",
+      "admitted": false,
+      "at": null
+    }
+  ],
+  "refused": null,
+  "log": [
+    {
+      "tick": 0,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 0.75001,
+          "z": 0.75
+        },
+        "frameHash": "2b8902581c5659b7"
+      },
+      "hash": "2b8902581c5659b7",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "915a686447bbf5037221a8e750bb6fb6a83bacd82203277726d2c4b9a4f80e3d",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "347b7432dec802f6b2dfe649021fc4401981c910c51f6bd2f950112f33071fe3",
+        "output": "cfe2b71602ec3d860c411596c62c7fa5426ed7fdf8351812bd5c37368083eb88",
+        "builtAt": {
+          "tick": 0,
+          "hash": "2b8902581c5659b7"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 1,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 0.765625,
+          "z": 0.75
+        },
+        "frameHash": "fac204a6a78c02ab"
+      },
+      "hash": "fac204a6a78c02ab",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "eef279b841b77e9ddf78813219e5ee0d45ada6f42c68305ee8368241b01212b2",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "30f5b185226f43f9aab8e54945c493d54d11f8f904352c1c552ec67b73415789",
+        "output": "7f076a24178cca83adb4171b6a5dd3de32112ddfa939143729e4fbec954fe822",
+        "builtAt": {
+          "tick": 1,
+          "hash": "fac204a6a78c02ab"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    },
+    {
+      "tick": 2,
+      "proposal": {
+        "kind": "intent",
+        "verb": "move",
+        "actor": "walker",
+        "target": {
+          "x": 0.765625,
+          "z": 0.750001
+        },
+        "frameHash": "06d41a91d7336bba"
+      },
+      "hash": "06d41a91d7336bba",
+      "provenance": {
+        "role": "instrument-copy",
+        "instance": "walker",
+        "manifest": "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a",
+        "model": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "prompt": "eace2745b82b841a6c77d61084f67b9dc6209b096cb019afd014e2941bd8dfca",
+        "schema": "90170ef4b0d4973ddc415245236570067352e4f238683d5c998876be8eba6fbc",
+        "record": "2ffc4b89183d1a37be65489124e4d444686f45157ed80845b376aa1556f2931a",
+        "output": "c6d25c5ffcc3c1bc7d4814a3b598a8dc353440b3a34b73012beecdfbafe6d221",
+        "builtAt": {
+          "tick": 2,
+          "hash": "06d41a91d7336bba"
+        },
+        "inputs": [
+          {
+            "source": "dispatch",
+            "trust": "trusted"
+          },
+          {
+            "source": "diff",
+            "trust": "untrusted"
+          },
+          {
+            "source": "access",
+            "trust": "trusted"
+          },
+          {
+            "source": "catalog",
+            "trust": "trusted"
+          },
+          {
+            "source": "world",
+            "trust": "trusted"
+          },
+          {
+            "source": "feedback",
+            "trust": "trusted"
+          }
+        ]
+      }
+    }
+  ],
+  "manifests": {
+    "d005d5c1d432008316bd210cb08995802f9831044c5a72a66917e5712cd9285a": {
+      "role": "instrument-copy",
+      "purpose": "Proposes intents aimed at a change, so the engine can judge the change by its own hashes, invariants, and outcome tests.",
+      "status": "thawed",
+      "decision": {
+        "by": "the coordinator",
+        "on": "2026-09-26"
+      },
+      "adversarialRun": "fixtures/sessions/instrument-copy",
+      "world": "scratch",
+      "inputs": [
+        {
+          "name": "dispatch",
+          "source": "dispatch"
+        },
+        {
+          "name": "diff",
+          "source": "diff"
+        },
+        {
+          "name": "access",
+          "source": "access"
+        },
+        {
+          "name": "catalog",
+          "source": "catalog"
+        },
+        {
+          "name": "world",
+          "source": "world"
+        },
+        {
+          "name": "feedback",
+          "source": "feedback"
+        }
+      ],
+      "outputs": {
+        "classes": [
+          "intent"
+        ],
+        "verbs": "catalog",
+        "actors": "world"
+      },
+      "model": {
+        "name": "qwen2.5:7b",
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "quantization": "Q4_K_M",
+        "options": {
+          "seed": 1,
+          "temperature": 0,
+          "top_k": 1,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "stop": []
+        }
+      },
+      "prompt": {
+        "template": "test-instrument.txt",
+        "sha256": "a91a9595e51d3071676c7a0e2597a0e72d1f6f559f877c036b63ed1fe50d656d"
+      },
+      "schema": "role-proposal",
+      "budget": {
+        "callsPerSession": 64,
+        "outputTokens": 256,
+        "secondsPerCall": 60,
+        "freeSpanChars": 400,
+        "maxProposalsPerWindow": 4,
+        "windowQuanta": 64,
+        "maxAgeQuanta": 640
+      }
+    }
+  },
+  "end": {
+    "tick": 3,
+    "hash": "5704179f1d147bc7"
+  },
+  "frames": [
+    "2b8902581c5659b7",
+    "fac204a6a78c02ab",
+    "06d41a91d7336bba",
+    "5704179f1d147bc7"
+  ]
+}

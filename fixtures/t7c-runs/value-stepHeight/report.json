@@ -1,0 +1,1017 @@
+{
+ "bench": 1,
+ "seed": 1,
+ "budgets": {
+  "sweep": {
+   "quanta": 6000,
+   "restores": 60
+  },
+  "ladder": {
+   "quanta": 12000,
+   "restores": 120
+  }
+ },
+ "grammar": {
+  "share": 0.5,
+  "pitch": 0.5,
+  "steps": 3
+ },
+ "refused": null,
+ "anchors": [
+  {
+   "id": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10",
+   "kind": "top-level",
+   "file": "packages/tick/predicates.js",
+   "name": "STEP_HEIGHT",
+   "lines": [
+    [
+     10,
+     10
+    ]
+   ],
+   "side": "head",
+   "approximate": true,
+   "observable": "observable",
+   "why": "the functions that name STEP_HEIGHT",
+   "executable": [
+    10
+   ],
+   "noExecutableChange": false,
+   "runsAtLoad": false,
+   "removed": false,
+   "identifiers": [
+    "STEP_HEIGHT"
+   ],
+   "verb": null,
+   "hazard": null,
+   "reachedBy": [
+    "restore",
+    "window"
+   ],
+   "entries": 48,
+   "linesReached": [],
+   "reached": true,
+   "verdict": "reached",
+   "differences": 2,
+   "wording": "no trace difference"
+  }
+ ],
+ "notAimed": [],
+ "worldsDiffer": [],
+ "binaries": {
+  "mode": "solver/ has no diff: every tree runs the head's product binary file, copied byte for byte"
+ },
+ "coverage": {
+  "made": false,
+  "why": "no law anchor",
+  "productScene": "",
+  "canary": null
+ },
+ "suite": {
+  "ran": false,
+  "differences": []
+ },
+ "worlds": [
+  {
+   "world": "fixtures/bench/room.json",
+   "sweep": {
+    "cells": 22,
+    "tried": 189,
+    "admitted": 57,
+    "refused": 132,
+    "quanta": 6039,
+    "restores": 58,
+    "complete": false,
+    "actionSet": "move to the centres of the 8 neighbouring cells; push at each body not carried; climb 1, 2, 3 cells out in 8 directions; pick-up at each body not carried; drop, while carrying, 1, 2, 3 cells out in 8 directions; use not swept; one actor at a time, the others taking no action, from settled states only",
+    "findings": []
+   },
+   "grammar": {
+    "verbs": [
+     "move",
+     "push",
+     "climb",
+     "pick-up",
+     "drop",
+     "use"
+    ],
+    "reachedVerbs": [
+     "climb"
+    ],
+    "otherVerbs": [
+     "move",
+     "push",
+     "pick-up",
+     "drop",
+     "use"
+    ]
+   }
+  }
+ ],
+ "proposers": {
+  "sweep": {
+   "proposed": 189,
+   "refused": 132,
+   "refusals": {
+    "move steps it": 116,
+    "path crosses collider wall-west": 6,
+    "path crosses collider step": 5,
+    "nothing is under the point": 3,
+    "path crosses collider ledge": 2
+   },
+   "admitted": 0,
+   "ran": 0,
+   "unrun": 0,
+   "groups": {
+    "fixtures/bench/room.json group 1": 11,
+    "fixtures/bench/room.json group 2": 46
+   },
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 0,
+    "differ": 0,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [],
+   "observable": {},
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "grammar": {
+   "proposed": 19,
+   "refused": 11,
+   "refusals": {
+    "move steps it": 3,
+    "path crosses collider ledge": 2,
+    "actor is already carrying": 1,
+    "nothing is under the point": 1,
+    "path crosses collider wall-east": 1,
+    "path crosses collider wall-south": 1,
+    "rise is past maxRise": 1,
+    "target is beyond climb range 3": 1
+   },
+   "admitted": 8,
+   "ran": 19,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 7,
+    "differ": 3,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [
+    "top-level:packages/tick/predicates.js:STEP_HEIGHT:10"
+   ],
+   "observable": {
+    "top-level:packages/tick/predicates.js:STEP_HEIGHT:10": "observable"
+   },
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [
+    {
+     "id": "c70",
+     "world": "fixtures/bench/room.json",
+     "summary": "admission differs at tick 36: climb refused on the base",
+     "block": "first difference at tick 36: admission differs\nintent 0: climb walker {\"x\":1.75,\"z\":1.75}\n  head admitted\n  base move steps it\n",
+     "bundle": "bundles/c70.bundle.json"
+    },
+    {
+     "id": "c71",
+     "world": "fixtures/bench/room.json",
+     "summary": "admission differs at tick 36: climb refused on the base",
+     "block": "first difference at tick 36: admission differs\nintent 0: climb walker {\"x\":1.75,\"z\":1.75}\n  head admitted\n  base move steps it\n",
+     "bundle": "bundles/c71.bundle.json"
+    },
+    {
+     "id": "c72",
+     "world": "fixtures/bench/room.json",
+     "summary": "admission differs at tick 36: climb refused on the base",
+     "block": "first difference at tick 36: admission differs\nintent 0: climb walker {\"x\":1.75,\"z\":1.75}\n  head admitted\n  base move steps it\n",
+     "bundle": "bundles/c72.bundle.json"
+    }
+   ],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "model": {
+   "proposed": 64,
+   "refused": 57,
+   "refusals": {
+    "over budget: 4 admissions in the last 64 quanta, and role instrument-copy allows 4": 42,
+    "move steps it": 15
+   },
+   "admitted": 7,
+   "ran": 7,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 4,
+    "differ": 0,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [
+    "top-level:packages/tick/predicates.js:STEP_HEIGHT:10"
+   ],
+   "observable": {
+    "top-level:packages/tick/predicates.js:STEP_HEIGHT:10": "observable"
+   },
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  },
+  "control": {
+   "proposed": 0,
+   "refused": 0,
+   "refusals": {},
+   "admitted": 0,
+   "ran": 0,
+   "unrun": 0,
+   "groups": {},
+   "rungs": {
+    "head0": 0,
+    "base0": 0,
+    "reached": 0,
+    "differ": 0,
+    "fail": 0,
+    "catches": 0
+   },
+   "anchorsReached": [],
+   "observable": {},
+   "mutants": {},
+   "linesReached": {},
+   "floods": [],
+   "differences": [],
+   "catches": [],
+   "lateGain": [
+    {
+     "n": 8,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 16,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 32,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 64,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    },
+    {
+     "n": 128,
+     "stalledAt": null,
+     "admittedBefore": null,
+     "lateGain": null
+    }
+   ]
+  }
+ },
+ "controls": [],
+ "findings": {
+  "head": [],
+  "base": []
+ },
+ "spent": {
+  "quanta": 17305,
+  "restores": 34
+ },
+ "mutants": {
+  "note": "The mutants measure the candidates' sensitivity at the change, not the aim, which is the access map's to measure.",
+  "cap": 64,
+  "list": [
+   {
+    "id": "m1",
+    "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10",
+    "file": "packages/tick/predicates.js",
+    "line": 10,
+    "operator": "numeric constant",
+    "detail": "0.2 to 0.20000000000000004, one unit in its last place up",
+    "kind": "js",
+    "marked": false,
+    "verdict": "survived",
+    "why": "a source reached the line it was made from, and nothing separated them",
+    "separatedBy": null,
+    "build": "the head's product build"
+   },
+   {
+    "id": "m2",
+    "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10",
+    "file": "packages/tick/predicates.js",
+    "line": 10,
+    "operator": "numeric constant",
+    "detail": "0.2 to 0.19999999999999998, one unit in its last place down",
+    "kind": "js",
+    "marked": false,
+    "verdict": "survived",
+    "why": "a source reached the line it was made from, and nothing separated them",
+    "separatedBy": null,
+    "build": "the head's product build"
+   },
+   {
+    "id": "m3",
+    "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10",
+    "file": "packages/tick/predicates.js",
+    "line": 10,
+    "operator": "numeric constant",
+    "detail": "0.2 to 0.22000000000000003, times 1.1",
+    "kind": "js",
+    "marked": false,
+    "verdict": "survived",
+    "why": "a source reached the line it was made from, and nothing separated them",
+    "separatedBy": null,
+    "build": "the head's product build"
+   },
+   {
+    "id": "m4",
+    "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10",
+    "file": "packages/tick/predicates.js",
+    "line": 10,
+    "operator": "numeric constant",
+    "detail": "0.2 to 0.18000000000000002, times 0.9",
+    "kind": "js",
+    "marked": false,
+    "verdict": "survived",
+    "why": "a source reached the line it was made from, and nothing separated them",
+    "separatedBy": null,
+    "build": "the head's product build"
+   }
+  ],
+  "leftOut": [],
+  "byVerdict": {
+   "survived": [
+    {
+     "id": "m1",
+     "operator": "numeric constant",
+     "file": "packages/tick/predicates.js",
+     "line": 10,
+     "detail": "0.2 to 0.20000000000000004, one unit in its last place up",
+     "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10"
+    },
+    {
+     "id": "m2",
+     "operator": "numeric constant",
+     "file": "packages/tick/predicates.js",
+     "line": 10,
+     "detail": "0.2 to 0.19999999999999998, one unit in its last place down",
+     "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10"
+    },
+    {
+     "id": "m3",
+     "operator": "numeric constant",
+     "file": "packages/tick/predicates.js",
+     "line": 10,
+     "detail": "0.2 to 0.22000000000000003, times 1.1",
+     "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10"
+    },
+    {
+     "id": "m4",
+     "operator": "numeric constant",
+     "file": "packages/tick/predicates.js",
+     "line": 10,
+     "detail": "0.2 to 0.18000000000000002, times 0.9",
+     "anchor": "top-level:packages/tick/predicates.js:STEP_HEIGHT:10"
+    }
+   ]
+  },
+  "none": []
+ },
+ "notMeasured": {
+  "notAimed": [],
+  "notSeenApproximate": [],
+  "notReached": [],
+  "runsAtLoad": [],
+  "noExecutableChange": [],
+  "removed": [],
+  "unrun": [],
+  "mutantsNotReached": [],
+  "mutantsNotScored": [],
+  "mutantsNone": []
+ },
+ "arms": [
+  {
+   "world": "fixtures/bench/room.json",
+   "start": {
+    "index": 19,
+    "candidate": null
+   },
+   "M": {
+    "calls": 64,
+    "quanta": 4837,
+    "restores": 7,
+    "findings": {
+     "lines": [],
+     "differences": [],
+     "mutants": []
+    }
+   },
+   "G": {
+    "quanta": 2905,
+    "restores": 8,
+    "extended": true,
+    "findings": {
+     "lines": [],
+     "differences": [],
+     "mutants": []
+    }
+   }
+  }
+ ],
+ "environment": {
+  "trees": {
+   "head": {
+    "path": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\stepHeight-head",
+    "commit": "df24f4d82b6e60c31abb66d98db0ac5f0d270b2d",
+    "digest": "7e945ddfa08417a523b43c1f6f80c77721da3e50996c013b5ee2d81486981fcc"
+   },
+   "base": {
+    "path": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\stepHeight-base",
+    "commit": "df24f4d82b6e60c31abb66d98db0ac5f0d270b2d",
+    "digest": "cd76bfb997b5326c5c82b81960251de015fbddd395eeb678109a181585d19c79"
+   }
+  },
+  "binaries": {
+   "head": "9ff6d183d8c76ead2a3b37ab59df3bf1f7336f654d854d6bf186e47e98b46f3e",
+   "base": "9ff6d183d8c76ead2a3b37ab59df3bf1f7336f654d854d6bf186e47e98b46f3e",
+   "files": {
+    "head": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "base": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf"
+   },
+   "jsMutants": {
+    "m1": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "m2": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "m3": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf",
+    "m4": "625cd59cd718b654b637a1084a8bb25ee045889e144455ac3a3c5057621d1faf"
+   }
+  },
+  "host": {
+   "platform": "win32",
+   "arch": "x64",
+   "cpus": 24,
+   "node": "v22.22.3"
+  },
+  "times": {
+   "anchors": 2140,
+   "product builds": 391,
+   "processes": 582,
+   "sweep fixtures/bench/room.json": 1895,
+   "sweep ladder fixtures/bench/room.json": 1900,
+   "grammar ladder fixtures/bench/room.json": 4052,
+   "model fixtures/bench/room.json": 39916,
+   "controls": 0,
+   "mutants": 10379,
+   "total": 61255
+  },
+  "paths": {
+   "out": "E:\\AI\\si-verify\\t7c-runs\\value-stepHeight",
+   "work": "E:\\AI\\si-verify\\t7c-runs\\value-stepHeight\\work"
+  },
+  "processes": {
+   "head": {
+    "pid": 44452,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\stepHeight-head",
+    "build": "product",
+    "calls": 31,
+    "ms": 5348,
+    "quanta": 20210
+   },
+   "base": {
+    "pid": 3772,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\stepHeight-base",
+    "build": "product",
+    "calls": 31,
+    "ms": 2140,
+    "quanta": 20780
+   },
+   "sweep": {
+    "pid": 34676,
+    "tree": "<home>\\AppData\\Local\\Temp\\si-rpg-bench-t7c-Z6wEJ7\\stepHeight-head",
+    "build": "product"
+   }
+  },
+  "model": {
+   "timeouts": 0,
+   "calls": [
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 0,
+     "ms": 882.1055999999999,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 1,
+     "ms": 557.4060999999992,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 2,
+     "ms": 514.8850999999995,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 3,
+     "ms": 720.2343000000001,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 4,
+     "ms": 505.7641000000003,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 5,
+     "ms": 394.9899000000005,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 6,
+     "ms": 482.3172000000013,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 7,
+     "ms": 605.9920000000002,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 8,
+     "ms": 777.4922000000006,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 9,
+     "ms": 495.6327000000001,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 10,
+     "ms": 565.1923999999999,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 11,
+     "ms": 501.91449999999895,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 12,
+     "ms": 621.2207000000017,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 13,
+     "ms": 607.949099999998,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 14,
+     "ms": 550.497800000001,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 15,
+     "ms": 514.9923999999992,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 16,
+     "ms": 577.6929999999993,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 17,
+     "ms": 575.1706000000013,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 18,
+     "ms": 591.5446000000011,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 19,
+     "ms": 584.7687000000005,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 20,
+     "ms": 537.0514000000003,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 21,
+     "ms": 495.5115000000005,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 22,
+     "ms": 608.5427999999993,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 23,
+     "ms": 465.08710000000065,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 24,
+     "ms": 484.377800000002,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 25,
+     "ms": 558.5561999999991,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 26,
+     "ms": 495.7474000000002,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 27,
+     "ms": 536.1668000000027,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 28,
+     "ms": 593.112299999997,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 29,
+     "ms": 509.90789999999834,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 30,
+     "ms": 500.8634999999995,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 31,
+     "ms": 504.34200000000055,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 32,
+     "ms": 485.490600000001,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 33,
+     "ms": 476.78640000000087,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 34,
+     "ms": 580.9061000000002,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 35,
+     "ms": 616.8575999999994,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 36,
+     "ms": 495.8035000000018,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 37,
+     "ms": 465.1974000000009,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 38,
+     "ms": 470.6909000000014,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 39,
+     "ms": 564.417599999997,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 40,
+     "ms": 414.12749999999505,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 41,
+     "ms": 555.4565999999977,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 42,
+     "ms": 359.6484999999957,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 43,
+     "ms": 455.95000000000437,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 44,
+     "ms": 455.49810000000434,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 45,
+     "ms": 464.24489999999787,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 46,
+     "ms": 448.0673999999999,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 47,
+     "ms": 446.83550000000105,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 48,
+     "ms": 438.06129999999393,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 49,
+     "ms": 430.0587999999989,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 50,
+     "ms": 441.00309999999445,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 51,
+     "ms": 448.92959999999584,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 52,
+     "ms": 442.27100000000064,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 53,
+     "ms": 448.93419999999605,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 54,
+     "ms": 447.0601000000024,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 55,
+     "ms": 446.5448000000033,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 56,
+     "ms": 435.5561000000016,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 57,
+     "ms": 445.3523000000059,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 58,
+     "ms": 456.3824999999997,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 59,
+     "ms": 442.4259999999995,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 60,
+     "ms": 434.39820000000327,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 61,
+     "ms": 436.4714000000022,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 62,
+     "ms": 443.9835000000021,
+     "timedOut": false
+    },
+    {
+     "world": "fixtures/bench/room.json",
+     "call": 63,
+     "ms": 479.9270000000033,
+     "timedOut": false
+    }
+   ]
+  },
+  "mutants": {
+   "m1": {
+    "pid": 39004,
+    "ms": 1598
+   },
+   "m2": {
+    "pid": 5796,
+    "ms": 1604
+   },
+   "m3": {
+    "pid": 10312,
+    "ms": 1579
+   },
+   "m4": {
+    "pid": 43580,
+    "ms": 1570
+   }
+  }
+ }
+}

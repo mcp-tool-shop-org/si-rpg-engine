@@ -2055,6 +2055,74 @@
           "path": "fixtures/sessions/instrument-copy/actor-ghost/dispatch.txt"
         },
         {
+          "hash": "36f21850291db40218e05657b2877e753729d31c9ef543748141526476434b47",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/0ba03b0ada6d2cf33981684a6339946bebb06dfc62c71180992f54b953ddc46b.json"
+        },
+        {
+          "hash": "0789b34adecff9e9f746443d69f5ce814d26dc26ee50a643ea06b54016101f57",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/27fde4fa8fa1975fc2fbe24ed7e9c255e0eb6fb66c9b9e36b37ee1014a00bdb8.json"
+        },
+        {
+          "hash": "43758408b48d896aba05680d7b6d21de5ac6e8897036f012e9d01b3a7776019e",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/3a213e654915e8e7c5d05b47218ba82519feec8beb7d123225f99312c0d2dc18.json"
+        },
+        {
+          "hash": "d14e674fae91db4459df896d48bbca8779ec7aa6f75f878dca1ac9f4da13fad2",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/3e46e27eedd295801a0fa2426918b804efa45d826ee2228ab5d26f32a754c62f.json"
+        },
+        {
+          "hash": "2d28b09f56dd257f54317ce5c87932bc79bbdf5b06b17425e805168932e6606c",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/67073f1a252cbf1c8d1e96a7d6889ede8272bd0b88d40863f1b26387826e6d21.json"
+        },
+        {
+          "hash": "225e5dbe2b59ae0d46617f7e9502664685492779dd63de52fc3d5baeadb812ce",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/695aa12917e699a0806dce5f38e36ff56328300a6b2554bd46bebce4d6510251.json"
+        },
+        {
+          "hash": "f79ad5c110ab00d341d70c9913e57290d7a040c510c8728f56a2d3b22f840fa2",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/7d51711514a9f382bcf5575bfd49be4277b9b0fc9294bc443b1b30704360bd67.json"
+        },
+        {
+          "hash": "b7aa8f467e2a1f3cbfdc0455e3f8e2c71ae08a3957d6232eb0cb025f7285e863",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/93157a1ddbbccdb7c70d7ded593147c56f9b4487094b6f33e2d9b5544121f0c9.json"
+        },
+        {
+          "hash": "1d59bc3d8e274759e02bb64b50665f4178c5e035ca74462e44583b86ab708137",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/bb14b037fc55eb365127295f354962e0a6fd2dfb32fbb01418ae323d363ff3ad.json"
+        },
+        {
+          "hash": "72a0e12ef9355a9ccd8a1ec32eb62de8d6f3bc53cd7bb8731c138fbfd7eaa165",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/c43ebe5fffb27c5dd2a730a242803559647ed81334f41d9094476aad16bc3a89.json"
+        },
+        {
+          "hash": "e2083c6ac1af336ef9ae60af17227bc7eeb9b2b55ed60c78b7bb50b93cf41c9c",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/c7d8eef184f3b38d5ff4bcbc7b81d8bb6a88e5a8316fbda598e09c1f3fcb165c.json"
+        },
+        {
+          "hash": "9ee5b7b93171939fd46c1325d37c889216d33ae9369e96d28024d0020880cf55",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/d447071cf5ecdf205a1eb4708e3bf6d2b6cc4f942301f312e016df17ff7bb214.json"
+        },
+        {
+          "hash": "6013b224752b6fdd6b26240c861b7f920b98721d3bedb1f97b069f284365f69c",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/d48b3712ace822f709edef28b47aa187a3e4d396ff54c4a97d614f841cb8462f.json"
+        },
+        {
+          "hash": "dcdfe68dbaf181608948e68eb8b23b6574975d8b96a27d11ba2fb9c1c093ba60",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/dfea061fe48cd1e1d1c81b007da1143a2c7d1b7ba39e74d195eb1881456c3e81.json"
+        },
+        {
+          "hash": "0aaa135e75406a9d0f2bc3ad3f1677f7e59cffcf6d969b04f10c06859c9cadd7",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/f542ec27fca0e5b1dcc90a852356eaa67b2b76b98962c357374c076c867c89ab.json"
+        },
+        {
+          "hash": "36faba766e2a0c61f070387b1ae2316d9baa18f80cf396395a485e3eb450deab",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/records/f630c136103bad7c977e52582cd665225e17530e05e48bbf844e0b1b3093768d.json"
+        },
+        {
+          "hash": "be4ee9563d39bb6a5ac86cd671b6529d197e907c4ea9941b7731bc0ab3279435",
+          "path": "fixtures/sessions/instrument-copy/actor-ghost/session.json"
+        },
+        {
           "hash": "dc0586453e510676f14b3d255fe31bfa5431d5920b1e6750098f7f1f1f956335",
           "path": "fixtures/sessions/instrument-copy/actor-ghost/spec.json"
         },
@@ -2065,6 +2133,74 @@
         {
           "hash": "382627451cd0cf756f54e1f39187f11209b95f95d35dbaec4cab294b0c299f29",
           "path": "fixtures/sessions/instrument-copy/class-body/dispatch.txt"
+        },
+        {
+          "hash": "6e52474006743896ad5667949beeb614c0ec6cb365e7e52ac1f217f0ee4d0182",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/2acc16f17ed0ea66a07a0384585506c0fc86968c787cdf6e879659738a400de5.json"
+        },
+        {
+          "hash": "b23ec3ec9d2f2bf9fa9057d28b77645de5037c04cce7ebdbbaa997f71ffc407a",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/4ae82e145ca8a4fd9ecb04060ac3206571dd28e4bfa1ab71be8f204fa365b568.json"
+        },
+        {
+          "hash": "c8e7ee46ebb67599b240750c83f87840aca1393936ebbadc5f2145f4634fc887",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/563353dc28c7a1e566a0292d578b0852a1d99976cd834565bb1b75af3a2359e9.json"
+        },
+        {
+          "hash": "d3aefb500a6ea9d744e7c7a9c6df3286fc4ff842a349bcfc49d2e276c61f7d2a",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/603cb35dba6e9940f8a1025e1220db5d234ba05d2ea1fe8a1c994dad220b4aef.json"
+        },
+        {
+          "hash": "0af798647d4622be2a66a0a03aa85f95fffd201f8af28bfcb79cf5f6ec2c54b2",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/6558acffadaa0513d76b6afef13f5a25a892b6574b80fd246f5eb385efcc7f4e.json"
+        },
+        {
+          "hash": "968876480560e250c21091c022ede11e76c179732221673b6859618802ffde77",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/67684ff1517dc44f8742823e84bc309bd38d02c2ab89dca0ca598b5d24c7bf9b.json"
+        },
+        {
+          "hash": "b2d5f173a7596ab1ef3251b52ab9d0956da1f8f4494a4f671374929a85e30383",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/6cfa680e073d564c3dd5622e175af48d75ea369b6a5f6b5c7a8fee3f34aa3a89.json"
+        },
+        {
+          "hash": "46eb742f6e859c00941e25c63e8a672d2fbb8c99a54351b1267d414d97b558d8",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/84a4d2c521527b29453b061a9f5fe39ab97246fcd7cc14def24e9421c65720fc.json"
+        },
+        {
+          "hash": "376f030a7f405659efa258a3a70ca049c758e9c020d33e36311009a5ad1b8257",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/bf507a79cbf6d504252f607a896403da6b4babd6f2966d2daaad669127bf2117.json"
+        },
+        {
+          "hash": "10b8d27afe463f9f3c4511eb7136de57389cb0aa2c71ba21cdf2dd1ffa81633a",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/cd8c15dcf62469e85611fc051327830c285911129918be6ce088c4417d9857e5.json"
+        },
+        {
+          "hash": "baa88153f0aaea6fecea39f6e1d840e2b17fe5108ee4104960cbdcdea008cf8f",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/ce7db5a5e25a8d76550cf30f52db62a07893fdc464527aeb026711aa6e373b82.json"
+        },
+        {
+          "hash": "b90d8128fc8ffb6296b03551386c1d32740e63ea271b9f57662647d47e7c5a41",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/d30af14dc456f883b5ff04693c030e44e7f369900faf94c28a3cc33f60297fe8.json"
+        },
+        {
+          "hash": "15d7dcf2c4b97a0a628ec69735c920eb47b09bdc96824797d4fb50a2acbee4fb",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/e9af7d1b3ee90c72996c11a2fab31ac8716e9fe98355ed6e4cbc1566d196886e.json"
+        },
+        {
+          "hash": "9a23205d82c21d873008e32255fcd86a62dee099e955c5e3309b998bb460de1c",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/f05226fe39b9f9915d15aeb62689a04c88689396b6a75d55520d2545469110b7.json"
+        },
+        {
+          "hash": "8451d59cbe415d5ff5b21e018ce9545d7c605bdb3ef326db29da42c8684db813",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/f43e6c0e9541a6646fc0a0afc122324fb43011cc7d45a6928242542abfa7a8ec.json"
+        },
+        {
+          "hash": "32d585a12eccadf9f44341473ded5a28da7480cbf823f54b17bb0523d2ba385d",
+          "path": "fixtures/sessions/instrument-copy/class-body/records/f673d57212fa6c33e01b1a20fcb8291ed8018ca0e4383456b6970a961cb91e7f.json"
+        },
+        {
+          "hash": "59084031a7fcaf2a58616ed70bd9d0b4795de170c4747649cb9408ecc49c1fce",
+          "path": "fixtures/sessions/instrument-copy/class-body/session.json"
         },
         {
           "hash": "da13c8f9ec07be2b0ea97480dc1bb9348e026599d79acbbcb5aae824e4df4daa",
@@ -2079,6 +2215,74 @@
           "path": "fixtures/sessions/instrument-copy/outcome-hash/dispatch.txt"
         },
         {
+          "hash": "0d49aad6006e4f768ae9884b85875e4617b3e08979582069179e7682fd99cf87",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/196510de8293dbe79e168fd52527970d5ebdcdc927b1290070d36f09d707748a.json"
+        },
+        {
+          "hash": "81f8d7e91ba7ec8b80ac7151780436d456dbee05731fda61f8d6f9d0d9249a30",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/240b2d1b7c35521f79b4c4987334a05b03a5c8a9e22ceecce0b57e7c447d3294.json"
+        },
+        {
+          "hash": "c1b2c3e466253f7f381c009377a8db972a43ecb04d5fa93dd97e556a09809c1f",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/2d90881d3e149dce32a5329799d7564eab9ea730c1cc5c252e4ebeb4521dea6a.json"
+        },
+        {
+          "hash": "864d6cdb6ad4188debd7585569e12925ac52e17801784f3d65d5c4b9ed6a8691",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/53dda56eb155e72ec5dc971528e068144bed23bbb58fa90a3033a33c1645fa9d.json"
+        },
+        {
+          "hash": "aa41befdfbcc5c7a5daa7842066e2d395a07bd94ed1446665fa35c68331602ab",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/5d692e89224a1986d441b0034b6f9b6ee39a4452de1406bf6db191874dd1e4b7.json"
+        },
+        {
+          "hash": "ca5c82175628d44b1f284f7a62eb58d92e09a7c155b397d8e5dfe1efaaaa847e",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/7563814235e07f17807d82d192e371d8feb1e79be1be1db2fe96587ea5ede17b.json"
+        },
+        {
+          "hash": "5af0f8ea85383f82892057e27de12583b7b5326cc77be4bfb6cb7920a45841c7",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/896826a113c66cb8d5201d9e854f37cc1ba3f7bf7710cd7515792e1d2c3bd84e.json"
+        },
+        {
+          "hash": "277914277b7385a2008025f149ebd8254ecaece131394666201a2328f3e1cb5d",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/9e1da8c552da57fbffae8c24e700ba6933435fd7f7200f011a51563b5a5c51a8.json"
+        },
+        {
+          "hash": "fd71c7205706aebdd5b7b3b4de8a8e4ea635624b7132892c99cf6be4889cda72",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/ae91a109ea1783785d2cdc6124a76ce58d572eec04b1c74f2e96019aba875013.json"
+        },
+        {
+          "hash": "4cbf6bfb4f5107955c512d200a4f980be1bb12b62458fed1876043cf0a11d724",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/b969461bba3f715844a7493ae0b82de5f2bf9587cc7531db41c756b85de0f005.json"
+        },
+        {
+          "hash": "8b131d1d1d6a3bafa2870b313b03f32ecaf1f2175a25494f8f785769bd3079e3",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/bd673167fd6791481bf64cfed5d1b2486310f5b97553138a6630883451f1f7ae.json"
+        },
+        {
+          "hash": "c81903a01284d03a01ba9b9836a51fc33c0fd93b0867ef75e4350af3f8c28f73",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/d089290ef6712649e72fd235fe1ca445f5787c8374a11432f3d12e38a116d9d3.json"
+        },
+        {
+          "hash": "a69d58572fd76b09dda7f2d56b56a16d10f3999369afe018c2bc3001d6f7e901",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/d86faabe0833b8fdd72d93e05712afdd46278346873a0221933edf2b0543465a.json"
+        },
+        {
+          "hash": "f7e67ae8dd5bd1e83bec628af668ae22529e136aee9e9d98ca89fd228c353892",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/daa3e630e6f7f2e645b6bf49fbdc3f5466a11ccd4af6715621ba849b30f192eb.json"
+        },
+        {
+          "hash": "9e1227cde5a4a4d29f0ab48f67796014f5b249344830754c0e0942b6e038ab8f",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/ddeac09ee5980b85d93dabbfe53d75279d592c2b819ff357979dc2d221a3c625.json"
+        },
+        {
+          "hash": "231e8d44b1004c64512ae9d4084489d1d0b28417fc93bfd95a67aa0aab50c9a1",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/records/e36789138b955238da84853588629ee7bd858bf6e927ef6a4b3790a24fcb9c41.json"
+        },
+        {
+          "hash": "c719cd63f5d4e645130f6b4ee679ec279e82eb0aaa8270d0c6764185caeb8c6a",
+          "path": "fixtures/sessions/instrument-copy/outcome-hash/session.json"
+        },
+        {
           "hash": "3375ff9e83f01c127bbf5fe2f81584bc12574c82597a31e67e8680919948d501",
           "path": "fixtures/sessions/instrument-copy/outcome-hash/spec.json"
         },
@@ -2091,8 +2295,1672 @@
           "path": "fixtures/sessions/instrument-copy/target-missing/dispatch.txt"
         },
         {
+          "hash": "917f84f7938b992a6d22d7a030dd57f2355359c17fa097ac85f7ff5925093240",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/2bb0fe3718b1d6d73dd5564e46c583d1924d2b033a7a4b5b375e1f92a430d1ba.json"
+        },
+        {
+          "hash": "274f7fcecd7f90aa1248f7cba8cd538e8ed90ac489df31409154ead11ca60af1",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/30fc565d4b9333f48c73f5b7458c2545939571bb960bfea31f9d6eed6ed82098.json"
+        },
+        {
+          "hash": "4ee7da055a58227ec0bd4c51c4dc1953f8dca0fc5521dae3a828f2818ef7116c",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/43f672cc6dc35a1a4c6b2fe39e4c5ca77b377413067121de5c5d4fd42c6d3cc1.json"
+        },
+        {
+          "hash": "e7e719d68023ac03723ac5c2bb01b31a66a9f3760bf0a5b32db128b460b6dcf8",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/49b7f77b1aa6f19da1cd90002017eccdd06af99aabc53cf113f6fa949eff4187.json"
+        },
+        {
+          "hash": "c23628a717063cf06934c82d07a19bd1e7651a21579bbbfbe9d5595230acbb03",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/5a63d06209c6042c5897926b1ad44306fb57ec623490189cbab4dbd94471c1ee.json"
+        },
+        {
+          "hash": "0ba5aa352df2efaf9c1b6cf8bc8ac0ffd4e151b93bf48ab957a4c075f46858d3",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/78c9f3c7cdbe5772be1978f83896c8cae4161254caa09e9bde1c9319ed593578.json"
+        },
+        {
+          "hash": "fe960a77faf33c6d7b9e20910dae8791b7610c8f888c0e58ebded67690217d02",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/885de3701d79200c4a9835998042cfff3c9ae3d497f6d0f9eb854ad626b08b2e.json"
+        },
+        {
+          "hash": "f1ad7c01d5d3516be6b4b7957568bc0e9ecb8b2949edba8ded219af2c4654be3",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/91f95246abf9e9605be5b1b2916491653dd517bb6a78ce6019f984d09d0f11fd.json"
+        },
+        {
+          "hash": "9e70b15d36d896d0ab1481c68d69c63cee5074ea4c65759d4d56a7288734efd9",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/add5e59e8736016af6bb22686b2a28e142f346b8b6e6c57bca7f55ec559e093a.json"
+        },
+        {
+          "hash": "9d7f99b67a56efb729becf5a7527626190d0c48fc65b6196cb57f311d8c05c81",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/afbfdf9c31575ae2a3c4c4f84880916dd238764263d1349230a5b19de1cccdbc.json"
+        },
+        {
+          "hash": "41415ff7575da7ef64dbca2071ebdd24f3edbf9a78a4f18939323981188ce948",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/b1e7b14c945050dd6cea7774267f5bc53b23c9bdc96c6e6910f60f5c130010f1.json"
+        },
+        {
+          "hash": "89bf5659082bc917cacdc50c6c8720681c57ec045946be9e3a255e6b819a9c19",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/c7f8ae623dbe8e04e2b300839a9a26985761e8e57a4f04682c15c08c81f752fb.json"
+        },
+        {
+          "hash": "4dcc7df89c8b12a4c629e4921cf926a0150b55aaff5f248c1df4df82714f015f",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/da7b9c4686fcf63da34c0a9883cf33251c3fe3cb3c6202ac0b16519b4c784fcf.json"
+        },
+        {
+          "hash": "18ebdd962702c37a7193889e86fd1885385243b70b94b8844486b30935a14140",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/df8f4934b2e93c7a2c12186f1f477d6ae04eab74f1af890de51c447df595598f.json"
+        },
+        {
+          "hash": "0866be0fa69025d75d2de9d4ffd695fd6da30921cf75dbe5413eaa2bb9b3f458",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/e5a2002400550801f2111d6ecbd76e15bd9f31c2687f3e321b776fc318d9f918.json"
+        },
+        {
+          "hash": "11e6ce2f08d8ff74e8ccf00da3df94f5f6261fa8776f2c1d426b2163660b55cb",
+          "path": "fixtures/sessions/instrument-copy/target-missing/records/f043a02362dc16d38135ca6f00df68e99d4fef399492b75a26cc9ff8a3f8d1f4.json"
+        },
+        {
+          "hash": "84df548f074da86cf5b8108c8052c131fc1629822227f11c44015e543e3171b4",
+          "path": "fixtures/sessions/instrument-copy/target-missing/session.json"
+        },
+        {
           "hash": "dfae74fb4a42f95054f92802ad47fe10e9c0823cacc24864324c448eaa532f5d",
           "path": "fixtures/sessions/instrument-copy/target-missing/spec.json"
+        },
+        {
+          "hash": "31bbb7be1a0edcb8311daabba2f0d0ba056686174479c17a144565115aa6abaf",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/0660469ef4574a19f403557e66f600076bde0fb16ce03a57d028bd78a29832de.json"
+        },
+        {
+          "hash": "ef8d2b9784e9930022f3e5deec5e8cb503d173e3f766da8f0f31ff3a5dbba4f8",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/084a3aed1dd848493ca9787d1753bbf90ddf74febc69119393cdced88d3e810e.json"
+        },
+        {
+          "hash": "058453f3976523e800bc0e22ddbf133994c6b6cad9b323682075912f2e96a19b",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/088ecc508353fffaebeed5689bc1cde18c2c60cea1e19ed037fecaea2100e7de.json"
+        },
+        {
+          "hash": "c0d4c2ef0313dd2dd83e77a6cfb749e239b82e4b47d5c3c520f262f86b788b65",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/1007179199540eb3bb6e9146bf86cb97904953f3c6b010b8cc82cedd1a52f968.json"
+        },
+        {
+          "hash": "9342ff0a9221376c177aac5e506baafeee957c626744de2f7787da0a369e27a8",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/176cb21d3af2bec7566cf237163ab4699b7c79db2a58649c59d3799e0ecc6b14.json"
+        },
+        {
+          "hash": "9b377267943fd2ff62957ce150af65401ac22a5cd9ff46c3606a579bd514ffc4",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/1dbf64325a0816069f490ac49cb27746a164d37517994f8a3507ba5ebd7d4451.json"
+        },
+        {
+          "hash": "81fcd8f7e273cc171c83280fe73b6c9d0d5294df18e5e3b29bbff3796d9953a8",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/2672595658ffae260a3f6493e236b6d4420c054471ae042150955dbcbceb67df.json"
+        },
+        {
+          "hash": "d1bcd12ca5b490e1debe19fc94a802589a071b4bf6827a7f7fa2b09fd9cf9273",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/276bbb4f157fc19d8b2657509770bbca3e59c5606be7dd9b5c4c6e8ac40b83b7.json"
+        },
+        {
+          "hash": "83a74fe4f4b7853538f900319782b64f0773afdd2da2911b873abef3d4df990c",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/27bf024bd4c7ff5309703def188dbd3b92b32353e4ab06a8bae2afa92b01cd47.json"
+        },
+        {
+          "hash": "c87b3ddf3cdee6ded68fea1081ef76548455d3e27840c1dedb802030530af5ba",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/2c9785b4bfb4f82f377475121fda067071946d1266f80f080e4ef5e36a6cf33c.json"
+        },
+        {
+          "hash": "f1dd3738d7e08c6a6f7056e3c3334dab37c8329b5b9af6ec4f6144095c6ae666",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/3052a5f2d45e8c5f8f56b9fe97292a9151eec0778f06b17c168740c19d6e7c0f.json"
+        },
+        {
+          "hash": "f18af06dbdf03582c5670de88046ef90c87712c3cccfc495ed5789c5acdd9c1e",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/312dcacbd7ce53f73d12b07aad7a9fd185909374164fcf8d46a0358f91390ca1.json"
+        },
+        {
+          "hash": "61e8a7cc88995b6bae147091d70fe04a6af147ad938c2ac0bb118c687794f826",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/34dfbc4da3f9c950282b6f993573d400a29ac7402f54a33177cb38493b2b9590.json"
+        },
+        {
+          "hash": "5b510dcf810140bc4b5281a49304dca61cf8ac24957a5557968148a878a8c91b",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/353deee2b0f04a1c0fed860f07b8fd8a8f0b1a54da195c5c3fa8802b4885660b.json"
+        },
+        {
+          "hash": "c2d67becb38097614161344bb857ccda02b5a4926deb95f1db6e506e9839688e",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/3609ad6dc6b56b4a326ebfda3071139239c80c281aa31fbad11be531bb9b311e.json"
+        },
+        {
+          "hash": "f095ee6d6a354244f39499146a00dccf346ef9556180dfd518e8681e05f30e19",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/36d352bcdbbff34f735c9996e6655a688642d244b9a0538ee6ffe36ba794e1f2.json"
+        },
+        {
+          "hash": "b6e26bf26ae05d468396042cb94b098c57ad105298b530a8bc120ce941f80660",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/3c38e84c558ba30f95fda2bebe80810dd21e06c74218582a5e8d883fbc1fe861.json"
+        },
+        {
+          "hash": "56ea2ccf7f5d94ad37145650bdbe59d89cd6aa4e5494f627ff6722e1fbca380b",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/3e20c92eb62a4824b6d450f1ad647dff404fbfb650fc159b2c82d49a14015ae8.json"
+        },
+        {
+          "hash": "56fb523d877381642fb00ffbe7b28a85a7059fdafc6737c8276466ee103375b8",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/46c020a70bb9ae7e805bfa81d28f83488ae6f3df93b9c175dde48726c016760b.json"
+        },
+        {
+          "hash": "535de48a39b59e8282711d94dfa39cec5384ed7d782130dbb53ea2927b352eea",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/47f1bffbb20fa2b26ade02fcdbf6705eb911a0872baed21458b74fed217c4549.json"
+        },
+        {
+          "hash": "07ea73563391d0789709a9ca1ae7511b4b13fc4280d8ed843f15e7433fc12fe7",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/49f59d379f54ba01f68b2fdd3b129f2c84d28425d1d2352f6b9f51efce18060a.json"
+        },
+        {
+          "hash": "46c2ce31352b8a8aa98108312f4749b9e86b61e082adf67ac303d210ed43facc",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/52bc45e98c0311b73948d75094af187be50896a775a5dc33eacab998a77abfcb.json"
+        },
+        {
+          "hash": "24834e765142f6a56cf913ee26a1c9b89c6cd7cae93a1e05c0c590de77ed2fac",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/5572b02f00d2c22915d04455579882f312773fe05529a411b4858ba393ce9467.json"
+        },
+        {
+          "hash": "6881d3c17686b4d5c5e5b7a2c09714d0c7221ab17c566fd798ce3578cda37be1",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/57ae71aab69891e4ac2745b231efb09d64739ded2346fe5ceb74bb40e93e7bfb.json"
+        },
+        {
+          "hash": "c34903ddfb9a52a475a844a81d19a30b2adcb72e000f4ef443bc5e67e777e20b",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/5a0ee679253da1851f4d5114544c994ca98d7d9056791f89b1459c2447e1c9af.json"
+        },
+        {
+          "hash": "2494213727cb4988f9c90f0fafc997f9e53c666658cc1241a8cd3f22627c1cbc",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/5fe7b35ac7f7070cc362d134ed9566809f67bbb30a2743f8fac67c50ab42216b.json"
+        },
+        {
+          "hash": "9b992fbc190632131f293710379c4a4c231322c29896d244575f4e352c903a5c",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/62b3fd5739df727a6182b819e55b7bae853de68cb1bfdd6d8f210a894c1f700a.json"
+        },
+        {
+          "hash": "d2a9cb8222de5c0cf1f3a44797bb0aad5c7ff7a64f2f4326e263bcad6c208adc",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/673eb23bc9eba98a1d6def745973a8ad09321cb05369a4741c4fa5b47281bd92.json"
+        },
+        {
+          "hash": "ca8d28d801720271881486a22e614f2baca36162c4aa661fb3d5d1d06e3074ed",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/6edea1970a35f5f514451b4fa9998c315e83d4d5fdfa8957e1910b35c9039396.json"
+        },
+        {
+          "hash": "2d9618c59c257742eadb36549bd201e6d8a32eda94b705cc069eddae6290c3e8",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/741d5009472cf5f8b45c26f48b66b34f699748e80a3fc5a2edae06a98ab24696.json"
+        },
+        {
+          "hash": "89a98504b4b0fc37fc896e248d89035e34941c79c354f089d3d2d932ee5696cb",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/7e2bdea853e8c8df1fe87df3aa04eb06a0fe5c3d93d63cc7fdf8e43d6ef6c19f.json"
+        },
+        {
+          "hash": "f27106ef028da5394a1f8070e319fc085c43be4d7d84791823b6751f9dca6287",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/7f9cb2f8f99b2d649af340a996d3f8179dbc3f410b3b60147d29ab464ac00fbb.json"
+        },
+        {
+          "hash": "1e38a36725bb56ac4137384e5ae850ab62ecafe1dd6ed6a10600a3308b993a24",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/804a99fec00e59aec43af937c23c43025d83b9d2e5d6d8e5ea91ee04f5565714.json"
+        },
+        {
+          "hash": "636d024696465195ff4260e11a78cd0d9c5b45a220fcd19c586833fedd01aff6",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/8063236afcd781954c72dffd2ece27e021321a81bac25ce5e2f55913c43ead67.json"
+        },
+        {
+          "hash": "3a9fdcfec0d3b192307b410da02ea92f90c0ca0a70083d84d30d125c228b21c3",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/817b57bfe2e43e3f97642df52ad7b22bc37333d913b20f6da22daec1b0cdd5e6.json"
+        },
+        {
+          "hash": "d9d46a4a3a911f4ad4ae88403a42787d43424d5bbc9844b4744ba71b362be008",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/82a290700c43be240229f21a17839e8a4714a8b876a854f772519e79b491f225.json"
+        },
+        {
+          "hash": "104e17d98690d91533c3cbd7776a31d910b99107c425fb814588b8b80c268c3a",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/844f7eba14e8143974d747514133980f9f67f633c6078c42992f410b1acda201.json"
+        },
+        {
+          "hash": "06594ece7f151755fa9da203377424af78e81813951cec8543c44b7d9b04ec99",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/8523d315a693c05670f8b85ef0f941e79b760c2fe8d7e8eec1a8b20a9a5d2fdc.json"
+        },
+        {
+          "hash": "31d5fa589af48db5ceb9a844d0c4cc180faff55373986d92de52d1ff52f54996",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/90b0bc0aad9b31348fa4cebb07ab04462d58d1537501989cd1c1503dc1e72b07.json"
+        },
+        {
+          "hash": "c29e3c011eddc6fb2d80b4f8ddde925192f4ed2f66124fb456a5e5355fbd30be",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/9579a9b4ca3bd8dbaeb751eb5118b7089a53a50cbffd818f5fbf4d19a95bb02d.json"
+        },
+        {
+          "hash": "c155e862faf9689368358f6ef0082f5cef5c7e128fb7dee51b2d6c6f71a2be13",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/9a3c4facd285645783ac2992b403e1b8c4a39a328aa90a2f863355f8ef971341.json"
+        },
+        {
+          "hash": "f5416c3b9f71e3b23e214d44db0141664e56ec674a1aa7c30deabff71dd39581",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/9bb3313b1a7a98904b73f5bae9a1e1a6e4837682b89cc4ba60889f8242cd7e76.json"
+        },
+        {
+          "hash": "9ec4d56ea94e607216c551c4b7ea6148576b64dd8fb3eca3e959fcbd98800a00",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/9cd7056732acf046b597c634692addef1d7b072beff17007cc644c26150c217c.json"
+        },
+        {
+          "hash": "a6e64e61b51593b420df2ca07359bc1c439883ac1f343ecc9063202dc8db6721",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/9ebd6b59abae7062c403469ad2212d79970a09c54e33bf6f2ddd36a78bc07f4b.json"
+        },
+        {
+          "hash": "4a3677be5335f67a1f91dbc6736f31295b0a449b8cb6a666aaa8c46a2dcfd836",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/a278edf340bece09c62bc842b9e2651643f2626abe46a4ab0a78ae587fa80982.json"
+        },
+        {
+          "hash": "78617775b2f29f88612c913bde2853992773a252a50493ec68e675a7799b102e",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/a3a833c5b7a23ca8f740ab41a86f3b32c5be51a2fdf8f398a14357fcfec92017.json"
+        },
+        {
+          "hash": "cd49bfed1b485b739fe9359a13ec3afe53a1d6272c22dae1f0215c7e677933a7",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/ac44bc7d345f03ea5719cd19c07e446795882912fe4e77eefdf8327ba5688b09.json"
+        },
+        {
+          "hash": "987bc951385fbb1edd0e45a99db19f0ae6f642dd423d1d18b67266fd3d679db9",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/acc94488ec163990daa3d7c8e926e27f5a716d58218c7eddd77a3c574037a760.json"
+        },
+        {
+          "hash": "76cb3fdda7da60189165bc1f1d4fd2360837ca82c3483740282f1f050ed47f33",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/b22a84cebfe0df4f34cf3509020278a2874dad7bab40b688e65f42101a35569c.json"
+        },
+        {
+          "hash": "e530e19ac6ab68e7bfdea3eef5031a39f1da8d265da841b3d696880b938830bc",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/bb4ecdb5204068eb7e82368c5561310fbe20165e1ac8d3d6e362d4a6e450ca04.json"
+        },
+        {
+          "hash": "c7b59394a050abc3a439676356cc14fa805c0a14f4096e5a6cd670c4f35c30f8",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/bda19e34ef447ff85b2b8f677dcefb20bcdd7fa4164ea9d951d0327ece988fc8.json"
+        },
+        {
+          "hash": "8be1612258d95f6054bdc7141b3c9d466fb7b58707fa544ccfacc8f2c637a750",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/c8bd20692fc1ee111118d2a22d38117d4fbdb3f0e2547317bed21b8cbfd71907.json"
+        },
+        {
+          "hash": "232e15160847410d77bfb707a1fe7bc1929d5c955c0ea72cc0423180f009a1e3",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/d2eadc5bcd18e79e211133b76c043f1a557445a4a96d4688f618a099f78d36ca.json"
+        },
+        {
+          "hash": "aab27aa27f9469323b10bb568709f6eaf6a48c9b0aaec1235efbfb261e3c7e66",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/d44c5571425b499b8f69d1fdbba074180f99c00496bfe5000fb5bed92ce70716.json"
+        },
+        {
+          "hash": "20e24454b8f75864e6c62a38f7e2d57bd7466cdfe0038419dea3eee188b7b846",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/dd4675dfb88ad08ae7a6c4b14f334a0812d20ab83d419ea53c1e822565528ae4.json"
+        },
+        {
+          "hash": "85831c3cc800d1e9fa989f907ece98651a5d99949b965199c1e42d287c38762f",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/dee93117f0c2d8349ecc0fe6b8bcce74acaf38bffef8a741b361ebcc1405b6e1.json"
+        },
+        {
+          "hash": "e67bb58b6ded1059dd063147a6552bc91dfedda52c3e9c663f521e8e035de4a1",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/e0a341c4c512a61286bccaf1adf68ab6e714f3efce1617ead3427719c55906b4.json"
+        },
+        {
+          "hash": "07186b620c743fc3f83398e90e39b8dcd435576285613cc3fdd93fab2eda7236",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/ede2ad7c86f2df6d5bf9132c6d5cab729488426819a3219eae420f22190c9f12.json"
+        },
+        {
+          "hash": "25eb2be421bf2639e396295a94b2bc3be207c3485ea14b84e1f68b10baa63f17",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/eeb27ecffa315ef824c98efa2879f27c1e06a309315c5ce45ff0086b26ce7323.json"
+        },
+        {
+          "hash": "5b9cf53c2f0dd604ba5d68215a6350480f21080e398bc93696d2b548edf11b7b",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/eec25ddf3c2ee0c7dab03202d6607abd4ca3a698af25cb47d830413da1bee05b.json"
+        },
+        {
+          "hash": "29433a41cade829db6bc06bdf8e82a76639dfa04fd375a6fd0547006e57fb3a3",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/f14ce9aed321f4c5aa3c5b4c4e887e88a866d0a5fde6d2678d333edb5e056b53.json"
+        },
+        {
+          "hash": "98a6808cd88211cf90fcfa3367d2dc314355e6b38e6f5c99252a961d7590ed34",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/f2e8cb02d33b5ca331d3affa83f3695aedf3fd65d0afedf7e772c22be7a10216.json"
+        },
+        {
+          "hash": "a142ad524a1b875187b1783a050b55d4b4b1c2a2ea4bf4d692df41bea2719b4b",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/f7b10a02a00e1431dec42de0d5fb73848d669479b134c6776a45f6e4863cf3cd.json"
+        },
+        {
+          "hash": "2ea76ef73a7971a5ce9e9e2e57d475291deeced3c4b53d7d7b39016f729c9f7f",
+          "path": "fixtures/sessions/instrument-copy/value-F2/records/f9bf5bd81f3e7c138186f80a2aab8b260ceadd48176f7d62182eeb1d125f3e8a.json"
+        },
+        {
+          "hash": "9c27d7e439bb447f2562a13a78849c272134152930e046d9e59040eb75c810ef",
+          "path": "fixtures/sessions/instrument-copy/value-F2/session.json"
+        },
+        {
+          "hash": "64f91818c162b79dacf205a9b47164b9d57dd029df933e809b04f4b0ccaeaadd",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/0255fdeb38e0f19285597afa499490647cd65818a6c7062b4377f5241dceec5a.json"
+        },
+        {
+          "hash": "71e5790c724d5fa0e9ed874ab9787f318e8ef25e2bd989e7773695e1aa794271",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/041d90f8a010729dc6f5f6992f3b2a3b7d9e30f208112e17fb04e2308da50969.json"
+        },
+        {
+          "hash": "03c1f2f2b6ffbefba18dd1c67c55d4efb03695061e9f6a51f6c7971fb21998aa",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/0490550a73c4c4388a055df4c610ab1bd218802eb9096ed60e3a59e0c87997d8.json"
+        },
+        {
+          "hash": "1d9511d4ce53ceee75f20c352240f262fdfe8897ce8042ff4811b4a2398dd285",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/08799319433b2a9a9118a24cfb6c152dadfe54f0dc13dc82678284ab98b6ea6f.json"
+        },
+        {
+          "hash": "2d4a351367c1288038e538807200ab4f4d3564568be3d7a943907c4e17a43481",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/0a9094b18e79a13a1438f328be1210bc2c18575f73844904ae645e7002fe614c.json"
+        },
+        {
+          "hash": "dd884edfdfbbe0ffbdc76bdf835d5508615acb9b7d6e33c8fa60bff7693f62ac",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/0bbab5a1612ff6e237b6d8eee792f278bbd04a26746cd050037cf5b97808aa70.json"
+        },
+        {
+          "hash": "5eb52b7f768101a7daeb5f74695178f8b0f8a5a02ca18a162c705890b15fe5f0",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/1814ae3d3018b8806febadd37f6ef6c415868efb411893eb99e6d9f3170361e8.json"
+        },
+        {
+          "hash": "1adda4e2f5893340d41c72bf58a2bfc6772684a991a4894b9ff6722e47236b78",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/1835bcd1cdb1f47d8a0e06c5be4cffbddf5fefa828461397549405cc4b081d49.json"
+        },
+        {
+          "hash": "a291e90862b50d08698ae219e375613a948da85f3981474345dd1cede1f76d89",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/1d7853d244908a95c142c59c93b29e029f0efce6b7ad54e2a19c69ac40e2b584.json"
+        },
+        {
+          "hash": "084db250aa80fc7bc074c2b087f03700d84e5075c949b534c96a410d000e9dc5",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/1e44e793f4c1e43f60b49c9b214f79be3b29b8a17aca2bc640613e4012dd9698.json"
+        },
+        {
+          "hash": "da03ed849eac68b0c569ed3110c123462f756733995fc30d66bd1d1241520735",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/23639706fc7346be693fb2c1c1494eab692843733f4e07ee0d0294dcc9dc3743.json"
+        },
+        {
+          "hash": "84fee2987939ab573b21da23147ce4e8240e81f17b8dd07b80ab768f75d78a5b",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/343e4346e83d4350ff028de4739b0eeb5f3c114d29e2e8f3f980ba889c8af6e2.json"
+        },
+        {
+          "hash": "cf22e0bcae44674b12f6a2b10ff0972e78c07511b006bd2c01cc550eada7e8f6",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/3d903f42507986345e60086c743cfe78f4845ff4fc6c5183c748298bd52ae413.json"
+        },
+        {
+          "hash": "d5ec58686d65ed893b833d16290ec211ed0d86cdf476e24455ff0c609a488a1e",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/3d9ab570341b5b669fb6b9fb7898933ddf98776b307dbfb5bfe678153ad2cd2e.json"
+        },
+        {
+          "hash": "ac244d3b54aa0f96fec1d04dd5e4e689a18a6895d80be9b33e9e8f04fd807908",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/3fd3881c3f7c5962bcfeb278a1a1e76989ebf35586ededfa2b52e877623a756b.json"
+        },
+        {
+          "hash": "86962e1917f590dae299c73e2dc72b6d192764e2c4e500b59fa380877d83091b",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/4025f6acc697345daa1fd0446bac4e1e25fd92d57bd8e6f4c16e5cededd21b01.json"
+        },
+        {
+          "hash": "d51508ae4a5421fe03d4eaf912391ab1e455f2b8fa1960f1c1db332787ea4a97",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/4524eebb7af9998e8ee02283a3371407dca8afa05ca82be715aa73cf62a611b1.json"
+        },
+        {
+          "hash": "655dedd6de2f3277c9e8c49b3cdb61f7d03d624816727efed6180a8ccc25224c",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/459cf758ed3dfe650569ef19b06ee1d278c246f2801f0deb238309a3f271802c.json"
+        },
+        {
+          "hash": "19b35ab2fbcae786c893452f26229f67500639958a1ec3726c4ca73d9598a260",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/466f691b1b82aaff434b501112a307030b99a09f76af47573badd756bf4fdd3a.json"
+        },
+        {
+          "hash": "df59bd24d2678deb091621dc3175ccdca55a098dc96a44d94a6aa13f1f9b3842",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/4cac3850c6610ff0e6d1e53d8c68502485cc9fe470c9211ba8c5e0836495ef48.json"
+        },
+        {
+          "hash": "bda83bf738b8d7cd8cf95c6bed359903eb389d3818834cc726db3a5b733c6e5a",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/5c6981ae5138f2f3dfd06e3431f2033710ca45b296b1b74fc1c6856e555cc448.json"
+        },
+        {
+          "hash": "b1ce4269074553479f19b8636233c88bbb08170b3d907d62e432f46d286dd7da",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/5ca00c69faf9d7bbf5922239d6d1905821a4b658da4aac142a064b393315df07.json"
+        },
+        {
+          "hash": "6c823247a60fe4be80e3ab33dfabe3dbd925e22ed0bfb4a6b058ea5db0bd3a6c",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/5e991eb791ef557043371666500d84c1839120b9ca213a696f854d22b57b5289.json"
+        },
+        {
+          "hash": "78f5925e6653e622b9402253be858879b35ca38533de475426ed4006acfe3465",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/61e24a304be57d6976f97bfac25b9378041f707f4b45e9aaa48f242c46f90702.json"
+        },
+        {
+          "hash": "821ab71377e2d1138b0328c43806fa71418d9ecc4caa554f814b9dbc39c432d5",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/6526811cce42cc12d240759550a8bf6dc52a50abcf07390d443533e915adb17b.json"
+        },
+        {
+          "hash": "0b6ab127c49641abd0b448122c3229e5a600d517798b78344c5fec190febf19e",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/67795a376877669ac88b94feb763c71180b77d5458872ecedeeb827539c8b82c.json"
+        },
+        {
+          "hash": "2e7006f28788185a6815ecb7aa61f7baa734cdbd40d4689fd7774725dac56965",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/6908877199cbadbec8ab4f0495507f25bf14aae35719698f9c0dba7d28be3d42.json"
+        },
+        {
+          "hash": "f15cafdfd66cb2709c70c5c0088abea790014c3fb09a32bfae37311b203b11c2",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/6bdfc9858818307b92979af9a5b34c540a2f067864958de57218bedee71ef73f.json"
+        },
+        {
+          "hash": "2cb06829fb7e88cad8358aa5197272d324e2172029557f6679ef3d67c84bd0c4",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/6c306b05e1ec717c988b7f17da4e2c50c35919b6a7fe43304fc8cab8a01032ce.json"
+        },
+        {
+          "hash": "94a1e0c03c7280c163a8ad7b97e461cadf637958577338e1d3ce4e46c17f0582",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/6c96a96d68cac1a8b2f0887c66c9d690f402805ef0af6649ecec25a686d12785.json"
+        },
+        {
+          "hash": "e16c3c6ce15c811cc12ae035d5764bb0eeb03cb1fa8a499e538225fc1e7d9643",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/712bdcf9a9951270b1ebe2e9496e4915fbd0ea44bd2a6ab2c1809dd29aaafef0.json"
+        },
+        {
+          "hash": "d078b44cdb2661ba754d6df77cf874753aa654a7ec00b0fb886bf1ca84d55f14",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/77f517d0e36e3ab4e5898d2b3d599e7951d0aa4bbd7959568394b727fa7dea67.json"
+        },
+        {
+          "hash": "4f18aaa4b0587096e7e8f496cb58639b4c92b0566d0110763ca3155d0de71bc2",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/78ea3946b901cc25b023e1a714c96356a6fbefb8a7b21c35ca6ab3aae6977a02.json"
+        },
+        {
+          "hash": "1f8db6a27ce0bb0679cad9774ec23306c74c0de254387fae56a38f1463a3bf3a",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/83aaafd48728b306aac9300e6afb3b42b39b4994de7a63a663f8666bad82ee8f.json"
+        },
+        {
+          "hash": "a6743143547be6dbf2cf78ffc2b9f235eb03623e5c76e3849624fa3a5c2b8f7d",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/851629dbe50ddd6363c3403d722e6f16578b95e5c8b4f80256e487cf5c2346a7.json"
+        },
+        {
+          "hash": "b9a1f6d1023901cf19fe7094409e0a42c23e6cb771554cb72f8da05c9a12467a",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/89a29967fca391706c9e800dea55a7f7c3108419f27b68008b701020597d5a73.json"
+        },
+        {
+          "hash": "3988dba6a0a1ed4a021d8322aaa39522e60cf0c849c774eeff1d81729ad330d6",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/8a9f0b0f27d6f7291eb194924c33c21fc9c2710b3455ffa098dfad63cc354b6a.json"
+        },
+        {
+          "hash": "6c080516d2ec8fa6763b4e7988cca302e33835084a2beb72f561c9f024c9acb7",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/8bcdb07339d05093544bee09060aab587598668afe2e0edf0139fa4d5d91c999.json"
+        },
+        {
+          "hash": "fa1e9e38b61f3b90ef1782a3eae5a6d0b019d35c2aec82d8159b15d9631fd91c",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/8d42c817887f16d6282c4bb8b3f315fb2d873acedc148570ec740b58af7fd7c7.json"
+        },
+        {
+          "hash": "ef679efbe5c1c8f2213420056ec13f7eb033b40312ab918dd3311ed6497db7b6",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/8f3b0a8c1b035fd41b70f3a68cab6bf69d7c207beefb9d839bcd6348351c9ac4.json"
+        },
+        {
+          "hash": "f4a0f95150be35f800d9a5844c98bd32cebf4dd5429e224cadde7ec0639b1e49",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/8f5daecb1bbc06bc2b1a3dae97684369cf30684c19b023956e354898fc579fd6.json"
+        },
+        {
+          "hash": "f98ce90fef714003fdf3c3ba23a654df74115394af07a646ef91a11634a2d0b6",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/98c85743d211dc0e2db7050a77ca61de62bf35ee0da99efd163e5d6d678e6be4.json"
+        },
+        {
+          "hash": "66988f558525f9acbc5c99a2b3b78ad493d480cc3866d5f5cb68c48132f458ba",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/9e281bba9459edd0027c68d43c7ee9b71e0893e848db83dabed50eab13163af9.json"
+        },
+        {
+          "hash": "b881b8c11de25d26a6eaee50c25da6b5cc9f6f912396f5ebdc635a4773260b65",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/a010976e065dea544f52e2ba580903d69bf5a86b38a4d8cd46d5e8bacbaaa4b1.json"
+        },
+        {
+          "hash": "1a455653e9e4d341d8b04a3d96289af0c999b33e28d20a4864a8d3d3393257fe",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/a2831fb64b49b089912b5fc64bd9aca04f93f1d3982203670247b67b2491871a.json"
+        },
+        {
+          "hash": "4c641bd8ac73b7759ac09365364aff1b7897425c78d03ec9ff69a1ef262d4984",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/ab12d4ad85635e02e790d428ed7fb681da8510edee4152937f818c0999b0570a.json"
+        },
+        {
+          "hash": "ab7b93da39c7dade92321f60688db8f14719700b30d71d8043327ca0fe520aa4",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/ab2cd0f5e10dd4ad06dc323ed27f216ed8cd8f9c9c7c88153f91ef21e6a27d1b.json"
+        },
+        {
+          "hash": "3e63f05b237f8599b1d5a5b776b4933307325ecf2ce861b0a4bed8cdb77cc3ac",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/b689478dd9edf5482c82950ac0b1c3633dc23a86049917aca95183f32da1e98b.json"
+        },
+        {
+          "hash": "c6eb085ac8bc2af748905826d06b6e4e06137cfe4cf63a4f95ef5db30d7420ee",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/b7ef56b51b72cbb3434714ffb2c265e2cefc2dbd26e33cf1548987e7f1ca53af.json"
+        },
+        {
+          "hash": "2d190ea49fa590da904af91529b03e00aa2f5f24efdeb593dba65e8a5b1b6579",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/be140fa412ed5e53f8de47203ed55108b3862373c2085905c0fcbdaf58dc6030.json"
+        },
+        {
+          "hash": "c4fc7b6c78add30a5cfce2f169f4684e262ea639183810a4b308e987dd3401de",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/c36ec56fb29469ea9d290aa5f08e20ff07c09ae5a4169ac1469431119cea0846.json"
+        },
+        {
+          "hash": "27bf82c266edd6863fee2c1eb8e46710fe8121dab326b6d5957c9e0b1ecb05e8",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/c402b0ee7f56e0c9b46a1c813c8750896e441a94af0006459d9b37f5ff7706fb.json"
+        },
+        {
+          "hash": "7ff72eaf4d99aed0cd86a80399144e26fd9788a8349d29ef7912abd2fc6f1cd9",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/c81e210eee1e0d6ff5570c7ed6a032ca9e2918173f569814b0e779916b20086d.json"
+        },
+        {
+          "hash": "ed89f488b93edbaac7bcce2ea09c18bb07b7dc1c9b653e7a5b335a701ed814af",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/cabc702ec05ff91a9e47a5c895abbc222ed9cae1898f0acb3c1392c7327ae42b.json"
+        },
+        {
+          "hash": "90ef3fd570c8ba402e045058a646ec15aaa09d90b420bf93e04a504fe0e0f90a",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/d20999ec85a9faa4aaaee4c606945b311cac4c968f3ed6c9c70191094501b4e3.json"
+        },
+        {
+          "hash": "c9b07b0e6748a998fc00f62b441ee2c1d92b0f3f360566a4a26e7020ea45a9a6",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/d301aa08f64e0722099cdc47b40f1cd6d191a4da866cb6da9f7a3e01f6ace86e.json"
+        },
+        {
+          "hash": "c593dcc802eb018bb5a659934b925fe094a791ea73ac8dc739ddfc4f24c51cc3",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/d4f4856b6d21f7130b9906246d998673299928981d8e372b170a0319131ddd7d.json"
+        },
+        {
+          "hash": "789d137df023fa6d2671ce5ecf182fa45523a2d58f98acbcb464db255731cb1c",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/d604d0dd9a0d8de304815458858db970292c8ee4ab739c34924d38317a75c134.json"
+        },
+        {
+          "hash": "7de9f5bdf4e5cb3dc0632a6ddb6227386e7fdaad6ce5328f1580373dfe3064c8",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/db538a5ab3881f61a4eeef09f8f4f5b8359276c463e0a1478ffc6bcb2ae8bd8d.json"
+        },
+        {
+          "hash": "8fcc84aaca9b698b492ed73e9694d5510a690f42d872182a5a246c0de4b0d201",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/e51d77a2ffd75f9dea6ae7e1c19ab703154a60d6717ba8e8fbe4c5d79ab91693.json"
+        },
+        {
+          "hash": "5c1a10de1fe6352c629d22492b55dd798cb361e610cfa792e0e9b7a46ae957c4",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/e52ba0faad61b3d5859336f3e824410eb9e036529fefdf26b3110ecfa6838dcd.json"
+        },
+        {
+          "hash": "c1656195a7a57f4cf565f64fe9a63d9ac9abeb105a688f6020904ed4bb055fad",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/f22a6d6da1c67723bcc2dca5593e3b0b45f145d24cb78b5ade48309cc7950e14.json"
+        },
+        {
+          "hash": "0368b32487a2e7f0ca454457a7900e18653ff4a6de3b24c946ce002986338bad",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/f6b5a53baa2720f5a3c485c00595c8133c32a350fec5c3493301a4a71dd3a951.json"
+        },
+        {
+          "hash": "42171ebfeb4a2b6c7ab0bb77bfb3a7d31e10d81509efbc64bdeba5c4bb478e9c",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/records/f78f3fde0e3713ac16f06142a2612b015258ab61b840e0ae90b8cc4474f6f787.json"
+        },
+        {
+          "hash": "109ad2494386d52ebce06d9f8f92f977022416bf732231d399fd50c68479710d",
+          "path": "fixtures/sessions/instrument-copy/value-comparison/session.json"
+        },
+        {
+          "hash": "c5162c8ca001abf98cac610df6c55f16d77e9ed2fdc64570d2d22df142a44f22",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/205c1cc31e311ce89e879c07c597cc4bf6322dcc4c0ac1b97dd83e2ce876465a.json"
+        },
+        {
+          "hash": "4e38d17f75e5d4265e98426e2cb3dded75856609d7d9eb86eb28fc3fff139e80",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/29e6ca430b9798f053b642d9c95d9ce0bcda0661d6117892ed85551ccba815a8.json"
+        },
+        {
+          "hash": "0f1ac0f8218791b79183f0e7629adf089e9b3c2969b344f3d04251c46419e83c",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/371d52bf66cef158b426b24986fcedeabba4bb6ac187332b697db08e985984a1.json"
+        },
+        {
+          "hash": "d4ce7df3209d821789b102d1fcf63301af88fbe56753ef721ec73e27ce6f0c5a",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/70446936ef383e1fc08a8af799b11a422037741acdfb6159942d8e9098bf0a2e.json"
+        },
+        {
+          "hash": "e2338feadfaab8c97a4d5f9bbcabce9d5e7dc4bb79ab898b098a786bc3618534",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/c0a53e3e1816acedacfe5a6ce953369b3f807275f1a79c266b78ab2f563ba672.json"
+        },
+        {
+          "hash": "b6062e37887c843aa656502117f06a06ca9355e2f60f76511831c96d3af1f686",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/e81271a645c7717236f03323533b346713969ccbc1dd82a42b84ddfceec00bbb.json"
+        },
+        {
+          "hash": "f4cc5689d153ae07bfa7034f6bac189c60428b5506711a15be3a01c835d0beb4",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/ee02651261729dd489d0345d7571db5adc57816f42945418d3f17356b91d8b56.json"
+        },
+        {
+          "hash": "f0c2b670ab6daad5bf6132844f9ff09bac0b2131c161e67521f8d6ca40dc1927",
+          "path": "fixtures/sessions/instrument-copy/value-push/records/f068847edec600fdb1e99741d343db293f135abbe76f2b908390b5d659377dbd.json"
+        },
+        {
+          "hash": "b39e4895110cad45fb273fd01d87511b02bffd371c603eb60b4dab4ada9f26bb",
+          "path": "fixtures/sessions/instrument-copy/value-push/session.json"
+        },
+        {
+          "hash": "1e037ccc18fb1d3f10b3c586ccce073cc71edaf003e040f8ba4b004a625cb098",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/064863ddf2a626bd22714bf7d36aa839e2110103fab387c5054ce873749db0a8.json"
+        },
+        {
+          "hash": "8a2af80fdbae18d5c2d6327115235f7409e208c82b4867715e6bdf37bac34832",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/0d0f55cd5979112c31dd6c19de5d4ec047928b650ed02547f12cbae3c5cd0908.json"
+        },
+        {
+          "hash": "40c725109e40337c0a003d52ea347222011d912472ded31859337335e5c61981",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/12af670b9cba94e98a95d2cee6d70f24d154c3878ba203da28d7b55153606439.json"
+        },
+        {
+          "hash": "de6dd65088cc496721023ee987996c8330fe1d8d1182e572e1fd335181b91167",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/152a2288ec9441516b560ddc453f9da48e0d3a87658b3ca37547f425dd2aea76.json"
+        },
+        {
+          "hash": "c96c43be189ff9bf9c3a775a05e4578aa14563e4c752f4051583e84345a5e92a",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/1532877dd6eab5a44ad6add11dbf9257260c0241cea6452e15dbe861b40fcce0.json"
+        },
+        {
+          "hash": "ecfa6dafbf77607f007df9cbde568b3be182d2d071b93d7d8858ca1bfd82c3aa",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/165e588b816e399cc621f8db70ec3dfc45a92606b6206a86a6b07e310512be5d.json"
+        },
+        {
+          "hash": "bc29486d8abf88ea50865dfc3f40d3d38b37c9399a349af7d17f0ca44aca2514",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/18484d282c3cc5a13ae974bf1fe5fd199175f2638f01144ed0d234a4f4d9f82f.json"
+        },
+        {
+          "hash": "99d3164067b25c19d92c4d8c0ec7cc196452c7702df890bede08cf868235fb50",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/20606558424273e235505ccade3cc6d6e2f033d8f67b7727388ca0bd1c0d6f72.json"
+        },
+        {
+          "hash": "b810bfa3fe4f8f43fe53f44dc8a3d8b89351f52997d5f2321e6c99be4920eae1",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/22386bf9608365199528eddf90037d9b46dd9bff274fc069686f6aaf3c3af8e5.json"
+        },
+        {
+          "hash": "7bf6f5846272fb70074403cef839d8bf00a611cfebcba482afee7cce18c02cf7",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/269d13465604512a7d152544d18d406c2a3a9bcf30cfbb20e8647eafed0fba51.json"
+        },
+        {
+          "hash": "a89e73f051c1413d320d84ae8510f0bb403f74e25ab452966ad07863f77efd0f",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/27a97c497f601b4fa0c76e01b9f0eb5510cee331762b150a3e3ba2d4ed789526.json"
+        },
+        {
+          "hash": "a6689740254e000401a85b599b8ffa63f5a57c6aa6a2687cc4d45a29a6bf5d88",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/30cfffcf47424073db9fe9d3a405e3d5129db846d5490e9eb88b174de9384e84.json"
+        },
+        {
+          "hash": "fb1b78d47a9186c95100e1bae1e9bacda117fae1941fcef01787a34de956953c",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/348ea61587a8f351ad99e6cd9cbbbb26088003bd72dd2ee724bdbdb30d36774c.json"
+        },
+        {
+          "hash": "2f7b763a20c2416151fc5bb98ac89feece2fdb5ba8afcd004f4dee3b863162c5",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/3586637238d476dcf8136c1c0c3d5c47e7925addef81500476bc950c5b00b5c1.json"
+        },
+        {
+          "hash": "06829460ebd542e0a61feb3b17dd96af8a425bbda992118d3932c53f123c21d1",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/3d2d00043290e16924850f6efd20722078c0b2211c2ec19206810867d22e3c09.json"
+        },
+        {
+          "hash": "79e90c676a8d1fbf1eba3e615570ee7b2ade06225cacf61366b7c1c275dd6d88",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/4252f60af42cff802225a5ab1f0ceeca1ceb901e87ba3a2b8b634437ede22c05.json"
+        },
+        {
+          "hash": "5f9dba1df843b5df742ff6c0207804b2f2e67f1cfd87c90cdb1f6965a888a0dc",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/45acd0c281f82375f1bf3f9136138881ab54d9db8ebfd394ffafa7084d12eca7.json"
+        },
+        {
+          "hash": "9bbf26730153abefc75f0e99617aa6a3b011a987a245b35dc1e6f35f2280ef14",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/4e248378e0aa6947410705d03a6507688e65249e97de8806cc7360c2859210d2.json"
+        },
+        {
+          "hash": "8850827dd0ce7138d7091360b9706853ec14fcdbce6ea8c2f440a0166f27e10c",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/4f9848152ac3efc172dc3dd913c7bad794878ba79726819b8218823bacc42f3b.json"
+        },
+        {
+          "hash": "087dfdca2031e2bc2c04e8d465a2be9ae3c5d491545d6b13423df0f38f258507",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/53ecb44bbb8a571b9551f34cec0999aa749133ee1d9dad054673cb7960462b33.json"
+        },
+        {
+          "hash": "cbfd6b1cd5bf61e3bc7578fd9bb8f321835c14a8244094cbe2a83a3c01b13eb8",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/54e9b4a0809858d0bb4434555e004b693129bdba0d5594a076f90e4eca1a3a96.json"
+        },
+        {
+          "hash": "387abdf46dc72880624d398e984d1e79be295ccd4766ef0e4861e540ba19dd0b",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/55c4e30558602cbb9fe895b0a1a4bf9a9f98c066263fbfdbca876c9ba44bd45c.json"
+        },
+        {
+          "hash": "99b422b1bb1e177123cce4b30f0cd12bb689ef89786c6a12b7af0ab7d81a6f46",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/570d701d42e070daa8c3c5df9b885eb2410b8aa241bb37e86a5619959c2518c4.json"
+        },
+        {
+          "hash": "1716fceace1121ec8547a0cde133836b1c4d96adea58f2f1e4497c4a71e3d38f",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/575cbb509dff228d266d84832093798a0ee3e67ad4247e5c4b31753902c3695f.json"
+        },
+        {
+          "hash": "efeca8423b082e9d8f343fa19c31fb8ac0c131708f5931e4d62c734ddb3ac26e",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/5771d837feed3218e4588bb8ec697429d10311ebf0d207b2cc22d0fe3571d9eb.json"
+        },
+        {
+          "hash": "b3578552ea112049fde9ad8778c6a85290a184a458a4d8a404a195d412852a61",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/5876d7d5bc60478e28ae74a68b3fe89350fb83e8d796a30aba4b28e10644ccd5.json"
+        },
+        {
+          "hash": "7df13a990274c40640caad4a8b7cad2f87598edc2943b7ced04426bc20146bb2",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/5ddb6558052ec2f2fe1e7a7da27b055c3237b67e88e8dfb8d1b3f24ac73b44e4.json"
+        },
+        {
+          "hash": "7e21d8129dfe1bedf59647c00013912c99ac2f1088d1d97208440d75e4773b31",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/6318ef152ed0d33280f4859b3a2332335af7972206f8ddf4ad35adb271efa448.json"
+        },
+        {
+          "hash": "5e4eb53422fddf42cc162476e3da70aa057376922ba4a5663eeba95d19123931",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/697c77d934529d05604a85d95883eadb8c6b06b8b67bf628285c23987772cb35.json"
+        },
+        {
+          "hash": "d4829d3fee4ad2b9e20bbb583a124d7b664e53d2faf4da01035389d0425e4970",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/6cc852b44b74f36cf5be433a599c3eab9d6935cdbd9bf3f1f35a954d16ad64b4.json"
+        },
+        {
+          "hash": "296bbb6590428d934dfd054a7486c4bf3efed4c7a25708941653d4a7b40147a8",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/746a5f770a61a48d08db5a5523d9631c382244df0240ce9df0c3b9cf49dbd2ac.json"
+        },
+        {
+          "hash": "6b5c69fa5118f62b1aea37f39fd3ed56fa362dcdcf655563e01767ee0ce38759",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/78cd3e40854f13762ec24e953f0bfdb16189694fbb4250818bdc7d296edc2859.json"
+        },
+        {
+          "hash": "97500b29ca17109e091211a8037b83c33d2c04a12206b225da8a6a2f740b3031",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/7bae8ae0cacd3e715ab6306fc40308ebfb2c9007cee3cf3f9d376af649166807.json"
+        },
+        {
+          "hash": "75129363bc36774df93040b4cf65c075b2c73715247879c19151cfddf8747497",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/7be67b0d5506d9b86c9406c139c731ffcb44aa7f4ee1f0a8be53264cefafee50.json"
+        },
+        {
+          "hash": "caf28ec7ec0a654cc654afcea0818595d3f39d66397772bd5c001fa9c5d802c8",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/7e793506a117fd740d1fb0cab1df46e99c417f1c787463dcd77c7220a51335d4.json"
+        },
+        {
+          "hash": "01fed48717f2b32bc739939f243a61e9d63f370552a93c24dfc05fcb7164f191",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/7ebfc79ca4272e991410ec0d0d7bc889640a02be8a15e383ccc1a6434c28ab79.json"
+        },
+        {
+          "hash": "b35032d47a61cfc04a5f993f1dc790938e6cf71a944b3d34599af466c08be2b7",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/8411c988387f087367b9aed907c495a97691bcc9842f5f59bed83ff59a07f323.json"
+        },
+        {
+          "hash": "9dd47eab7f4223704b56653e5bc3503cf371fa127ba9a2afde5f82b55478ff53",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/92e5e01c99199926e988cd79a51b5d32aeae4fbe1551afc74baeb02c3e91ebab.json"
+        },
+        {
+          "hash": "7b3c35138c8d85d39bcc96633a9695d413c77004880067145a0ec925a64c1ed2",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/94187f87fd3dda407394fbf6b2d4498b097780d82d660b6ff4241a4055511ed9.json"
+        },
+        {
+          "hash": "f36565fcfb9f70e537434b96405e5b55a6dfc0e104dccbc8816c37d3ac0e6037",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/96d0dac0fbf790a83f8b1e8172a63d164773bd0b15ffa47b39f5994856039112.json"
+        },
+        {
+          "hash": "4833577f31f3598bb6628c67f534a0a2e1172c3dfbc8a5c22bd105e43121789d",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/9f7bc83702b990f96dbd1a453d1976f82dd8a1c09bccf6fda3f1e7b9fcda4068.json"
+        },
+        {
+          "hash": "8b65ab32d83837abac686c2e552c3684590a5ae5c3ad32da6360984399c99f75",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/a1378c037e734cc500acdf6accdcb89a87338bbf6ec17ff7ea71da902396d6ca.json"
+        },
+        {
+          "hash": "0a8ea4d15a4938c97c41c219a8272199e364ace553070329b4e1f4ee1fe2d403",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/a388b4e696680497db88f56fe5d383d920667f14e9b97139130d33b319c936fb.json"
+        },
+        {
+          "hash": "561d1546a3158d1e958ee7a21142fc095f011ec3311372e784046bc463c9c8b1",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/a79c95bd6a36f17458183688aacdd34ba2e6c575d98da8b3e27be9d819063c73.json"
+        },
+        {
+          "hash": "ed205274fdfce0c8e607cd50c38c2938b4f4ad93b86b4922d1e001c256bba4c9",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/b436946f892a60357b73e8327615316c43a6b2c6c4f607b1dad18e9683fe1c3a.json"
+        },
+        {
+          "hash": "7112770462f71667f85ff4b056e64d9b303ec1d2d9dc80fb5f253e78ec522b4a",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/bb279cdfe87c3949943547b3b6979bba6e411de9d5d46cb8d8b5a5fea4992efc.json"
+        },
+        {
+          "hash": "20ed3d23f9dfcbaffe42075f0d378c92b5b18fba1abd9b537c56f41d2be9cf07",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/be9c7a4678e4464ed1b61fc89bf2e979bc890d7902c65d34e7a39940b1c1667b.json"
+        },
+        {
+          "hash": "e0f675fc3b43907d99fda1e16b65d4b9f8e07fff70ef2867730b836c93011039",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/c041e941a35568d4af20773b9c687494e548f3ca69a6d3275c671627b1a9b8a1.json"
+        },
+        {
+          "hash": "836b77379e5ec2423ee03ac003bc34aaef972b1bd0188dc3e12085b87c3a343e",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/c750db44711ccfe7707219d0f1db4baf97144831d79ab5bfa37004a8cf912e19.json"
+        },
+        {
+          "hash": "e5266ae36d898172bf0d9337c80f00920932e09c40a6acd302bc6164396d23b4",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/dc747eef306f87aa357de47739b3d0bd26b5e2a09abd2226c7a491b4b6fef2a3.json"
+        },
+        {
+          "hash": "33cbabaf2b80c8ba709cf89c1eb2842824db93be23df481c8ca0d2666899362e",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/ddd1545fc3393bf1b1b928324c50a76ac09ad3c08244e65e5979fb252d6c2a3e.json"
+        },
+        {
+          "hash": "907892add11b0d47270d9832ed3aaf0bb8ca555af042f06378ef8954f94d85c9",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/e0a54acefd0b5fafd9be46f219e6138dc238c88b8f9614c0e2a01e508a1c35c6.json"
+        },
+        {
+          "hash": "aea57dd3c2157f764310a6f44ac1bb81348ce72993392581154eb548d951fb16",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/e6e59008b6ddcf65bb562fdd142d1c40f74f60f7bdee7f5a00e1807af2f4b4c2.json"
+        },
+        {
+          "hash": "146f74febce4efc064af771f954ba289101bdc49a87579c48d7de915a7b93890",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/e7364cab8bc5ab68983c8e0af3b9ef28f0fa933d731f6751411bd3a9bdcd2d46.json"
+        },
+        {
+          "hash": "ae47a3d4b518a2ec068ed17be0f4017ede2ea0c3b85e590dd871c68a382eb93b",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/ea719d553a1c6b5c8b25c9e40d08dd1fff3d9eeba68c11ec2a36118276ba9c0c.json"
+        },
+        {
+          "hash": "0f7a4652be9324a6c1b63cf9f508e3c325c341610d8c880252c7d96f100345a8",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/ed14d9ed1d70efeb51cbc9fdbf89ff480dbf24a9755eac393394640758e19663.json"
+        },
+        {
+          "hash": "fa4d03975f6b8fd31cf6b08a4a3eea6861f0ca71e362b786eeda4b9c9d0e2ad9",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/f01df5067c4796a709d733673611673072597b5ca2b26eafcd58eb8903fbf717.json"
+        },
+        {
+          "hash": "79d2c83cf7d2d6bbd26466d6654fff2893bfef1fd500e63da0677e273e1147c9",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/f114b4d299f10198d7724119977f95361da145fd35ca7febe9c9d0e34859fbd5.json"
+        },
+        {
+          "hash": "ad47452720100e2a5e5d6f8ff3823b3880326135378849817f857f5a6c5bb89b",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/f1b7721c122758963bf68109769ce02cee1cf4fe2e6f7aa97651db7336c6d93a.json"
+        },
+        {
+          "hash": "16325420fe8824a10c07b008dec8b556113fab9d0bf3ed8618b5dd1158b1da2a",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/f6ec0600bc7bbdc86c4a16715f7bbf848524dd8c9602336f6f0491874d609143.json"
+        },
+        {
+          "hash": "ac3ccae0818a7fa1e1ff9e9db223fb3ce8ee210e93350de42e1a9dd1fd04b6cf",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/f7ff506245afe1e80afa7501baf1c04bcacd51997e729de7edc8124f693d477a.json"
+        },
+        {
+          "hash": "bfad543faa0c518d8d34bbbdf037817fed8e483e652ced0917c32abe927a221e",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/fe66ae99907a4fee4a9015751431cd21b1c737df254ab773ec6f0943bcc757d7.json"
+        },
+        {
+          "hash": "6bdf758227bedfc56ac3c5921ae4fd3983401421ec5d1ff58ff05347a8226aa1",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/fee364a581ce9b8d52bcf407bbc99ca65172922c71a263ae48d18cf64567f4fe.json"
+        },
+        {
+          "hash": "a4cdbf90737e10351dceb6763c9a3ad4b56993ab456954fd9211e964079feee7",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/records/ff9a91ea737bf447c6f07524a6dc94e3532eb4df1fcbd3cdeeef9eb71200c6ba.json"
+        },
+        {
+          "hash": "a8b17da6789589907403fc13536130ae975e9e0b9b3dbee0bb4c92d002c0f372",
+          "path": "fixtures/sessions/instrument-copy/value-quanta/session.json"
+        },
+        {
+          "hash": "d25a0553e932c3abb130604077d1a278aea4d7a93088f92658300360a8ae8dfe",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/085f0613ef28ac3256f84862c97149661f275f47b229b3af3de8d9643cdc01ac.json"
+        },
+        {
+          "hash": "6ee3bd88e2154f4a3eabb96b397fa941faee93f869ef9349f28c09d991eb0eb3",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/0f9cf083e87725fdb044451388d9b6cc92ffcba8e7ed8393db218d857ad345d7.json"
+        },
+        {
+          "hash": "897abe95bb0bfcbbc472f51adb6cf5fab52962817b64ea16b68da1b9a433ffe0",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/10ac83a39c61c1994e308910c0ffe8b692adcc195323a07919f9bd1283ec3743.json"
+        },
+        {
+          "hash": "6ce0b4e072a93688c2683170fee84661955a3a2a7aa43cee948c812c59b81071",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/10dbd85517bf1ac117bbe59612dc3a87f49bfd1bf617483b5f20734f1867dcce.json"
+        },
+        {
+          "hash": "33bbf93c80cf30e0e189b75dd3230fdb915638322d8ef7cf4d80a1e4ba289086",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/1b51f8650d0611a74393dec47b2155150ce46a9b29825d2c97f8ebbaf9982ff5.json"
+        },
+        {
+          "hash": "8039f3a9b81ad6d7873dea4f5df8559dd887b36b2351ac6c4fa0658600d98b7f",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/1da086b3efd597cc21c1dfa83aafd79f631af539e44ce034627b04ffd4479de4.json"
+        },
+        {
+          "hash": "0960ca354090e2c7541b4f0a5039bf6d82310b5eedba7d3b52f8cc6e1fb20576",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/240eaac8038f8fd2ccc08c6217642095daab9f1827011458247e6afe5cd301fd.json"
+        },
+        {
+          "hash": "8366d098df8973922adeaee116f83e663aa7f3ba8d1d7969b3da1c71ebe962fa",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/26edfc9ea66b4c21384a123a765d75423b7916fb2de5ecebc6e5561c0764afe1.json"
+        },
+        {
+          "hash": "813bc61304af318ea8619c085273dc4e6a303df8390f3821a1e42699d5a328ff",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/2e341111461a15934f86d5fd6547bfa25a14205e591c5a81b7e5cebcf7db18f1.json"
+        },
+        {
+          "hash": "e3847a0a1ad7e496c8353c4986e697618f8e7552d3e594d6a385d2530fa5e985",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/2ffc4b89183d1a37be65489124e4d444686f45157ed80845b376aa1556f2931a.json"
+        },
+        {
+          "hash": "9b27ae78a2068aa87de8ec6719f53bfa4f776634f59a940dbc8f9673b850ca18",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/30f56ae81f38386009be19dae9770ffe43ef091158714e9a2c3837ea6caaa783.json"
+        },
+        {
+          "hash": "376ef694d9bb4842a019ac6acd74f5cc3b755d0329792090836f698c0d09d7fd",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/30f5b185226f43f9aab8e54945c493d54d11f8f904352c1c552ec67b73415789.json"
+        },
+        {
+          "hash": "db5279cf3f8d609a27d00410229c824869ea2ecc5e60ebe693542dc3201d07bd",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/318bfa6d081967de49eb970935f02d4d6f9b9b7d08c89972df52048f0cd88522.json"
+        },
+        {
+          "hash": "178a2b319687cbbae0abba2b9d245845afa0693adc4cf3dddb8f6fd09b67db1d",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/328abea47ef1f186bcd3f581dcc3b0d7cdfb88aa1850a58f2c7d2cd22e06aba3.json"
+        },
+        {
+          "hash": "89a865a0c936936aa55095428eb5146d38ca08e45700f3db6d6129c9ca952766",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/3360cf2c4401f9f8a858f9c5825b629a1760f7d454f32a674fe960f5d3a0519b.json"
+        },
+        {
+          "hash": "80def1a0cda3ef3c0fecc32e031ceea739ba486f5438b62011b3de5fcb5089a2",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/347b7432dec802f6b2dfe649021fc4401981c910c51f6bd2f950112f33071fe3.json"
+        },
+        {
+          "hash": "629af772700edae94a503ff393c1316e91703c4eb72ad2192f501fef9569b8cb",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/3acf18cf83876acbe2ee9e9f85e4f49639cab88bd2800560842b113c1d5dc121.json"
+        },
+        {
+          "hash": "a5650f403842cba5b2a0b85a118db43abbde378148bf4652b9d9d545a7e5632d",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/3ae385c2619ceede99e6731fe83a6b9e25df92e62a3e2f2099bed3e51926016f.json"
+        },
+        {
+          "hash": "911596ff97b3c4d87af6de4ca228244ec45a0ab5fc48ce4ea8b4e0e60544cf04",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/40f06de51b9ec848decde599d6b136e74402657800457a4b6eb0e283b6cafb47.json"
+        },
+        {
+          "hash": "81da44c3fae7f2edb68ea2bd45c29fc8bf5a83b8a633fc1740f50c15d0c2aa1a",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/4d29d6739b2875f3dbb8d9352b4ab32a2303d48effa247e2c4c93e752c22a5c5.json"
+        },
+        {
+          "hash": "31368f8b9382edb20c3ca5b5c391ab4179f087177ea63f94af7ef365d1dfbf35",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/5153d224ea16176553f3710e11bd3130c7125cf3005ef4fcd8f8a20e1c1b90d9.json"
+        },
+        {
+          "hash": "087f66ff33750e1e15396f4640c3a49002749882853db850ec80a2f6dcc753d2",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/52683beed59cf6161aa80a2af5f9924e27131be52bec903b27054c2a689e9930.json"
+        },
+        {
+          "hash": "3dd8caadaf782ec4bd9a81b234125e4681c5a9f148e840db613dfd01ce9a8af8",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/631c7261c21e1c7610c01fc8b4709a6fba62ad3738a4ec06f023e386d19b0713.json"
+        },
+        {
+          "hash": "bd71d5a33ff9feabf9b2f4057b6469345b41ca4036f3545620d3c9403e5231b2",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/65f96744ec35c58dab602340c2169cfdd9a7dbc21f1ea29942c72ecb9defa8b7.json"
+        },
+        {
+          "hash": "7aad6080791809859284a19d6c05d7597e9d6136eaa419401f34a6e6bd9e00fc",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/6cced5ccd0b32ed57071f1500e38017e29740431170fda0e13d5e374ce1c4f98.json"
+        },
+        {
+          "hash": "005a3533f6f94d413781e345530bded2b1909a09797f05c4dc157e27ba83f246",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/709f5fc0d9d3dc5cec9c628d01e62fccc6742c161a5649a632913bac83a86c9a.json"
+        },
+        {
+          "hash": "5c7fa3b6e1bb4cbc4e2e7ea48f1101691dff7ddc56d677823b52d8bb18224018",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/7165464985d6d46936d4e49f2e6075bff9c9bcfaa1517d08e658b378a139b128.json"
+        },
+        {
+          "hash": "54d3e08c67c1e405be66e2a91d967fc280b45a82d70a4140502ef4fc7817eb8f",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/727ba32480067a7b4fb3fb311a3b487f6630766018330b54b1af45ce0f9b83b4.json"
+        },
+        {
+          "hash": "5b0df3a1ffd1052422d82ce41274eb9883dc0714e35bdf73173cf33ae002f623",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/7be9ebd5fd769fe52f193bef1a3ab46d2537fbb805d4e9d66e6747ae3718ca8a.json"
+        },
+        {
+          "hash": "0b1da5d11909457b3e95d2d8f08875586438dd4ecb57f54b6873d3de6e5652f4",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/7ef73097e2e9cc6d93e281ffa996458dae263e083f94c4d1b0deb66ab18fd055.json"
+        },
+        {
+          "hash": "1cb32a71894d5161dda9944234aa8252cd06e0be6d14d70d942db23f18e92ca4",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/850b298d93ede261d31f28e72004565bf5a44022ffe637928904a3f187e573bd.json"
+        },
+        {
+          "hash": "c93aca90198a63557a99c33740efd41a8f2d918a1a99fbf9bdea7ebb587a7093",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/87c102aa0b7af8f0e26b157213ad07c1d01f2787878b1f8972bad04cb626cc95.json"
+        },
+        {
+          "hash": "4d5439bed7ca8c2f163b4f82b40ea84d7c84f65e3db7627ea9a15360c1e10954",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/89fffc90e5b4926d74af59aac1bc2e2914e96f275184fe97e4e6ab07befb74fd.json"
+        },
+        {
+          "hash": "73781d69ec9e2355df54719bfadeaa22eba122f8956e190109115d9b7ef200b1",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/8b02621e6b647f5ea71501cacf9f6b6b8d7062237c03a6da9c0d423e39084ff3.json"
+        },
+        {
+          "hash": "5097494db8cc40b6bd135a23f1591ca01b2bbfe3dc31b8db637a0e8861fdc583",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/8cee9e9ba3f171177857753584c6d8a36d8c438b4f2d8363ad49ba49ca186197.json"
+        },
+        {
+          "hash": "ddfae0ea3a8bc0d0401743062950aec4a5f4e7bbdcffea91943667f4e4485bfb",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/9267dfd52cc549702d238ffdb4d125fb165c7cab7b9b87d701731e5027694406.json"
+        },
+        {
+          "hash": "f95558461ac06e63ba77ad27a3a34616a3b0f4a06b54e6ea80d92b14e4d8914e",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/986bc08fe3cd920cf9858ed87f6b0660bea6cde8c3358b09c01cd7f698c4f4fd.json"
+        },
+        {
+          "hash": "70b7cf0ca48351e11ab0126bea49b89b0c08cbcacc4bff5d9575b96442f00e9c",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/9d232bb9e43c3632a9f296ab4fff54b8c068642bc3de4df1b8e0e68a0c7b98e6.json"
+        },
+        {
+          "hash": "5fdf73e9d806f2a3e583ba63b86975ec33da45f67ef862dd51c646aff0c38798",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/9d3eb9494e428b01b785e16a669840ec8b361de6d4c12fd9d49650eb0c52064b.json"
+        },
+        {
+          "hash": "64aea37fd2b13ce604ef1486489bff28811499068e91d2b59102cd06701e752d",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/aa701b856d9cda40614bb3d9eb8a5a97f6be09f0be35189e66beea654320ea9f.json"
+        },
+        {
+          "hash": "48c5e90514074c8dd4e3823b5a7b3288992c856016e352caf837cf6c4f6697e1",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/ac5493f2c5619ade66fc7742ffb4d346921151d91b1c8805dc90d1b9573dd635.json"
+        },
+        {
+          "hash": "1c3ace2bab48aba36e41ca431bdbaf12fa213fcdc3f424ca77986134717c67dd",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/acbc04fd2b7b6821010e360276bf55e014bc74b5322fcec864a24acc3b321b82.json"
+        },
+        {
+          "hash": "0830a6ee25cf3d4e55ad4c0413b857ceb00bfd8a4435879a9ca2fbb8815b3c9b",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/b42d1da91c31fa9cb4ca78e5732d007fab0b6d23dad7233b7ab1296b9aa113cd.json"
+        },
+        {
+          "hash": "af8410f53153d3b9b8a17d91810cb6ac2e571646eee45422a710ba543b688936",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/b519378a6580f467a1fb9f16da42462a21957220be419ab5e7f3145247b2b688.json"
+        },
+        {
+          "hash": "c05f78880859bbe73fa44716cf09317a119e37ad19c9a218ba3b519ab83e30af",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/b9504a85305cf10b94e6139500f28a6ee18514e5916c9445068274bb60ee5e6b.json"
+        },
+        {
+          "hash": "b2bf77cc8bc6350be6485339bbfadf8d9627c28dc0f32288508e0e22e34c34ac",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/be1a3db8655f2f1d24bab4049e7d972a77ba899c6c1c5ce6c0abd92bcb5cfd44.json"
+        },
+        {
+          "hash": "31f489cfc8682a0a677e266c610e698522d41cb600bc82ccfbad83e255182eda",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/c5ca9239d267a20ae12ed3e3543f16914819988a1e607a249c051fd1021a05d5.json"
+        },
+        {
+          "hash": "55b10a3c9aed097bcd30e1a04393083cc744dcec47b58db4b0c47a620c52ff47",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/c5f3eacb9780a03f0dcd3631f056fedd5f93a80d672a6410594b2fdc28165d4b.json"
+        },
+        {
+          "hash": "414fa13b0de12ecfc766654be93d22a28108b2e78af4d91d745ed618b17d7a7e",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/c8029a2a48fd08eaeb983fa78970dea0ddfdc52145ac50d99d402bc46d89d29a.json"
+        },
+        {
+          "hash": "6b9986b1c4ef81f9798de29bcfbd8c0c259e8de737c8e26e4e52ee99254a0d34",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/cae1d815d41307e97eb29b69f0ccec3f5eab33755645a23798b90aef19976dfe.json"
+        },
+        {
+          "hash": "23830862741d6ba9cbd2e742003806f84cbe22ac1b8cf2b0e903d7d7a41e2afd",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/ccfad07531c278eb4ef1810b60595ffa7e1b08a685745a9e0d82a16f54f582c7.json"
+        },
+        {
+          "hash": "495ca8f1a5aad0d9bd5d2b8aab7f62da4495430a43ae2f15e23ebab4eb608ca6",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/d7ef41063fe320e3df93d88dd2abc05b5250a9295999af2e4c142a9afb212e36.json"
+        },
+        {
+          "hash": "41e3e20fa781c921f371c715e0d724306923d6c0a3a03d0d7f682b27b0bf6900",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/d9e4c9ad27c260909528273e20ab3263a986560ff9e6f8937984cc764f504abd.json"
+        },
+        {
+          "hash": "37b114e21ef355bc917a18492af05cea04aa4e6fae3e007f0585c9311899cee3",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/da0ac4dc2f1f9584bf23f7c4f640e535866ad978b825c52db4dfa777afc0c76c.json"
+        },
+        {
+          "hash": "b9f4022a38d0dc206948bb68f52d302e1c0a73c263094502f153708942696fb3",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/dd033d6cf1fab82edb306af55cb111a93c03c715ab5950512238d3902f66457e.json"
+        },
+        {
+          "hash": "f04f38d06377cd3dda0b01a165d21efc99068084576aed120facdd8643ac2022",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/dda236534bcc78d28aea53c164d8d60b50a8386724c6e80d5e4a2428696e5538.json"
+        },
+        {
+          "hash": "393e5dfc7e03438d8ab6bc8bccc1837fdc3e14fb459e598daee69f58d27fdcd6",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/df2a1f873d3805e896e1d8849ba7616991e5bfcd4841ab461b805b5709459af4.json"
+        },
+        {
+          "hash": "caded06f6fc5a3d31b0152bd45cf4e7ae591bfcd15df0eaa8c7e92aac76aad8b",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/e11e68d68ec16fbbc3795360d0221b2827f45b251da38272ee5385703f479c80.json"
+        },
+        {
+          "hash": "5dca28c8846b8636cf1edf1d9da4c8feceb9813125e46dca961315d1aaf64185",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/ecc276dea2ac13c81a138621b281f5e9cf61fd13cc4083f5c21f4c5c22760974.json"
+        },
+        {
+          "hash": "a476725497330513bd250173e5ebd707bd62bccc06887c1f9819b030d34422b8",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/f053b583bff5ee63db28eabb4aaf926dc469a55eca8e2e005079e382e0b572d2.json"
+        },
+        {
+          "hash": "1a02209a74c0b929240e292f669bae307e7959f7177d2fac45041d53a0aedf8c",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/f06d5b3e2190240d6c982b3cb78f80f8fb3bbc57b22f96024a8f216854c8152e.json"
+        },
+        {
+          "hash": "20562ba31d95ad3b1d46d3ef90d36579da11f55dffdf171ea13dc8dcb85c3574",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/f255852c6d8f72e14053c0bd6990b1a01ae7aaeef7f99a5842211c0e86eacda3.json"
+        },
+        {
+          "hash": "bc9bda5062e10082152d23a876508237f1d0a33321a0cc24b0212dd03cc5dba9",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/fbebd32477fd737e3c34933e2666fcf5fa5efa2af5aacb9b40162c5ba06ea6b2.json"
+        },
+        {
+          "hash": "4f66eac23712898e1c8c9854417e8a156ef9f0529e088fdaa00f89f779b5448f",
+          "path": "fixtures/sessions/instrument-copy/value-rule/records/fee7326aa68bec00964bc6b364e4d7c5fc3a0838562428e7805284c55235cc03.json"
+        },
+        {
+          "hash": "7e5511942dc9e8454d889e4c8c330680cbde3a98fdbcd4d187289c8f6162426a",
+          "path": "fixtures/sessions/instrument-copy/value-rule/session.json"
+        },
+        {
+          "hash": "e8861a0c88704ac6ff621322c2a5fcb7719419285950891ef1e536b6eb5a8160",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/04de18c8fdc51c1ba1e2f337e9b4d7f883fc781a48627b23fc34dc67d4b920d1.json"
+        },
+        {
+          "hash": "d76f1e8a120e1a78ab691e6a0c33e02354b2ba38f09101a028e98f7cb13c4904",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/0da31c64980715dc1dcb04fcef718f4f0db4f86ff2070e26f66fad42a14eee85.json"
+        },
+        {
+          "hash": "72fb1c8948c29271be02e8759c4d8700803c6f8e83957234f87e174401a3d9b4",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/1f1aa240066d3be26c13117c484602c784fadf1989cceecc690ee33a8ee830cf.json"
+        },
+        {
+          "hash": "698e0b3a08b06b1b6a34b5bb79974052ffab0f050a173fe744ccb2ee77f0aeac",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/260e7a28aa1e93aa4a9b7edc120fa80bf9bc428a42562c550a175306fc25a2bc.json"
+        },
+        {
+          "hash": "64ea5abd864c6cb94b99849e4a4df36b8f6675eed7ac4d88a3d6a538e96f749e",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/27ca2271defa636d06ccd83fd6a0094fd44d71b9805f8032ee87e4a4c3cde2ef.json"
+        },
+        {
+          "hash": "d09643a3e481f96a61ead984ce5f972dd118a66d1737e62b2879904ffdc875c2",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/2b446fe3a3710534195070801b3ab6fd80de204fdae33eb436fe99f72440a4ad.json"
+        },
+        {
+          "hash": "e3d2ec4eb85967ffc4dc960569cd06553f4c4172519d4cef2ed58966323aa83f",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/2eec210dbdd684fc3142876586452fd358333ae82216b40d01b5cd9bdb9a8dfc.json"
+        },
+        {
+          "hash": "ab4d4bc93cbd7096dc5611aed44b49dd510f633cc33efdd7dc956da7822d6bcd",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/2f8b9b3b8c201e5f497e19382ea2d1311f7cc6a71024646a9d77626b6ae57955.json"
+        },
+        {
+          "hash": "8bfe09ca1c97920a210c1d3ffc0c95ebb2814e6ea9c58615e514a809150b3bb8",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/3752e3787c03af44ce331953cae1222437949cb55d339898ce2cf7fb9cfa7850.json"
+        },
+        {
+          "hash": "2da696357f8d69f2e962efecb6981e83e66f4da8d1deba7d02ad197b725dd4ad",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/3a8246f5f6a0886ca4c435575ca8e186db0dc1af71abef483ae93ef6194a7b47.json"
+        },
+        {
+          "hash": "bb9aeb3af4fed1ecae59037e52e83c7ba751c259e6ec00d9162da6a4d48fb318",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/3ae991f618c889d209e6d1dbdb29dd3ae681ccfa5d63fe37e0932032ac199881.json"
+        },
+        {
+          "hash": "bd59b2b1aed9f32bb427b577f8819fdc17ea22b4d392cfb67b69fa912a264cf0",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/3b3742facac3562ea45aca0b8aaf8a495c03a3f0d02abb2c32d8af407b9d8fbc.json"
+        },
+        {
+          "hash": "d636b41f3b3ecc93e6cb9838ba1e594918a30fc31bff93ddf59cfc5947319d37",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/3df37ffd0fddd6c217f397f8b29ff245140c4c97cf770a84cc1f07b47954bb61.json"
+        },
+        {
+          "hash": "dfbbdaa6ce9d70f65bc28c28c2b067a75326873a073077b4d04434339301f50a",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/3e63421651985611a3f8fc314a9f7728b7c2d387cb7120f78bf6681feacccc14.json"
+        },
+        {
+          "hash": "853d3945ac55c317c016cdcb09865747156f19dea3a4f53fd9538812ac0a60d9",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/41011ac41548c5198ae3134f3aa140c786dff16601ba531c3c9a26a82e94da06.json"
+        },
+        {
+          "hash": "c32bb92da85a80fc73fb8df2b1120a6c9de3f62034fa6545d88fd417e4cfaac0",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/47767ac594408818d4227ffa48f737fb8700a43d9934407b8446d178e1f3134c.json"
+        },
+        {
+          "hash": "0cfffcce137dacd4f48ce05683f57a548aa67832de82190c7201c8664bff8c6b",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/4f299f1238d9c2096561f86b121ec2a7acdbb889081beb043db6635fb873a08f.json"
+        },
+        {
+          "hash": "2323a90eb4e58d0e5e15de7832cf258fe70b654007f61402fa3fb51d8563c9c8",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/50c48a1c2e84f528cd6bb0c774889e413cd0c043f8d569b46a395d45836a15d5.json"
+        },
+        {
+          "hash": "2ff77fcc26cc678e91b359a549fd2fecdea5f67c75c7999e8cff0812a5def0f0",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/54255302cfe4802ab90c0cd12db6cc8b095e0ac60d70475abdcd1256c43e7a16.json"
+        },
+        {
+          "hash": "8ef87c8d3732b7885d92558a1e3f0001921d14c372b1f1caf49403f4b144f547",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/58859d5feb651aaf4c9e3ad56e5831a18f0b28e53593dd30c975b94bbc40cb23.json"
+        },
+        {
+          "hash": "df964fc3bb1042af7b5b5ba6178219df03634d2bd7ed0aab06b77ca8384714f0",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/5ab6d05fcc1eb6212871b53369c132c6ae7a6ef032005813064e5e91978f2905.json"
+        },
+        {
+          "hash": "26e8e29712593c49d422122c3a3b1b487dd185d32cce37e3ba50cf21a405750e",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/5b04e5258b657e6587d7a11581086bfb1e9d07aca0cd6e50764467eaf079b83e.json"
+        },
+        {
+          "hash": "7e7dbb50eaac2baa9d3e2ec454fb1c0c0022de38987efaa2c908d93c537e93f3",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/5c6490eda82c9c537d04bcf51170cd160b3948eb8a706c0a0561f8454b678fbe.json"
+        },
+        {
+          "hash": "f495144baea3d3bb984ff5fcfaa1f70f28d88d9d5b3f77dfcd98ffdea723088a",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/60785d5ffd412ff98bdffadd741685ec4ce22846ed168a87fa6100c440416c8a.json"
+        },
+        {
+          "hash": "6869eda5a9a8116603052d0aef7a9a79ffe36801e5c872e30198275fd7acd568",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/62063e8b6631dd7323fa1edbae1842bd21f7058128a181ac50cb3b1649ebee2e.json"
+        },
+        {
+          "hash": "70daceedb5716d7bb4dbacb4c31a29f4c78f6c8098bc243ea29edcc52d2f0c12",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/719d5a9e867d940c029a2a8ad800f5a1e0c5906c0ce66cdb3f00bd6aff0180ff.json"
+        },
+        {
+          "hash": "7783dafe62c5797bfeb38d1247881ff3eaa840bf569df0ca311b518858a20ec3",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/71eefec80ca078d45d505b3d5a31c4df31a92769b1ea5de7474fd252a3b824f1.json"
+        },
+        {
+          "hash": "34a25ae98b9f5653567cad3bc912a5d6cec03ecabde84ebaaf5252b68e73305e",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/7af636e04350e3e922ba38f52f7aa242abe41d5ce02550b340c6ff197c2eab3a.json"
+        },
+        {
+          "hash": "28195049ac4e072303c33af18d522304064a5ce063cee312812b8ad2b307b573",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/7e353315ee9debd5f477d52d4dfbd5935112c66d90bc9fb58defb3fe2b028f1d.json"
+        },
+        {
+          "hash": "89cc8922044302424539c3361c9bc2ce4da6dbd3aec54a3ecdeae88f2d3b72e6",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/7f642693a7c0f7d1bb740a786873f56306a8c0cd824f828fb9b9f3c76bad8b77.json"
+        },
+        {
+          "hash": "42ac5b8bf22fc9501d53d506d2d0bb751ff212177733395ca2900da7adad4bf4",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/824f5d4d64531d7209f101d55a2b6bfb979df8ef84e6c957b5dd7b1802d43851.json"
+        },
+        {
+          "hash": "d777088a4c7ec995b12edf2910155a8c486911c421b664c14522c147c3c08717",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/8339a5e3ed65851127d272cc8a6907225dde5981b09727c49b52d020f4c1b56d.json"
+        },
+        {
+          "hash": "b84aed35eeb12f246f22a0f763dfd820bac2592cddf9238f61c270f05181ccc7",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/8441edf389f65b79616eb2d69e09f3d6d130e626e9c526ed8ed972b3d6a48988.json"
+        },
+        {
+          "hash": "ff38256e46eba3a6ce8a95c564e12ada14dec8c9cf399fc7a1fcccd54986a8de",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/86241065d5e3d9b94f95d5873bd5e2505aa55a574a536120cbfd9a461ae0819b.json"
+        },
+        {
+          "hash": "ae4e9e3f577da76eee129456005a3ede51246fe9968e6d28ad2a95bc00809d6d",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/87234b543b4ba3cea1c761c5ebd01c370634dd8a73893f5ec1cad17406205c79.json"
+        },
+        {
+          "hash": "205a054bb4e29091312ef324d292fa1414c7eff0ea1d4f3cdc37232c59bd60d6",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/93fc1fe87e30159114d93d0b2eb86acdac22ed16706204198de5483076c65573.json"
+        },
+        {
+          "hash": "2ea5f0515e1c28831baafd06a17b164dc667eb78da26184d7ac64c06c412525a",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/9bc1e79166c1dc9ecfd3387346b2f154afbc97f029f6c48868fff3c83f2c2bf3.json"
+        },
+        {
+          "hash": "99ed83d636e47d1811cf2d40c4e54a5c5d8bc0f31e399357bd94b0af41acd830",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/9fdf3d11ca35251f64cb8be6f95f03408c49add6d8c0a11d83159e92a288883f.json"
+        },
+        {
+          "hash": "5217fa06b22014d02b186f700803573a1717f2313e25d5ce96b5dd73cfb39093",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/a17d0a6a878e2b038ec7b3c1bf835e4560450ae564b6740db42f2b0b0349540d.json"
+        },
+        {
+          "hash": "ec5cee34082ae57c38537d88ca1b14f780c42d68219e567b76219315e4750829",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/a2b1708f9b2f8945de2e51f091143b0a147fba6580c1cd473c529827290f3845.json"
+        },
+        {
+          "hash": "459ac9a38b48d7ccd5095fbfc91db1fa6bc246de5cf2ba5a6e56eb8234fbd65f",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/a923f2e12facc1fdc094420201d7a0149197c7b15ded456a4dbf9f1155d10ee6.json"
+        },
+        {
+          "hash": "40038d129532a2130de5fef6b02670fc75074808a45f018fb46afb5be26f2597",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/a9e324536cdd39cf17d64d9d211c74ae732e16dd7da9dece62133ded94d9a788.json"
+        },
+        {
+          "hash": "b16e45bcbbe035e6c37fb1e6f70a1321ff0f9f630aa874f5fe4f4ad1ce48620c",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/ae87b8a215b994d6f9eb8625c1c6d7684c1ae54a0eef9dce1a293884796c5289.json"
+        },
+        {
+          "hash": "b8c5e59b79e8f72acd97e6aea6a982d4de09347481de47928d0431cd59ba49cc",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/af94c05567475e88131683b5c261ff68750ac995308d427d2495426b493a9904.json"
+        },
+        {
+          "hash": "564dadb9e477ae968b76f833b6c99f44e5afa68d7b2974d0410f1163773fbf6f",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/afbdd5818d55894ec36dd980dc8b36222605b02d215b380daa5e50313b55ff33.json"
+        },
+        {
+          "hash": "b8d37deb32c5a96c1e44d9e353843522e3ca80d874be5727bcb31f31e287f9e1",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/b04496f2eeb9af63e90bcb998f2b0e211acdf0902d6364707a04ad3e84ea66db.json"
+        },
+        {
+          "hash": "8d146e0414a3a0a42f005aed1a1d1789d0ae7e351a5fa7c05edba087188a1573",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/b358d7cbd3f36a37b79b98bc14d6d9bb84f26ed6b3ec935f7817c31730e7aa83.json"
+        },
+        {
+          "hash": "b8969945c8dc0f9777880ec4c5638fad35371dc1965bb6384bd27ae9298af575",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/b401e5e37cf00d2d3e9fe4c044fb7642d9eea0de126b6f33983963b83235cb0b.json"
+        },
+        {
+          "hash": "0adeb3d9752c73eb7cf378c9f7db082649de785c1a6bd3b25a03571fd8f590c5",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/bbbd973906e2bcee8cabe0cd588f48d2c7b4b463dd0a3def88792a136b483f2d.json"
+        },
+        {
+          "hash": "f3fc8cc72e0559ca764eeb9ad8d4ed60fb04de8d6b567bb308e49e746cb68864",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/bcfc56efa16ada4b9c4e5dcf496885833ead65716a25c3369b141391da4981fb.json"
+        },
+        {
+          "hash": "f2ca26e5c80124d60946e22ebe253f4e9f7693f90407148d3812c1e239cfa434",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/c831ec72ef5360acae38d9a936323202c45ad90abbe97da97a13d13bfeea38a6.json"
+        },
+        {
+          "hash": "3f8d67fcf460b9624cdd9d1745752322374301eb75ef23987d3ab3c5dda0378c",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/c8b37c0a436a251808768328608b96d35ab033fa8279296069676c5fc9849699.json"
+        },
+        {
+          "hash": "ad10b5994b43ca262da0d184f1c9d012b07d78008710b9b2c9b050ff16c7b66e",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/cc6ccaeb34f2a22223c7a0e263572059850a31cc71fffec461d8eeb21d57f2f9.json"
+        },
+        {
+          "hash": "9d41f9f0bb4488fda8d2b0af18187d1ed4d685beca921cda668bdd264c1ef1bf",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/ce397061b86eb2eb01f171ac7b7bd9bc5bc2404104cddd6167d735f8c5d88707.json"
+        },
+        {
+          "hash": "207dae248c207513bef1c1727cbd678554dbcd55b7b3de1553854649c5ded295",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/ce6229918b4801553c95ce962d3d2c5ab223073df5835137c4fed1d39165d02f.json"
+        },
+        {
+          "hash": "f44fbfa306500f989f38d42cb8115083d47c8a508f96325b1ffbd33b062a0f61",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/cf34f5c5d7db6002c66107be691385ea70e470c7dbaed44a1dd611dce6feb45f.json"
+        },
+        {
+          "hash": "fa3df40eef4f3c010885dae51cb37cc41adefada704e80ee4c2ff0f98e74b001",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/d06bb245c17466ba69b2f66cb2c61e4680334ed7a3a408eb9b6dcacf1ebbbd3a.json"
+        },
+        {
+          "hash": "a08be9cc856a3d0059c0732c49b94269e041a88f87ac60007e280f70732e9728",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/d5ef0cffe343f6a625f19b97cf99653528ee4909da5143c55a3474d78a78e578.json"
+        },
+        {
+          "hash": "63160de93cce35e27b099c9d1fd7e51eede7432a63fe2c0892d6ef619fa272e7",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/e67e635d73b543e9ee8952de01b55de7b3f6316d34e0634a3b17637e7c228683.json"
+        },
+        {
+          "hash": "76422eb64c2aa3f2cbb8cbfb19f93b2a80ebbcf2d842c4ce3f13d79762ce3b43",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/e99bce92a1d3fda6940735e666793f87709bda67661fa5786cb60b402f41a5a5.json"
+        },
+        {
+          "hash": "58bb07f2dbdbb6d01c334ad08854e03dda7bf6413332d64224e9d347b8ae389d",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/f46a02f726a0fb82e5370865822994a381cfce63db9e8a07590859734ac87cbd.json"
+        },
+        {
+          "hash": "0540d29eebab394b42c14d955d71d229a3a304968e3d8dcce529c17a38040ca2",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/f509f606315f62d05286b880b7b9ee3eab7faf4a13abb56a972c5fd820295ee8.json"
+        },
+        {
+          "hash": "9a8f0e580cfbcbfbcf6d50fc7b9d42cf39b440a92a442a4e1078e684dc724c36",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/f75eb5073abd22062860349e61591249730a64cb811fa0f6dd9385c77dc90e87.json"
+        },
+        {
+          "hash": "ca70f877d97bca54c18d7aace9473081d4a3da95e442f77382606c9e16a94a52",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/records/ff95f83f16b580b6cbc2c2eaefef58967254709c92bf80e7d8ac8a344fb35ecb.json"
+        },
+        {
+          "hash": "2965976979bd36b989cbf9df7edd9e675dcd9c76397d8ff86e126b7ae4ae7a49",
+          "path": "fixtures/sessions/instrument-copy/value-ruleFlag/session.json"
+        },
+        {
+          "hash": "36a0a4d67615de5232a9e301004a43e6551eb4e5c1f2da8560d81289cc9eed40",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/00fdb4034a29fad873725ff6bbd0277f31118006943905d629f81e6341d98faf.json"
+        },
+        {
+          "hash": "d8d78f569830d906bea4a0aa1d102780d35cd97b5781afc88d10b41835e1a0ab",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/034409f6000a0b9ec38781ded8b16ff85b1d89c00b71d8f23c2cb5511c7f9b61.json"
+        },
+        {
+          "hash": "e4f537e71cafe779a7135d455f19473e7b786c225483810265397e8fb5569a31",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/03e22ebfb3dc9837be4cb2a879f5ef88bc61a309c4310f4c52a66caa3bc18a80.json"
+        },
+        {
+          "hash": "70f3562117e6b5dac51f8328c4702c83e4a660b06db679b5a19111d796a518ef",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/075e9e4306a3c9062f0dcd1c65a94f9981d7b35e74029fdadd4e2a7c566610c0.json"
+        },
+        {
+          "hash": "8e699e68ff5778b429b8495340dc87f6fca50ca8d6e2cede8ffb2de0113a367b",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/0d1c8e857e8ff9145c03a7296c6b6dbf19220e5b7edf552ee202ab76568494e8.json"
+        },
+        {
+          "hash": "a26d2daecdc099e4a90283fa8866b2f43494c0957354757d236269c257bad18e",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/0ef00d6b29a5ae69447a1f7425405c96b5da79e765fc8b681d6d7ebf8f0b856a.json"
+        },
+        {
+          "hash": "358ee4640d5d12a73862793842c1d552d3e2bb88c57f5e182071292eaa1de60a",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/12ab4677120a4f616221213fa591a14b85468db82cc5f8371db78daedbff92ef.json"
+        },
+        {
+          "hash": "1a387332bb65ab997c8c2490600713c1dc4dc52415b4e6664e280b7af9815833",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/1692f5a3eda0320a7e15310898e547f60a3e9d6acda1bcd131f7324efed4f23b.json"
+        },
+        {
+          "hash": "e4b6984c92f8d5695e331ec5e6be9aba6f8a8fb8973f0c031fce4a97f15d2759",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/181fb54522bc804e32cbc6aadcfd313b6324cf8844ed9764f910a9b0edb194f2.json"
+        },
+        {
+          "hash": "ee61be13397d2d18ebd68c909a4ec14341939d64e8f400e05b4dcb5035483f38",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/182781eced1dd9249d8199a660f73acfd9eb5c186fe422ec75bf123835f702fa.json"
+        },
+        {
+          "hash": "6dd3b4f4d444363e6a13c8f7834be1fd17fb2ce0a9b7a797191c79e5d49c850c",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/18be6d6289c469714986fcf29a6b5ca473140608655e0a3232b1997db4ff86d4.json"
+        },
+        {
+          "hash": "fea341ac4a5dd73919f1d7fdfd15f0914cef7ab5ca02b16974d71b95a3b82a18",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/1be5d61409f294149cd7211884af2d79a43b8114c3f893823b7c2f53a702b864.json"
+        },
+        {
+          "hash": "2dc69643a7067edf0878ca7f39317ec89cd4028102b9ef7dafc6f24e7b825b1e",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/1c9df7b1b5fefd8d516925d086d1cca9d787423801e3c6b6b6e5f6acc5f34eb8.json"
+        },
+        {
+          "hash": "0f4e385daa5a504c7f05efb82781591192ac720e20b1b0812a09821263298305",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/1d5db363ef9bc65f76dd16937519144736851f0e66b3df3fb50288f27d3ddfc7.json"
+        },
+        {
+          "hash": "57f601dfca59e44c6130f2b17ed0873e457774cc2567c69ef4dc4dca3d23b2a5",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/1df62814d7e78cd4f70a5c9e9e96a0379e807398e9aef5aff3f8b58625cc0ba3.json"
+        },
+        {
+          "hash": "ce82c6f05ab1d3c0871e431980789ab948bcf411739cce5c2c7f375a5417ccf7",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/22687cdb3d88c80c142d1ff598d3770b0311764a792a51495a36d01702909e6a.json"
+        },
+        {
+          "hash": "f184e48b4c81c03a26375c5c9d5c1e8497a5e42aa6b691d4f25dfce5606e1589",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/23e19b886e480a124659ea3a24ad8ef9dc6aec878de7f00bca82b43d39ac5a1a.json"
+        },
+        {
+          "hash": "ff0e9b26d63fb5cde88d7bfdc6b7f05eff57ba81312937a607fcee3a57930495",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/24059a0716fc50d6b708b7c98f03bddceda2dc4c9ac73ae8b9a4bca707c85cbe.json"
+        },
+        {
+          "hash": "f17ff472e1f59e7e083210aabd9a0ef9c41294a1c94c1afdf4beb2ae75ce392a",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/2ade795dfa7df6707eda708cdc1115cde9ff3cae649933e4168b865ff659ea51.json"
+        },
+        {
+          "hash": "66ce636ac214891353f005d87046611795e390ca50e53fcd9f5ffdfd55613b7a",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/2b8eb2b5a5ccdc42c18090c573542daf83bc3a50330c4ee26da13d2db1cc340c.json"
+        },
+        {
+          "hash": "8f9b0a44f3c42dcbb46e6a24f3ebd46681b2879f32244a40f491c45c3accd122",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/39f3aa3466fcfd2ac0c933ba7c21d4392fc097c0be64935c2ad219c981575cfc.json"
+        },
+        {
+          "hash": "fc0b8f89c2644c4e3756d96182b8db23c4f404fb3c03e735b16a105eb09f33a8",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/3e72602365c7d8f52e750548e193970ef4014146168e67b92f86ab95f10524a2.json"
+        },
+        {
+          "hash": "0c0c91eace63c915e15b037baef249eaef7c116f7f1edd97c15f89d36ddc4e29",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/40452635b65d533da981501a5731e6e55654c33ceb90f68b65efcb2090e66b80.json"
+        },
+        {
+          "hash": "789ee646228c453e16f87b773e44d67405bc887e2883903a83001c948d320c8c",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/472bf83ecd9a3afb964453d3e6c91b516e844a778e59ed6314517faea6caf8d9.json"
+        },
+        {
+          "hash": "5c818051c9c53d897c833bb2b0c1cbdc72e7590e8c53f69ea03ba112d575cb2b",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/4b660afcaf82cc545814190b868c87254df555bcc2e171395e3286818791dd5f.json"
+        },
+        {
+          "hash": "b6cc0080b9f0540f76676e299ad1afbfbc66e9aac1fe923453c29ad3e9bc3d4c",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/4cdf8250b951da39fe7aef8048974eaeb6a6a3377ed1e75eac771a97725f319b.json"
+        },
+        {
+          "hash": "29af64ec712e28fb95004c8cbc852222f7e2b0dbd8322dd8d669b87fc6edd468",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/568efecf1a43a9c92d428dcb327641576610e3d93cd6fed9842e59fd22a718dc.json"
+        },
+        {
+          "hash": "143b887b69df27fdd22357ac41263ff6c8e90bebba8113bda095598c6e2ce99f",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/61e259bd05276ea1af5d5c10e004fd41e9cd5ac289fb6fa3bd10466f78acb000.json"
+        },
+        {
+          "hash": "d13d560207b34e654b562da8e7f45b528173bdd17ba54157d36be699f8d1c3b3",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/64746d3d1a726f31aa3b6056b3fb14b765aa53704badb9859dd90f5250e6bc1f.json"
+        },
+        {
+          "hash": "eda01cfaade7273a0b9d6deaee0da6ea212bf4a0b28b24863ee44594055fae12",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/6baf856685cb75105604264887cb7eaad2457f34e0ec8a98fbb8ac47807ab023.json"
+        },
+        {
+          "hash": "51de2269ecb0e8310c930a368db424f07ab4cc56a2f1d75ef2e6c9d73f0726fb",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/6d89fb5e23b2834c2c129869d6549984157041a0ee28658411717391fd41aa8a.json"
+        },
+        {
+          "hash": "1e6b400a4ca970a093806c914d9b02f3cdf1c75618351274427c41054bb3a9d5",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/6f0cc9725e0341edea2e2c147eee82518dea5403fab2a8b13472efd15c0c8071.json"
+        },
+        {
+          "hash": "6332cdd97609b88489d607c4e07f422cebe2ab476690d570767688b40d1a251d",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/73a378882e76196a9774ba8024b9f92b33017b71ce5dcd00288a562ef64e867a.json"
+        },
+        {
+          "hash": "ea10f9d642e52bdeefe60aabf9a9b71fc94cd43dd201aeed8b39fde46f82069e",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/7497109e3e3247859089bac9548f07d55706ed7fa1a14a1b9b63ae19c9410682.json"
+        },
+        {
+          "hash": "4f539608d1f388e16fc82ab5c2e6f26eacab8f0d95d50bf70c5f1925029aea51",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/78e13d654efc05edeac1fecfe1900dcd213652b1a10ba9aa623ca178367302b7.json"
+        },
+        {
+          "hash": "0cb3c0235be9049e4983a29fd9640ae65188d6151e61b1a2f39590bdb2f13082",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/7d0543f82b0d3cb174ba90ce198e7db05beda4bc7770d8b3b90b734b0949c42b.json"
+        },
+        {
+          "hash": "c8ee00dae6961ab80a54affd6d16a8f06220c395885f8cff3177b9a5fa4ed1ad",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/8566c5768e4b74f6cedc8b9f430bafab2952ee19d0fbd8abe4f6823b0845838b.json"
+        },
+        {
+          "hash": "951c908d2427485cb522e998e977d683fd1e7518bf14a0aed79c84ebea3f440a",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/87572955affee8eb6215720ef9902ef9b10bacb7ce6f5159cf0ceaeb6a8c9aba.json"
+        },
+        {
+          "hash": "6a2c1f465431134c25fdf8aa0c4c0bd101d2ef321c28bd73a03fa74e953d2846",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/9be09d98363215dbb201bf0e2d843d7c73028f9b4ad53252ad61f4405006bb59.json"
+        },
+        {
+          "hash": "78e523b1e71c6e941cc5763525ae6e76a01ee671cede459508ab70a2c08becb7",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/9d8e2dd2f06a38cc15b23478e2258e5d82dbddbefc093545af42534767da5859.json"
+        },
+        {
+          "hash": "75d7e55bab154bc526b76f0a3fee7b5c38aad2189518f75bd4107c0f705578bd",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/9d97043ffa7b748cd352fbce826ad8d2914ee9b69617d569be3bc6251974ffbd.json"
+        },
+        {
+          "hash": "77f24e81aa72f9326c4a853443ef522c9ef46fe30846880c5007a2a218fa6357",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/a2638ce692221e56ff2d8f06b6de3fb81ba448df1ca44ed87723c64ab14fe746.json"
+        },
+        {
+          "hash": "0bf76ec7a1787f552245765969ced875f027988a609df6b36e532c7081a26dfc",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/a407a0e2af0110ada278e82da4c6980a9a6cd8bffd00abb81b5ee9949dc27b06.json"
+        },
+        {
+          "hash": "1f9efa900216cfb1da0f4a924cf240ced64cddd8b235c2d94f65a4e267b1199f",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/a42de6ac2d800926b55b2f20b77ab972703a6ca39a767d98d84463f9eab56e5d.json"
+        },
+        {
+          "hash": "4ae317e1fd1184592d05d8dab49dfb278491901334bf6bdfc21eaa48c51930c6",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/a95a1c13b05c82a2db1aaac905624528ed7d69ca5b6600553cebb842cec48db0.json"
+        },
+        {
+          "hash": "a6604b8377c28205a7c50a8af7d907d2b6cae629d271b6ac05a5888d4b10cb3f",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/aa18fb0d9aae2c2b3bba11a380eb88affb1a19b752e3aa31a9d2b75ff78cdf5b.json"
+        },
+        {
+          "hash": "a40921324747949b5b17b3cef0ede1c4b3b8e8254d1b42773efab74006ad45be",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/aa617fd64c2cb918046a410ebff986cef334b9b920adab238e2dc59e1cd0d74e.json"
+        },
+        {
+          "hash": "ace5f0bd6d363d580e37c9342f89c8787d4b91d3a21506e20409b85b3bea50b9",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/ac1e435d36bc1715186f52a6e2bcc7935d9fd8a7a89ca85312d303967b555d51.json"
+        },
+        {
+          "hash": "1d5218ed5bad885e50b4cc4061c8ae596a85c9e949e0a190fdfca14ca286146a",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/ac3b5d3f8f609a1052adba630f8665c3749f14179d1b38fdfa43933b41637ef9.json"
+        },
+        {
+          "hash": "f32cc42f3e8adf63ef33e0c8ab530aa80ea8105c07f05517ce2863c391ed0692",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/af207588417529295286d44fe7b86ff3461df7fd0d9d1bf5c124c96dc6479b5b.json"
+        },
+        {
+          "hash": "2ed5dd10bd2216d176dc865d982524d828172c9b54dd0803d40123b303794e30",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/b0268e1799c5f78a9bceca8feb38f4246ae8c40754fdd1844963542fe17fb524.json"
+        },
+        {
+          "hash": "7aa5157edb538bb150956689df8f79c71d417b69f5a8c8ea46a491642371ed24",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/beb3c66fffaa4f6eb4a4840770bc60e616e1d7b8e3254b0af6f9b1daa5f1a9c8.json"
+        },
+        {
+          "hash": "0bd160a2c1ebd7ab86b9e8dd8a437743160f7892257df89ed091bb616d0c0785",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/beb5c65dadca9510292e3c4545b55cf7db31d03915c4da82fb34565cc63c5099.json"
+        },
+        {
+          "hash": "216a830012105b43c031518398b154fdd52f66ce28c6cfa836a5fa77481de2f9",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/bfab2b9b022725e79e6814025dfb205e1b7efbb6f7e977a06a17583f7cbce163.json"
+        },
+        {
+          "hash": "e79825015e7c8eb0cca996c858d22dcf1b801cf300fa9ddfd74bd6af3cd9a4a1",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/c558488b38db8927aedf96db9711734e425f4fc975ecedaa6a13b36ca25bf4a3.json"
+        },
+        {
+          "hash": "713cbac3679b7d56eb9bd5f1426709d424bc5f7e0234570e346dc6affc06b5fc",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/c850ffb45345e48fa4d206c3e8e01226b7d897e9243bbf07d5593242b0440e35.json"
+        },
+        {
+          "hash": "3a27704998fd24e91f054c7953d7364b9ebefad6901e62f308d66abdbc9e2b79",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/cbdf3d34275892cddb6835912923b3579c91045611f206706074290353d24adb.json"
+        },
+        {
+          "hash": "4f1d6ae551a6a2ab567d05d9c5e94b4c086a0022dcbf920f30cc3c0b0650fcc0",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/d5d28572aec5e03ea2fce50f1ee236295f5c2b6e9c1586b4743d83454fad85b8.json"
+        },
+        {
+          "hash": "541cbe2a9c6c8b4f2d3a64814b092e7caee449504a99a56de389cc883781e8ff",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/d5ddc5c5dd8eb4537ab385e404fd02a227ecce500ae100181ab106546bd051a2.json"
+        },
+        {
+          "hash": "b1115df6f8ef1dd678fad55933405acad69e1fa06b14cbceb4fbdc0cc2e33344",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/d723ef29fe64fd7c32411edaed395b337a2cd5992f6e5c2e835cab80af0b962c.json"
+        },
+        {
+          "hash": "7687050dd885fb3a8fe242194f301f158bee138332add6b6415eab3b86090758",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/de274eda3101ab3dc06c1447ddb1d0eb813664b5db5a874e4bae2ef8ad31dc8d.json"
+        },
+        {
+          "hash": "57a4b7449144d8182ee2ae460be85b76f5b2afe1d102f6c2558eb833cb6e9c39",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/e3e155e802a5bb05f93481971ab52888c01ef895f095bef86bb653715926b3d0.json"
+        },
+        {
+          "hash": "cae16c25d85c73be7d276e40fe953a370975801ac532e8ae7573c73f2347d759",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/e73b62af1069fa257464ac1e57878b3bf836a291d55e62a9680fc6f7607c7d04.json"
+        },
+        {
+          "hash": "ba30a39520ff2de8d7aa31595b915e0bde1665495eebce61c286a22e55afb1f4",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/records/f115abe0479aa08275e88754e6a79aeb717f550f58eb769a754c76b1412f2384.json"
+        },
+        {
+          "hash": "277f98c84dac299e00f2f9606f7c0e291cf0c9f08574dc15fef9a434a8ab10a8",
+          "path": "fixtures/sessions/instrument-copy/value-stepHeight/session.json"
         },
         {
           "hash": "408459bea97dad31dc018d99a15db40fc74b564c0a3470f741b8e804bc1fd21e",
@@ -2101,6 +3969,74 @@
         {
           "hash": "fa76640e65c97ef64da277e540368ae8fc609db9f5a6b7fd6a9c0a3abda5ad5a",
           "path": "fixtures/sessions/instrument-copy/verb-teleport/dispatch.txt"
+        },
+        {
+          "hash": "d4e04d446582f77b06cda970b7efeb8bfd77f7c71e3453d06921231f534c89f5",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/0443b9f666a643e6e6982d6b5e0bdd7afcf5e8f1af5f64650e9429b9b6a003f8.json"
+        },
+        {
+          "hash": "75e17473ff6195d4d32fed5cffe1809daec7c070119a95fd879cbcd5f9b9f80e",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/11f8e358cd7ab927573a0cd17fa2c2ad8338a6cf0a213ddbf3f5272a02b0d7f3.json"
+        },
+        {
+          "hash": "b60bc2425fcbf0117ef484e75238df68be7f025d7942eb1eaeb9c90d9fdd0d74",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/1c728ce0a8e17e37b48feb7ae645d92b5c6696acac0065ea4eec064edfb5afcf.json"
+        },
+        {
+          "hash": "0258a035f87c450fd78b0d94f9fb37a6cf2db00cad3e5571a12478aaa3fede20",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/2b0ed709d8aaceb8e28176ad0cb2e9f07b852bc22cf96a56cb6b913ccd33dde0.json"
+        },
+        {
+          "hash": "a03789a94b2504798387b25985530e0cb8d9d25bb79f86e0ba6e036baa46dbc6",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/2bda58c3c00b8af5c2cef08d5697a75d14bb42de028ee0bbfe1da6a80d2a2c65.json"
+        },
+        {
+          "hash": "560b7daf6ed47e98e9f55504d58221812fff63b8e29b957fbdf71af1d56a6444",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/3432119aa3c4fd96123c624dc7f0bf43b19b1057a265c0a1998cfb13c30098bb.json"
+        },
+        {
+          "hash": "28b50bb10896a0166e6a5a89f16b2adf3070ea5e99819e252835d0220857f420",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/39d5420a07430ad37505f2140218a6678d55d8ab2454288f00f0a6d59b2467aa.json"
+        },
+        {
+          "hash": "01bb84ebf5a9c3555e1e9b1c5d4cef8d8462aefc9a60b13a2bf5bfd5fbb2b1ff",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/5aff3130aef32ddb9551148c39616a13372d5e9edf10fee1db0282ea87063ffe.json"
+        },
+        {
+          "hash": "841c467b53d788f86f2931256ff7aa6836f1aa771e6653300a243282b349cb95",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/6b3a94a6784e3f6b75b2ed1c4311d088f11b34ced1ec59ce148e413bf10b9667.json"
+        },
+        {
+          "hash": "45d579bb23102d0cd5ef70405fb61053821710bb4dcfc00a6f24f94502841684",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/910d9a9cf273b2d2ce58ce3ec870a07feaa6586d5a6b704271ae578b550c022f.json"
+        },
+        {
+          "hash": "3487a03a09b2a892caa5dcfc36d1128c511e5f8d2c31106f7fa7afa3927ee662",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/93883fbee393c4205a734c4784f6b3da016a5464b249484e8b8d76e1a16abff1.json"
+        },
+        {
+          "hash": "4ff464d08d81b68155b16cfb3c95d4c4e0ad885d462a176e09b6439262437b19",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/a6cca246092d19496e8a1211fe3c725ea37da7def280f8876ae284830a3fe7b5.json"
+        },
+        {
+          "hash": "be7dca05a2696de93ca56af16195a4686ef4cb743201a9db105acc3cb302fcef",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/acb98f60d25496e25b1f06800b88597893220f5ad95cffd7a92d270ac158f55a.json"
+        },
+        {
+          "hash": "928ed085fcc659465406ebe020ad9fdd7f27d6d44fdcadb9fe529a8528cbc6cd",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/b1593dfc9e2afb20c129335f7803a598671510f4248e07154b8a6126a139ead0.json"
+        },
+        {
+          "hash": "7898fe645346e6c45dadfedb3bba4a839685667a1babf1a041d21ede23913870",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/b17136ab77900babc7367c86a2c8c276ff7bdb3e911ff8175e91bfb944937045.json"
+        },
+        {
+          "hash": "e87e21e7c4972fee285940d38d8d8af4168ae269879be5ab3f1fe1c75e12ea5e",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/records/beac75f32b2b9ce9f9bac2e6364b0ebefc3c6f601284587b0fa2f835f72b1086.json"
+        },
+        {
+          "hash": "3906fdc1e5670a9cc19bfbd682f3a54047c10705addc0c49f23705c12badc8cc",
+          "path": "fixtures/sessions/instrument-copy/verb-teleport/session.json"
         },
         {
           "hash": "79da7787b2540b0749d84b35022278b47f8680e7d7da768acd6d7e31d159d091",
@@ -2193,6 +4129,210 @@
         {
           "hash": "489d84e5d099b7b4127bce3fc37f3bd0eb5e2769ded640ed56bcb002e51818d5",
           "path": "fixtures/sweep/walled.json"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-actor-ghost-off/records.jsonl"
+        },
+        {
+          "hash": "55832075c786b0bcb5a735abd5b6a89e50208f8b7fc8bb9cbae6f1903138acb6",
+          "path": "fixtures/t7c-runs/safety-actor-ghost-off/report.json"
+        },
+        {
+          "hash": "e2c13c9602a59157a51d51a49c6595c6985a8dcadadfb03f19625bd896e6ce40",
+          "path": "fixtures/t7c-runs/safety-actor-ghost-off/report.md"
+        },
+        {
+          "hash": "5de14b4201a59cd0ce7c324127532a8f5b54af89ed4a60ef26787d4352614e97",
+          "path": "fixtures/t7c-runs/safety-actor-ghost/records.jsonl"
+        },
+        {
+          "hash": "c1b87ef9f52b1b68eb6496fdea9ee8a8522faea1d8e2d482f9c71be908abe700",
+          "path": "fixtures/t7c-runs/safety-actor-ghost/report.json"
+        },
+        {
+          "hash": "dfec32cd9e779535717e3105db513d40c859c4929a2e333c01e6238309faae96",
+          "path": "fixtures/t7c-runs/safety-actor-ghost/report.md"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-class-body-off/records.jsonl"
+        },
+        {
+          "hash": "57069330141323fb790bde8f5a0a8162bb8954c68dbb45053acc3b107fa9cde9",
+          "path": "fixtures/t7c-runs/safety-class-body-off/report.json"
+        },
+        {
+          "hash": "81973ead103aeeab194823159f2cd1cc427feb3c07415b2a2c13e059c4bb7fad",
+          "path": "fixtures/t7c-runs/safety-class-body-off/report.md"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-class-body/records.jsonl"
+        },
+        {
+          "hash": "c985761a9a8a65aa731249f28b21d700bdf83217b6cd65648b56b832bf0736fe",
+          "path": "fixtures/t7c-runs/safety-class-body/report.json"
+        },
+        {
+          "hash": "8d7fb0448b4380cd870d5b3c4515ddd1db3685500e4b7509fe2ad016843b25bb",
+          "path": "fixtures/t7c-runs/safety-class-body/report.md"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-outcome-hash-off/records.jsonl"
+        },
+        {
+          "hash": "b0c99513f27607eb065c5259f6c6c952d52e1eadef826421eb53279fe14d3578",
+          "path": "fixtures/t7c-runs/safety-outcome-hash-off/report.json"
+        },
+        {
+          "hash": "8909cf52eb8046cd755f746f7373d3ca9ddfcc61c51e225fc35e2a028d606b7c",
+          "path": "fixtures/t7c-runs/safety-outcome-hash-off/report.md"
+        },
+        {
+          "hash": "2d9208d75d27d5c2ef6e03a9b21a654fa6049f4744251b45de145fdb70bf809d",
+          "path": "fixtures/t7c-runs/safety-outcome-hash/records.jsonl"
+        },
+        {
+          "hash": "df3282cb7bb3307c910620182ee1a64f62b1ec93bca8c73929c542461fa8a090",
+          "path": "fixtures/t7c-runs/safety-outcome-hash/report.json"
+        },
+        {
+          "hash": "78c4f2b83c9b924ebe7b775abd1e3f3b86d82530a39cc723cfd2780af3a91204",
+          "path": "fixtures/t7c-runs/safety-outcome-hash/report.md"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-target-missing-off/records.jsonl"
+        },
+        {
+          "hash": "fb99c924a8d091e1ae0273075d4c8db8df8d08a90c23924655fef9182a3c1d4e",
+          "path": "fixtures/t7c-runs/safety-target-missing-off/report.json"
+        },
+        {
+          "hash": "029ec669e455b0302d133bf8b7571544d8ed847160a0a72f34b604a55d726a1f",
+          "path": "fixtures/t7c-runs/safety-target-missing-off/report.md"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-target-missing/records.jsonl"
+        },
+        {
+          "hash": "4eba82d01ac141c7a6aca9d62921ebc6e0781c9cd9d094a9604a7d0e1ef2ae60",
+          "path": "fixtures/t7c-runs/safety-target-missing/report.json"
+        },
+        {
+          "hash": "199dc904dc44b63975b1b92c0f5e88353493e987530b20063a5809a866e031b9",
+          "path": "fixtures/t7c-runs/safety-target-missing/report.md"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-verb-teleport-off/records.jsonl"
+        },
+        {
+          "hash": "939d0cfe3796eed9f5da5fe1fc2de255c6753cc51ca4767d9c3453116769c779",
+          "path": "fixtures/t7c-runs/safety-verb-teleport-off/report.json"
+        },
+        {
+          "hash": "235a6c304d1ba69938bb75c8ff7d3e78f3e3741ab8c62b12c4705a1a5aa0f51a",
+          "path": "fixtures/t7c-runs/safety-verb-teleport-off/report.md"
+        },
+        {
+          "hash": "dab022d72addea34ab65f185f6664b8b873c615a6d6b3d202d0f62e20c5edc76",
+          "path": "fixtures/t7c-runs/safety-verb-teleport/records.jsonl"
+        },
+        {
+          "hash": "264fd618b8285c605fd86983ddcf7c88007bd690ac50f769ca82faa3d044f82c",
+          "path": "fixtures/t7c-runs/safety-verb-teleport/report.json"
+        },
+        {
+          "hash": "6f90f7e203f57058be37c96a34f16fd444e5192d6735a7abfc44161e2672dcb4",
+          "path": "fixtures/t7c-runs/safety-verb-teleport/report.md"
+        },
+        {
+          "hash": "f8cc385957f022e0792616d0f410775dad09d638c695d4280861202a4cc8cf2a",
+          "path": "fixtures/t7c-runs/value-F2/records.jsonl"
+        },
+        {
+          "hash": "6f44e989b7f0e2170638cfc49a3a1efb797d0fc0306d4976c954e14792e596de",
+          "path": "fixtures/t7c-runs/value-F2/report.json"
+        },
+        {
+          "hash": "0ff65938040c582342dc13c04e71e742de991949bb0aeb56404447b902806237",
+          "path": "fixtures/t7c-runs/value-F2/report.md"
+        },
+        {
+          "hash": "2e4543436554f65f222410ee595520e758e9b5eae4bfcea390ffed04132a672a",
+          "path": "fixtures/t7c-runs/value-comparison/records.jsonl"
+        },
+        {
+          "hash": "d4d996d271ce06eb51d64b3924261485d175c5e92f429a2e6818ff30d0a5f804",
+          "path": "fixtures/t7c-runs/value-comparison/report.json"
+        },
+        {
+          "hash": "14f89e197198909ca8a59b1a5ee8c150d291acbdb6cab0075e4c48a827b3132d",
+          "path": "fixtures/t7c-runs/value-comparison/report.md"
+        },
+        {
+          "hash": "9d6834099235929f9e24df04a62db6b239c1b1561fd06b209f9c64b2b205d9bb",
+          "path": "fixtures/t7c-runs/value-push/records.jsonl"
+        },
+        {
+          "hash": "de2db42139685ccdf37c786b37fd5c39ecbb1caf6b710ea21c41af61edaaad2d",
+          "path": "fixtures/t7c-runs/value-push/report.json"
+        },
+        {
+          "hash": "111af5849a65d3bdc96c47a5b0e644072bd81970df0c45b69da323742ca7de98",
+          "path": "fixtures/t7c-runs/value-push/report.md"
+        },
+        {
+          "hash": "8482cecea0df4a3240d9ff685c4a9b3eacb25a0ec2fc64a2c6155d29f5d3e2d7",
+          "path": "fixtures/t7c-runs/value-quanta/records.jsonl"
+        },
+        {
+          "hash": "2422390301d07abc41c131fc63238d244e2e9157593e74d62c30fc7e20e995f9",
+          "path": "fixtures/t7c-runs/value-quanta/report.json"
+        },
+        {
+          "hash": "01d5d1e28fe7ed90d29d5628b9aac60d31b7e39ef9c163daffabee7e31c89c41",
+          "path": "fixtures/t7c-runs/value-quanta/report.md"
+        },
+        {
+          "hash": "551e7ae2bc297e39b43b014dc3d8f0deb832fd47fc7a6c913e29a851088a72d7",
+          "path": "fixtures/t7c-runs/value-rule/records.jsonl"
+        },
+        {
+          "hash": "5ece7d92cfe608877987eae223470ae7a089fe952d339f8baab0d534763a6c22",
+          "path": "fixtures/t7c-runs/value-rule/report.json"
+        },
+        {
+          "hash": "d023c69c24747545704ce66538ff51e79adf46dee74ba2f2303e5ed8b8ceedbc",
+          "path": "fixtures/t7c-runs/value-rule/report.md"
+        },
+        {
+          "hash": "7bc6d488cf0586b4e3f6bdf4f9d98378efe520006399f97647d91c64fbc3d12d",
+          "path": "fixtures/t7c-runs/value-ruleFlag/records.jsonl"
+        },
+        {
+          "hash": "ad85d963c88d7803f6999717779c353de1e86e3e39e76a2b6490bf7289a64d3c",
+          "path": "fixtures/t7c-runs/value-ruleFlag/report.json"
+        },
+        {
+          "hash": "bd41e765dbc501d41bd57573bcd41c8002a8c53a6391402d8928c38c88c8bdb4",
+          "path": "fixtures/t7c-runs/value-ruleFlag/report.md"
+        },
+        {
+          "hash": "0ff398dab36db4deaa97ef2f42ce6b4ed1561327ae357e63a1c293ef68f8b5ed",
+          "path": "fixtures/t7c-runs/value-stepHeight/records.jsonl"
+        },
+        {
+          "hash": "a1f5af6396bd859614b1d32ac86e627ea20c291bcb9ae6dae9f3d82e1846d971",
+          "path": "fixtures/t7c-runs/value-stepHeight/report.json"
+        },
+        {
+          "hash": "bf472f402b5f2f774462f951599d1e5c3175366a1848d521fa077e26d8aa564e",
+          "path": "fixtures/t7c-runs/value-stepHeight/report.md"
         },
         {
           "hash": "d908151ffd8bd0734216b9707b05200f8d5b19e3f831d0807c4387a4dee0b0e2",
@@ -12313,8 +14453,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "2f8e4dcbb5b58996558f6e03c59ed03f6a122632",
-    "tracked": 382
+    "commit": "aa90e0026358de8508117fbf3a725953fa39164c",
+    "tracked": 917
   },
   "landings": [
     {
@@ -13106,18 +15246,6 @@
     {
       "readers": [
         {
-          "by": "packages/propose/record.test.js",
-          "call": "existsSync",
-          "confidence": "ast",
-          "fromTests": true
-        }
-      ],
-      "target": "fixtures/sessions/instrument-copy/*",
-      "writers": []
-    },
-    {
-      "readers": [
-        {
           "by": "packages/propose/propose.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -13352,8 +15480,7 @@
     },
     {
       "readers": [],
-      "target": "fixtures/t7c-runs/*",
-      "tracked": false,
+      "target": "fixtures/t7c-runs",
       "writers": [
         {
           "by": "tools/coordinator/t7c-runs.mjs",
