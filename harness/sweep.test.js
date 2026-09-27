@@ -493,10 +493,9 @@ function refusalsAtThrowTick(input) {
   function asleep() {
     return world.bodies.every((body) => world.sleeping(body.id) || world.carriedByOf(body.id) !== null);
   }
-  /** @type {{ before: number, after: number, rise: number, lifted: boolean, scheduling: boolean } | null} */
-  let seen = null;
   /**
    * @param {boolean} scheduling true while an action is still running
+   * @returns {{ before: number, after: number, rise: number, lifted: boolean, scheduling: boolean } | null}
    */
   function advanceSeen(scheduling) {
     const walker = world.body('walker');
@@ -508,28 +507,38 @@ function refusalsAtThrowTick(input) {
     tick.advance();
     see();
     if (at + 1 !== 356) {
-      return;
+      return null;
     }
     const after = world.body('walker');
     if (!after) {
       throw new Error('no walker');
     }
-    seen = { before, after: after.vy, rise: after.y - startY.walker, lifted: world.lifted.has('walker'), scheduling };
+    return { before, after: after.vy, rise: after.y - startY.walker, lifted: world.lifted.has('walker'), scheduling };
   }
-  function runOut() {
+  /**
+   * @param {{ before: number, after: number, rise: number, lifted: boolean, scheduling: boolean } | null} seen
+   */
+  function runOut(seen) {
     let n = 0;
     while (!tick.idle()) {
-      advanceSeen(true);
+      const snap = advanceSeen(true);
+      if (snap) {
+        seen = snap;
+      }
       n = n + 1;
       if (n > 8000) {
         throw new Error('the refusals witness did not go idle');
       }
     }
     for (let i = 0; i < 512 && !asleep(); i = i + 1) {
-      advanceSeen(false);
+      const snap = advanceSeen(false);
+      if (snap) {
+        seen = snap;
+      }
     }
+    return seen;
   }
-  runOut();
+  let seen = runOut(null);
   const moves = [
     { verb: 'move', target: { x: 0.75, z: -0.25 } },
     { verb: 'move', target: { x: 1.25, z: 0.25 } },
@@ -541,7 +550,7 @@ function refusalsAtThrowTick(input) {
     if (!admitted.admitted) {
       throw new Error(move.verb + ' refused: ' + admitted.reason);
     }
-    runOut();
+    seen = runOut(seen);
   }
   if (!seen) {
     throw new Error('the refusals witness never reached tick 356; it ended at ' + tick.frame().tick);
