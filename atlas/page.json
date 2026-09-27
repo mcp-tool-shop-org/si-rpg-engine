@@ -83,7 +83,9 @@
     {
       "doors": 2,
       "importedBy": [],
-      "importedByTests": [],
+      "importedByTests": [
+        "propose"
+      ],
       "kind": "part",
       "name": "bench",
       "partLabel": "bench"
@@ -102,77 +104,48 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 18,
-      "changed": 12,
+      "added": 1,
+      "changed": 22,
       "moved": 0,
-      "parts": 5,
+      "parts": 4,
       "removed": 0
     },
     "items": [
       {
-        "kind": "landing",
-        "sentence": "fixtures/t7c-runs/* is now written by tools/coordinator/t7c-runs.mjs.",
+        "kind": "cycle",
+        "sentence": "propose now imports bench, which closes the cycle propose → bench → propose.",
         "subjects": [
-          "fixtures/t7c-runs/*",
-          "tools/coordinator/t7c-runs.mjs"
+          "propose",
+          "bench"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "fixtures/bench/room.json is now also read by tools/coordinator/t7c-runs.mjs.",
+        "kind": "sequence",
+        "sentence": "packages/bench/mutants.test.js now starts at quanta run; it started at on.",
         "subjects": [
-          "fixtures/bench/room.json",
-          "tools/coordinator/t7c-runs.mjs"
+          "packages/bench/mutants.test.js"
         ]
       },
       {
-        "kind": "landing",
-        "sentence": "fixtures/corpus/walker-stall-flat-ground.bundle.json is now also read by tools/coordinator/t7c-runs.mjs.",
+        "kind": "sequence",
+        "sentence": "packages/propose/record.test.js now starts at verify in head; it started at rekey.",
         "subjects": [
-          "fixtures/corpus/walker-stall-flat-ground.bundle.json",
-          "tools/coordinator/t7c-runs.mjs"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "And 4 more new writers and readers of places.",
-        "subjects": []
-      },
-      {
-        "kind": "unassigned",
-        "sentence": "tools/coordinator/t7c-runs.mjs is new and belongs to no part, so atlas check fails on it against the previous map.",
-        "subjects": [
-          "tools/coordinator/t7c-runs.mjs"
+          "packages/propose/record.test.js"
         ]
       },
       {
         "kind": "counts",
-        "sentence": "18 files added and 12 changed content, across 5 parts.",
+        "sentence": "1 file added and 22 changed content, across 4 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "1a1727210e24557f3b6b57f1d0c1c94adc5cf5d1",
-      "generatedAt": "2026-09-26T21:13:44.930Z"
+      "commit": "6abc0a564efdfa9ffffccba6fee3ce1aac1a8ab7",
+      "generatedAt": "2026-09-26T22:23:00.803Z"
     },
     "unchanged": false
   },
   "changesTogether": [
-    {
-      "a": "packages/bench/bench.js",
-      "b": "packages/bench/neutral.test.js",
-      "either": 6,
-      "partLabels": [
-        "bench",
-        "bench"
-      ],
-      "parts": [
-        "bench",
-        "bench"
-      ],
-      "relation": "inside",
-      "shared": 5
-    },
     {
       "a": "packages/propose/bin/propose.js",
       "b": "packages/propose/seat.js",
@@ -232,15 +205,30 @@
       ],
       "relation": "inside",
       "shared": 8
+    },
+    {
+      "a": "packages/bench/law.test.js",
+      "b": "packages/bench/neutral.test.js",
+      "either": 6,
+      "partLabels": [
+        "bench",
+        "bench"
+      ],
+      "parts": [
+        "bench",
+        "bench"
+      ],
+      "relation": "inside",
+      "shared": 4
     }
   ],
   "changesTogetherNote": [
-    "3 files changed together with their own tests, as expected.",
+    "2 files changed together with their own tests, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
     "Window: 180 days; a pair counts from 3 shared commits, since 14 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
-  "changesTogetherWithTests": 3,
-  "commit": "6abc0a564efdfa9ffffccba6fee3ce1aac1a8ab7",
+  "changesTogetherWithTests": 2,
+  "commit": "2f8e4dcbb5b58996558f6e03c59ed03f6a122632",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -760,6 +748,11 @@
     },
     {
       "from": "propose",
+      "fromTests": true,
+      "to": "bench"
+    },
+    {
+      "from": "propose",
       "fromTests": false,
       "to": "harness"
     },
@@ -819,13 +812,13 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-26T22:23:00.803Z",
+  "generatedAt": "2026-09-27T00:30:09.256Z",
   "limits": [
     "18 import sites could not be resolved.",
     "3 writes and 9 reads use paths built at run time and are not named here.",
     "2 writes go to places this repository does not track, so they are not listed as generated.",
     "51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
-    "41 commands are built at run time and not followed, 35 of them in tests.",
+    "42 commands are built at run time and not followed, 36 of them in tests.",
     "Statistics confidence is low: fewer than 25 source files reach 10 revisions in the window."
   ],
   "mainDoor": ".github/workflows/ci.yml",
@@ -1556,6 +1549,156 @@
       ]
     },
     {
+      "alternatives": [
+        {
+          "steps": [
+            {
+              "name": "verifySession",
+              "part": "propose",
+              "partLabel": "propose",
+              "phrase": "verify session"
+            }
+          ],
+          "when": "!p || p.inBase"
+        }
+      ],
+      "entry": "verifyInHead",
+      "file": "packages/propose/record.test.js",
+      "inner": [
+        {
+          "file": "packages/propose/record.js",
+          "name": "verifySession",
+          "part": "propose",
+          "partLabel": "propose",
+          "phrase": "verify session",
+          "steps": [
+            {
+              "name": "manifestHash",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "manifest hash"
+            },
+            {
+              "name": "validateManifest",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "validate manifest"
+            },
+            {
+              "name": "canonical",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "canonical"
+            },
+            {
+              "name": "sha256",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "sha 256"
+            },
+            {
+              "name": "canonical",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "canonical"
+            },
+            {
+              "name": "sha256",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "sha 256"
+            },
+            {
+              "name": "canonical",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "canonical"
+            },
+            {
+              "name": "sha256",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "sha 256"
+            },
+            {
+              "name": "canonical",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "canonical"
+            },
+            {
+              "name": "readRoleOutput",
+              "part": "propose",
+              "partLabel": "propose",
+              "phrase": "read role output"
+            },
+            {
+              "name": "stampProposal",
+              "part": "propose",
+              "partLabel": "propose",
+              "phrase": "stamp proposal"
+            },
+            {
+              "name": "canonical",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "canonical"
+            }
+          ]
+        },
+        {
+          "file": "packages/bench/plant.js",
+          "name": "copyCheckout",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "copy checkout",
+          "steps": [
+            {
+              "name": "copyTree",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "copy tree"
+            },
+            {
+              "name": "copyProduct",
+              "part": "bench",
+              "partLabel": "bench",
+              "phrase": "copy product"
+            }
+          ]
+        }
+      ],
+      "part": "propose",
+      "partLabel": "propose",
+      "phrase": "verify in head",
+      "steps": [
+        {
+          "name": "find",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "find"
+        },
+        {
+          "name": "copyCheckout",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "copy checkout"
+        },
+        {
+          "name": "apply",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "apply"
+        },
+        {
+          "name": "apply",
+          "part": "bench",
+          "partLabel": "bench",
+          "phrase": "apply"
+        }
+      ]
+    },
+    {
       "entry": "roleTick",
       "file": "packages/tick/gate.test.js",
       "inner": [
@@ -2012,7 +2155,7 @@
   "summaryFrom": "person",
   "testFiles": 44,
   "testedBy": {
-    "bench": 10,
+    "bench": 11,
     "frame": 16,
     "host": 1,
     "load": 4,

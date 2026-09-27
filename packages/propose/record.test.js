@@ -12,7 +12,10 @@ import assert from 'node:assert/strict';
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { PLANTS } from '../bench/measure.js';
+import { copyCheckout, plant, removeScratch, scratch } from '../bench/plant.js';
+import { apply } from '../bench/plants.js';
 import { loadIntentRules } from '../tick/predicates.js';
 import { roleRefusal } from '../tick/gate.js';
 import { catalogFromLog, loadRoles, sha256 } from '../tick/roles.js';
@@ -189,28 +192,69 @@ test('the thawed test-only role rests on an adversarial session that verifies, a
   assert.equal(thawed, 2);
 });
 
-test('every session recorded under fixtures/sessions/instrument-copy verifies with no model running, as instrument-copy, and every entry its log admitted is inside the manifest', () => {
+test('every session recorded under fixtures/sessions/instrument-copy verifies with no model running, in the tree it ran in, as instrument-copy, and every entry its log admitted is inside the manifest', () => {
   const root = join(SESSIONS, 'instrument-copy');
   const changes = readdirSync(root).filter((name) => existsSync(join(root, name, 'spec.json')) || existsSync(join(root, name, 'session.json')));
   assert.ok(changes.length >= 5, 'the five steering changes are on record');
-  for (const name of changes) {
-    const run = join(root, name);
-    if (!existsSync(join(run, 'session.json'))) {
-      continue;
+  const scratchDir = scratch('record-trees');
+  try {
+    for (const name of changes) {
+      const run = join(root, name);
+      if (!existsSync(join(run, 'session.json'))) {
+        continue;
+      }
+      assert.deepEqual(verifyInHead(name, run, scratchDir), [], run);
+      checkAdmitted(run);
     }
-    assert.deepEqual(verifySession(run).failures, [], run);
-    const { session } = readSession(run);
-    assert.equal(session.role, 'instrument-copy', run);
-    const carried = catalogFromLog(session.manifests);
-    assert.ok(carried.ok, run);
-    if (!carried.ok) {
-      continue;
-    }
-    for (const logged of session.log) {
-      assert.ok(roleRefusal(carried.catalog, logged.proposal, logged.provenance).ok, run + ': ' + JSON.stringify(logged.proposal));
-    }
+  } finally {
+    removeScratch(scratchDir);
   }
 });
+
+/**
+ * A value run's session ran in the sweep process, on the bench's head tree,
+ * so it replays only under that tree's rules. A planted change of T7b's is
+ * applied to a scratch copy of the checkout, as tools/coordinator/t7c-runs.mjs
+ * builds the head, and the session is verified in that copy. A safety run's
+ * head, F2's, and the comparison plant's (planted in the base) are the checkout.
+ * @param {string} name
+ * @param {string} run
+ * @param {string} scratchDir
+ * @returns {string[]}
+ */
+function verifyInHead(name, run, scratchDir) {
+  const p = PLANTS.find((item) => 'value-' + item.name === name);
+  if (!p || p.inBase) {
+    return verifySession(run).failures;
+  }
+  const tree = copyCheckout(scratchDir, name);
+  apply(plant, tree, p.edits);
+  if (p.shared) {
+    apply(plant, tree, p.shared);
+  }
+  const code = 'import { verifySession } from "./packages/propose/record.js"; process.stdout.write(JSON.stringify(verifySession(process.argv[1]).failures));';
+  const ran = spawnSync(process.execPath, ['--input-type=module', '-e', code, resolve(run)], { cwd: tree, encoding: 'utf8' });
+  assert.equal(ran.status, 0, ran.stderr);
+  return JSON.parse(ran.stdout);
+}
+
+/**
+ * The session is the copy's, and every entry its log admitted is inside the
+ * manifest it carries.
+ * @param {string} run
+ */
+function checkAdmitted(run) {
+  const { session } = readSession(run);
+  assert.equal(session.role, 'instrument-copy', run);
+  const carried = catalogFromLog(session.manifests);
+  assert.ok(carried.ok, run);
+  if (!carried.ok) {
+    return;
+  }
+  for (const logged of session.log) {
+    assert.ok(roleRefusal(carried.catalog, logged.proposal, logged.provenance).ok, run + ': ' + JSON.stringify(logged.proposal));
+  }
+}
 
 test('nothing the record check imports can reach a model', () => {
   /** @type {Set<string>} */
