@@ -476,8 +476,51 @@ fn body_for(b: &[f64; BODY_STRIDE], driven: bool, shape: u32) -> Result<(RigidBo
         body.activation_mut().time_until_sleep = SLEEP_QUANTA * DT;
         body
     };
-    let co = ColliderBuilder::new(collider_shape(driven, shape, half)).restitution(0.0).friction(0.8).build();
+    let co = solver_grouped(
+        ColliderBuilder::new(collider_shape(driven, shape, half)).restitution(0.0).friction(0.8),
+        driven,
+        SEPARATE_DRIVEN,
+    )
+    .build();
     Ok((body, co))
+}
+
+/// On in the product law (dispatch 128). Off, a body's collider keeps
+/// Rapier's default solver groups, membership and filter both all, which is
+/// the law before this slice.
+const SEPARATE_DRIVEN: bool = true;
+
+/// Solver groups for one body. A driven body is group 3 and does not solve
+/// with group 2. A dynamic body is group 2 and does not solve with group 3.
+/// Each still solves with the other of its own kind. A static collider is
+/// left at Rapier's default, so both solve with the floor and the walls.
+/// Collision groups are not touched: the narrow phase still finds the pairs.
+fn body_solver_groups(driven: bool) -> InteractionGroups {
+    let (membership, excluded) = if driven {
+        (Group::GROUP_3, Group::GROUP_2)
+    } else {
+        (Group::GROUP_2, Group::GROUP_3)
+    };
+    InteractionGroups::new(
+        membership,
+        Group::from_bits_truncate(Group::ALL.bits() & !excluded.bits()),
+        InteractionTestMode::And,
+    )
+}
+
+/// The builder, with dispatch 128's solver groups when `separate` is on.
+fn solver_grouped(builder: ColliderBuilder, driven: bool, separate: bool) -> ColliderBuilder {
+    if separate {
+        builder.solver_groups(body_solver_groups(driven))
+    } else {
+        builder
+    }
+}
+
+fn set_body_solver_groups(co: &mut Collider, driven: bool) {
+    if SEPARATE_DRIVEN {
+        co.set_solver_groups(body_solver_groups(driven));
+    }
 }
 
 /// The sleep settings a driven body is built with: `can_sleep(false)`, which
@@ -620,19 +663,21 @@ fn switch_in_place(loaded: &mut Loaded, driven: u64, carried: u64) -> Result<(),
         match transition {
             Transition::ToDriven(handle, collider) => {
                 to_driven(&mut loaded.world.bodies[handle]);
-                if shape == 1 {
-                    if let Some(co) = loaded.world.colliders.get_mut(collider) {
+                if let Some(co) = loaded.world.colliders.get_mut(collider) {
+                    if shape == 1 {
                         co.set_shape(collider_shape(true, shape, loaded.halves[i]));
                     }
+                    set_body_solver_groups(co, true);
                 }
                 loaded.kinematic[i] = true;
             }
             Transition::ToDynamic(handle, collider, rotation) => {
                 to_dynamic(&mut loaded.world.bodies[handle], &body_at(i), rotation);
-                if shape == 1 {
-                    if let Some(co) = loaded.world.colliders.get_mut(collider) {
+                if let Some(co) = loaded.world.colliders.get_mut(collider) {
+                    if shape == 1 {
                         co.set_shape(collider_shape(false, shape, loaded.halves[i]));
                     }
+                    set_body_solver_groups(co, false);
                 }
                 loaded.kinematic[i] = false;
             }
@@ -1729,6 +1774,34 @@ mod tests {
         };
         apply(&mut body, &record, rotation);
         body.is_dynamic() && body.linvel() == Vector::new(0.5, 0.75, -0.25) && body.angvel() == Vector::new(0.125, -0.5, 0.25)
+    }
+
+    /// Dispatch 128. Solver groups, not collision groups: a driven body and a
+    /// dynamic body do not solve, both solve with a static, and writing the
+    /// groups does not change the collider's handle.
+    #[test]
+    fn driven_and_dynamic_solver_groups_exclude_each_other_and_the_handle_stays() {
+        let driven = body_solver_groups(true);
+        let dynamic = body_solver_groups(false);
+        let floor = InteractionGroups::all();
+        assert!(!driven.test(dynamic) && !dynamic.test(driven), "a driven body still solves with a dynamic body");
+        assert!(driven.test(floor) && floor.test(driven), "a driven body no longer solves with a static");
+        assert!(dynamic.test(floor) && floor.test(dynamic), "a dynamic body no longer solves with a static");
+        assert!(driven.test(driven), "two driven bodies no longer solve");
+        assert!(dynamic.test(dynamic), "two dynamic bodies no longer solve");
+
+        let mut bodies = RigidBodySet::new();
+        let mut colliders = ColliderSet::new();
+        let body = bodies.insert(RigidBodyBuilder::dynamic().build());
+        let handle = colliders.insert_with_parent(ColliderBuilder::cuboid(0.5, 0.5, 0.5).build(), body, &mut bodies);
+        let raw = handle.into_raw_parts();
+        colliders.get_mut(handle).unwrap().set_solver_groups(dynamic);
+        let after = colliders.get(handle).unwrap();
+        assert_eq!(handle.into_raw_parts(), raw, "setting solver groups changed the collider handle");
+        assert_eq!(after.parent(), Some(body));
+        assert!(!after.solver_groups().test(driven));
+        let plain = solver_grouped(ColliderBuilder::cuboid(0.5, 0.5, 0.5), false, false).build();
+        assert_eq!(plain.solver_groups(), InteractionGroups::all(), "the switch off left Rapier's default solver groups");
     }
 
     // F1 pin 6. Rapier ignores set_linvel and set_angvel on a position-based
