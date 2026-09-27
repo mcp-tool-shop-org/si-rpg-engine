@@ -1,6 +1,6 @@
 # Dispatch 128 — a driven character's contacts do not become a dynamic body's speed
 
-2026-09-26. Coordinator: Grok. Builder: a seat named at dispatch time. Reviewer: a different family, before merge. Issues #128 and #121. This slice changes the law. It merges after T7c's measurement pull request, so both of T7c's bars run on one law. It rebases onto #127 if that lands first.
+2026-09-26. Coordinator: Grok. Builder: a seat named at dispatch time. Reviewer: a different family, before merge. Issues #128 and #121. This slice changes the law. It merges after T7c's measurement pull request, so both of T7c's bars run on one law. #127 has landed, so the slice rebases onto current `main`.
 
 The measurement is the overseer's, standing in for the Archivist, on `main` at `1da5f6a` with the product law `fd4b46bb45f299894d31e8745a3649f986c08b95ad3acba7ec20d70bfef2fde2`, rapier3d-f64 0.35.3 with enhanced-determinism, and parry3d-f64 0.30.2. It is summarised below. #121's measurement is the Archivist's crate-eject reading, relayed on 2026-09-26.
 
@@ -13,7 +13,7 @@ The measurement is the overseer's, standing in for the Archivist, on `main` at `
 - At t355 the move ends. At t356 `solverModes` gives the walker mode 0 (`packages/tick/world.js:127`), and `to_dynamic` flips it in place (F1). The flip keeps the pose, the contact pairs, and their warm-starts. The first dynamic step applies the stored ~3.1 N·s to a walker of 0.125 kg. The walker leaves at (−1.29, 11.12, −0.70) m/s and the crate at (−2.57, 3.06, 0.57). Both warm-starts read 0 after that step. The walker reaches y 8.9 and leaves the world.
 - The control: a fresh product world loaded from the exact t355 bodies, both dynamic, the walker's velocity zeroed, no stored impulses. Stepped once, the walker gets 0.81 m/s and the crate 0.33 m/s. The geometry does not throw. The stored impulse does.
 
-**#121.** The 0.25 autostep is a pose change of the kinematic body. Rapier turns it into 16.0 m/s with `interpolate_velocity`, and the contact solve writes that onto a dynamic box the walker overlaps or carries. The push copy (`solver/src/impulses.rs`) does not carry it, and F5's guard does not see it.
+**#121.** The 0.25 autostep is a pose change of the kinematic body. Rapier turns it into 16.0 m/s with `interpolate_velocity`, and the contact solve writes that onto a dynamic box the walker overlaps, or onto a box that only meets the walker's head. A carried body is not in the solver. `pinCarried` copies it to the walker's head and sets its velocity to 0, and the crate-eject measurement recorded that case at speed 0. The push copy (`solver/src/impulses.rs`) does not write the 16 m/s, and F5's guard does not see it. The reading is [`requests/crate-eject.md`](https://github.com/mcp-tool-shop-org/readouts/blob/main/rust-knowledge/waves/wave-03-si-rpg-engine/requests/crate-eject.md).
 
 **What the two share.** A driven character in deep contact with a dynamic body. The contact solve turns something that only makes sense for an infinite-mass body into dynamic velocity: the pose change in #121, the squeeze in #128.
 
@@ -29,7 +29,7 @@ This slice takes route B: no solver contacts between a driven character and a dy
 
 1. **The tests first.** Each red fails on `main` and passes here, and the pull request shows both.
    - The `refusals` witness above: on `main` the walker leaves the world after t356. Here it does not, and no body in that run exceeds the climb rule's `maxRise` above its start.
-   - A two-body red room for #121: a walker that autosteps 0.25 while a dynamic box overlaps it or rests on it. On `main` the box leaves at about 16 m/s. Here it does not rise faster than the walker does.
+   - A two-body red room for #121: a walker that autosteps 0.25 while a dynamic box overlaps it, or meets its head and is not carried. On `main` that box leaves at about 16 m/s. A carried box is not this red: the same measurement recorded it at speed 0. Here the overlapping box, and the box that meets the head, do not rise faster than the walker does.
 
 2. **Solver groups, not collision groups.** A driven body's collider and a dynamic body's collider carry solver groups that exclude each other. Static colliders solve against both. The narrow phase still finds the pairs, so the snapshot's pair keys, the character controller's queries, and the push routine's contact reads do not change. Collision groups would remove the pairs and are not this slice.
    - The groups follow the mode. At every in-place switch (`to_dynamic`, `to_kinematic`, and the driven switch F1 made), the switched collider's solver groups are set in place. Its handle does not change.
