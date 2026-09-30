@@ -1,0 +1,35 @@
+{
+  "name": "@si-rpg-engine/host",
+  "version": "0.3.0",
+  "description": "The socket a picture binds to: the frame stream and the intent door.",
+  "type": "module",
+  "license": "MIT",
+  "author": "mcp-tool-shop",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "host": "./bin/host.js"
+  },
+  "exports": {
+    ".": "./session.js",
+    "./session.js": "./session.js",
+    "./server.js": "./server.js"
+  },
+  "files": [
+    "*.js",
+    "*.html",
+    "bin",
+    "!*.test.js",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcp-tool-shop-org/si-rpg-engine.git",
+    "directory": "packages/host"
+  },
+  "homepage": "https://mcp-tool-shop-org.github.io/si-rpg-engine/",
+  "bugs": {
+    "url": "https://github.com/mcp-tool-shop-org/si-rpg-engine/issues"
+  }
+}

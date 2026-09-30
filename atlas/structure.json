@@ -1740,6 +1740,10 @@
           "path": "docs/dispatch-mesh-refusal.md"
         },
         {
+          "hash": "63da896e49a79524430ce1ce339026eca267a481f1c37cb230aec13789414f2c",
+          "path": "docs/dispatch-npm-workspaces.md"
+        },
+        {
           "hash": "e598dbb1a3748c5beb74bd2179a7312a30de9c63e888702e5f9da0881918844b",
           "path": "docs/dispatch-s1-soundness.md"
         },
@@ -1784,7 +1788,7 @@
           "path": "docs/dispatch-t7c-model.md"
         },
         {
-          "hash": "4bf29806b28cba95a7b644f26f210d89897d980813aaa20a330417c79220f710",
+          "hash": "095980141151e445f8d6513b17223e23642711fd6a21d47025d591cc771116c1",
           "path": "docs/host-binding.md"
         },
         {
@@ -4374,9 +4378,15 @@
       "dynamicSpawns": 0,
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
-      "entryPoints": [],
+      "entryPoints": [
+        "packages/frame/hash.js"
+      ],
       "externals": 0,
       "files": [
+        {
+          "hash": "ceec48cc0638fe892f763967baeef9b49ddac159a486d9cf0c490a88331bd395",
+          "path": "packages/frame/README.md"
+        },
         {
           "exports": [
             "commitFrame"
@@ -4391,6 +4401,10 @@
           ],
           "hash": "679ea1225a673d0cd523445aae4c37d9b21696f9716c4835003ae62c37e83270",
           "path": "packages/frame/hash.js"
+        },
+        {
+          "hash": "7e696df40880c62e36dd5e24c5f344e329d9d66bdec83048de9de2c3bb1dab3c",
+          "path": "packages/frame/package.json"
         },
         {
           "hash": "4444c7a23814d39e23045bd41aaea4b5f3c8e3a1c0bd45db21805d9b624e1bc5",
@@ -4476,7 +4490,7 @@
         {
           "entry": "holds",
           "entryRule": 1,
-          "hash": "8852acc9c6d114be107041585bb696dcfc4aea5cc7138e7bc71eba94ac52f1bf",
+          "hash": "9f5906a694e129bf3298298c03187e32a044e12a90de90b322716585587bd072",
           "importsFiles": [
             "packages/host/server.js",
             "packages/host/session.js",
@@ -4488,17 +4502,17 @@
             {
               "calls": [
                 {
-                  "line": 166,
+                  "line": 167,
                   "name": "worldRecord",
                   "target": null
                 },
                 {
-                  "line": 167,
+                  "line": 168,
                   "name": "frame",
                   "target": null
                 },
                 {
-                  "line": 167,
+                  "line": 168,
                   "name": "frameRecord",
                   "target": null
                 }
@@ -4511,7 +4525,7 @@
             {
               "calls": [
                 {
-                  "line": 177,
+                  "line": 178,
                   "name": "listen",
                   "target": null
                 }
@@ -8320,10 +8334,15 @@
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
       "entryPoints": [
-        "packages/host/bin/host.js"
+        "packages/host/bin/host.js",
+        "packages/host/session.js"
       ],
       "externals": 0,
       "files": [
+        {
+          "hash": "98428f2021a7041d7e468c3abbb5e3cfb4be0bfd8251bb01e9bd1be68e6b55fa",
+          "path": "packages/host/README.md"
+        },
         {
           "entry": "saveLog",
           "entryRule": 1,
@@ -8347,6 +8366,10 @@
             "packages/tick/scene.js"
           ],
           "path": "packages/host/host.test.js"
+        },
+        {
+          "hash": "727dae3f1542fea3d411f6094dd84cae3c35747c9f77cf50d7d1e14fc9ecfe28",
+          "path": "packages/host/package.json"
         },
         {
           "hash": "81203522e5b7da61b032c50811b6d4b8f65175d28fdae019392c3f6145ff9fb4",
@@ -8458,10 +8481,15 @@
       "dynamicSpawnsInTests": 0,
       "dynamicWrites": 0,
       "entryPoints": [
-        "packages/load/bin/load.js"
+        "packages/load/bin/load.js",
+        "packages/load/world.js"
       ],
       "externals": 0,
       "files": [
+        {
+          "hash": "4998d582b81e045709207bcf1b70c51074535882f273a1a48b2689d3a4f04a2e",
+          "path": "packages/load/README.md"
+        },
         {
           "exports": [
             "considerDraft",
@@ -8509,6 +8537,10 @@
             "packages/tick/world.js"
           ],
           "path": "packages/load/load.test.js"
+        },
+        {
+          "hash": "5b3436ff4ba2aeaf1b4df4cf9f845c578f5bfd5f56baa72945aef46ccf3f1689",
+          "path": "packages/load/package.json"
         },
         {
           "exports": [
@@ -10189,11 +10221,11 @@
           "path": ".gitattributes"
         },
         {
-          "hash": "aca7ee64a4cc04ce03b026a56d2fbec41dab3a0797a0972c8a3510479933cce1",
+          "hash": "13cbf8fd1cdf28d4b82bb6aeb86cdd26afaf15865a58ceae766c0aed826d5867",
           "path": ".gitignore"
         },
         {
-          "hash": "ce11adccd7ea9b60e6cf8e6f76be99b07d524995d7c862983db650aeb27439b5",
+          "hash": "a03fca926629a7b97550e4e97abe555b17dbd389b3eddc60d8db1d0e36f267d8",
           "path": "CHANGELOG.md"
         },
         {
@@ -10201,35 +10233,35 @@
           "path": "LICENSE"
         },
         {
-          "hash": "4b3074d8b7c854ad8e491fbf29b9ebc0d6bb89c529cf6724001f499fdb5bdd15",
+          "hash": "ec873c3184f2d47237e233710ae5e4a2c17b96ad2fbf5be5bef3f6ff4fa2096c",
           "path": "README.es.md"
         },
         {
-          "hash": "6ad3512fa4bfa89f08a32e382c04fdf018ef636fd75ae7b3c1b687d8a1664a86",
+          "hash": "133b95fce69b8babc9740292c2eacf77e8e61e2d1bbf161c30759892c67022d0",
           "path": "README.fr.md"
         },
         {
-          "hash": "0456a478611dfec66737cb02f9e977b3823c4d90a0ef5c809878bf0924a04bcc",
+          "hash": "e17bb8b877560e217695651c94399198f819e34bf45974c8794c2a86dc0ebd8c",
           "path": "README.hi.md"
         },
         {
-          "hash": "0011f029de58690fcfb81ffb7679941ae6a20864673a79724e391faf349adbdc",
+          "hash": "c9f454fb4f9e232a40c2493aaa6e929254adcd9cc61f930da40534361e9739b8",
           "path": "README.it.md"
         },
         {
-          "hash": "f430c029d64b85ff24652a47355911d5a8be2b6ec23f86bd4e1e7a105ec3a286",
+          "hash": "1e796713e53fa5070737583207fa73d414e4150e9a116075cdc2ddf2e3fba9a7",
           "path": "README.ja.md"
         },
         {
-          "hash": "d7e021204fb9d901741223bcf7f47727448cd17b8f60c936b9dc9e7ef6b3650b",
+          "hash": "3aa94a38d6dec9a2fd0dea5b7c7548cb9889d4a48309013582529dc80b28ba6e",
           "path": "README.md"
         },
         {
-          "hash": "d429aecdf949083f96c0fbe953e2f715b785871578c79f1d5507fb38c826dcd9",
+          "hash": "12f0a154df961b206b46cbf4c8a8446ea066472368d61fdd9e479c64c136121d",
           "path": "README.pt-BR.md"
         },
         {
-          "hash": "aa508f8451e09c9b424abeaca378a0d66c1bdfa7b2ee50aaf16a65b006b2fbba",
+          "hash": "7e8e4249a0c11e2fcad8474ac074ee46f1a2e5158f1b8e03eaa2a7d962cf90b8",
           "path": "README.zh.md"
         },
         {
@@ -10249,15 +10281,15 @@
           "path": "codecov.yml"
         },
         {
-          "hash": "a62f093137882656dfee1173c2baeab0f4fea2289941f2af7449e855dd300926",
+          "hash": "99d72bb7de0c54054413eb0a0afb9c95f1cb86560c953e8193b17310ee0cff4b",
           "path": "package-lock.json"
         },
         {
-          "hash": "ed4a46f6728a4bf5840142366d52ccf968af4d1471ad99fe7654830ca9e731b2",
+          "hash": "fdbd565c92b15193fcc16b0a44c4f38155a18ebe63409989967b446dea29c6f8",
           "path": "package.json"
         },
         {
-          "hash": "40661f3acee6a4a716886fc44f6303c16330b4e9799b459615ba2627c17c758a",
+          "hash": "af92054f361f7006cdf1dcb1dbbea3e0b5865b51e3fa60abb689867803fa3c8c",
           "path": "tsconfig.json"
         }
       ],
@@ -10943,10 +10975,15 @@
       "dynamicWrites": 0,
       "entryPoints": [
         "packages/tick/bin/play.js",
-        "packages/tick/bin/replay.js"
+        "packages/tick/bin/replay.js",
+        "packages/tick/tick.js"
       ],
       "externals": 0,
       "files": [
+        {
+          "hash": "62eedc4f33bd444f53e21f65ae8d3f610051cca428341d52159329f80d97ff03",
+          "path": "packages/tick/README.md"
+        },
         {
           "entry": "loadHash",
           "entryRule": 4,
@@ -11919,6 +11956,10 @@
               "name": "firstHashes"
             }
           ]
+        },
+        {
+          "hash": "086d965b4bc5fbd41adbf597278fd5b9fdc5d9c8f5f2203802033efb41f53356",
+          "path": "packages/tick/package.json"
         },
         {
           "entry": "admitIntent",
@@ -13053,6 +13094,10 @@
         {
           "hash": "0e703d7cc2b7143a8b9ef8fa67cb783bd74929143382a954e00f6db6a02b4c09",
           "path": ".github/workflows/pages.yml"
+        },
+        {
+          "hash": "4838237b27847170cd83c5325757c47a5c17a8359c91d5b2a656385c8f8de2c1",
+          "path": ".github/workflows/release.yml"
         }
       ],
       "globs": [
@@ -13097,7 +13142,7 @@
   ],
   "doors": [
     {
-      "checksCount": 31,
+      "checksCount": 32,
       "commands": [
         {
           "job": "engines",
@@ -13807,6 +13852,18 @@
         {
           "job": "engines",
           "matched": true,
+          "path": "tools/stage-release.mjs",
+          "runKind": "checks",
+          "via": "tsc tsconfig.json"
+        },
+        {
+          "job": "engines",
+          "path": "tools/stage-release.test.js",
+          "runKind": "executes"
+        },
+        {
+          "job": "engines",
+          "matched": true,
           "path": "tools/verdicts.js",
           "runKind": "checks",
           "via": "tsc tsconfig.json"
@@ -13817,7 +13874,7 @@
           "runKind": "executes"
         }
       ],
-      "runsCount": 85,
+      "runsCount": 87,
       "secrets": [],
       "sends": {
         "deploysPages": false,
@@ -14102,6 +14159,102 @@
         "actions/deploy-pages",
         "actions/setup-node",
         "actions/upload-pages-artifact"
+      ],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [
+        {
+          "job": "npm",
+          "step": "Install pinned npm for OIDC dist-tags",
+          "text": "npm install -g npm@11.21.0 --ignore-scripts"
+        },
+        {
+          "job": "npm",
+          "step": "3",
+          "text": "npm ci"
+        },
+        {
+          "job": "npm",
+          "step": "Build the solver and hold the pin",
+          "text": "node solver/build.mjs --check"
+        },
+        {
+          "job": "npm",
+          "step": "Stage the packages",
+          "text": "node tools/stage-release.mjs"
+        },
+        {
+          "job": "npm",
+          "step": "Publish",
+          "text": "bash tools/publish-release.sh"
+        }
+      ],
+      "elsewhere": [],
+      "file": ".github/workflows/release.yml",
+      "landings": [],
+      "mentions": [],
+      "name": "Release",
+      "permissions": [
+        "contents:read",
+        "id-token:write"
+      ],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "solver",
+          "depth": 0,
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "job": "npm",
+          "path": "solver/build.mjs",
+          "runKind": "executes"
+        },
+        {
+          "job": "npm",
+          "path": "tools/publish-release.sh",
+          "runKind": "executes"
+        },
+        {
+          "job": "npm",
+          "path": "tools/stage-release.mjs",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 3,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [
+        {
+          "event": "release",
+          "types": [
+            "published"
+          ]
+        },
+        {
+          "event": "workflow_dispatch"
+        }
+      ],
+      "uses": [
+        "Swatinem/rust-cache",
+        "actions/checkout",
+        "actions/setup-node",
+        "dtolnay/rust-toolchain"
       ],
       "usesWorkflowToken": false
     },
@@ -14628,6 +14781,234 @@
       "triggers": [],
       "uses": [],
       "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "packages/host/package.json",
+      "kind": "command",
+      "landings": [],
+      "mentions": [],
+      "name": "host",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "host",
+          "depth": 0,
+          "files": 3
+        },
+        {
+          "boundary": "tick",
+          "depth": 1,
+          "enters": {
+            "file": "packages/tick/scene.js",
+            "from": "packages/host/bin/host.js"
+          },
+          "files": 14
+        },
+        {
+          "boundary": "frame",
+          "depth": 2,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/admit-world.js"
+          },
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "path": "packages/host/bin/host.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "packages/load/package.json",
+      "kind": "command",
+      "landings": [],
+      "mentions": [],
+      "name": "load",
+      "permissions": [],
+      "programs": [
+        "git"
+      ],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "load",
+          "depth": 0,
+          "files": 6
+        },
+        {
+          "boundary": "tick",
+          "depth": 1,
+          "enters": {
+            "file": "packages/tick/bundle.js",
+            "from": "packages/load/bin/load.js"
+          },
+          "files": 18
+        },
+        {
+          "boundary": "frame",
+          "depth": 3,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/admit-world.js"
+          },
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "path": "packages/load/bin/load.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "packages/tick/package.json",
+      "kind": "command",
+      "landings": [],
+      "mentions": [],
+      "name": "play",
+      "permissions": [],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "tick",
+          "depth": 0,
+          "files": 13
+        },
+        {
+          "boundary": "frame",
+          "depth": 2,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/tick.js"
+          },
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "path": "packages/tick/bin/play.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
+    },
+    {
+      "checksCount": 0,
+      "commands": [],
+      "elsewhere": [],
+      "file": "packages/tick/package.json",
+      "kind": "command",
+      "landings": [],
+      "mentions": [],
+      "name": "replay",
+      "permissions": [],
+      "programs": [
+        "git"
+      ],
+      "pushes": false,
+      "reach": [
+        {
+          "boundary": "tick",
+          "depth": 0,
+          "files": 19
+        },
+        {
+          "boundary": "frame",
+          "depth": 3,
+          "enters": {
+            "file": "packages/frame/hash.js",
+            "from": "packages/tick/sessions.js"
+          },
+          "files": 2
+        }
+      ],
+      "readers": [],
+      "runs": [
+        {
+          "path": "packages/tick/bin/replay.js",
+          "runKind": "executes"
+        }
+      ],
+      "runsCount": 1,
+      "secrets": [],
+      "sends": {
+        "deploysPages": false,
+        "dispatchesTo": [],
+        "opensIssues": false,
+        "opensIssuesOnFailure": false,
+        "opensPullRequests": false,
+        "publishes": false,
+        "publishesTo": [],
+        "releases": false
+      },
+      "stages": [],
+      "triggers": [],
+      "uses": [],
+      "usesWorkflowToken": false
     }
   ],
   "edges": [
@@ -14712,8 +15093,8 @@
     }
   ],
   "generatedFrom": {
-    "commit": "6865b1c7ffd03e99cb8f913840402048707c1a5c",
-    "tracked": 927
+    "commit": "2e24412d7e5980562575f986c06fb81be9ce20db",
+    "tracked": 940
   },
   "landings": [
     {
@@ -14730,9 +15111,27 @@
     {
       "readers": [
         {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "LICENSE",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "tools/coordinator/check-translations.mjs",
           "call": "readFileSync",
           "confidence": "weak"
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "README.md",
@@ -16001,9 +16400,36 @@
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "readFileSync",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "package.json",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "readFileSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "readdirSync",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages",
       "writers": []
     },
     {
@@ -16043,6 +16469,11 @@
     },
     {
       "readers": [
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        },
         {
           "by": "packages/bench/finding.test.js",
           "call": "literal",
@@ -16114,9 +16545,42 @@
     {
       "readers": [
         {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "packages/frame",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages/frame/frame.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "packages/bench/plants.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "packages/frame/hash.js",
@@ -16124,6 +16588,11 @@
     },
     {
       "readers": [
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        },
         {
           "by": "packages/bench/anchors.js",
           "call": "literal",
@@ -16136,7 +16605,18 @@
     {
       "readers": [
         {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        },
+        {
           "by": "packages/tick/load-hash.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "tools/stage-release.test.js",
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
@@ -16165,6 +16645,28 @@
     {
       "readers": [
         {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages/host/server.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages/host/session.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "packages/host/server.js",
           "call": "readFileSync",
           "confidence": "ast"
@@ -16175,6 +16677,11 @@
     },
     {
       "readers": [
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        },
         {
           "by": "packages/bench/anchors.js",
           "call": "literal",
@@ -16187,7 +16694,29 @@
     {
       "readers": [
         {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages/load/admit.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "harness/sweep.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        },
+        {
+          "by": "tools/stage-release.test.js",
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
@@ -16226,6 +16755,17 @@
     {
       "readers": [
         {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        }
+      ],
+      "target": "packages/load/world.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "packages/bench/anchors.js",
           "call": "literal",
           "confidence": "ast"
@@ -16254,6 +16794,11 @@
     },
     {
       "readers": [
+        {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        },
         {
           "by": "packages/propose/propose.test.js",
           "call": "literal",
@@ -16309,6 +16854,11 @@
     {
       "readers": [
         {
+          "by": "package-lock.json",
+          "call": "literal",
+          "confidence": "text"
+        },
+        {
           "by": "packages/host/host.test.js",
           "call": "literal",
           "confidence": "ast",
@@ -16349,6 +16899,12 @@
         },
         {
           "by": "packages/tick/tick.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "tools/stage-release.test.js",
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
@@ -16584,6 +17140,17 @@
           "call": "readFileSync",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "packages/tick/tick.js",
@@ -16621,6 +17188,11 @@
           "by": "packages/bench/runner.js",
           "call": "literal",
           "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "literal",
+          "confidence": "ast"
         }
       ],
       "target": "packages/tick/world.js",
@@ -16635,6 +17207,18 @@
         }
       ],
       "target": "packages/tool",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
+        }
+      ],
+      "target": "packages/tool/guard.js",
       "writers": []
     },
     {
@@ -16789,6 +17373,12 @@
           "by": "packages/tick/predicates.js",
           "call": "readFileSync",
           "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "predicates/intents/index.json",
@@ -17032,6 +17622,17 @@
         {
           "by": "solver/source.test.js",
           "call": "statSync",
+          "confidence": "ast",
+          "fromTests": true
+        },
+        {
+          "by": "tools/stage-release.mjs",
+          "call": "existsSync",
+          "confidence": "ast"
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "existsSync",
           "confidence": "ast",
           "fromTests": true
         }
@@ -17449,6 +18050,33 @@
     {
       "readers": [
         {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "tools/stage-release.mjs",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
+          "by": "docs/dispatch-npm-workspaces.md",
+          "call": "--test",
+          "confidence": "text"
+        },
+        {
+          "by": "tsconfig.json",
+          "call": "literal",
+          "confidence": "text"
+        }
+      ],
+      "target": "tools/stage-release.test.js",
+      "writers": []
+    },
+    {
+      "readers": [
+        {
           "by": "tools/review.mjs",
           "call": "readFileSync",
           "confidence": "ast"
@@ -17701,7 +18329,7 @@
   "overlaps": [],
   "submodules": [],
   "symlinks": [],
-  "testFiles": 48,
+  "testFiles": 49,
   "unassigned": [
     {
       "exports": [
@@ -17857,6 +18485,10 @@
       "sequences": []
     },
     {
+      "hash": "843f9a4c3815219c0e38569989c0bd77b4c9ea9aedf4b8de3de1a842d3270c49",
+      "path": "tools/publish-release.sh"
+    },
+    {
       "hash": "125963b9b3019078c9f6f01a25c369838aa08725ceaf23daf7e97cfa3903347b",
       "importsFiles": [
         "packages/tool/guard.js",
@@ -17865,6 +18497,26 @@
         "tools/verdicts.js"
       ],
       "path": "tools/review.mjs"
+    },
+    {
+      "entry": "stageRelease",
+      "entryRule": 1,
+      "exports": [
+        "stageRelease"
+      ],
+      "hash": "66378990f5c516b0bf6f317515644235f817550a22bbfbce12b60424b9783529",
+      "path": "tools/stage-release.mjs",
+      "sequences": []
+    },
+    {
+      "entry": "pack",
+      "entryRule": 1,
+      "hash": "5e4e11bd28e6a652ba5bdcf4f6c5db9e2f312c741dc2f9bb8e287eeef1f8bd36",
+      "importsFiles": [
+        "tools/stage-release.mjs"
+      ],
+      "path": "tools/stage-release.test.js",
+      "sequences": []
     },
     {
       "exports": [

@@ -44,7 +44,7 @@ What it aims to be is the simulation core inside a host: a browser, Godot, or Un
 | Roles for model seats: a manifest per role, the Rule of Two derived from what the role reads, a role gate in the checker, provenance on every admission, trust labels that stay with a belief, and every model call recorded and checked without a GPU; both declared roles frozen | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` over the sessions in `fixtures/sessions/` |
 | Replay from a seed and a log, and a host binding for the frame stream, the intent door, and the blend rule | `packages/tick/replay.js`, `packages/host`, `docs/host-binding.md` | `fixtures/first-scene-played.json` is a person's play through the host boundary; `harness/binding.test.js` plays the fixture through the socket |
 
-516 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
+521 tests, seven behaviour fixtures that replay step for step, and two golden hashes printed by three engines on x64 and by node on ARM64, on every commit.
 
 ## Install
 

@@ -44,7 +44,7 @@ L'obiettivo è essere il motore di simulazione all'interno di un host: un browse
 | Ruoli per i modelli: un manifesto per ogni ruolo, la "Regola dei Due" derivata da ciò che legge il ruolo, un "gate" di ruolo nel checker, la provenienza per ogni ammissione, etichette di fiducia che rimangono con una credenza e ogni chiamata al modello registrata e verificata senza una GPU; entrambi i ruoli dichiarati sono fissi. | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` durante le sessioni in `fixtures/sessions/` |
 | Riproduzione da un seme e un log, e un binding dell'host per il flusso di fotogrammi, la "porta delle intenzioni" e la regola di fusione. | `packages/tick/replay.js`, `packages/host`, `docs/host-binding.md` | `fixtures/first-scene-played.json` è l'esecuzione di una persona attraverso il confine dell'host; `harness/binding.test.js` esegue lo scenario attraverso il socket. |
 
-516 test, sette scenari comportamentali che riproducono passo dopo passo, e due hash "oro" stampati da tre motori su x64 e da node su ARM64, ad ogni commit.
+521 test, sette scenari comportamentali che riproducono passo dopo passo, e due hash "oro" stampati da tre motori su x64 e da node su ARM64, ad ogni commit.
 
 ## Installazione
 
