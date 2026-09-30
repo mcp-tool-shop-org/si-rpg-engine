@@ -1,6 +1,6 @@
 {
   "name": "@si-rpg-engine/load",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "World admission for SI RPG Engine. A world file is accepted, with a reason, before it runs.",
   "type": "module",
   "license": "MIT",

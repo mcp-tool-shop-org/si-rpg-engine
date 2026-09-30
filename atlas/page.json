@@ -105,39 +105,23 @@
   "changes": {
     "fileCounts": {
       "added": 0,
-      "changed": 3,
+      "changed": 8,
       "moved": 0,
-      "parts": 1,
+      "parts": 6,
       "removed": 0
     },
     "items": [
       {
-        "kind": "landing",
-        "sentence": "packages/host/bin/host.js is now also read by tools/stage-release.test.js.",
-        "subjects": [
-          "packages/host/bin/host.js",
-          "tools/stage-release.test.js"
-        ]
-      },
-      {
-        "kind": "landing",
-        "sentence": "packages/load/bin/load.js is now also read by tools/stage-release.test.js.",
-        "subjects": [
-          "packages/load/bin/load.js",
-          "tools/stage-release.test.js"
-        ]
-      },
-      {
         "kind": "counts",
-        "sentence": "3 files changed content, across 1 part.",
+        "sentence": "Nothing structural changed since 2026-09-30; 8 files changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "d08872bee885d64295aef6b080927b81ff98416f",
-      "generatedAt": "2026-09-30T20:04:48.212Z"
+      "commit": "2e24412d7e5980562575f986c06fb81be9ce20db",
+      "generatedAt": "2026-09-30T20:08:46.780Z"
     },
-    "unchanged": false
+    "unchanged": true
   },
   "changesTogether": [
     {
@@ -222,7 +206,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 18 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "2e24412d7e5980562575f986c06fb81be9ce20db",
+  "commit": "3fda2e5df225708158270381e28b14f88cdaab6f",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JavaScript (141 files). Work enters through 15 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
@@ -973,7 +957,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-30T20:08:46.780Z",
+  "generatedAt": "2026-09-30T20:36:07.286Z",
   "limits": [
     "19 import sites could not be resolved.",
     "3 writes and 9 reads use paths built at run time and are not named here.",

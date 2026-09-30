@@ -331,18 +331,18 @@
         "path": ".github/workflows/pages.yml"
       },
       {
-        "commits": 1,
-        "lines": 68,
+        "commits": 2,
+        "lines": 136,
         "path": ".github/workflows/release.yml"
       },
       {
-        "commits": 6,
-        "lines": 17,
+        "commits": 7,
+        "lines": 18,
         "path": ".gitignore"
       },
       {
-        "commits": 46,
-        "lines": 356,
+        "commits": 48,
+        "lines": 379,
         "path": "CHANGELOG.md"
       },
       {
@@ -351,43 +351,43 @@
         "path": "LICENSE"
       },
       {
-        "commits": 33,
-        "lines": 1387,
+        "commits": 34,
+        "lines": 1389,
         "path": "README.es.md"
       },
       {
-        "commits": 33,
-        "lines": 1695,
+        "commits": 34,
+        "lines": 1697,
         "path": "README.fr.md"
       },
       {
-        "commits": 33,
-        "lines": 1575,
+        "commits": 34,
+        "lines": 1577,
         "path": "README.hi.md"
       },
       {
-        "commits": 33,
-        "lines": 1687,
+        "commits": 34,
+        "lines": 1689,
         "path": "README.it.md"
       },
       {
-        "commits": 33,
-        "lines": 1677,
+        "commits": 34,
+        "lines": 1679,
         "path": "README.ja.md"
       },
       {
-        "commits": 67,
-        "lines": 635,
+        "commits": 68,
+        "lines": 637,
         "path": "README.md"
       },
       {
-        "commits": 33,
-        "lines": 1323,
+        "commits": 34,
+        "lines": 1325,
         "path": "README.pt-BR.md"
       },
       {
-        "commits": 33,
-        "lines": 1707,
+        "commits": 34,
+        "lines": 1709,
         "path": "README.zh.md"
       },
       {
@@ -406,8 +406,8 @@
         "path": "SHIP_GATE.md"
       },
       {
-        "commits": 119,
-        "lines": 4534,
+        "commits": 121,
+        "lines": 4622,
         "path": "atlas/README.md"
       },
       {
@@ -416,18 +416,18 @@
         "path": "atlas/boundaries.yaml"
       },
       {
-        "commits": 119,
-        "lines": 17041,
+        "commits": 121,
+        "lines": 17382,
         "path": "atlas/page.json"
       },
       {
-        "commits": 119,
-        "lines": 34968,
+        "commits": 121,
+        "lines": 35351,
         "path": "atlas/statistics.json"
       },
       {
-        "commits": 119,
-        "lines": 70296,
+        "commits": 121,
+        "lines": 71250,
         "path": "atlas/structure.json"
       },
       {
@@ -661,8 +661,8 @@
         "path": "docs/dispatch-mesh-refusal.md"
       },
       {
-        "commits": 2,
-        "lines": 23,
+        "commits": 4,
+        "lines": 48,
         "path": "docs/dispatch-npm-workspaces.md"
       },
       {
@@ -4121,13 +4121,13 @@
         "path": "harness/write-golden.js"
       },
       {
-        "commits": 5,
-        "lines": 188,
+        "commits": 7,
+        "lines": 268,
         "path": "package-lock.json"
       },
       {
-        "commits": 84,
-        "lines": 293,
+        "commits": 86,
+        "lines": 303,
         "path": "package.json"
       },
       {
@@ -4281,8 +4281,8 @@
         "path": "packages/bench/trees.js"
       },
       {
-        "commits": 1,
-        "lines": 13,
+        "commits": 2,
+        "lines": 26,
         "path": "packages/frame/README.md"
       },
       {
@@ -4296,8 +4296,8 @@
         "path": "packages/frame/hash.js"
       },
       {
-        "commits": 1,
-        "lines": 31,
+        "commits": 3,
+        "lines": 64,
         "path": "packages/frame/package.json"
       },
       {
@@ -4306,8 +4306,8 @@
         "path": "packages/frame/types.d.ts"
       },
       {
-        "commits": 1,
-        "lines": 13,
+        "commits": 2,
+        "lines": 26,
         "path": "packages/host/README.md"
       },
       {
@@ -4321,8 +4321,8 @@
         "path": "packages/host/host.test.js"
       },
       {
-        "commits": 1,
-        "lines": 35,
+        "commits": 3,
+        "lines": 72,
         "path": "packages/host/package.json"
       },
       {
@@ -4346,8 +4346,8 @@
         "path": "packages/host/view.js"
       },
       {
-        "commits": 1,
-        "lines": 13,
+        "commits": 2,
+        "lines": 26,
         "path": "packages/load/README.md"
       },
       {
@@ -4371,8 +4371,8 @@
         "path": "packages/load/load.test.js"
       },
       {
-        "commits": 1,
-        "lines": 34,
+        "commits": 3,
+        "lines": 70,
         "path": "packages/load/package.json"
       },
       {
@@ -4451,8 +4451,8 @@
         "path": "packages/propose/seat.js"
       },
       {
-        "commits": 1,
-        "lines": 13,
+        "commits": 2,
+        "lines": 26,
         "path": "packages/tick/README.md"
       },
       {
@@ -4531,8 +4531,8 @@
         "path": "packages/tick/order.test.js"
       },
       {
-        "commits": 1,
-        "lines": 35,
+        "commits": 3,
+        "lines": 72,
         "path": "packages/tick/package.json"
       },
       {
@@ -5021,8 +5021,8 @@
         "path": "tools/prompt.test.js"
       },
       {
-        "commits": 2,
-        "lines": 67,
+        "commits": 3,
+        "lines": 132,
         "path": "tools/publish-release.sh"
       },
       {
@@ -5031,13 +5031,13 @@
         "path": "tools/review.mjs"
       },
       {
-        "commits": 1,
-        "lines": 137,
+        "commits": 2,
+        "lines": 274,
         "path": "tools/stage-release.mjs"
       },
       {
-        "commits": 2,
-        "lines": 149,
+        "commits": 3,
+        "lines": 298,
         "path": "tools/stage-release.test.js"
       },
       {
@@ -5051,8 +5051,8 @@
         "path": "tools/verdicts.test.js"
       },
       {
-        "commits": 15,
-        "lines": 54,
+        "commits": 16,
+        "lines": 56,
         "path": "tsconfig.json"
       },
       {
@@ -5076,59 +5076,59 @@
     "level": "low",
     "reason": "fewer than 25 source files reach 10 revisions in the window"
   },
-  "generatedAt": "2026-09-30T20:08:46.780Z",
+  "generatedAt": "2026-09-30T20:36:07.286Z",
   "generatedFrom": {
-    "commit": "2e24412d7e5980562575f986c06fb81be9ce20db"
+    "commit": "3fda2e5df225708158270381e28b14f88cdaab6f"
   },
   "pairs": [
     {
       "a": "CHANGELOG.md",
       "b": "README.es.md",
-      "either": 28,
+      "either": 29,
       "shared": 16,
-      "strength": 0.571429
+      "strength": 0.551724
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.fr.md",
-      "either": 28,
+      "either": 29,
       "shared": 16,
-      "strength": 0.571429
+      "strength": 0.551724
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.hi.md",
-      "either": 28,
+      "either": 29,
       "shared": 16,
-      "strength": 0.571429
+      "strength": 0.551724
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.it.md",
-      "either": 28,
+      "either": 29,
       "shared": 16,
-      "strength": 0.571429
+      "strength": 0.551724
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.ja.md",
-      "either": 28,
+      "either": 29,
       "shared": 16,
-      "strength": 0.571429
+      "strength": 0.551724
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.pt-BR.md",
-      "either": 28,
+      "either": 29,
       "shared": 16,
-      "strength": 0.571429
+      "strength": 0.551724
     },
     {
       "a": "CHANGELOG.md",
       "b": "README.zh.md",
-      "either": 28,
+      "either": 29,
       "shared": 16,
-      "strength": 0.571429
+      "strength": 0.551724
     },
     {
       "a": "README.es.md",
@@ -5280,43 +5280,43 @@
     {
       "a": "atlas/README.md",
       "b": "atlas/page.json",
-      "either": 68,
-      "shared": 68,
+      "either": 69,
+      "shared": 69,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/statistics.json",
-      "either": 68,
-      "shared": 68,
+      "either": 69,
+      "shared": 69,
       "strength": 1
     },
     {
       "a": "atlas/README.md",
       "b": "atlas/structure.json",
-      "either": 68,
-      "shared": 68,
+      "either": 69,
+      "shared": 69,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/statistics.json",
-      "either": 68,
-      "shared": 68,
+      "either": 69,
+      "shared": 69,
       "strength": 1
     },
     {
       "a": "atlas/page.json",
       "b": "atlas/structure.json",
-      "either": 68,
-      "shared": 68,
+      "either": 69,
+      "shared": 69,
       "strength": 1
     },
     {
       "a": "atlas/statistics.json",
       "b": "atlas/structure.json",
-      "either": 68,
-      "shared": 68,
+      "either": 69,
+      "shared": 69,
       "strength": 1
     },
     {
@@ -5554,16 +5554,16 @@
     "floor": "fallen",
     "floorHeld": false,
     "floorTrigger": "revision-depth",
-    "headDate": "2026-09-30T16:08:30-04:00",
+    "headDate": "2026-09-30T16:35:49-04:00",
     "inScopeFiles": 945,
     "pinnedStart": null,
     "priorFloor": "fallen",
-    "qualifyingCommits": 365,
+    "qualifyingCommits": 367,
     "qualifyingMinimum": 30,
     "revisions": 5,
     "shared": 10,
     "sharedFloorUsed": 3,
-    "since": "2026-04-03T20:08:30.000Z",
+    "since": "2026-04-03T20:35:49.000Z",
     "sourceExtensions": [
       ".js",
       ".mjs",

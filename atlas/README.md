@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-30 from commit 2e24412.
+Mapped at 2026-09-30 from commit 3fda2e5.
 
 ## What this is
 
@@ -8,11 +8,9 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 17 parts, mostly JavaScript (141 files). Work enters through 15 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-30 (d08872b)
+## What changed since 2026-09-30 (2e24412)
 
-- packages/host/bin/host.js is now also read by tools/stage-release.test.js.
-- packages/load/bin/load.js is now also read by tools/stage-release.test.js.
-- 3 files changed content, across 1 part.
+Nothing structural changed since 2026-09-30; 8 files changed content.
 
 ## What comes in
 
