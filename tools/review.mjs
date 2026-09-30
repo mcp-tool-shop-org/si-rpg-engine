@@ -19,7 +19,7 @@
 //   named defect against the code; a reviewer whose served model differs from the one asked for
 //   is discarded, never counted.
 // - NAMED_COMPENSATORS 2: the runner's only irreversible act is spending model tokens (bounded:
-//   one call per seat, six by default, a size cap on the prompt, an owner-accepted cost recorded per
+//   one call per seat, one by default, a size cap on the prompt, an owner-accepted cost recorded per
 //   call). Posting the
 //   summary to the pull request is undone by deleting the comment (owner: coordinator).
 // - DECOMPOSE_BY_SECRETS 3: the panel (panel.js), the rubric and message (prompt.js), and the
@@ -29,10 +29,9 @@
 //   lone BLOCK is checked against the code by the coordinator; a corroborated BLOCK, or a BLOCK
 //   the coordinator cannot refute, goes back to the builder, and a disagreement about design goes
 //   to the Director, framed contrastively.
-// - EXTERNAL_VERIFIER 3: the default panel is six Ollama Cloud families other than the author's
-//   (Moonshot, Z.ai, DeepSeek, NVIDIA, MiniMax, Mistral). OpenAI and Google sit on standby and
-//   are named with --seats. None sees the author's reasoning, and the served-model check is
-//   enforced.
+// - EXTERNAL_VERIFIER 3: the default panel is one OpenRouter seat, DeepSeek
+//   (deepseek/deepseek-v4.1-flash), a family other than the author's. Ollama Cloud is not
+//   seated. None sees the author's reasoning, and the served-model check is enforced.
 //
 // Text the pull request's author wrote, or its code printed, is fenced in the message as untrusted
 // data (prompt.js), and the dispatch comes from the base branch, so a pull request cannot rewrite
@@ -40,8 +39,8 @@
 // a security boundary (see prompt.js), which is why no verdict merges anything by itself.
 //
 // Reads OPENROUTER_API_KEY from the environment when a chosen seat goes through OpenRouter, and
-// never prints it. Ollama Cloud models go through the local daemon at 127.0.0.1:11434, which is
-// signed in to Ollama Cloud.
+// never prints it. The shipped panel goes through OpenRouter. An Ollama seat, if a later panel
+// names one, goes through the local daemon at 127.0.0.1:11434. A default run names none.
 
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -178,7 +177,7 @@ async function callOpenRouter(seat, prompt) {
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + process.env.OPENROUTER_API_KEY },
-    body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: prompt }], max_tokens: maxTokens, usage: { include: true } }),
+    body: JSON.stringify({ model, messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: prompt }], max_tokens: maxTokens, usage: { include: true }, ...(seat.reasoningEffort ? { reasoning: { effort: seat.reasoningEffort } } : {}) }),
     signal: AbortSignal.timeout(900000),
   });
   const j = await res.json();
@@ -257,14 +256,14 @@ const prompt = built.text;
 if (process.argv.includes('--dry-run')) {
   // Everything up to the first model call, and no call: the message's size and fence, where the
   // dispatch came from, and the seats that would be asked.
-  process.stdout.write(JSON.stringify({ pr: Number(pr), head: g.meta.headRefOid, files: files ?? null, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, promptChars: prompt.length, promptSha256: sha(prompt), notSent: g.omitted.length, seats: panel.map((seat) => seat.family + ' ' + seat.model + ' ' + seat.maxTokens + (seat.think === undefined ? '' : ' think=' + seat.think)) }, null, 2) + '\n');
+  process.stdout.write(JSON.stringify({ pr: Number(pr), head: g.meta.headRefOid, files: files ?? null, dispatchFrom: g.dispatchFrom, fenceTag: built.tag, diffCut: built.diffCut, promptChars: prompt.length, promptSha256: sha(prompt), notSent: g.omitted.length, seats: panel.map((seat) => seat.family + ' ' + seat.model + ' ' + seat.maxTokens + (seat.think === undefined ? '' : ' think=' + seat.think) + (seat.reasoningEffort === undefined ? '' : ' reasoning=' + seat.reasoningEffort)) }, null, 2) + '\n');
   process.exit(0);
 }
 process.stderr.write(`prompt ${prompt.length} characters; ${g.omitted.length} files not sent; calling ${panel.length} reviewers\n`);
-// Ollama Cloud serves this account OLLAMA_CONCURRENCY requests at once (panel.js). Under the
-// earlier plan it served one: on #74 two seats at once failed with HTTP 429, and the seats took
-// turns. The Ollama seats now run together, up to that number. The shipped panel has no
-// OpenRouter seat.
+// An OpenRouter seat runs on its own. An Ollama seat, if a panel names one, waits for a free
+// slot: Ollama Cloud serves this account OLLAMA_CONCURRENCY requests at once (panel.js). Under
+// the earlier plan it served one, and on #74 two seats at once failed with HTTP 429. The shipped
+// panel names no Ollama seat. The default seat is OpenRouter deepseek/deepseek-v4.1-flash.
 // review() never throws, so one seat's failure frees its slot for the next.
 let ollamaRunning = 0;
 /** @type {Array<() => void>} */

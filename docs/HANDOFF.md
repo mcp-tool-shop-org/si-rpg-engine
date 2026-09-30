@@ -92,23 +92,22 @@ The handbook's testing page lists what is known and not yet proven.
 
 ### The review panel
 
-`tools/panel.js` seats six families by default, all through Ollama Cloud: Moonshot, Z.ai, DeepSeek, NVIDIA, MiniMax, and Mistral. OpenAI and Google sit on standby and are named with `--seats`.
-- **Concurrency.** The account's Ollama Max plan serves ten requests at once, so the Ollama seats review together. A review takes as long as its slowest seat: six minutes on #95, eleven on F5's larger diff, and ten on each of T7b's two passes.
+`tools/panel.js` seats one family by default: DeepSeek, through OpenRouter, model `deepseek/deepseek-v4.1-flash`, with reasoning effort `none` and an output budget of 8,192 tokens. That budget keeps one review of a pull request of this size to about a cent. Ollama Cloud is not seated, and a default run does not call it. The served-model check still discards a seat whose served id differs from the one asked for, so a router id is not a seat.
+- **Saved 2026-09-30.** The Director named this seat as the verification path. A run at the default reasoning effort spent 16,384 tokens on reasoning and returned no answer, and a run at low effort spent 32,768 the same way. The seat asks for no reasoning, which is the setting that answers.
 - **A large pull request** is reviewed in passes over disjoint files, one `--files <regex>` each (#112).
   - T7b's diff was about 480,000 characters, beside a frame of about 115,000, and the prompt cap is 400,000.
   - Each pass carried the whole dispatch, description, checklist, and evidence.
   - A dry run shows whether a pass fits.
 - **The receipt's hashes** are of the runner's files as they sit on disk. On Windows, under `autocrlf`, they hash the CRLF form.
-- **OpenRouter is retired.** It was retired on 2026-09-26, on cost, and cross-family panels run on Ollama Cloud only. The shipped panel has no OpenRouter seat.
-  - Mistral is `mistral-large-3:675b-cloud`. It accepts 262,144 output tokens, and the daemon serves it as `mistral-large-3:675b`.
-  - The OpenAI standby is `gpt-oss:120b-cloud`. An output budget over 131,072 is refused, and a budget of 32 returns an empty answer, so the seat keeps 131,072.
-  - The Google standby is `gemma4:31b-cloud`. The bare name is the local weight. It accepts 262,144 output tokens, and the daemon serves it as `gemma4:31b`.
-  - Seat a model only after it answers through the local daemon. `ollama list` still shows retired tags that return HTTP 410. The live catalog is the check.
-- **`--seats`** names families for one run.
-- **Measured behaviour:**
-  - DeepSeek sometimes spends its whole 65,536-token budget thinking, and is then reported as not counted.
-  - MiniMax's first trial invented two findings, so a lone BLOCK from it is checked like any other.
-  - Only NVIDIA reasons longer with `think: 'high'`.
+- **The retired panel.** Until 2026-09-30 the default was six Ollama Cloud families: Moonshot, Z.ai, DeepSeek, NVIDIA, MiniMax, and Mistral. OpenAI and Google sat on standby. OpenRouter had been retired on 2026-09-26 on cost; this one model is the path that replaced that panel. Those Ollama seats are not in `tools/panel.js`.
+  - The account's Ollama Max plan served ten requests at once, so those seats reviewed together. A review took as long as its slowest seat: six minutes on #95, eleven on F5's larger diff, and ten on each of T7b's two passes.
+  - Mistral was `mistral-large-3:675b-cloud`. It accepted 262,144 output tokens, and the daemon served it as `mistral-large-3:675b`.
+  - The OpenAI standby was `gpt-oss:120b-cloud`. An output budget over 131,072 was refused, and a budget of 32 returned an empty answer, so the seat kept 131,072.
+  - The Google standby was `gemma4:31b-cloud`. The bare name is the local weight. It accepted 262,144 output tokens, and the daemon served it as `gemma4:31b`.
+  - DeepSeek on that panel sometimes spent its whole 65,536-token budget thinking, and was then reported as not counted.
+  - MiniMax's first trial invented two findings, so a lone BLOCK from it was checked like any other.
+  - Only NVIDIA reasoned longer with `think: 'high'`.
+- **`--seats`** names families for one run. The only family on the panel is DeepSeek.
 - **The coordinator's own breaks.** Before the review, the coordinator breaks a few of a slice's promises by hand and reruns the test that should hold each one. The results go into the evidence, and each break that turns nothing red is a gap. On T7b this found the two gaps the panel then corroborated.
 - **When a review stops converging.** T7b's dispatch took nine rounds before the Director chose to merge without a tenth. Now, when a design review keeps blocking on gaps in the text rather than faults in the design, the Director gets that choice after the round named in advance. The builder's promise table and the review of its code are the next check.
 
