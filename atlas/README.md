@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-30 from commit d08872b.
+Mapped at 2026-09-30 from commit 2e24412.
 
 ## What this is
 
@@ -8,20 +8,11 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 17 parts, mostly JavaScript (141 files). Work enters through 15 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-30 (6865b1c)
+## What changed since 2026-09-30 (d08872b)
 
-- CI now also runs tools/stage-release.test.js.
-- CI now also checks tools/stage-release.mjs.
-- Release (.github/workflows/release.yml) is a new door. It starts when a release is published; or by hand. It runs solver/build.mjs, tools/publish-release.sh and tools/stage-release.mjs.
-- And 4 more changes to doors.
-- LICENSE is now read by tools/stage-release.test.js.
-- README.md is now read by tools/stage-release.test.js.
-- package.json is now also read by tools/stage-release.test.js.
-- And 23 more new writers and readers of places.
-- tools/publish-release.sh is new and belongs to no part, so atlas check fails on it against the previous map.
-- tools/stage-release.mjs is new and belongs to no part, so atlas check fails on it against the previous map.
-- tools/stage-release.test.js is new and belongs to no part, so atlas check fails on it against the previous map.
-- 13 files added and 15 changed content, across 8 parts.
+- packages/host/bin/host.js is now also read by tools/stage-release.test.js.
+- packages/load/bin/load.js is now also read by tools/stage-release.test.js.
+- 3 files changed content, across 1 part.
 
 ## What comes in
 

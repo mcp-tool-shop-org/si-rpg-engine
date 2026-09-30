@@ -1740,7 +1740,7 @@
           "path": "docs/dispatch-mesh-refusal.md"
         },
         {
-          "hash": "56b3e6974831cbd6d4e050829719e9fa3d9bf3d6b625b97b77a0c2efba5e8b51",
+          "hash": "63da896e49a79524430ce1ce339026eca267a481f1c37cb230aec13789414f2c",
           "path": "docs/dispatch-npm-workspaces.md"
         },
         {
@@ -15093,7 +15093,7 @@
     }
   ],
   "generatedFrom": {
-    "commit": "d08872bee885d64295aef6b080927b81ff98416f",
+    "commit": "2e24412d7e5980562575f986c06fb81be9ce20db",
     "tracked": 940
   },
   "landings": [
@@ -16614,6 +16614,12 @@
           "call": "literal",
           "confidence": "ast",
           "fromTests": true
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "packages/host/bin/host.js",
@@ -16708,6 +16714,12 @@
           "by": "package-lock.json",
           "call": "literal",
           "confidence": "text"
+        },
+        {
+          "by": "tools/stage-release.test.js",
+          "call": "literal",
+          "confidence": "ast",
+          "fromTests": true
         }
       ],
       "target": "packages/load/bin/load.js",
@@ -18473,7 +18485,7 @@
       "sequences": []
     },
     {
-      "hash": "22556a63cb5157ea3c0497d55dc07d525dd65383a1fe88fe5c59b53eca4d4295",
+      "hash": "843f9a4c3815219c0e38569989c0bd77b4c9ea9aedf4b8de3de1a842d3270c49",
       "path": "tools/publish-release.sh"
     },
     {
@@ -18499,7 +18511,7 @@
     {
       "entry": "pack",
       "entryRule": 1,
-      "hash": "473265db6e926ae3f06d40466122df7a16ab9a43fc8be51ffbff5da965599afe",
+      "hash": "5e4e11bd28e6a652ba5bdcf4f6c5db9e2f312c741dc2f9bb8e287eeef1f8bd36",
       "importsFiles": [
         "tools/stage-release.mjs"
       ],
