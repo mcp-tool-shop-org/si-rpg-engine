@@ -52,7 +52,7 @@ The handbook's testing page lists what is known and not yet proven.
 1. **T7c, dispatch 128, and v0.3.0 are on main.** T7c is `5ef97f9`. The law slice is `a0fceca`. The tag is `8d9a8a3`, a GitHub release only. `test-instrument` stays frozen. The prompt, the stall rule, and the model stay as they were.
 2. **Rapier 0.36.0 and mesh collision are on main.** A scene may name one fixed triangle mesh. The product scene names none. The controller control test and the push control test passed on the bump. The course and the outcome tests passed, and the product golden did not move.
 3. **A bad mesh is refused before Parry builds it.** `createWorld` runs `validateMesh` and throws that reason. The law refuses an index out of range, a repeated index, or a non-finite vertex before the trimesh is built, and a non-finite snapshot value the same way. A trap drops the cached module. A refused load or step does not hold that world and does not copy bodies back. `harness/mesh.test.js` is on `npm test`. The dispatch is `docs/dispatch-mesh-refusal.md`.
-4. **The pins.** The product golden stays `69a671f962665563`. The arithmetic golden stays `0d38671370d12d1e`. The Linux digest in the tree is still `5a886be5608abfc385dc986da7aec5876a4eae86a2111ac239e2eb77673d5c8d`. This slice moves the digest. The replacement is pinned from the Linux CI build, not from a Windows build.
+4. **The pins.** The product golden stays `69a671f962665563`. The arithmetic golden stays `0d38671370d12d1e`. The Linux digest is `fe5d46350f944426a684742479a41b352340c4caee47a56733eb50ce3a2e8bf3`, the build CI run `36743536389` printed. A Windows build does not write the pin.
 5. **A host binding is the open line.** There is no dispatch for it.
 
 ## How the work runs
