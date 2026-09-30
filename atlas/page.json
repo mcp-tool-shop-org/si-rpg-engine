@@ -104,80 +104,55 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 7,
-      "changed": 379,
+      "added": 3,
+      "changed": 921,
       "moved": 0,
       "parts": 17,
       "removed": 0
     },
     "items": [
       {
-        "kind": "door",
-        "sentence": "CI's pull request trigger now also names `codecov.yml`.",
+        "kind": "cycle",
+        "sentence": "harness now imports host, which closes the cycle harness → host → tick → harness.",
         "subjects": [
-          ".github/workflows/ci.yml"
+          "harness",
+          "host",
+          "tick"
         ]
       },
       {
         "kind": "door",
-        "sentence": "CI's push trigger now also names `codecov.yml`.",
-        "subjects": [
-          ".github/workflows/ci.yml"
-        ]
-      },
-      {
-        "kind": "door",
-        "sentence": "CI now also runs harness/mesh-refusal.test.js, harness/mesh.test.js and harness/step-up-121.test.js.",
+        "sentence": "CI now also runs harness/binding.test.js.",
         "subjects": [
           ".github/workflows/ci.yml",
-          "harness/mesh-refusal.test.js",
-          "harness/mesh.test.js",
-          "harness/step-up-121.test.js"
+          "harness/binding.test.js"
         ]
       },
       {
         "kind": "landing",
-        "sentence": "solver/build.mjs is now also read by harness/mesh-refusal.test.js.",
+        "sentence": "docs/host-binding.md is now read by harness/binding.test.js.",
         "subjects": [
-          "solver/build.mjs",
-          "harness/mesh-refusal.test.js"
+          "docs/host-binding.md",
+          "harness/binding.test.js"
         ]
       },
       {
-        "kind": "sequence",
-        "sentence": "In packages/tick/scene.js, validate scene gained a step, validate mesh, before belief refusal.",
+        "kind": "landing",
+        "sentence": "worlds/crate-and-door.json is now also read by harness/binding.test.js.",
         "subjects": [
-          "packages/tick/scene.js"
+          "worlds/crate-and-door.json",
+          "harness/binding.test.js"
         ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/scene.js, load scene gained a step, validate mesh, before belief refusal.",
-        "subjects": [
-          "packages/tick/scene.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "In packages/tick/scene.js, validate scene gained a step, validate mesh, before belief refusal.",
-        "subjects": [
-          "packages/tick/scene.js"
-        ]
-      },
-      {
-        "kind": "sequence",
-        "sentence": "And 1 more change to the order of work.",
-        "subjects": []
       },
       {
         "kind": "counts",
-        "sentence": "7 files added and 379 changed content, across 17 parts.",
+        "sentence": "3 files added and 921 changed content, across 17 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "aa90e0026358de8508117fbf3a725953fa39164c",
-      "generatedAt": "2026-09-27T00:44:51.979Z"
+      "commit": "bfa453817bf90dab8fe3f30994b4ae802de5ae14",
+      "generatedAt": "2026-09-30T17:07:27.658Z"
     },
     "unchanged": false
   },
@@ -198,6 +173,21 @@
       "shared": 10
     },
     {
+      "a": "packages/host/host.test.js",
+      "b": "packages/host/session.js",
+      "either": 13,
+      "partLabels": [
+        "host",
+        "host"
+      ],
+      "parts": [
+        "host",
+        "host"
+      ],
+      "relation": "inside",
+      "shared": 9
+    },
+    {
       "a": "packages/propose/prompt.js",
       "b": "packages/propose/seat.js",
       "either": 13,
@@ -211,21 +201,6 @@
       ],
       "relation": "inside",
       "shared": 9
-    },
-    {
-      "a": "packages/host/host.test.js",
-      "b": "packages/host/session.js",
-      "either": 12,
-      "partLabels": [
-        "host",
-        "host"
-      ],
-      "parts": [
-        "host",
-        "host"
-      ],
-      "relation": "inside",
-      "shared": 8
     },
     {
       "a": "packages/load/load.test.js",
@@ -261,12 +236,12 @@
   "changesTogetherNote": [
     "2 files changed together with their own tests, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
-    "Window: 180 days; a pair counts from 3 shared commits, since 17 source files reach 10 revisions; the floor rises to 10 when 25 do."
+    "Window: 180 days; a pair counts from 3 shared commits, since 18 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "bfa453817bf90dab8fe3f30994b4ae802de5ae14",
-  "defaultBranch": "dispatch-mesh-refusal",
-  "derived": "17 parts, mostly JavaScript (138 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
+  "commit": "6865b1c7ffd03e99cb8f913840402048707c1a5c",
+  "defaultBranch": "main",
+  "derived": "17 parts, mostly JavaScript (139 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -333,7 +308,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 39
+          "files": 40
         },
         {
           "boundary": "host",
@@ -362,6 +337,7 @@
         }
       ],
       "runs": [
+        "harness/binding.test.js",
         "harness/bundle.mjs",
         "harness/bundle.test.js",
         "harness/caps.test.js",
@@ -416,7 +392,7 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 53,
+      "runsCount": 54,
       "sends": [],
       "stages": [],
       "triggers": [
@@ -857,7 +833,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-30T17:07:27.658Z",
+  "generatedAt": "2026-09-30T18:42:00.766Z",
   "limits": [
     "19 import sites could not be resolved.",
     "3 writes and 9 reads use paths built at run time and are not named here.",
@@ -888,8 +864,36 @@
   },
   "parts": 17,
   "readers": [],
-  "repo": "si-rpg-engine",
+  "repo": "mcp-tool-shop-org/si-rpg-engine",
   "sequences": [
+    {
+      "entry": "holds",
+      "file": "harness/binding.test.js",
+      "inner": [],
+      "part": "harness",
+      "partLabel": "harness",
+      "phrase": "holds",
+      "steps": [
+        {
+          "name": "worldRecord",
+          "part": null,
+          "partLabel": null,
+          "phrase": "world record"
+        },
+        {
+          "name": "frame",
+          "part": null,
+          "partLabel": null,
+          "phrase": "frame"
+        },
+        {
+          "name": "frameRecord",
+          "part": null,
+          "partLabel": null,
+          "phrase": "frame record"
+        }
+      ]
+    },
     {
       "entry": "makeBundle",
       "file": "harness/bundle.mjs",
@@ -2204,15 +2208,15 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 47,
+  "testFiles": 48,
   "testedBy": {
     "bench": 11,
     "frame": 16,
-    "host": 1,
+    "host": 2,
     "load": 4,
     "propose": 2,
     "solver": 2,
-    "tick": 38
+    "tick": 39
   },
   "unnamedWrites": 3,
   "unread": [

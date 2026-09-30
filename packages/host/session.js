@@ -33,6 +33,7 @@ export function createSession(scene, law) {
     minds: scene.minds,
   } : fixtureWorld(), law);
   const memory = createMemory();
+  const actorId = scene && scene.goal ? scene.goal.actor : 'walker';
   const tick = createTick({
     seed: scene ? scene.seed : FIXTURE_SEED,
     world: sim,
@@ -58,9 +59,10 @@ export function createSession(scene, law) {
   }
 
   function worldRecord() {
-    /** @type {{ kind: string, dt: number, colliders: ReturnType<typeof fixtureColliders>, zones: import('../tick/scene.js').Zone[], goal?: import('../tick/scene.js').Zone }} */
+    /** @type {{ kind: string, version: number, dt: number, colliders: ReturnType<typeof fixtureColliders>, zones: import('../tick/scene.js').Zone[], goal?: import('../tick/scene.js').Zone }} */
     const record = {
       kind: 'world',
+      version: 1,
       dt: DT,
       colliders: scene ? scene.colliders : fixtureColliders(),
       zones: scene ? scene.zones : [],
@@ -103,7 +105,7 @@ export function createSession(scene, law) {
         hz: body.hz,
       })),
       door: doorTick(frame),
-      zone: sim.zoneOf('walker'),
+      zone: sim.zoneOf(actorId),
       ...(sim.minds.length > 0 ? { minds: mindRecord() } : {}),
     };
   }
@@ -158,7 +160,7 @@ export function createSession(scene, law) {
       return { admitted: false, reason: 'an intent is an object' };
     }
     const record = /** @type {Record<string, unknown>} */ (input);
-    const actor = typeof record.actor === 'string' ? record.actor : 'walker';
+    const actor = typeof record.actor === 'string' ? record.actor : actorId;
     const verb = typeof record.verb === 'string' ? record.verb : 'move';
     const frame = tick.frame();
     if (verb === 'push') {

@@ -146,6 +146,7 @@ test('the page stream is a world line, then frames, and a posted intent is admit
   const world = JSON.parse(lines[0]);
   const frame = JSON.parse(lines[1]);
   assert.equal(world.kind, 'world');
+  assert.equal(world.version, 1);
   assert.equal(world.colliders.length, 3);
   assert.equal(frame.kind, 'frame');
   assert.equal(frame.tick, 0);

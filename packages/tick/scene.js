@@ -151,11 +151,30 @@ export function validateScene(value) {
     if (anyQuat && Math.abs(Math.hypot(qx, qy, qz, qw) - 1) > 1e-9) {
       return { ok: false, reason: 'collider ' + box.id + ' quaternion is not unit' };
     }
-    colliders.push(/** @type {StaticCollider} */ ({
+    // Absent components stay absent. The load hash and the law read a missing component as identity.
+    /** @type {StaticCollider} */
+    const stored = {
       id: box.id,
-      minX: box.minX, maxX: box.maxX, minY: box.minY, maxY: box.maxY, minZ: box.minZ, maxZ: box.maxZ,
-      qx, qy, qz, qw,
-    }));
+      minX: /** @type {number} */ (box.minX),
+      maxX: /** @type {number} */ (box.maxX),
+      minY: /** @type {number} */ (box.minY),
+      maxY: /** @type {number} */ (box.maxY),
+      minZ: /** @type {number} */ (box.minZ),
+      maxZ: /** @type {number} */ (box.maxZ),
+    };
+    if (typeof box.qx === 'number') {
+      stored.qx = box.qx;
+    }
+    if (typeof box.qy === 'number') {
+      stored.qy = box.qy;
+    }
+    if (typeof box.qz === 'number') {
+      stored.qz = box.qz;
+    }
+    if (typeof box.qw === 'number') {
+      stored.qw = box.qw;
+    }
+    colliders.push(stored);
   }
   if (!Array.isArray(raw.zones)) {
     return { ok: false, reason: 'zones must be a list' };
