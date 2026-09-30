@@ -1,7 +1,8 @@
 // The spatial law: bodies, static colliders, one fixed-timestep quantum.
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
-import { imageRefusal, imageSolver, imageSparse, instantiate, loadSolver, restoreImage, restoreSparse, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { imageRefusal, imageSolver, imageSparse, instantiate, lawStatus, loadSolver, restoreImage, restoreSparse, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
+import { validateMesh } from './scene.js';
 import { subjectText } from './subject.js';
 import { goalsOf as goalsOfMind } from './minds.js';
 
@@ -38,12 +39,31 @@ function hold(id) {
   held = { id, instance: instantiate() };
 }
 
+/** A refused product load or step. A trap names itself. Every other refusal stays NaN. @returns {never} */
+function lawRefusal() {
+  if (lawStatus() === 'trapped') {
+    throw new Error('the physics module trapped and was discarded');
+  }
+  throw new Error('NaN');
+}
+
 /**
  * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; mesh?: { positions: number[], indices: number[] } | null; shape?: 'box' | 'capsule'; name?: string; minds?: import('./minds.js').Mind[] }} init
  * @param {'product' | 'box' | 'reference'} [law] product is the Rapier step; box is the E1 binary; reference is the JavaScript kernel
  */
 export function createWorld(init, law) {
   const chosen = law || 'product';
+  // validateMesh runs only from here, after both modules have finished loading.
+  // scene.js imports this function, and this file imports that check.
+  /** @type {{ positions: number[], indices: number[] } | null} */
+  let mesh = null;
+  if (init.mesh) {
+    const checked = validateMesh(init.mesh);
+    if (!checked.ok) {
+      throw new Error(checked.reason);
+    }
+    mesh = checked.mesh;
+  }
   // A restore adopts the saved world's id, so the solver's signature matches.
   let productId = chosen === 'product' ? nextProductId++ : 0;
   /** @type {Body[]} */
@@ -97,11 +117,6 @@ export function createWorld(init, law) {
     cols: init.heightfield.cols,
     cell: init.heightfield.cell,
     heights: init.heightfield.heights.slice(),
-  } : null;
-  /** @type {{ positions: number[], indices: number[] } | null} */
-  const mesh = init.mesh ? {
-    positions: init.mesh.positions.slice(),
-    indices: init.mesh.indices.slice(),
   } : null;
 
   /** @param {string} id */
@@ -181,10 +196,10 @@ export function createWorld(init, law) {
     if (chosen === 'product') {
       solverModes(driving);
       const stepped = stepSolver(productId, bodies, colliders, heightfield, driving, shapeId, mesh);
-      hold(productId);
       if (!stepped) {
-        throw new Error('NaN');
+        lawRefusal();
       }
+      hold(productId);
       pinCarried();
       return;
     }
@@ -550,10 +565,10 @@ export function createWorld(init, law) {
     }
     if (chosen === 'product') {
       const loaded = loadSolver(productId, bodies, colliders, heightfield, driven || new Set(), shapeId, mesh);
-      hold(productId);
       if (!loaded) {
-        throw new Error('NaN');
+        lawRefusal();
       }
+      hold(productId);
     }
   }
 

@@ -1,6 +1,6 @@
 # Handoff
 
-2026-09-27, at v0.3.0. This is for the next session, and for anyone who picks the work up. It says where the engine stands, what comes next and in what order, and how the work runs, with the scripts that run it. `docs/PHASE-2.md` holds the plan and its reasons; this file holds the working state.
+2026-09-30. Main when this note was written was `a641adb`. This note rides with the mesh-refusal slice. It says where the engine stands, what comes next and in what order, and how the work runs, with the scripts that run it. `docs/PHASE-2.md` holds the plan and its reasons; this file holds the working state.
 
 ## Where the engine stands
 
@@ -43,27 +43,17 @@ v0.3.0 is the v0.2.0 suite with dispatch 128's law slice on it. v0.2.0 was Phase
 
 **The law slice's pin.** Dispatch 128's law slice is on main at `a0fceca`. The Linux digest is `fab06138921df81dbe269aac68cee653292ef9d60310af996687ea4621821a71`. The product golden is still `69a671f962665563`.
 
-**Open issues.**
-- **#97:** two leftovers from #83.
-- **#109:** tightening F4's tests.
-- **#101:** a doc comment in `warm_broadphase`, for the next slice that re-pins the digest.
-- **#129:** a drop started with the actor exactly on the target clears the back-out velocity, and the release is refused.
-- **#131:** the coverage build's `law_coverage` warning count is not asserted.
+**Issues that were open at v0.3.0.** #97, #109, #101, #129, and #131 are fixed. The Unreleased section of the changelog is the record: the drop backs out, the deferred sweep note names the scheduled comparison, a 2D capture the loader accepts is a failure, outcome 4d locks its measured height, and the coverage builds report no `law_coverage` warning. #101's comment landed with the Rapier 0.36 bump.
 
 The handbook's testing page lists what is known and not yet proven.
 
 ## What comes next, in order
 
-1. **T7c's result is on main** at `5ef97f9`. The bars were recomputed from the committed reports. Safety passes: 80 outputs, every proposal an intent for the walker with a catalog verb, and the 9 admissions are walker moves. Value fails: arm M and arm G are 0 and 0 on all seven changes. `test-instrument` stays frozen. The prompt, the stall rule, and the model stay as they were.
-2. **Dispatch 128 is on main.** The carried box stays at speed 0 (`895b2bf`). The law slice is `a0fceca`. A driven collider is solver group 3 and does not solve against group 2. A dynamic collider is group 2 and does not solve against group 3. Statics keep Rapier's default. Collision groups are unchanged, and there is no JavaScript switch. The step-up boxes stay under 1 m/s. The refusals walker is not thrown. Only red room A's law run moved.
-3. **v0.3.0 is tagged** at `8d9a8a3`. GitHub release only. The package is not published to npm. `test-instrument` stays frozen.
-4. **#97, #109, #129, and #131** share one builder. The deferred sweep note names the scheduled comparison. A capture the loader accepts has a block. Outcome 4d locks its measured height. A drop that starts on its target backs out. The coverage builds report no `law_coverage` warning.
-5. **The Rapier 0.36.0 bump is this slice.** The controller control test and the push control test passed. SEPARATE is retired. EFFECTIVE stays. The course and the outcome tests passed, and the product golden did not move. The Linux digest is written from CI, not from a Windows build. `solver/FLAGS.md` is the record.
-   - 0.36.0 carries #1004, so `impulses.rs`'s first change becomes Rapier's own.
-   - #1020 is still open, so the effective mass stays.
-   - F2's branch (#1019) and F4's retry (parry#452) still apply: the bump's parry has the same `gjk.rs`.
-   - #101 is in this slice: `warm_broadphase`'s comment names the native record-order test.
-6. **Mesh collision** is `docs/dispatch-mesh-collision.md`. The survey's eleven canon glbs are render meshes with no collision sibling. A scene that names a mesh is refused on main with `unknown field: mesh`.
+1. **T7c, dispatch 128, and v0.3.0 are on main.** T7c is `5ef97f9`. The law slice is `a0fceca`. The tag is `8d9a8a3`, a GitHub release only. `test-instrument` stays frozen. The prompt, the stall rule, and the model stay as they were.
+2. **Rapier 0.36.0 and mesh collision are on main.** A scene may name one fixed triangle mesh. The product scene names none. The controller control test and the push control test passed on the bump. The course and the outcome tests passed, and the product golden did not move.
+3. **A bad mesh is refused before Parry builds it.** `createWorld` runs `validateMesh` and throws that reason. The law refuses an index out of range, a repeated index, or a non-finite vertex before the trimesh is built, and a non-finite snapshot value the same way. A trap drops the cached module. A refused load or step does not hold that world and does not copy bodies back. `harness/mesh.test.js` is on `npm test`. The dispatch is `docs/dispatch-mesh-refusal.md`.
+4. **The pins.** The product golden stays `69a671f962665563`. The arithmetic golden stays `0d38671370d12d1e`. The Linux digest in the tree is still `5a886be5608abfc385dc986da7aec5876a4eae86a2111ac239e2eb77673d5c8d`. This slice moves the digest. The replacement is pinned from the Linux CI build, not from a Windows build.
+5. **A host binding is the open line.** There is no dispatch for it.
 
 ## How the work runs
 

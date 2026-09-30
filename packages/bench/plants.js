@@ -102,7 +102,7 @@ export const LAW = {
   // One operator on a line the product scene runs: the snapshot's sleep
   // timer, which the frame hash mixes, is written times the quantum instead of
   // divided by it, so frames differ wherever a dynamic body can sleep.
-  operator: [{ file: 'solver/src/rapier_law.rs', from: '            push_f64(out, act.time_since_can_sleep / DT);\n', to: '            push_f64(out, act.time_since_can_sleep * DT);\n' }],
+  operator: [{ file: 'solver/src/rapier_law.rs', from: '            push_f64(out, act.time_since_can_sleep / DT)?;\n', to: '            push_f64(out, act.time_since_can_sleep * DT)?;\n' }],
   // A const two law functions name, gravity, written again at the same
   // value: the difference the head shows is the operator's alone, and the
   // const's four mutants each change what runs.

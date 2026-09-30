@@ -32,7 +32,7 @@
 
 The tag is `v0.3.0`. The product stays pre-1.0. Shipcheck's old "promote v0.x to v1.0.0" line does not apply. The support line in the README says there is no compatibility promise between releases.
 
-Coverage stays the measurement recorded at v0.2.0. It is not uploaded, and no third workflow is added. Push-triggered workflows stay `ci.yml` and `pages.yml`.
+Codecov uploads the course and outcome reach from a job inside `ci.yml`. That percentage is those two files only. The v0.2.0 hand measurement below covered the whole suite and was not uploaded. Push-triggered workflows stay `ci.yml` and `pages.yml`.
 
 ## At v0.2.0
 

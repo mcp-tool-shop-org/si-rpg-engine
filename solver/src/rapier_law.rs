@@ -375,11 +375,24 @@ fn signature(world_id: u32, n_bodies: u32, n_colliders: u32, rows: u32, cols: u3
     geometry.push(n_verts as u64);
     geometry.push(n_idx as u64);
     if n_idx > 0 {
+        // The same checks build_world makes before Parry indexes the vertex
+        // buffer. An out-of-range index panics there instead of returning Err.
+        if n_idx % 3 != 0 {
+            return Err(Refusal::Mesh);
+        }
         unsafe {
             let mesh = &*(&raw const MESH);
             for v in &mesh.positions {
                 finite(*v)?;
                 geometry.push(canon(*v).to_bits());
+            }
+            for t in 0..n_idx / 3 {
+                let a = mesh.indices[t * 3] as usize;
+                let b = mesh.indices[t * 3 + 1] as usize;
+                let c = mesh.indices[t * 3 + 2] as usize;
+                if a >= n_verts || b >= n_verts || c >= n_verts || a == b || b == c || a == c {
+                    return Err(Refusal::Mesh);
+                }
             }
             for ix in &mesh.indices {
                 geometry.push(*ix as u64);
@@ -843,13 +856,26 @@ fn build_world(sig: Signature, separate: bool) -> Result<Loaded, Refusal> {
         let (vertices, indices) = unsafe {
             let mesh = &*(&raw const MESH);
             let n_verts = mesh.positions.len() / 3;
+            if mesh.indices.len() % 3 != 0 {
+                return Err(Refusal::Mesh);
+            }
+            for v in &mesh.positions {
+                finite(*v)?;
+            }
             let mut vertices = Vec::with_capacity(n_verts);
             for i in 0..n_verts {
                 vertices.push(Vector::new(mesh.positions[i * 3], mesh.positions[i * 3 + 1], mesh.positions[i * 3 + 2]));
             }
             let mut indices = Vec::with_capacity(n_idx / 3);
             for t in 0..n_idx / 3 {
-                indices.push([mesh.indices[t * 3], mesh.indices[t * 3 + 1], mesh.indices[t * 3 + 2]]);
+                let a = mesh.indices[t * 3];
+                let b = mesh.indices[t * 3 + 1];
+                let c = mesh.indices[t * 3 + 2];
+                let (au, bu, cu) = (a as usize, b as usize, c as usize);
+                if au >= n_verts || bu >= n_verts || cu >= n_verts || a == b || b == c || a == c {
+                    return Err(Refusal::Mesh);
+                }
+                indices.push([a, b, c]);
             }
             (vertices, indices)
         };
@@ -1014,8 +1040,14 @@ fn integrate(loaded: &mut Loaded, mover: &mut impl Mover, pusher: &mut impl Push
     Ok(())
 }
 
-fn push_f64(out: &mut Vec<u8>, x: f64) {
+fn push_f64(out: &mut Vec<u8>, x: f64) -> Result<(), Refusal> {
+    // A NaN warm-start would be hashed with its payload. Body state is already
+    // refused at the boundary; this is the same refusal on the snapshot.
+    if bad(x) {
+        return Err(Refusal::NotFinite);
+    }
     out.extend_from_slice(&canon(x).to_le_bytes());
+    Ok(())
 }
 
 fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) -> Result<(), Refusal> {
@@ -1036,35 +1068,35 @@ fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) -> Result<(), Refusal> {
         };
         if loaded.kinematic[i] {
             let b = body_at(i);
-            push_f64(out, p.x);
-            push_f64(out, p.y);
-            push_f64(out, p.z);
-            push_f64(out, b[3]);
-            push_f64(out, b[4]);
-            push_f64(out, b[5]);
+            push_f64(out, p.x)?;
+            push_f64(out, p.y)?;
+            push_f64(out, p.z)?;
+            push_f64(out, b[3])?;
+            push_f64(out, b[4])?;
+            push_f64(out, b[5])?;
         } else {
             let v = body.linvel();
-            push_f64(out, p.x);
-            push_f64(out, p.y);
-            push_f64(out, p.z);
-            push_f64(out, v.x);
-            push_f64(out, v.y);
-            push_f64(out, v.z);
+            push_f64(out, p.x)?;
+            push_f64(out, p.y)?;
+            push_f64(out, p.z)?;
+            push_f64(out, v.x)?;
+            push_f64(out, v.y)?;
+            push_f64(out, v.z)?;
         }
-        push_f64(out, qx);
-        push_f64(out, qy);
-        push_f64(out, qz);
-        push_f64(out, qw);
-        push_f64(out, wx);
-        push_f64(out, wy);
-        push_f64(out, wz);
+        push_f64(out, qx)?;
+        push_f64(out, qy)?;
+        push_f64(out, qz)?;
+        push_f64(out, qw)?;
+        push_f64(out, wx)?;
+        push_f64(out, wy)?;
+        push_f64(out, wz)?;
         if loaded.kinematic[i] {
-            push_f64(out, 0.0);
-            push_f64(out, 0.0);
+            push_f64(out, 0.0)?;
+            push_f64(out, 0.0)?;
         } else {
             let act = body.activation();
-            push_f64(out, act.time_since_can_sleep / DT);
-            push_f64(out, if act.sleeping { 1.0 } else { 0.0 });
+            push_f64(out, act.time_since_can_sleep / DT)?;
+            push_f64(out, if act.sleeping { 1.0 } else { 0.0 })?;
         }
     }
 
@@ -1081,37 +1113,38 @@ fn rebuild_snapshot(loaded: &Loaded, out: &mut Vec<u8>) -> Result<(), Refusal> {
         let kb = (b.collider1.into_raw_parts(), b.collider2.into_raw_parts());
         ka.cmp(&kb)
     });
-    push_f64(out, pairs.len() as f64);
+    push_f64(out, pairs.len() as f64)?;
     for pair in pairs {
         let (i1, g1) = pair.collider1.into_raw_parts();
         let (i2, g2) = pair.collider2.into_raw_parts();
-        push_f64(out, i1 as f64);
-        push_f64(out, g1 as f64);
-        push_f64(out, i2 as f64);
-        push_f64(out, g2 as f64);
+        push_f64(out, i1 as f64)?;
+        push_f64(out, g1 as f64)?;
+        push_f64(out, i2 as f64)?;
+        push_f64(out, g2 as f64)?;
         let manifolds = pair.solver_manifolds();
         let mut n_points = 0usize;
         for manifold in manifolds {
             n_points += manifold.points.len();
         }
-        push_f64(out, n_points as f64);
+        push_f64(out, n_points as f64)?;
         for manifold in manifolds {
             for point in &manifold.points {
-                push_contact(out, &point.data);
+                push_contact(out, &point.data)?;
             }
         }
     }
     Ok(())
 }
 
-fn push_contact(out: &mut Vec<u8>, data: &ContactData) {
-    push_f64(out, data.warmstart_impulse);
-    push_f64(out, data.warmstart_tangent_impulse.x);
-    push_f64(out, data.warmstart_tangent_impulse.y);
-    push_f64(out, data.warmstart_twist_impulse);
-    push_f64(out, data.warmstart_tangent_world.x);
-    push_f64(out, data.warmstart_tangent_world.y);
-    push_f64(out, data.warmstart_tangent_world.z);
+fn push_contact(out: &mut Vec<u8>, data: &ContactData) -> Result<(), Refusal> {
+    push_f64(out, data.warmstart_impulse)?;
+    push_f64(out, data.warmstart_tangent_impulse.x)?;
+    push_f64(out, data.warmstart_tangent_impulse.y)?;
+    push_f64(out, data.warmstart_twist_impulse)?;
+    push_f64(out, data.warmstart_tangent_world.x)?;
+    push_f64(out, data.warmstart_tangent_world.y)?;
+    push_f64(out, data.warmstart_tangent_world.z)?;
+    Ok(())
 }
 
 /// Makes the loaded world the one the records describe. The same world with
@@ -1412,6 +1445,85 @@ mod tests {
         set_slot(1, DRIVEN, 1.5);
         assert_eq!(solver_step(*turn, 2, 1, 0, 0, 0.0, 0), 0);
         assert_eq!(crate::step(2, 1), 0);
+    }
+
+    // A mesh the loader would refuse must not reach Parry. An out-of-range
+    // index aborts inside TriMesh::rebuild_bvh; the law returns Mesh first.
+    fn fill_mesh(positions: &[f64], indices: &[u32]) {
+        assert_eq!(mesh_prepare((positions.len() / 3) as u32, indices.len() as u32), 1);
+        unsafe {
+            let p = mesh_positions_ptr();
+            for (i, v) in positions.iter().enumerate() {
+                p.add(i).write(*v);
+            }
+            let ix = mesh_indices_ptr();
+            for (i, v) in indices.iter().enumerate() {
+                ix.add(i).write(*v);
+            }
+        }
+    }
+
+    struct ClearMesh;
+    impl Drop for ClearMesh {
+        fn drop(&mut self) {
+            let _ = mesh_prepare(0, 0);
+        }
+    }
+
+    #[test]
+    fn a_bad_mesh_is_refused_before_parry_builds_it_and_a_non_finite_snapshot_value_is_too() {
+        let mut turn = TURN.lock().unwrap_or_else(|e| e.into_inner());
+        let _clear = ClearMesh;
+        set_body(0, box_at(0.0, 1.0, 0.0));
+        set_collider(0, FLOOR);
+        let tri = [0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 4.0];
+
+        fill_mesh(&tri, &[0, 1, 9]);
+        *turn += 1;
+        assert!(matches!(signature(*turn, 1, 1, 0, 0, 0.0, 0), Err(Refusal::Mesh)));
+        assert_eq!(solver_load(*turn, 1, 1, 0, 0, 0.0, 0), 0);
+
+        fill_mesh(&tri, &[0, 1, 1]);
+        *turn += 1;
+        assert!(matches!(signature(*turn, 1, 1, 0, 0, 0.0, 0), Err(Refusal::Mesh)));
+        assert_eq!(solver_load(*turn, 1, 1, 0, 0, 0.0, 0), 0);
+
+        let mut nan = tri;
+        nan[1] = f64::NAN;
+        fill_mesh(&nan, &[0, 1, 2]);
+        *turn += 1;
+        assert!(matches!(signature(*turn, 1, 1, 0, 0, 0.0, 0), Err(Refusal::NotFinite)));
+        assert_eq!(solver_load(*turn, 1, 1, 0, 0, 0.0, 0), 0);
+
+        // build_world reads the live buffers, so a signature taken while the
+        // mesh was good still refuses once the buffers go bad.
+        fill_mesh(&tri, &[0, 1, 2]);
+        *turn += 1;
+        let signed = signature(*turn, 1, 1, 0, 0, 0.0, 0).expect("a good triangle signs");
+        fill_mesh(&tri, &[0, 1, 9]);
+        assert!(matches!(build_world(signed, true), Err(Refusal::Mesh)));
+        fill_mesh(&tri, &[0, 1, 2]);
+        *turn += 1;
+        let signed = signature(*turn, 1, 1, 0, 0, 0.0, 0).expect("a good triangle signs");
+        fill_mesh(&tri, &[0, 0, 1]);
+        assert!(matches!(build_world(signed, true), Err(Refusal::Mesh)));
+        fill_mesh(&tri, &[0, 1, 2]);
+        *turn += 1;
+        let signed = signature(*turn, 1, 1, 0, 0, 0.0, 0).expect("a good triangle signs");
+        fill_mesh(&nan, &[0, 1, 2]);
+        assert!(matches!(build_world(signed, true), Err(Refusal::NotFinite)));
+
+        fill_mesh(&tri, &[0, 1, 2]);
+        *turn += 1;
+        let id = *turn;
+        assert_eq!(solver_load(id, 1, 1, 0, 0, 0.0, 0), 1);
+        assert_eq!(solver_step(id, 1, 1, 0, 0, 0.0, 0), 1);
+
+        let mut out = Vec::new();
+        assert_eq!(push_f64(&mut out, f64::NAN), Err(Refusal::NotFinite));
+        assert!(out.is_empty());
+        assert!(push_f64(&mut out, 1.0).is_ok());
+        assert_eq!(out.len(), 8);
     }
 
     // Pin 4. The signature hashed the raw bits of bounds and heights, so a

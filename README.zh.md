@@ -18,7 +18,7 @@ si-rpg-engine 是一个 3D 世界的模拟核心，可以完全重现。它以�
 
 Chrome、Firefox 和 Safari 背后的 JavaScript 引擎（分别是 V8、SpiderMonkey 和 JavaScriptCore），对于相同的世界，每次提交都会打印出相同的“指纹”，并且相同的物理引擎构建也会在 x64 和 ARM64 上打印出相同的“指纹”。所有其他内容都建立在这个承诺之上：在给定一个种子和一个接受的输入列表的情况下，两台机器对一个世界达成一致，精确到每一个字节。在此基础上，存在着在三维空间中坠落、滑动、推动、倾斜和翻滚的物体；一个可以行走、攀爬斜坡、携带物品并放下物品的角色；当世界文件出现错误时，会附带原因而被拒绝；以及拥有“思想”的角色，它们可以观察、记住它们所看到的内容，并拒绝基于比其将要替代的证据更旧的证据得出的结论。
 
-它想要成为的是宿主内部的模拟核心：浏览器、Godot 或 Unreal 绘制图像并发送输入，而物理、指纹和记录则保留在此处。当前的工作是正在发布的引擎所需的测试套件，其中大部分内容如下：一个跟踪，用于命名两个运行过程开始分歧的第一个步骤和值；经过验证的保存和恢复；第二个 CPU 架构；对编译后的物理引擎进行的代码风格检查；以及测试，用于检查世界实际执行的操作，而不仅仅是其指纹。在测试套件之后，将是基于网格的碰撞和宿主绑定。设计和计划可以在 [docs/PHASE-0.md](docs/PHASE-0.md)、[docs/PHASE-1.md](docs/PHASE-1.md) 和 [docs/PHASE-2.md](docs/PHASE-2.md) 中找到。
+它想要成为的是宿主内部的模拟核心：浏览器、Godot 或 Unreal 绘制图像并发送输入，而物理、指纹和记录则保留在此处。当前的工作是正在发布的引擎所需的测试套件，其中大部分内容如下：一个跟踪，用于命名两个运行过程开始分歧的第一个步骤和值；经过验证的保存和恢复；第二个 CPU 架构；对编译后的物理引擎进行的代码风格检查；以及测试，用于检查世界实际执行的操作，而不仅仅是其指纹。基于网格的碰撞已经落地：一个场景可以命名一张固定的三角形网格，产品场景不命名任何网格。宿主绑定仍是未完成的一行。设计和计划可以在 [docs/PHASE-0.md](docs/PHASE-0.md)、[docs/PHASE-1.md](docs/PHASE-1.md) 和 [docs/PHASE-2.md](docs/PHASE-2.md) 中找到。
 
 ## 已构建的内容
 
@@ -29,6 +29,7 @@ Chrome、Firefox 和 Safari 背后的 JavaScript 引擎（分别是 V8、SpiderM
 | 具有位置、速度、规范四元数、角速度和半轴的物体；动态盒子可以旋转；一个运动学角色，具有 0.3 的自动步进、45° 的攀爬能力和 0.2 的快照；睡眠以步数计算 | `solver/src/rapier_law.rs`, `packages/tick/world.js` | `fixtures/behavior-3d.json`, `behavior-rotation.json`, `behavior-ramp.json`, `shape-traversal.json` |
 | 角色通过引擎的 Rapier 冲量例程进行推动，其中 Rapier 自身的后续修复已回溯，因此物体仅在其自身的接触点处受到推动，并且每个接触点的冲量大小由物体在该处的有效质量决定，包括其旋转；物理引擎中的一个保护机制，如果推动导致物体的速度超过其推动者的速度的指定倍数，则物理引擎会失败 | `solver/src/impulses.rs` | `harness/push.test.js`、`fixtures/push/red-room-a.json` 和一个本地测试，该测试表明，不进行修复的副本与 Rapier 的例程一样，精确到每一位 |
 | 受驱动的物体不会与动态物体发生碰撞。受驱动的碰撞体是求解器组 3，并且排除组 2；动态碰撞体是组 2，并且排除组 3。静态物体保持 Rapier 的默认设置。碰撞组保持不变，因此窄相仍然会找到该对。没有 JavaScript 切换。在阶梯状房间中，两个盒子都保持在 1 米/秒以下。行人的 16 米/秒速度是 0.25 米的步长，在一个量子中完成，这就是步长 | `solver/src/rapier_law.rs` | `harness/step-up-121.test.js`、`harness/sweep.test.js` 和一个本地测试，该测试表明，各个组相互排除，并且碰撞处理程序保持不变 |
+| 一张固定的三角形网格。场景可以命名它，产品场景不命名任何网格。构造器拒绝加载器会拒绝的网格，物理定律在构建网格之前拒绝越界索引、重复索引或非有限顶点。陷入陷阱的物理模块会被丢弃。被拒绝的加载或步进不会保留那个世界，也不会把刚体复制回来 | `solver/src/rapier_law.rs`, `packages/tick/scene.js`, `packages/tick/world.js` | `harness/mesh.test.js`, `harness/mesh-refusal.test.js` |
 | 世界文件：物体、定向静态碰撞体、高度图、区域作为分区、十二个加载拒绝、加载时的危险，以及宿主信任的索引；动作位于与物理碰撞相同的两个三角形地形表面上 | `packages/tick/scene.js`, `packages/tick/admit-world.js`, `worlds/` | `packages/tick/scene.test.js`, `harness/surface.test.js` |
 | 当世界被允许时，会进行一次可达性扫描：使用允许的动作，通过检查器，从刻度本身的保存中，探索其可达状态。如果一个区域无法到达，或者一个物体被带出世界，或者一个投掷动作被拒绝，则该世界将被拒绝，并提供一个证明，即 `replay` 可以重现 | `packages/load/sweep.js` | `harness/sweep.test.js`，封闭的测试房间在 `fixtures/sweep/` 中 |
 | 在加载时允许的动作，具有 `drive`、`climb`、`carry`、`release` 和 `episode` 的效果，每个动作都有危险场景 | `predicates/`, `packages/load` | `fixtures/behavior-verbs.json` |
@@ -43,7 +44,7 @@ Chrome、Firefox 和 Safari 背后的 JavaScript 引擎（分别是 V8、SpiderM
 | 模型角色的作用：每个角色都有一个清单，从角色读取的内容中推导出“二律法则”，检查器中有一个角色门控，对每次提交都有来源记录，信任标签会与一个信念一起保留，并且每个模型调用都会被记录和检查，无需使用 GPU；声明的角色都被冻结。 | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`，在 `fixtures/sessions/` 中，跨越各个会话的 `packages/propose/record.test.js`。 |
 | 从一个种子和一个日志中重放，并查看在 localhost 上的刻度。 | `packages/tick/replay.js`, `packages/host` | `fixtures/first-scene-played.json` 是一个人通过主机边界的游玩。 |
 
-503 个测试，七个行为测试用例，这些测试用例会逐步重放，并且在每次提交时，三个引擎会在 x64 上打印两个黄金哈希值，以及在 ARM64 上的节点打印。
+510 个测试，七个行为测试用例，这些测试用例会逐步重放，并且在每次提交时，三个引擎会在 x64 上打印两个黄金哈希值，以及在 ARM64 上的节点打印。
 
 ## 安装
 
@@ -95,7 +96,7 @@ npx bench run --base ../trees/base --head ../trees/head --out ../bench --product
 
 调试视图是一个调试视图。它将提交的帧绘制为沿使用 `x`、`y` 或 `z` 选择的轴投影的框；单击是地面平面目标；`M`、`C`、`G`、`D` 和 `U` 选择移动、攀爬、拾取、放下和使用；行者的区域和每个角色的信念都位于刻度和哈希旁边。它永远不会绘制刻度不包含的任何内容。
 
-世界文件是 JSON：`name`、`seed`、`bodies`、`colliders`、`zones`，以及可选的 `heightfield` 和 `goal`。一个身体是 `{ id, x, y, z, vx, vy, vz, hx, hy, hz }`，并带有可选的四元数和角速度；一个静态碰撞体是一个盒子，其边界带有可选的四元数，关于其中心；一个区域是一个命名的盒子。未知的字段、重复的 ID、重叠的身体、身体位于碰撞体内部、非单位四元数、退化的或无法到达的区域，以及命名为空的目标，每个都会被拒绝，并附带原因。
+世界文件是 JSON：`name`、`seed`、`bodies`、`colliders`、`zones`，以及可选的 `heightfield`、`mesh` 和 `goal`。网格是 `{ positions, indices }`。一个身体是 `{ id, x, y, z, vx, vy, vz, hx, hy, hz }`，并带有可选的四元数和角速度；一个静态碰撞体是一个盒子，其边界带有可选的四元数，关于其中心；一个区域是一个命名的盒子。未知的字段、重复的 ID、重叠的身体、身体位于碰撞体内部、非单位四元数、退化的或无法到达的区域，以及命名为空的目标，每个都会被拒绝，并附带原因。
 
 ## 法律，一气呵成
 
