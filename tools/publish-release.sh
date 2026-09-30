@@ -31,8 +31,10 @@ publish_one() {
   if [ "$view_ec" -eq 0 ]; then
     echo "skip publish $pkg@$ver — already on registry"
   else
+    # A missing version is code E404 plus the registry's own not-found line.
+    # A 404 mentioned inside some other error is not enough.
     unpublished=0
-    if echo "$view_out" | grep -Eq 'code E404|E404|404 Not Found|is not in this registry|version not found'; then
+    if echo "$view_out" | grep -q 'code E404' && echo "$view_out" | grep -Eq 'No match found for version|is not in this registry'; then
       unpublished=1
     fi
     if [ "$unpublished" -ne 1 ]; then
@@ -49,8 +51,10 @@ publish_one() {
     fi
   fi
   if [ "$pre" = "true" ]; then
+    echo "point $pkg@$ver at next"
     npm dist-tag add "$pkg@$ver" next
   else
+    echo "point $pkg@$ver at latest"
     npm dist-tag add "$pkg@$ver" latest
   fi
 }

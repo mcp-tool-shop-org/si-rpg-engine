@@ -31,11 +31,25 @@ test('the stage keeps the relative layout and leaves tests out', () => {
     assert.equal(existsSync(join(dest, 'tick', 'packages', 'tool', 'guard.js')), true);
     assert.equal(existsSync(join(dest, 'tick', 'predicates', 'intents', 'index.json')), true);
     assert.equal(existsSync(join(dest, 'host', 'packages', 'host', 'session.js')), true);
+    assert.equal(existsSync(join(dest, 'host', 'packages', 'host', 'page.html')), true);
+    assert.equal(existsSync(join(dest, 'host', 'packages', 'host', 'view.js')), true);
     assert.equal(existsSync(join(dest, 'host', 'worlds', 'index.json')), true);
     assert.equal(existsSync(join(dest, 'host', 'worlds', 'crate-and-door.json')), true);
     assert.equal(existsSync(join(dest, 'load', 'packages', 'load', 'world.js')), true);
     assert.equal(existsSync(join(dest, 'load', 'worlds', 'index.json')), true);
     assert.equal(walk(dest).some((path) => path.endsWith('.test.js')), false);
+    for (const name of ['frame', 'tick', 'host', 'load']) {
+      const manifest = JSON.parse(readFileSync(join(dest, name, 'package.json'), 'utf8'));
+      assert.equal(manifest.files, undefined, name);
+      assert.equal(typeof manifest.exports['.'], 'string', name);
+      assert.equal(existsSync(join(dest, name, '.npmignore')), true, name);
+    }
+    const tick = JSON.parse(readFileSync(join(dest, 'tick', 'package.json'), 'utf8'));
+    assert.equal(tick.bin.play, './packages/tick/bin/play.js');
+    const host = JSON.parse(readFileSync(join(dest, 'host', 'package.json'), 'utf8'));
+    assert.equal(host.bin.host, './packages/host/bin/host.js');
+    const load = JSON.parse(readFileSync(join(dest, 'load', 'package.json'), 'utf8'));
+    assert.equal(load.bin.load, './packages/load/bin/load.js');
   } finally {
     rmSync(dest, { recursive: true, force: true });
   }
