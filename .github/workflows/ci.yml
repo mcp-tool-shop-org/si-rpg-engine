@@ -220,7 +220,7 @@ jobs:
       - name: Check the golden behaviour numbers
         run: npm run check
       - name: Check the Atlas map
-        run: npx --yes @dogfood-lab/atlas@1.17.0 check
+        run: npx --yes @dogfood-lab/atlas@1.24.0 check
       # The ARM lane tests these bytes, not a rebuild: the module that embeds
       # the pinned Linux binary, and node's x64 trace of the product scene.
       - name: Collect the x64 artifacts for the ARM lane
