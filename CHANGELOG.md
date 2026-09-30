@@ -7,16 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-30
+
+The first publish of the four packages. `v0.3.0` remains the 27 September release.
+
 ### Added
 
-- **Four packages publish under the npm org.** `@si-rpg-engine/frame`, `@si-rpg-engine/tick`, `@si-rpg-engine/host`, and `@si-rpg-engine/load` are workspaces at `0.3.0`. The root package stays private. `.github/workflows/release.yml` publishes a staged tree on a GitHub release. A full release points the `latest` dist-tag at that version. A prerelease stays on `next`.
+- **Four packages publish under the npm org.** `@si-rpg-engine/frame`, `@si-rpg-engine/tick`, `@si-rpg-engine/host`, and `@si-rpg-engine/load` are workspaces at `0.4.0`. The root package stays private. `.github/workflows/release.yml` publishes a staged tree on a GitHub release. A full release points the `latest` dist-tag at that version. A prerelease stays on `next`.
 - **A host binds to a written socket.** The world record is version 1. The frame stream, the intent door, and the blend rule are `docs/host-binding.md`. `harness/binding.test.js` holds those field lists and plays the fixture through the socket. The session's driven actor is the world file's goal actor. A collider's quaternion stays off the wire when the file does not name it. The product golden stays `69a671f962665563`. The Linux digest stays `fe5d46350f944426a684742479a41b352340c4caee47a56733eb50ce3a2e8bf3`.
-- **A scene may name a mesh.** Load accepts `{ positions, indices }` up to 999,474 triangles, the survey's maximum, and refuses a repeated index, a non-finite position, or an index out of range. The law builds one fixed trimesh. A box set on a two-triangle floor sleeps on it. Worlds that do not name a mesh are unchanged, and the product golden stays `69a671f962665563`. The Linux digest is `5a886be5608abfc385dc986da7aec5876a4eae86a2111ac239e2eb77673d5c8d`.
+- **A scene may name a mesh.** Load accepts `{ positions, indices }` up to 999,474 triangles, the survey's maximum, and refuses a repeated index, a non-finite position, or an index out of range. The law builds one fixed trimesh. A box set on a two-triangle floor sleeps on it. Worlds that do not name a mesh are unchanged, and the product golden stays `69a671f962665563`. The Linux digest is `fe5d46350f944426a684742479a41b352340c4caee47a56733eb50ce3a2e8bf3`.
 - **A bad mesh is refused before it is built.** `createWorld` runs the same mesh check as load and throws that reason. The law refuses an index out of range, a repeated index, or a non-finite vertex before Parry builds the trimesh, and refuses a non-finite value in the snapshot the same way. A trap drops the cached physics module. A refused load or step does not hold that world and does not copy bodies back. `harness/mesh.test.js` is on `npm test`. The product golden stays `69a671f962665563`. The Linux digest is `fe5d46350f944426a684742479a41b352340c4caee47a56733eb50ce3a2e8bf3`.
 
 ### Changed
 
-- **rapier3d-f64 is 0.36.0**, with parry3d-f64 0.31.1. 0.36.0 carries dimforge/rapier#1004, so the copy's separate-manifold switch is retired and the push's mass stays. The controller copy still keeps the stride branch and the floor-cast retry. The course and the outcome tests pass, and the product golden stays `69a671f962665563`. The Linux digest is `65aa5d91a76c09df00e667b4026f0d5e5d5fc8bcfc9f344b9d5c4aba4e96faad`. `warm_broadphase`'s comment names the native test that holds the record-order case.
+- **rapier3d-f64 is 0.36.0**, with parry3d-f64 0.31.1. 0.36.0 carries dimforge/rapier#1004, so the copy's separate-manifold switch is retired and the push's mass stays. The controller copy still keeps the stride branch and the floor-cast retry. The course and the outcome tests pass, and the product golden stays `69a671f962665563`. The Linux digest is `fe5d46350f944426a684742479a41b352340c4caee47a56733eb50ce3a2e8bf3`. `warm_broadphase`'s comment names the native test that holds the record-order case.
 
 ### Fixed
 
@@ -25,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - A 2D capture the loader accepts is a failure whose block names the capture, and the job's issue quotes that block.
 - Outcome 4d requires the walker to end at y `0.2601000000000001`, and writes a bundle only when the walker sinks.
 - The coverage builds report no `law_coverage` warning.
+- **521 tests,** from the suite on this tree.
+
+### Golden hashes at this release
+
+| Harness | Hash |
+|---|---|
+| `harness/sim.mjs` (product) | `69a671f962665563` |
+| `harness/arith.mjs` (arithmetic contract) | `0d38671370d12d1e` |
+| `fixtures/solver.sha256` (Linux binary) | `fe5d46350f944426a684742479a41b352340c4caee47a56733eb50ce3a2e8bf3` |
 
 ## [0.3.0] - 2026-09-27
 
@@ -141,7 +154,8 @@ The first release. Version numbers before 0.1.0 were internal slice counters and
 | `harness/arith.mjs` (arithmetic contract) | `0d38671370d12d1e` |
 | `fixtures/solver.sha256` (Linux binary) | `ede99ea1e51ec3ca12afa407764a66acf98eda3d7c36ac70397a6105c76fb5f0` |
 
-[Unreleased]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/releases/tag/v0.2.0
 [0.1.0]: https://github.com/mcp-tool-shop-org/si-rpg-engine/releases/tag/v0.1.0

@@ -1,6 +1,6 @@
 {
   "name": "@si-rpg-engine/host",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The socket a picture binds to: the frame stream and the intent door.",
   "type": "module",
   "license": "MIT",

@@ -4,7 +4,7 @@
 
 ## Pins
 
-1. The root package stays private. The workspaces are `packages/frame`, `packages/tick`, `packages/host`, and `packages/load`, named `@si-rpg-engine/frame`, `@si-rpg-engine/tick`, `@si-rpg-engine/host`, and `@si-rpg-engine/load`, at `0.3.0`. `propose`, `bench`, and `tool` have no public manifest.
+1. The root package stays private. The workspaces are `packages/frame`, `packages/tick`, `packages/host`, and `packages/load`, named `@si-rpg-engine/frame`, `@si-rpg-engine/tick`, `@si-rpg-engine/host`, and `@si-rpg-engine/load`, at `0.4.0`. `propose`, `bench`, and `tool` have no public manifest.
 2. `.github/workflows/release.yml` is the workflow file. The publish job has `id-token: write`. It installs `npm@11.21.0` and sets no `NODE_AUTH_TOKEN`. The release job leaves the package-manager cache off.
 3. The job publishes the staged tree from `tools/stage-release.mjs`, because the modules import siblings and `solver/dist/solver.mjs` by relative path. The bins chdir three levels up from `packages/<name>/bin`. That directory is the stage root, so the stage carries `predicates/`, and the host and load stages also carry `worlds/`.
 4. A full release publishes with `--tag latest` and then runs `npm dist-tag add <name>@<version> latest`. A prerelease publishes with `--tag next` and then runs `npm dist-tag add <name>@<version> next`. A version already on the registry is not published again. The dist-tag command still runs. A missing version is the registry's `code E404` together with `No match found for version` or `is not in this registry`. Any other lookup failure refuses to publish. A dist-tag failure after a publish fails the job; the next run sees the version and points the tag.
@@ -18,4 +18,4 @@
 
 ## Not in this slice
 
-No tag, and no npm publish from the machine that opens the pull request. The `0.0.0` packages stay on the registry until a GitHub release publishes `0.3.0`. Product imports stay relative. The handbook's two unproven items stay on their own dispatches.
+No tag, and no npm publish from the machine that opens the pull request. The `0.0.0` packages stay on the registry until a GitHub release publishes `0.4.0`. Product imports stay relative. The handbook's two unproven items stay on their own dispatches.

@@ -1,6 +1,6 @@
 {
   "name": "@si-rpg-engine/tick",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The fixed-timestep tick for SI RPG Engine. It admits inputs, steps the physics, and records a fingerprint after every step.",
   "type": "module",
   "license": "MIT",

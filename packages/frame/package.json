@@ -1,6 +1,6 @@
 {
   "name": "@si-rpg-engine/frame",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The fingerprint for SI RPG Engine: the frame types and the hash two machines compare.",
   "type": "module",
   "license": "MIT",
