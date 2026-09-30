@@ -2,7 +2,6 @@
 // The product step is the WASM binary. The JavaScript below it is the reference.
 
 import { imageRefusal, imageSolver, imageSparse, instantiate, lawStatus, loadSolver, restoreImage, restoreSparse, snapshotBytes, stepBodies, stepSolver } from '../../solver/dist/solver.mjs';
-import { validateMesh } from './scene.js';
 import { subjectText } from './subject.js';
 import { goalsOf as goalsOfMind } from './minds.js';
 
@@ -47,14 +46,80 @@ function lawRefusal() {
   throw new Error('NaN');
 }
 
+const MESH_KEYS = ['positions', 'indices'];
+const MAX_MESH_TRIANGLES = 999474;
+
+/**
+ * The scene loader imports this check. This file does not import the loader:
+ * the loader reads files, and the product shells have no filesystem.
+ * @param {unknown} value
+ * @returns {{ ok: true, mesh: { positions: number[], indices: number[] } } | { ok: false, reason: string }}
+ */
+export function validateMesh(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { ok: false, reason: 'a mesh is an object' };
+  }
+  const raw = /** @type {Record<string, unknown>} */ (value);
+  for (const key of Object.keys(raw)) {
+    if (!MESH_KEYS.includes(key)) {
+      return { ok: false, reason: 'unknown field: ' + key };
+    }
+  }
+  if (!Array.isArray(raw.positions)) {
+    return { ok: false, reason: 'positions must be a list' };
+  }
+  if (raw.positions.length % 3 !== 0) {
+    return { ok: false, reason: 'positions length is not divisible by 3' };
+  }
+  for (let i = 0; i < raw.positions.length; i = i + 1) {
+    const v = raw.positions[i];
+    if (typeof v !== 'number' || !Number.isFinite(v)) {
+      return { ok: false, reason: 'a position is not finite' };
+    }
+  }
+  if (!Array.isArray(raw.indices)) {
+    return { ok: false, reason: 'indices must be a list' };
+  }
+  if (raw.indices.length % 3 !== 0) {
+    return { ok: false, reason: 'indices length is not divisible by 3' };
+  }
+  const triangles = raw.indices.length / 3;
+  if (triangles < 1) {
+    return { ok: false, reason: 'a mesh has no triangle' };
+  }
+  if (triangles > MAX_MESH_TRIANGLES) {
+    return { ok: false, reason: 'a mesh has more than 999474 triangles' };
+  }
+  const vertices = raw.positions.length / 3;
+  for (let t = 0; t < triangles; t = t + 1) {
+    const a = raw.indices[t * 3];
+    const b = raw.indices[t * 3 + 1];
+    const c = raw.indices[t * 3 + 2];
+    if (!Number.isInteger(a) || !Number.isInteger(b) || !Number.isInteger(c)) {
+      return { ok: false, reason: 'an index is not an integer' };
+    }
+    if (a < 0 || b < 0 || c < 0 || a >= vertices || b >= vertices || c >= vertices) {
+      return { ok: false, reason: 'an index is out of range' };
+    }
+    if (a === b || b === c || a === c) {
+      return { ok: false, reason: 'a triangle repeats an index' };
+    }
+  }
+  return {
+    ok: true,
+    mesh: {
+      positions: /** @type {number[]} */ (raw.positions).slice(),
+      indices: /** @type {number[]} */ (raw.indices).slice(),
+    },
+  };
+}
+
 /**
  * @param {{ bodies: Array<Body | (Omit<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'> & Partial<Pick<Body, 'qx' | 'qy' | 'qz' | 'qw' | 'wx' | 'wy' | 'wz'>>)>; colliders: StaticCollider[]; zones?: import('../frame/types.js').Zone[]; heightfield?: Heightfield | null; mesh?: { positions: number[], indices: number[] } | null; shape?: 'box' | 'capsule'; name?: string; minds?: import('./minds.js').Mind[] }} init
  * @param {'product' | 'box' | 'reference'} [law] product is the Rapier step; box is the E1 binary; reference is the JavaScript kernel
  */
 export function createWorld(init, law) {
   const chosen = law || 'product';
-  // validateMesh runs only from here, after both modules have finished loading.
-  // scene.js imports this function, and this file imports that check.
   /** @type {{ positions: number[], indices: number[] } | null} */
   let mesh = null;
   if (init.mesh) {

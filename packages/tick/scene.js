@@ -2,7 +2,9 @@
 
 import { readFileSync } from 'node:fs';
 import { beliefRefusal } from './beliefs.js';
-import { createWorld } from './world.js';
+import { createWorld, validateMesh } from './world.js';
+
+export { validateMesh };
 
 /**
  * @typedef {import('../frame/types.js').Body} Body
@@ -27,8 +29,6 @@ import { createWorld } from './world.js';
 
 const SCENE_KEYS = ['name', 'seed', 'bodies', 'colliders', 'zones'];
 const SCENE_ALLOWED = ['name', 'seed', 'bodies', 'colliders', 'zones', 'goal', 'heightfield', 'mesh', 'minds'];
-const MESH_KEYS = ['positions', 'indices'];
-const MAX_MESH_TRIANGLES = 999474;
 const HEIGHTFIELD_KEYS = ['rows', 'cols', 'cell', 'heights'];
 const BODY_KEYS = ['id', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz', 'hx', 'hy', 'hz'];
 const BODY_OPTIONAL = ['qx', 'qy', 'qz', 'qw', 'wx', 'wy', 'wz'];
@@ -492,70 +492,6 @@ function zoneInsideCollider(zone, box) {
     }
   }
   return true;
-}
-
-/**
- * Positions and indices of one triangle mesh. The triangle cap is the survey's
- * maximum, 999474. A repeated index is a zero-area triangle.
- * @param {unknown} value
- * @returns {{ ok: true, mesh: { positions: number[], indices: number[] } } | { ok: false, reason: string }}
- */
-export function validateMesh(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return { ok: false, reason: 'a mesh is an object' };
-  }
-  const raw = /** @type {Record<string, unknown>} */ (value);
-  const extra = unknown(raw, MESH_KEYS);
-  if (extra) {
-    return { ok: false, reason: 'unknown field: ' + extra };
-  }
-  if (!Array.isArray(raw.positions)) {
-    return { ok: false, reason: 'positions must be a list' };
-  }
-  if (raw.positions.length % 3 !== 0) {
-    return { ok: false, reason: 'positions length is not divisible by 3' };
-  }
-  for (let i = 0; i < raw.positions.length; i = i + 1) {
-    const v = raw.positions[i];
-    if (typeof v !== 'number' || !Number.isFinite(v)) {
-      return { ok: false, reason: 'a position is not finite' };
-    }
-  }
-  if (!Array.isArray(raw.indices)) {
-    return { ok: false, reason: 'indices must be a list' };
-  }
-  if (raw.indices.length % 3 !== 0) {
-    return { ok: false, reason: 'indices length is not divisible by 3' };
-  }
-  const triangles = raw.indices.length / 3;
-  if (triangles < 1) {
-    return { ok: false, reason: 'a mesh has no triangle' };
-  }
-  if (triangles > MAX_MESH_TRIANGLES) {
-    return { ok: false, reason: 'a mesh has more than 999474 triangles' };
-  }
-  const vertices = raw.positions.length / 3;
-  for (let t = 0; t < triangles; t = t + 1) {
-    const a = raw.indices[t * 3];
-    const b = raw.indices[t * 3 + 1];
-    const c = raw.indices[t * 3 + 2];
-    if (!Number.isInteger(a) || !Number.isInteger(b) || !Number.isInteger(c)) {
-      return { ok: false, reason: 'an index is not an integer' };
-    }
-    if (a < 0 || b < 0 || c < 0 || a >= vertices || b >= vertices || c >= vertices) {
-      return { ok: false, reason: 'an index is out of range' };
-    }
-    if (a === b || b === c || a === c) {
-      return { ok: false, reason: 'a triangle repeats an index' };
-    }
-  }
-  return {
-    ok: true,
-    mesh: {
-      positions: /** @type {number[]} */ (raw.positions).slice(),
-      indices: /** @type {number[]} */ (raw.indices).slice(),
-    },
-  };
 }
 
 /**
