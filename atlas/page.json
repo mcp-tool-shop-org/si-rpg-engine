@@ -104,30 +104,80 @@
   ],
   "changes": {
     "fileCounts": {
-      "added": 535,
-      "changed": 0,
+      "added": 7,
+      "changed": 379,
       "moved": 0,
-      "parts": 1,
+      "parts": 17,
       "removed": 0
     },
     "items": [
       {
-        "kind": "landing",
-        "sentence": "fixtures/t7c-runs/ is now written by tools/coordinator/t7c-runs.mjs.",
+        "kind": "door",
+        "sentence": "CI's pull request trigger now also names `codecov.yml`.",
         "subjects": [
-          "fixtures/t7c-runs/",
-          "tools/coordinator/t7c-runs.mjs"
+          ".github/workflows/ci.yml"
         ]
       },
       {
+        "kind": "door",
+        "sentence": "CI's push trigger now also names `codecov.yml`.",
+        "subjects": [
+          ".github/workflows/ci.yml"
+        ]
+      },
+      {
+        "kind": "door",
+        "sentence": "CI now also runs harness/mesh-refusal.test.js, harness/mesh.test.js and harness/step-up-121.test.js.",
+        "subjects": [
+          ".github/workflows/ci.yml",
+          "harness/mesh-refusal.test.js",
+          "harness/mesh.test.js",
+          "harness/step-up-121.test.js"
+        ]
+      },
+      {
+        "kind": "landing",
+        "sentence": "solver/build.mjs is now also read by harness/mesh-refusal.test.js.",
+        "subjects": [
+          "solver/build.mjs",
+          "harness/mesh-refusal.test.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/scene.js, validate scene gained a step, validate mesh, before belief refusal.",
+        "subjects": [
+          "packages/tick/scene.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/scene.js, load scene gained a step, validate mesh, before belief refusal.",
+        "subjects": [
+          "packages/tick/scene.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "In packages/tick/scene.js, validate scene gained a step, validate mesh, before belief refusal.",
+        "subjects": [
+          "packages/tick/scene.js"
+        ]
+      },
+      {
+        "kind": "sequence",
+        "sentence": "And 1 more change to the order of work.",
+        "subjects": []
+      },
+      {
         "kind": "counts",
-        "sentence": "535 files added, across 1 part.",
+        "sentence": "7 files added and 379 changed content, across 17 parts.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "2f8e4dcbb5b58996558f6e03c59ed03f6a122632",
-      "generatedAt": "2026-09-27T00:30:09.256Z"
+      "commit": "aa90e0026358de8508117fbf3a725953fa39164c",
+      "generatedAt": "2026-09-27T00:44:51.979Z"
     },
     "unchanged": false
   },
@@ -146,21 +196,6 @@
       ],
       "relation": "inside",
       "shared": 10
-    },
-    {
-      "a": "harness/bundle.test.js",
-      "b": "harness/corpus.mjs",
-      "either": 10,
-      "partLabels": [
-        "harness",
-        "harness"
-      ],
-      "parts": [
-        "harness",
-        "harness"
-      ],
-      "relation": "inside",
-      "shared": 7
     },
     {
       "a": "packages/propose/prompt.js",
@@ -193,9 +228,24 @@
       "shared": 8
     },
     {
-      "a": "packages/bench/law.test.js",
-      "b": "packages/bench/neutral.test.js",
+      "a": "packages/load/load.test.js",
+      "b": "packages/load/suite.js",
       "either": 6,
+      "partLabels": [
+        "load",
+        "load"
+      ],
+      "parts": [
+        "load",
+        "load"
+      ],
+      "relation": "inside",
+      "shared": 4
+    },
+    {
+      "a": "packages/bench/bench.js",
+      "b": "packages/bench/neutral.test.js",
+      "either": 8,
       "partLabels": [
         "bench",
         "bench"
@@ -205,18 +255,18 @@
         "bench"
       ],
       "relation": "inside",
-      "shared": 4
+      "shared": 5
     }
   ],
   "changesTogetherNote": [
     "2 files changed together with their own tests, as expected.",
     "Confidence is low: fewer than 25 source files reach 10 revisions in the window.",
-    "Window: 180 days; a pair counts from 3 shared commits, since 14 source files reach 10 revisions; the floor rises to 10 when 25 do."
+    "Window: 180 days; a pair counts from 3 shared commits, since 17 source files reach 10 revisions; the floor rises to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "aa90e0026358de8508117fbf3a725953fa39164c",
-  "defaultBranch": "main",
-  "derived": "17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
+  "commit": "bfa453817bf90dab8fe3f30994b4ae802de5ae14",
+  "defaultBranch": "dispatch-mesh-refusal",
+  "derived": "17 parts, mostly JavaScript (138 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.",
   "doors": [
     {
       "checks": [
@@ -283,7 +333,7 @@
         {
           "boundary": "harness",
           "depth": 0,
-          "files": 36
+          "files": 39
         },
         {
           "boundary": "host",
@@ -320,6 +370,8 @@
         "harness/course.test.js",
         "harness/first-difference.js",
         "harness/golden-gate.test.js",
+        "harness/mesh-refusal.test.js",
+        "harness/mesh.test.js",
         "harness/outcome.test.js",
         "harness/product.test.js",
         "harness/push.test.js",
@@ -327,6 +379,7 @@
         "harness/solver.test.js",
         "harness/soundness.test.js",
         "harness/source.test.js",
+        "harness/step-up-121.test.js",
         "harness/surface.test.js",
         "harness/sweep.test.js",
         "harness/switch.test.js",
@@ -363,12 +416,12 @@
         "tools/prompt.test.js",
         "tools/verdicts.test.js"
       ],
-      "runsCount": 50,
+      "runsCount": 53,
       "sends": [],
       "stages": [],
       "triggers": [
-        "on a pull request touching 12 paths",
-        "on a push to main touching 12 paths",
+        "on a pull request touching 13 paths",
+        "on a push to main touching 13 paths",
         "or by hand"
       ]
     },
@@ -804,9 +857,9 @@
       ]
     }
   ],
-  "generatedAt": "2026-09-27T00:44:51.979Z",
+  "generatedAt": "2026-09-30T17:07:27.658Z",
   "limits": [
-    "18 import sites could not be resolved.",
+    "19 import sites could not be resolved.",
     "3 writes and 9 reads use paths built at run time and are not named here.",
     "1 write goes to places this repository does not track, so it is not listed as generated.",
     "51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.",
@@ -835,7 +888,7 @@
   },
   "parts": 17,
   "readers": [],
-  "repo": "mcp-tool-shop-org/si-rpg-engine",
+  "repo": "si-rpg-engine",
   "sequences": [
     {
       "entry": "makeBundle",
@@ -1058,6 +1111,12 @@
               "part": "tick",
               "partLabel": "tick",
               "phrase": "create world"
+            },
+            {
+              "name": "validateMesh",
+              "part": "tick",
+              "partLabel": "tick",
+              "phrase": "validate mesh"
             },
             {
               "name": "beliefRefusal",
@@ -2145,7 +2204,7 @@
   ],
   "summary": "Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames.",
   "summaryFrom": "person",
-  "testFiles": 44,
+  "testFiles": 47,
   "testedBy": {
     "bench": 11,
     "frame": 16,
@@ -2153,7 +2212,7 @@
     "load": 4,
     "propose": 2,
     "solver": 2,
-    "tick": 35
+    "tick": 38
   },
   "unnamedWrites": 3,
   "unread": [

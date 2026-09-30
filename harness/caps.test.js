@@ -94,7 +94,8 @@ test('64 bodies in contact and 64 static colliders run ' + CAPS_QUANTA + ' quant
 // The tripwire goes red. Every body on one spot over a full heightfield small
 // enough that each body touches all 450 of its triangles needs more heap than
 // 512 pages hold, and the allocator's failure is a trap, not a grown memory.
-// It runs last: a trapped instance is not used again in this file.
+// The high-water mark is read from the instance that trapped. The next
+// instantiate replaces it, so this test runs last in the file.
 test('a world denser than the fixed memory traps instead of growing', () => {
   instantiate();
   const bodies = [];
@@ -115,9 +116,9 @@ test('a world denser than the fixed memory traps instead of growing', () => {
     for (let q = 0; q < 10; q = q + 1) {
       world.step(new Set());
     }
-  }, (/** @type {unknown} */ err) => err instanceof WebAssembly.RuntimeError);
-  assert.equal(instantiate().exports.memory.buffer.byteLength, 512 * 65536, 'the memory did not grow');
-  // The trap is the heap running out: it had passed 400 of the 512 pages, and
-  // the request that failed did not fit in what was left.
-  assert.ok(heapHighWater().pages > 400, 'the heap reached ' + heapHighWater().pages + ' pages before the trap');
+  }, (/** @type {unknown} */ err) => err instanceof Error && err.message === 'the physics module trapped and was discarded');
+  const mark = heapHighWater();
+  assert.equal(mark.of, 512, 'the memory did not grow');
+  assert.ok(mark.pages > 400, 'the heap reached ' + mark.pages + ' pages before the trap');
+  assert.equal(instantiate().exports.memory.buffer.byteLength, 512 * 65536);
 });

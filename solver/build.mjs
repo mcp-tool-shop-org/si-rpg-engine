@@ -101,8 +101,41 @@ for (let i = 0; i < wasm.length; i += 24) {
 lines.push(']);');
 lines.push(`
 let cached = null;
+let retired = null;
 let compiled = null;
 let stackBase = null;
+let lawNote = 'none';
+const trapped = Symbol('trapped');
+
+function runExport(fn) {
+  try {
+    lawNote = 'none';
+    return fn();
+  } catch (err) {
+    if (err instanceof WebAssembly.RuntimeError) {
+      retired = cached;
+      cached = null;
+      lawNote = 'trapped';
+      return trapped;
+    }
+    throw err;
+  }
+}
+
+/**
+ * Runs one law call. A trap drops the cached module and returns undefined.
+ * @param {() => unknown} fn
+ * @returns {unknown}
+ */
+export function runLaw(fn) {
+  const value = runExport(fn);
+  return value === trapped ? undefined : value;
+}
+
+/** @returns {'none' | 'trapped'} */
+export function lawStatus() {
+  return lawNote;
+}
 
 function fresh() {
   if (!compiled) {
@@ -119,6 +152,7 @@ export function instantiate() {
   if (cached) {
     return cached;
   }
+  retired = null;
   cached = fresh();
   return cached;
 }
@@ -288,13 +322,14 @@ function readBodies(exp, bodies) {
  * @param {{ positions: number[], indices: number[] } | null} [mesh]
  */
 export function loadSolver(worldId, bodies, colliders, heightfield, driven, shapeId, mesh = null) {
+  lawNote = 'none';
   const exp = instantiate().exports;
   const shape = writeInputs(exp, bodies, colliders, heightfield, driven, mesh || null);
   if (!shape) {
     return false;
   }
-  const ok = exp.solver_load(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0);
-  return ok === 1;
+  const code = runExport(() => exp.solver_load(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0));
+  return code === 1;
 }
 
 /**
@@ -308,14 +343,18 @@ export function loadSolver(worldId, bodies, colliders, heightfield, driven, shap
  * @param {{ positions: number[], indices: number[] } | null} [mesh]
  */
 export function stepSolver(worldId, bodies, colliders, heightfield, driven, shapeId, mesh = null) {
+  lawNote = 'none';
   const exp = instantiate().exports;
   const shape = writeInputs(exp, bodies, colliders, heightfield, driven, mesh || null);
   if (!shape) {
     return false;
   }
-  const ok = exp.solver_step(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0);
+  const code = runExport(() => exp.solver_step(worldId, bodies.length, colliders.length, shape.rows, shape.cols, shape.cell, shapeId || 0));
+  if (code !== 1) {
+    return false;
+  }
   readBodies(exp, bodies);
-  return ok === 1;
+  return true;
 }
 
 /** Canonical solver snapshot. Empty until a product world has been loaded. */
@@ -793,7 +832,7 @@ export function stackPointer() {
  * so this is the number that says how close a world came to trapping.
  */
 export function heapHighWater() {
-  const exp = instantiate().exports;
+  const exp = (cached || retired || instantiate()).exports;
   const bytes = exp.heap_high_water() >>> 0;
   return { bytes, pages: Math.ceil(bytes / PAGE), of: exp.memory.buffer.byteLength / PAGE };
 }

@@ -43,6 +43,8 @@ pub(crate) enum Refusal {
     Mode,
     /// A half-extent or a collider extent that is not positive.
     Extent,
+    /// A mesh index is out of range, or a triangle repeats an index.
+    Mesh,
     /// A quaternion `canon_quat` cannot normalize.
     Quaternion,
     /// A kinematic body with no plan after the world stepped.

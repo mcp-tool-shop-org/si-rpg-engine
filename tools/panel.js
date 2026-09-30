@@ -3,37 +3,18 @@
 // checked before any call, so a seat without a budget stops the run instead of spending tokens.
 
 /**
- * @typedef {{ via: 'openrouter' | 'ollama', model: string, family: string, maxTokens: number, think?: boolean | 'high' | 'medium' | 'low', standby?: boolean }} Seat
+ * @typedef {{ via: 'openrouter' | 'ollama', model: string, family: string, maxTokens: number, think?: boolean | 'high' | 'medium' | 'low', reasoningEffort?: 'none' | 'low' | 'high' | 'max', standby?: boolean }} Seat
  */
 
 /** @type {Seat[]} */
 export const PANEL = [
-  // Kimi K3 and GLM-5.3 accept 262,144 output tokens on Ollama Cloud (measured 2026-09-26).
-  { via: 'ollama', model: 'kimi-k3:cloud', family: 'Moonshot', maxTokens: 262144 },
-  { via: 'ollama', model: 'glm-5.3:cloud', family: 'Z.ai', maxTokens: 262144 },
-  // DeepSeek and NVIDIA sat on standby until they answered pull requests of this size: both gave
-  // verdicts on #95 and #96. Ollama Cloud serves both with at most 65,536 output tokens, and
-  // refused a larger budget with HTTP 400. NVIDIA thinks with `think: 'high'`: on four measured
-  // problems it reasoned about half again as long with it, while Kimi and GLM reasoned less and
-  // DeepSeek and MiniMax no differently, so the others keep their own default.
-  { via: 'ollama', model: 'deepseek-v4-pro:cloud', family: 'DeepSeek', maxTokens: 65536 },
-  { via: 'ollama', model: 'nemotron-3-ultra:cloud', family: 'NVIDIA', maxTokens: 65536, think: 'high' },
-  // MiniMax M3 joined on 2026-09-26, the strongest family on Ollama Cloud the panel did not yet
-  // seat; its maximum output is 131,072 tokens. Its first run, a trial on #96 after that pull
-  // request merged, returned a BLOCK on two findings that the code refutes. A lone BLOCK is a
-  // CHECK the coordinator verifies against the code, so it sits with the others.
-  { via: 'ollama', model: 'minimax-m3:cloud', family: 'MiniMax', maxTokens: 131072 },
-  // Mistral joined the default panel on 2026-09-26. The daemon's name is
-  // mistral-large-3:675b-cloud; the parent id is not found. It accepts 262,144 output tokens,
-  // the daemon serves it as mistral-large-3:675b, and a one-word probe returned Pong.
-  { via: 'ollama', model: 'mistral-large-3:675b-cloud', family: 'Mistral', maxTokens: 262144 },
-  // OpenAI and Google sit out of a default run. Name them with --seats when a review needs that
-  // view. gpt-oss:120b is not found; gpt-oss:120b-cloud is, and an output budget over 131,072 is
-  // refused. A budget of 32 returns an empty answer, so the seat keeps the accepted maximum.
-  // gemma4:31b-cloud is the cloud model; the bare name is the local weight. It accepts 262,144
-  // output tokens, the daemon serves it as gemma4:31b, and a one-word probe returned pong.
-  { via: 'ollama', model: 'gpt-oss:120b-cloud', family: 'OpenAI', maxTokens: 131072, standby: true },
-  { via: 'ollama', model: 'gemma4:31b-cloud', family: 'Google', maxTokens: 262144, standby: true },
+  // Verification path from 2026-09-30. Ollama Cloud is not seated. This OpenRouter model is the
+  // review seat. Reasoning effort is none. The default effort spent a 16,384-token budget on
+  // reasoning and returned no answer, and low effort then spent 32,768 the same way. With
+  // reasoning off, the model answers. The output budget is 8,192 tokens, so one review of a
+  // pull request of this size stays about a cent. A router id is not a seat: the runner discards
+  // a served id that differs from this one.
+  { via: 'openrouter', model: 'deepseek/deepseek-v4.1-flash', family: 'DeepSeek', maxTokens: 8192, reasoningEffort: 'none' },
 ];
 
 /**
@@ -77,6 +58,12 @@ export function panelProblems(panel) {
     }
     if (seat.think !== undefined && seat.via !== 'ollama') {
       problems.push(name + ': think is an Ollama setting');
+    }
+    if (seat.reasoningEffort !== undefined && seat.via !== 'openrouter') {
+      problems.push(name + ': reasoning effort is an OpenRouter setting');
+    }
+    if (seat.reasoningEffort !== undefined && !['none', 'low', 'high', 'max'].includes(/** @type {any} */ (seat.reasoningEffort))) {
+      problems.push(name + ': reasoning effort must be none, low, high, or max');
     }
     const limit = seat.via === 'openrouter' || seat.via === 'ollama' ? BUDGET_LIMIT[seat.via] : 0;
     if (typeof seat.maxTokens !== 'number' || !Number.isInteger(seat.maxTokens) || seat.maxTokens <= 0) {

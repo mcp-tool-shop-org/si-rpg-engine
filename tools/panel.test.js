@@ -31,21 +31,29 @@ test('a budget over the transport limit, an unknown transport, and a repeated fa
 
 test('choose takes the seats not on standby by default, and named families without regard to case', () => {
   const defaults = choose(PANEL, undefined).seats;
-  assert.deepEqual(defaults.map((s) => s.family), ['Moonshot', 'Z.ai', 'DeepSeek', 'NVIDIA', 'MiniMax', 'Mistral']);
-  assert.ok(defaults.every((s) => s.via === 'ollama'), 'a default seat is an Ollama seat');
-  assert.deepEqual(choose(PANEL, 'openai, google').seats.map((s) => s.model), ['gpt-oss:120b-cloud', 'gemma4:31b-cloud']);
+  assert.deepEqual(defaults.map((s) => s.family), ['DeepSeek']);
+  assert.deepEqual(defaults.map((s) => ({ via: s.via, model: s.model, maxTokens: s.maxTokens, reasoningEffort: s.reasoningEffort })), [
+    { via: 'openrouter', model: 'deepseek/deepseek-v4.1-flash', maxTokens: 8192, reasoningEffort: 'none' },
+  ]);
+  assert.ok(PANEL.every((s) => !s.model.includes(':cloud')), 'a shipped seat is not an Ollama Cloud tag');
   const withStandby = [...PANEL, { via: /** @type {const} */ ('ollama'), model: 'x:cloud', family: 'Spare', maxTokens: 1000, standby: true }];
   assert.equal(choose(withStandby, undefined).seats.some((s) => s.family === 'Spare'), false, 'a standby seat is left out by default');
   assert.deepEqual(choose(withStandby, 'spare').seats.map((s) => s.family), ['Spare']);
-  const named = choose(PANEL, 'google, deepseek');
-  assert.deepEqual(named.seats.map((s) => s.family), ['DeepSeek', 'Google']);
+  const named = choose(PANEL, 'deepseek');
+  assert.deepEqual(named.seats.map((s) => s.family), ['DeepSeek']);
   assert.deepEqual(named.unknown, []);
 });
 
 test('choose reports a family that matches no seat, so a misspelt name stops the run', () => {
-  const r = choose(PANEL, 'Google,Gemni');
-  assert.deepEqual(r.seats.map((s) => s.family), ['Google']);
+  const r = choose(PANEL, 'DeepSeek,Gemni');
+  assert.deepEqual(r.seats.map((s) => s.family), ['DeepSeek']);
   assert.deepEqual(r.unknown, ['Gemni']);
+});
+
+test('a reasoning effort is one OpenRouter understands, and only on an OpenRouter seat', () => {
+  assert.deepEqual(panelProblems([{ via: 'openrouter', model: 'o', family: 'O', maxTokens: 1000, reasoningEffort: 'extreme' }]), ['o: reasoning effort must be none, low, high, or max']);
+  assert.deepEqual(panelProblems([{ via: 'ollama', model: 'm', family: 'M', maxTokens: 1000, reasoningEffort: 'low' }]), ['m: reasoning effort is an OpenRouter setting']);
+  assert.deepEqual(panelProblems([{ via: 'openrouter', model: 'n', family: 'N', maxTokens: 1000, reasoningEffort: 'low' }]), []);
 });
 
 test('a think setting is one Ollama understands, and only on an Ollama seat', () => {

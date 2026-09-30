@@ -1,21 +1,28 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-27 from commit aa90e00.
+Mapped at 2026-09-30 from commit bfa4538.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-17 parts, mostly JavaScript (135 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
+17 parts, mostly JavaScript (138 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-27 (2f8e4dc)
+## What changed since 2026-09-27 (aa90e00)
 
-- fixtures/t7c-runs/ is now written by tools/coordinator/t7c-runs.mjs.
-- 535 files added, across 1 part.
+- CI's pull request trigger now also names `codecov.yml`.
+- CI's push trigger now also names `codecov.yml`.
+- CI now also runs harness/mesh-refusal.test.js, harness/mesh.test.js and harness/step-up-121.test.js.
+- solver/build.mjs is now also read by harness/mesh-refusal.test.js.
+- In packages/tick/scene.js, validate scene gained a step, validate mesh, before belief refusal.
+- In packages/tick/scene.js, load scene gained a step, validate mesh, before belief refusal.
+- In packages/tick/scene.js, validate scene gained a step, validate mesh, before belief refusal.
+- And 1 more change to the order of work.
+- 7 files added and 379 changed content, across 17 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 12 paths; on a push to main touching 12 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 47 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
+1. **CI.** On a pull request touching 13 paths; on a push to main touching 13 paths; or by hand. Runs harness/bundle.mjs, harness/bundle.test.js, harness/caps.test.js and 50 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
 3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
 4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
@@ -28,7 +35,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 ## What happens through CI
 
-1. The workflow runs 10 files in bench, 20 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
+1. The workflow runs 10 files in bench, 23 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
    1. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    2. **Capture bundle** (tick) runs, in order: replay to and subarray.
    3. Inside harness/course.test.js, step run does, in order: record run, create world (tick) and body.
@@ -46,7 +53,7 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
       10. end line
    6. Inside harness/soundness.test.js, evict does, in order: create world (tick) and create hasher (frame).
    7. Inside harness/sweep.test.js, sweep of does, in order: load scene (tick) and sweep (load, 3 steps).
-   8. **Load scene** (tick) runs, in order: create world and belief refusal.
+   8. **Load scene** (tick) runs, in order: create world, validate mesh and belief refusal.
    9. **Sweep** (load) runs, in order:
       1. load intent rules (tick)
       2. create world
@@ -197,16 +204,16 @@ Only CI itself reads what it writes.
 ## What tends to change together
 
 - **packages/propose/bin/propose.js** and **packages/propose/seat.js** changed together in 10 of 14 commits, inside the propose part.
-- **harness/bundle.test.js** and **harness/corpus.mjs** changed together in 7 of 10 commits, inside the harness part.
 - **packages/propose/prompt.js** and **packages/propose/seat.js** changed together in 9 of 13 commits, inside the propose part.
 - **packages/host/host.test.js** and **packages/host/session.js** changed together in 8 of 12 commits, inside the host part.
-- **packages/bench/law.test.js** and **packages/bench/neutral.test.js** changed together in 4 of 6 commits, inside the bench part.
+- **packages/load/load.test.js** and **packages/load/suite.js** changed together in 4 of 6 commits, inside the load part.
+- **packages/bench/bench.js** and **packages/bench/neutral.test.js** changed together in 5 of 8 commits, inside the bench part.
 
 2 files changed together with their own tests, as expected.
 
 Confidence is low: fewer than 25 source files reach 10 revisions in the window.
 
-Window: 180 days; a pair counts from 3 shared commits, since 14 source files reach 10 revisions; the floor rises to 10 when 25 do.
+Window: 180 days; a pair counts from 3 shared commits, since 17 source files reach 10 revisions; the floor rises to 10 when 25 do.
 
 ## What no test touches
 
@@ -242,7 +249,7 @@ Read those in order to follow one pull request end to end.
 
 ## What this map cannot see
 
-- 18 import sites could not be resolved.
+- 19 import sites could not be resolved.
 - 3 writes and 9 reads use paths built at run time and are not named here.
 - 1 write goes to places this repository does not track, so it is not listed as generated.
 - 51 writes and 103 reads go to the directory the command is run in, the home directory or a path its caller passes, not to this repository.

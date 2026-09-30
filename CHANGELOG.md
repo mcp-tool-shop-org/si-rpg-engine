@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - **A scene may name a mesh.** Load accepts `{ positions, indices }` up to 999,474 triangles, the survey's maximum, and refuses a repeated index, a non-finite position, or an index out of range. The law builds one fixed trimesh. A box set on a two-triangle floor sleeps on it. Worlds that do not name a mesh are unchanged, and the product golden stays `69a671f962665563`. The Linux digest is `5a886be5608abfc385dc986da7aec5876a4eae86a2111ac239e2eb77673d5c8d`.
+- **A bad mesh is refused before it is built.** `createWorld` runs the same mesh check as load and throws that reason. The law refuses an index out of range, a repeated index, or a non-finite vertex before Parry builds the trimesh, and refuses a non-finite value in the snapshot the same way. A trap drops the cached physics module. A refused load or step does not hold that world and does not copy bodies back. `harness/mesh.test.js` is on `npm test`. The product golden stays `69a671f962665563`. The Linux digest is `fe5d46350f944426a684742479a41b352340c4caee47a56733eb50ce3a2e8bf3`.
 
 ### Changed
 
