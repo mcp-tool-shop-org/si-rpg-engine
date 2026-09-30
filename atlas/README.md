@@ -1,37 +1,49 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-30 from commit 6865b1c.
+Mapped at 2026-09-30 from commit d08872b.
 
 ## What this is
 
 Deterministic 3D RPG tick: the model proposes, a checker admits, and the host draws committed frames. (written by a person)
 
-17 parts, mostly JavaScript (139 files). Work enters through 10 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
+17 parts, mostly JavaScript (141 files). Work enters through 15 doors; the busiest is CI, which reaches 9 parts. People run bench, host, load, play, propose, replay and write-golden.
 
-## What changed since 2026-09-30 (bfa4538)
+## What changed since 2026-09-30 (6865b1c)
 
-- harness now imports host, which closes the cycle harness → host → tick → harness.
-- CI now also runs harness/binding.test.js.
-- docs/host-binding.md is now read by harness/binding.test.js.
-- worlds/crate-and-door.json is now also read by harness/binding.test.js.
-- 3 files added and 921 changed content, across 17 parts.
+- CI now also runs tools/stage-release.test.js.
+- CI now also checks tools/stage-release.mjs.
+- Release (.github/workflows/release.yml) is a new door. It starts when a release is published; or by hand. It runs solver/build.mjs, tools/publish-release.sh and tools/stage-release.mjs.
+- And 4 more changes to doors.
+- LICENSE is now read by tools/stage-release.test.js.
+- README.md is now read by tools/stage-release.test.js.
+- package.json is now also read by tools/stage-release.test.js.
+- And 23 more new writers and readers of places.
+- tools/publish-release.sh is new and belongs to no part, so atlas check fails on it against the previous map.
+- tools/stage-release.mjs is new and belongs to no part, so atlas check fails on it against the previous map.
+- tools/stage-release.test.js is new and belongs to no part, so atlas check fails on it against the previous map.
+- 13 files added and 15 changed content, across 8 parts.
 
 ## What comes in
 
-1. **CI.** On a pull request touching 13 paths; on a push to main touching 13 paths; or by hand. Runs harness/binding.test.js, harness/bundle.mjs, harness/bundle.test.js and 51 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 28 more.
+1. **CI.** On a pull request touching 13 paths; on a push to main touching 13 paths; or by hand. Runs harness/binding.test.js, harness/bundle.mjs, harness/bundle.test.js and 52 more; checks fixtures/golden-arith.txt, fixtures/golden.txt, harness/arith.mjs and 29 more.
 2. **Corpus.** On a schedule (`17 6 * * 1`), Monday at 06:17 UTC; or by hand. Runs harness/corpus.mjs and solver/build.mjs.
-3. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
-4. **propose** (a command people run). Runs packages/propose/bin/propose.js.
-5. **bench** (a command people run). Runs packages/bench/bin/bench.js.
-6. **host** (a command people run). Runs packages/host/bin/host.js.
-7. **load** (a command people run). Runs packages/load/bin/load.js.
-8. **write-golden** (a command people run). Runs harness/sim.mjs and harness/write-golden.js.
-9. **play** (a command people run). Runs packages/tick/bin/play.js.
-10. **replay** (a command people run). Runs packages/tick/bin/replay.js.
+3. **Release.** When a release is published; or by hand. Runs solver/build.mjs, tools/publish-release.sh and tools/stage-release.mjs.
+4. **Deploy site to GitHub Pages.** On a push to main touching 2 paths; or by hand. Runs site/astro.config.mjs and site/src/.
+5. **propose** (a command people run). Runs packages/propose/bin/propose.js.
+6. **bench** (a command people run). Runs packages/bench/bin/bench.js.
+7. **host** (a command people run, from package.json). Runs packages/host/bin/host.js.
+8. **host** (a command people run, from packages/host/package.json). Runs packages/host/bin/host.js.
+9. **load** (a command people run, from package.json). Runs packages/load/bin/load.js.
+10. **load** (a command people run, from packages/load/package.json). Runs packages/load/bin/load.js.
+11. **write-golden** (a command people run). Runs harness/sim.mjs and harness/write-golden.js.
+12. **play** (a command people run, from package.json). Runs packages/tick/bin/play.js.
+13. **play** (a command people run, from packages/tick/package.json). Runs packages/tick/bin/play.js.
+14. **replay** (a command people run, from package.json). Runs packages/tick/bin/replay.js.
+15. **replay** (a command people run, from packages/tick/package.json). Runs packages/tick/bin/replay.js.
 
 ## What happens through CI
 
-1. The workflow runs 10 files in bench, 24 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 16 files in 6 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 51 files in 8 more places.
+1. The workflow runs 10 files in bench, 24 files in harness, packages/host/host.test.js in host, packages/load/load.test.js in load, packages/propose/propose.test.js and packages/propose/record.test.js in propose, and 17 files in 7 more places; it checks fixtures/golden-arith.txt and fixtures/golden.txt in fixtures, 16 files in harness, packages/bench/ in bench, packages/frame/frame.js, packages/frame/hash.js and packages/frame/types.d.ts in frame, packages/host/ in host, and 52 files in 9 more places.
    1. Inside harness/binding.test.js, holds does, in order: world record, frame and frame record.
    2. Inside harness/bundle.mjs, make bundle does, in order: with records and capture bundle (tick).
    3. **Capture bundle** (tick) runs, in order: replay to and subarray.
@@ -171,31 +183,41 @@ Only CI itself reads what it writes.
 
 **Corpus** runs harness/corpus.mjs and solver/build.mjs, reaches frame, load and tick, writes to fixtures/sweep/verdicts.json, runs git, and opens an issue when it fails.
 
+**Release** runs solver/build.mjs, tools/publish-release.sh and tools/stage-release.mjs.
+
 **Deploy site to GitHub Pages** runs site/astro.config.mjs and site/src/, and deploys the site.
 
 **propose** (a command people run) runs packages/propose/bin/propose.js and reaches frame, harness and tick.
 
 **bench** (a command people run) runs packages/bench/bin/bench.js, reaches solver and tick, writes to fixtures/solver.sha256, and runs git.
 
-**host** (a command people run) runs packages/host/bin/host.js and reaches frame and tick.
+**host** (a command people run, from package.json) runs packages/host/bin/host.js and reaches frame and tick.
 
-**load** (a command people run) runs packages/load/bin/load.js, reaches frame and tick, and runs git.
+**host** (a command people run, from packages/host/package.json) runs packages/host/bin/host.js and reaches frame and tick.
+
+**load** (a command people run, from package.json) runs packages/load/bin/load.js, reaches frame and tick, and runs git.
+
+**load** (a command people run, from packages/load/package.json) runs packages/load/bin/load.js, reaches frame and tick, and runs git.
 
 **write-golden** (a command people run) runs harness/sim.mjs and harness/write-golden.js, reaches frame and tick, and writes to fixtures/golden-behaviour.json and fixtures/golden.txt.
 
-**play** (a command people run) runs packages/tick/bin/play.js and reaches frame.
+**play** (a command people run, from package.json) runs packages/tick/bin/play.js and reaches frame.
 
-**replay** (a command people run) runs packages/tick/bin/replay.js, reaches frame, and runs git.
+**play** (a command people run, from packages/tick/package.json) runs packages/tick/bin/play.js and reaches frame.
+
+**replay** (a command people run, from package.json) runs packages/tick/bin/replay.js, reaches frame, and runs git.
+
+**replay** (a command people run, from packages/tick/package.json) runs packages/tick/bin/replay.js, reaches frame, and runs git.
 
 ## What breaks what
 
-- **tick** is imported by 5 parts (bench, harness, host, load, propose) and sits on the path of 9 doors.
-- **frame** is imported by 2 parts (harness, tick) and sits on the path of 8 doors.
+- **tick** is imported by 5 parts (bench, harness, host, load, propose) and sits on the path of 13 doors.
+- **frame** is imported by 2 parts (harness, tick) and sits on the path of 12 doors.
 - **harness** is imported by 1 part (propose), and by 1 more only from tests; it sits on the path of 4 doors.
-- **load** is imported by 1 part (harness), and by 1 more only from tests; it sits on the path of 3 doors.
+- **load** is imported by 1 part (harness), and by 1 more only from tests; it sits on the path of 4 doors.
 - **propose** is imported by 1 part (bench) and sits on the path of 2 doors.
-- **solver** is run as a child process by 1 part (bench) and sits on the path of 3 doors.
-- **bench** is imported only from tests, by 1 part (propose), and sits on the path of 2 doors.
+- **solver** is run as a child process by 1 part (bench) and sits on the path of 4 doors.
+- **host** is imported only from tests, by 1 part (harness), and sits on the path of 3 doors.
 - **fixtures/golden.txt** is written by harness and read by harness and workflows; a hand edit reaches every reader.
 
 ## What tends to change together
