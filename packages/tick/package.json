@@ -1,0 +1,35 @@
+{
+  "name": "@si-rpg-engine/tick",
+  "version": "0.3.0",
+  "description": "The fixed-timestep tick for SI RPG Engine. It admits inputs, steps the physics, and records a fingerprint after every step.",
+  "type": "module",
+  "license": "MIT",
+  "author": "mcp-tool-shop",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "play": "./bin/play.js",
+    "replay": "./bin/replay.js"
+  },
+  "exports": {
+    ".": "./tick.js",
+    "./tick.js": "./tick.js",
+    "./world.js": "./world.js"
+  },
+  "files": [
+    "*.js",
+    "bin",
+    "!*.test.js",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcp-tool-shop-org/si-rpg-engine.git",
+    "directory": "packages/tick"
+  },
+  "homepage": "https://mcp-tool-shop-org.github.io/si-rpg-engine/",
+  "bugs": {
+    "url": "https://github.com/mcp-tool-shop-org/si-rpg-engine/issues"
+  }
+}

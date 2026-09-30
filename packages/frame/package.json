@@ -1,0 +1,31 @@
+{
+  "name": "@si-rpg-engine/frame",
+  "version": "0.3.0",
+  "description": "The fingerprint for SI RPG Engine: the frame types and the hash two machines compare.",
+  "type": "module",
+  "license": "MIT",
+  "author": "mcp-tool-shop",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./hash.js",
+    "./hash.js": "./hash.js",
+    "./frame.js": "./frame.js"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "!*.test.js",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcp-tool-shop-org/si-rpg-engine.git",
+    "directory": "packages/frame"
+  },
+  "homepage": "https://mcp-tool-shop-org.github.io/si-rpg-engine/",
+  "bugs": {
+    "url": "https://github.com/mcp-tool-shop-org/si-rpg-engine/issues"
+  }
+}

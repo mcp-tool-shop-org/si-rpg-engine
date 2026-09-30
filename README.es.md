@@ -44,7 +44,7 @@ Lo que pretende ser es el núcleo de simulación dentro de un host: un navegador
 | Roles para los modelos: un manifiesto por rol, la Regla de los Dos derivada de lo que lee el rol, una puerta de rol en el verificador, procedencia en cada admisión, etiquetas de confianza que permanecen con una creencia y cada llamada de modelo registrada y verificada sin una GPU; ambos roles declarados congelados. | `predicates/roles/`, `packages/tick/roles.js`, `packages/tick/gate.js`, `packages/propose` | `packages/tick/gate.test.js`, `packages/propose/record.test.js` a lo largo de las sesiones en `fixtures/sessions/`. |
 | Reproducción a partir de una semilla y un registro, y un enlace de host para el flujo de fotogramas, la puerta de intención y la regla de mezcla. | `packages/tick/replay.js`, `packages/host`, `docs/host-binding.md` | `fixtures/first-scene-played.json` es la reproducción de una persona a través del límite del host; `harness/binding.test.js` reproduce la configuración a través del socket. |
 
-516 pruebas, siete configuraciones de comportamiento que reproducen paso a paso y dos hashes dorados impresos por tres motores en x64 y por node en ARM64, en cada confirmación.
+521 pruebas, siete configuraciones de comportamiento que reproducen paso a paso y dos hashes dorados impresos por tres motores en x64 y por node en ARM64, en cada confirmación.
 
 ## Instalar
 

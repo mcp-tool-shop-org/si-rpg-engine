@@ -1,0 +1,34 @@
+{
+  "name": "@si-rpg-engine/load",
+  "version": "0.3.0",
+  "description": "World admission for SI RPG Engine. A world file is accepted, with a reason, before it runs.",
+  "type": "module",
+  "license": "MIT",
+  "author": "mcp-tool-shop",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "load": "./bin/load.js"
+  },
+  "exports": {
+    ".": "./world.js",
+    "./world.js": "./world.js",
+    "./admit.js": "./admit.js"
+  },
+  "files": [
+    "*.js",
+    "bin",
+    "!*.test.js",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcp-tool-shop-org/si-rpg-engine.git",
+    "directory": "packages/load"
+  },
+  "homepage": "https://mcp-tool-shop-org.github.io/si-rpg-engine/",
+  "bugs": {
+    "url": "https://github.com/mcp-tool-shop-org/si-rpg-engine/issues"
+  }
+}

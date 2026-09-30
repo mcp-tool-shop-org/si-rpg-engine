@@ -2,6 +2,7 @@ node_modules/
 .jsvu/
 solver/target/
 solver/dist/
+.release/
 site/.astro/
 site/.astro/
 site/dist/
