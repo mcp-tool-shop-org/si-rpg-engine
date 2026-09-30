@@ -6,7 +6,8 @@ import { createHostServer } from '../packages/host/server.js';
 import { loadScene, validateScene } from '../packages/tick/scene.js';
 import { fixtureColliders } from '../packages/tick/world.js';
 
-const contract = readFileSync(new URL('../docs/host-binding.md', import.meta.url), 'utf8');
+// A Windows checkout writes CR LF. The fences are parsed from the line feeds.
+const contract = readFileSync(new URL('../docs/host-binding.md', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 const porter = {
   name: 'porter-yard',
