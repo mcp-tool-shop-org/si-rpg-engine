@@ -1,6 +1,6 @@
 # si-rpg-engine: how it works
 
-Mapped at 2026-09-30 from commit 07894f1 by Atlas 1.24.0.
+Mapped at 2026-11-12 from commit 25c0939 by Atlas 1.26.0.
 
 ## What this is
 
@@ -8,14 +8,9 @@ Deterministic 3D RPG tick: the model proposes, a checker admits, and the host dr
 
 17 parts, mostly JSON data (619 files) and Markdown (108); code in JavaScript (141), Rust (6), TypeScript (3), shell (3), CSS (2), Astro (1) and HTML (1). Work enters through 15 doors; the busiest is CI, which reaches 9 parts. It deploys a site to GitHub Pages. People run host, load, play and replay. bench, host, load, play, propose, replay and write-golden are commands of a private package (nothing ships them).
 
-## What changed since 2026-09-30 (3fda2e5)
+## What changed since 2026-11-11 (06c9367)
 
-- CI now also runs solver/build.rs, solver/src/kcc.rs and solver/src/rapier_law.rs.
-- .release is now written by tools/stage-release.mjs.
-- .release/frame is now written by tools/stage-release.mjs.
-- .release/frame/packages is now written by tools/stage-release.mjs.
-- And 30 more new writers and readers of places.
-- 923 files changed content, across 17 parts.
+Nothing structural changed since 2026-11-11; 1 file changed content.
 
 ## What comes in
 
@@ -176,9 +171,11 @@ People write .github/, docs/, predicates/beliefs/, predicates/hazards/, predicat
 
 ## Where to start
 
-.github/workflows/ci.yml → harness/bundle.mjs → packages/tick/bundle.js → packages/tick/runs.js → packages/tick/difference.js → packages/tick/trace-line.js → packages/frame/hash.js
+.github/workflows/ci.yml → harness/bundle.mjs → packages/tick/bundle.js → packages/tick/runs.js → packages/tick/memory.js → packages/tick/trust.js
 
 Read those in order to follow one pull request end to end.
+
+Beside the path, packages/tick/bundle.js also calls packages/tick/difference.js and packages/tick/trace-line.js.
 
 ## What this map cannot see
 
