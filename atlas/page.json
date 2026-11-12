@@ -114,13 +114,13 @@
     "items": [
       {
         "kind": "counts",
-        "sentence": "Nothing structural changed since 2026-09-30; 1 file changed content.",
+        "sentence": "Nothing structural changed since 2026-11-11; 1 file changed content.",
         "subjects": []
       }
     ],
     "since": {
-      "commit": "07894f1dfad79e8b04a28712b071b5cb79a376b7",
-      "generatedAt": "2026-09-30T21:09:08.981Z"
+      "commit": "06c93679bc1f6b442c727cd4e7729b2f059851d0",
+      "generatedAt": "2026-11-11T22:41:30.681Z"
     },
     "unchanged": true
   },
@@ -207,7 +207,7 @@
     "Window: 180 days; a pair counts from 3 shared commits, since 20 source files reach 10 revisions and the floor had fallen; it rises back to 10 when 25 do."
   ],
   "changesTogetherWithTests": 2,
-  "commit": "06c93679bc1f6b442c727cd4e7729b2f059851d0",
+  "commit": "25c0939b23cf351bea1421c897f0476c6968ea5e",
   "defaultBranch": "main",
   "derived": "17 parts, mostly JSON data (619 files) and Markdown (108); code in JavaScript (141), Rust (6), TypeScript (3), shell (3), CSS (2), Astro (1) and HTML (1). Work enters through 15 doors; the busiest is CI, which reaches 9 parts. It deploys a site to GitHub Pages. People run host, load, play and replay. bench, host, load, play, propose, replay and write-golden are commands of a private package (nothing ships them).",
   "doors": [
@@ -1016,7 +1016,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-11-11T22:41:30.681Z",
+  "generatedAt": "2026-11-12T00:55:58.107Z",
   "limits": [
     "19 imports could not be resolved: `harness/bundle.test.js` imports `../solver/dist/solver.mjs`, which a build generates; `harness/caps.test.js` imports `../solver/dist/solver.mjs`, which a build generates; `harness/corpus.mjs` imports `../solver/dist/solver.mjs`, which a build generates; and 16 more.",
     "2 writes and 7 reads use paths built at run time and are not named here.",
